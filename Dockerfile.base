@@ -30,7 +30,7 @@ RUN git clone --depth=1 https://git.planck.security/foundation/planckJNIWrapper.
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckWrapper.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libPlanckCxx11
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckTransport.git -b ${LIBPEPTRANSPORT_VERSION} $HOME/code/libpEpTransport
-RUN git clone --depth=1 http://git.pep.security/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
+RUN git clone --depth=1 https://git.pep.security/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
 COPY . /root/code/planck
 
 RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/planckJNIWrapper/local.conf
