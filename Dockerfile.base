@@ -27,7 +27,7 @@ ARG FOLDABLE_FOLDER_VERSION
 # Fetch planck for Android First-Party Dependencies
 RUN git clone --depth=1 https://git.planck.security/foundation/planckCoreV3.git -b ${ENGINE_VERSION} $HOME/code/planckCoreV3
 RUN git clone --depth=1 https://git.planck.security/foundation/planckJNIWrapper.git -b ${JNI_ADAPTER_VERSION} $HOME/code/planckJNIWrapper
-RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckWrapper.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
+RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckWrapper.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libPlanckAdapter
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libPlanckCxx11
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckTransport.git -b ${LIBPEPTRANSPORT_VERSION} $HOME/code/libPlanckTransport
 RUN git clone --depth=1 https://git.pep.security/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
