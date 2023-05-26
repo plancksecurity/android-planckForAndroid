@@ -95,5 +95,6 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
             }
         }
         securityStatusText?.text = firstLine
+        postInvalidate()
     }
 }
