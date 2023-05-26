@@ -19,6 +19,7 @@ import timber.log.Timber
 class ProvidersXmlDiscovery(
     private val xmlProvider: ProvidersXmlProvider,
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
+    private val dnsRecordsResolver: MiniDnsRecordsResolver,
     private val provisioningSettings: ProvisioningSettings = (K9.app as K9).component.provisioningSettings(),
 ) : ConnectionSettingsDiscovery {
 
@@ -35,7 +36,10 @@ class ProvidersXmlDiscovery(
     override fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
-        val provider = provisionedProvider ?: findProviderForDomain(domain) ?: return null
+        val provider = provisionedProvider
+            ?: findProviderForDomain(domain)
+            ?: findProviderForDomain(dnsRecordsResolver.getRealDomain(domain))
+            ?: return null
 
         val incomingSettings = provider.toIncomingServerSettings(email) ?: return null
         val outgoingSettings = provider.toOutgoingServerSettings(email) ?: return null

@@ -116,6 +116,7 @@ dependencies {
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     implementation "net.sf.biweekly:biweekly:${versions.biweekly}"
+    implementation 'org.minidns:minidns-hla:1.0.4'
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
