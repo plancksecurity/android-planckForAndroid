@@ -6,7 +6,7 @@ RUN git config --global advice.detachedHead false
 
 # yml2
 ARG YML2_VERSION
-RUN git clone --depth=1 https://gitea.pep.foundation/fdik/yml2.git -b ${YML2_VERSION} $HOME/yml2
+RUN git clone --depth=1 https://git.planck.security/foundation/yml2.git -b ${YML2_VERSION} $HOME/yml2
 
 # ASN1C
 RUN git clone https://github.com/vlm/asn1c.git $HOME/code/asn1c
