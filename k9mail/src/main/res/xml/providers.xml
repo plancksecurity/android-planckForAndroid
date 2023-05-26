@@ -806,5 +806,9 @@
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
         <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
     </provider>
+    <provider id="Microsoft-custom-domains" label="Microsoft custom domains" domain="mail.protection.outlook.com">
+        <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
+        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+    </provider>
 
 </providers>
