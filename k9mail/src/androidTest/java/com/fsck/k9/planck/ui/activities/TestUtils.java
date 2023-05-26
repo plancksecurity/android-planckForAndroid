@@ -2544,9 +2544,9 @@ public class TestUtils {
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
-                String text2 = getTextFromView(onView(withId(R.id.securityStatusText))) + " " + getTextFromView(onView(withId(R.id.securityStatusSecondLine)));
-                if (!text2.contains(text2)) {
-                    assertFailWithMessage("Status are not the same. It is " + text2 + " and it should be " + text);
+                String statusText = getTextFromView(onView(withId(R.id.securityStatusText))) + " " + getTextFromView(onView(withId(R.id.securityStatusSecondLine)));
+                if (!statusText.contains(text)) {
+                    assertFailWithMessage("Status are not the same. It is " + statusText + " and it should be " + text);
                 }
                 return;
             }
