@@ -387,12 +387,12 @@ android {
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
     if (variant.name == "mdmDemoPlayStoreRelease") {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.pEp.enterprise\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.pep.enterprise"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.pEp.enterprise"
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.test.enterprise\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.test.enterprise"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.test.enterprise"
     } else {
         variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId.toLowerCase()}"
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId}"
         mergedFlavor.manifestPlaceholders["oAuthAppId"] = "${variant.applicationId}"
     }
     //noinspection GroovyFallthrough
