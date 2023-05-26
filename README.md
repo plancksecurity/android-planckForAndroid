@@ -15,8 +15,7 @@ You might also be interested in becoming a beta tester to get an early look at n
 
 If the app is not behaving like it should, you might find these resources helpful:
 
-- [User Manual](https://prettyeasyprivacy.com/docs/)
-- [Frequently Asked Questions](https://prettyeasyprivacy.com/faq/)
+- [User Manual](https://userguide.planck.security/planck_for_Android_User_Guide.pdf)
 
 
 
