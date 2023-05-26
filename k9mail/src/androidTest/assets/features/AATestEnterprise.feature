@@ -35,12 +35,8 @@ Feature: Test
     Then I check the privacy status is secure
 
 
-  Scenario Outline: Cucumber Stress
+  Scenario: Cucumber Stress
     When I stress Engine threads with 4 recipients
-
-    Examples:
-      |account|
-      |  0    |
 
 
   Scenario Outline: Cucumber Reset Partner Key
