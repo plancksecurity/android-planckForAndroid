@@ -155,7 +155,7 @@
           <email>android_devtest_02@peptest.ch</email>
           <description>Initial identity</description>
           <settings>
-            <value key="signature">--  Sent from my planck for Android. </value>
+            <value key="signature">--  Sent from planck for Android. </value>
             <value key="signatureUse">true</value>
           </settings>
         </identity>
