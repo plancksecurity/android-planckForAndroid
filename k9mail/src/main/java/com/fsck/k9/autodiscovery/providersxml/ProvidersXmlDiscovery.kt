@@ -2,6 +2,7 @@ package com.fsck.k9.autodiscovery.providersxml
 
 import android.content.res.XmlResourceParser
 import android.net.Uri
+import com.fsck.k9.K9
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.api.ConnectionSettingsDiscovery
 import com.fsck.k9.autodiscovery.api.DiscoveredServerSettings
@@ -12,17 +13,29 @@ import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.oauth.OAuthConfigurationProvider
 import org.xmlpull.v1.XmlPullParser
+import security.planck.provisioning.ProvisioningSettings
 import timber.log.Timber
 
 class ProvidersXmlDiscovery(
     private val xmlProvider: ProvidersXmlProvider,
-    private val oAuthConfigurationProvider: OAuthConfigurationProvider
+    private val oAuthConfigurationProvider: OAuthConfigurationProvider,
+    private val provisioningSettings: ProvisioningSettings = (K9.app as K9).component.provisioningSettings(),
 ) : ConnectionSettingsDiscovery {
+
+    private val provisionedProvider: Provider?
+        get() = provisioningSettings.provisionedMailSettings?.let { mailSettings ->
+            Provider(
+                incomingUriTemplate = mailSettings.incoming.toSeverUriTemplate(outgoing = false),
+                incomingUsernameTemplate = mailSettings.incoming.userName!!,
+                outgoingUriTemplate = mailSettings.outgoing.toSeverUriTemplate(outgoing = true),
+                outgoingUsernameTemplate = mailSettings.outgoing.userName!!
+            )
+        }
 
     override fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
-        val provider = findProviderForDomain(domain) ?: return null
+        val provider = provisionedProvider ?: findProviderForDomain(domain) ?: return null
 
         val incomingSettings = provider.toIncomingServerSettings(email) ?: return null
         val outgoingSettings = provider.toOutgoingServerSettings(email) ?: return null
