@@ -106,7 +106,7 @@ import static org.hamcrest.Matchers.anything;
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
 
-    private static final String HOST = "@sq.pep.security";
+    private static final String HOST = "@sq.planck.security";
 
     private boolean syncThirdDevice = false;
 
