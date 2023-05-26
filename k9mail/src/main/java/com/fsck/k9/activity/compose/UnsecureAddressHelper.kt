@@ -47,24 +47,26 @@ class UnsecureAddressHelper @Inject constructor(
         echoSender: String,
         ratedRecipientsReadyListener: RatedRecipientsReadyListener
     ) {
-        recipients
-            .filter { it.address.address.equals(echoSender, true) }
-            .filter { it.address in unsecureAddresses }
-            .map { recipient ->
-                recipient
-                    .toRatedRecipient(
-                        planck.getRating(recipient.address)
-                            .onFailure { view.showError(it) }
-                            .getOrDefault(Rating.pEpRatingUndefined)
-                    )
-                    .also {
-                        if (!PlanckUtils.isRatingUnsecure(it.rating)) {
-                            removeUnsecureAddressChannel(it.baseRecipient.address)
+        coroutineScope.launch {
+            recipients
+                .filter { it.address.address.equals(echoSender, true) }
+                .filter { it.address in unsecureAddresses }
+                .map { recipient ->
+                    recipient
+                        .toRatedRecipient(
+                            planck.getRating(recipient.address)
+                                .onFailure { view.showError(it) }
+                                .getOrDefault(Rating.pEpRatingUndefined)
+                        )
+                        .also {
+                            if (!PlanckUtils.isRatingUnsecure(it.rating)) {
+                                removeUnsecureAddressChannel(it.baseRecipient.address)
+                            }
                         }
-                    }
-            }.also {
-                ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList())
-            }
+                }.also {
+                    ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList())
+                }
+        }
     }
 
     fun rateRecipients(
