@@ -1,0 +1,39 @@
+@startuml
+skinparam ranksep 20
+skinparam dpi 125
+skinparam packageTitleAlignment left
+skinparam linetype ortho
+'left to right direction
+
+
+rectangle "Compose Message" {
+    (Calculate message security status) as cmss
+    (Calculate recipents security status) as crss
+    (Remove unsecure recipients) as rur
+    (Send message) as sm
+    (Display recipients security status) as drss
+    (Display message security status) as dmss
+    (Establish trust with secure recipients) as etwsr
+}
+
+user ---> sm
+user ---> rur
+user ---> etwsr
+
+
+app -up---> sm
+app -up---> dmss
+app -up---> drss
+app -up---> cmss
+app -up---> crss
+app -up---> rur
+app -up---> etwsr
+
+
+cmss <--- core
+crss <--- core
+
+
+drss ........> crss : <<includes>>
+dmss ........> cmss : <<includes>>
+@enduml
