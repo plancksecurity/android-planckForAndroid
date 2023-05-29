@@ -210,20 +210,9 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         ccPresenter.tryPerformCompletion();
         bccPresenter.tryPerformCompletion();
 
-        if (toPresenter.hasUncompletedRecipients()) {
-            toPresenter.showUncompletedError();
-            return true;
-        }
-
-        if (ccPresenter.hasUncompletedRecipients()) {
-            ccPresenter.showUncompletedError();
-            return true;
-        }
-
-        if (bccPresenter.hasUncompletedRecipients()) {
-            bccPresenter.showUncompletedError();
-            return true;
-        }
+        if (toPresenter.reportedUncompletedRecipients()
+        || ccPresenter.reportedUncompletedRecipients()
+        || bccPresenter.reportedUncompletedRecipients()) return true;
 
         if (addressesAreEmpty(getToAddresses(), getCcAddresses(), getBccAddresses())) {
             toPresenter.showNoRecipientsError();
