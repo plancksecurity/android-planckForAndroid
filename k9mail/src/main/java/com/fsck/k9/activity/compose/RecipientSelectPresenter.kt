@@ -64,14 +64,16 @@ class RecipientSelectPresenter @Inject constructor(
         view.removeRecipient(recipient)
     }
 
-    fun hasUncompletedRecipients(): Boolean = view.hasUncompletedRecipients()
-
     fun showNoRecipientsError() {
         view.showNoRecipientsError()
     }
 
-    fun showUncompletedError() {
-        view.showUncompletedError()
+    fun reportedUncompletedRecipients(): Boolean {
+        return view.hasUncompletedRecipients().also {
+            if (it) {
+                view.showUncompletedError()
+            }
+        }
     }
 
     fun tryPerformCompletion(): Boolean = view.tryPerformCompletion()
