@@ -18,7 +18,7 @@ import org.junit.Test
 private const val SENDER_ADDRESS = "sender address"
 
 @ExperimentalCoroutinesApi
-class UnsecureAddressHelperTest {
+class RecipientSelectPresenterTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
 
@@ -27,7 +27,7 @@ class UnsecureAddressHelperTest {
     private val ratedListener: RatedRecipientsReadyListener = mockk(relaxed = true)
     private val view: RecipientSelectViewContract = mockk(relaxed = true)
 
-    private val helper = UnsecureAddressHelper(planck)
+    private val helper = RecipientSelectPresenter(planck)
 
     @Before
     fun setup() {

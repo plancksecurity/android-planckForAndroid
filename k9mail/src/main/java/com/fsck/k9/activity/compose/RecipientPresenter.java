@@ -84,9 +84,9 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     // transient state, which is either obtained during construction and initialization, or cached
     private final Context context;
     private final RecipientMvpView recipientMvpView;
-    private UnsecureAddressHelper toPresenter;
-    private UnsecureAddressHelper ccPresenter;
-    private UnsecureAddressHelper bccPresenter;
+    private RecipientSelectPresenter toPresenter;
+    private RecipientSelectPresenter ccPresenter;
+    private RecipientSelectPresenter bccPresenter;
     private final ComposePgpInlineDecider composePgpInlineDecider;
     private final RecipientsChangedListener listener;
     private Poller poller;
@@ -133,7 +133,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         updateCryptoStatus();
     }
 
-    public void setPresenter(UnsecureAddressHelper presenter, RecipientType type) {
+    public void setPresenter(RecipientSelectPresenter presenter, RecipientType type) {
         switch (type) {
             case TO:
                 this.toPresenter = presenter;
@@ -1021,7 +1021,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     private void notifyRecipientsChanged(
-            UnsecureAddressHelper presenter
+            RecipientSelectPresenter presenter
     ) {
         for (Recipient recipient : presenter.getRecipients()) {
             presenter.removeRecipient(recipient);
