@@ -60,7 +60,7 @@ class RecipientSelectPresenter @Inject constructor(
         }
     }
 
-    fun removeRecipient(recipient: Recipient) {
+    private fun removeRecipient(recipient: Recipient) {
         view.removeRecipient(recipient)
     }
 
