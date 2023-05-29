@@ -734,7 +734,7 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
     @Override
     public void updatedRestrictions() {
         recipientPresenter.updateCryptoStatus();
-        recipientPresenter.refreshRecipients();
+        recipientPresenter.notifyRecipientsChanged();
         recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
     }
 
@@ -1171,8 +1171,8 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
     }
 
     private void onPEpPrivacyStatus(boolean force) {
-        recipientMvpView.refreshRecipients();
-        if (force || recipientMvpView.isPepStatusClickable()) {
+        recipientPresenter.refreshRecipients();
+        if (force || PlanckUtils.isPepStatusClickable(uiCache.getRecipients(), recipientMvpView.getPlanckRating())) {
             recipientMvpView.setMessageReference(relatedMessageReference);
             handlePEpState();
             recipientPresenter.onPEpPrivacyStatus();
