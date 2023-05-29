@@ -9,10 +9,7 @@ import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.planck.infrastructure.components.DaggerPlanckComponent;
 import com.fsck.k9.planck.infrastructure.components.PlanckComponent;
-import com.fsck.k9.planck.infrastructure.modules.ActivityModule;
-import com.fsck.k9.planck.infrastructure.modules.PlanckModule;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import security.planck.ui.toolbar.ToolBarCustomizer;
@@ -44,11 +41,8 @@ public abstract class PlanckFragment extends Fragment {
 
     private void initializeInjector(ApplicationComponent applicationComponent) {
         applicationComponent.inject(this);
-        planckComponent = DaggerPlanckComponent.builder()
-                .applicationComponent(applicationComponent)
-                .planckModule(new PlanckModule(getActivity(), LoaderManager.getInstance(this), getFragmentManager()))
-                .activityModule(new ActivityModule(getActivity()))
-                .build();
+        planckComponent = getK9().getComponent().planckComponentFactory()
+                .create(requireActivity(), requireContext(), LoaderManager.getInstance(this), requireFragmentManager());
     }
 
     public PlanckComponent getPlanckComponent() {

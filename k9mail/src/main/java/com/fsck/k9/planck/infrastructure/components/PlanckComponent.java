@@ -1,5 +1,11 @@
 package com.fsck.k9.planck.infrastructure.components;
 
+import android.app.Activity;
+import android.content.Context;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.app.LoaderManager;
+
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.SettingsActivity;
@@ -23,9 +29,14 @@ import com.fsck.k9.planck.ui.keys.PlanckExtraKeys;
 import com.fsck.k9.planck.ui.keysync.KeysyncManagement;
 import com.fsck.k9.planck.ui.keysync.PlanckAddDevice;
 import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
+import com.fsck.k9.ui.messageview.MessageContainerView;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
-import dagger.Component;
+import javax.inject.Named;
+
+import dagger.BindsInstance;
+import dagger.Module;
+import dagger.Subcomponent;
 import security.planck.group.GroupTestScreen;
 import security.planck.ui.about.AboutActivity;
 import security.planck.ui.calendar.CalendarInviteLayout;
@@ -36,12 +47,25 @@ import security.planck.ui.mdm.MdmSettingsFeedbackActivity;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.permissions.PermissionsActivity;
 import security.planck.ui.support.export.ExportpEpSupportDataActivity;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @PerActivity
-@Component(dependencies = ApplicationComponent.class, modules = {
+@Subcomponent(modules = {
         ActivityModule.class, PlanckModule.class,
 })
-public interface PlanckComponent extends ActivityComponent {
+public interface PlanckComponent {
+
+    @Subcomponent.Factory
+    interface Factory {
+        PlanckComponent create(
+                @BindsInstance Activity activity,
+                @BindsInstance @Named("ActivityContext") Context context,
+                @BindsInstance LoaderManager loaderManager,
+                @BindsInstance FragmentManager fragmentManager
+        );
+    }
+
+    ToolBarCustomizer toolbarCustomizer();
 
     void inject(PlanckStatus activity);
 
@@ -104,4 +128,9 @@ public interface PlanckComponent extends ActivityComponent {
     void inject(AccountSetupSelectAuthFragment fragment);
 
     void inject(GroupTestScreen activity);
+
+    void inject(MessageContainerView messageContainerView);
+
+    @Module(subcomponents = {PlanckComponent.class})
+    interface InstallerModule {}
 }

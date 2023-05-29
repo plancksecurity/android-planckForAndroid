@@ -29,13 +29,6 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    @Named("AppContext")
-    Context provideContext(K9 application) {
-        return application.getApplicationContext();
-    }
-
-    @Provides
-    @Singleton
     ThreadExecutor provideThreadExecutor(JobExecutor jobExecutor) {
         return jobExecutor;
     }
@@ -62,7 +55,7 @@ public class ApplicationModule {
     }
 
     @Provides
-    public Preferences providePreferences(K9 application) {
+    public Preferences providePreferences(@Named("AppContext") Context application) {
         return Preferences.getPreferences(application);
     }
 
@@ -78,6 +71,12 @@ public class ApplicationModule {
     @Provides
     public PlanckUIArtefactCache provideUiCache(K9 application) {
         return PlanckUIArtefactCache.getInstance(application);
+    }
+
+    @Provides
+    @Named("AppContext")
+    Context provideAppContext(K9 k9) {
+        return k9.getApplicationContext();
     }
 
 }

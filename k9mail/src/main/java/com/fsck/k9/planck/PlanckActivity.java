@@ -2,13 +2,12 @@ package com.fsck.k9.planck;
 
 import android.os.Bundle;
 
+import androidx.loader.app.LoaderManager;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.planck.infrastructure.components.DaggerPlanckComponent;
 import com.fsck.k9.planck.infrastructure.components.PlanckComponent;
-import com.fsck.k9.planck.infrastructure.modules.ActivityModule;
-import com.fsck.k9.planck.infrastructure.modules.PlanckModule;
 
 public abstract class PlanckActivity extends K9Activity {
     private PlanckProvider planck;
@@ -40,11 +39,8 @@ public abstract class PlanckActivity extends K9Activity {
 
     private void initializeInjector(ApplicationComponent applicationComponent) {
         applicationComponent.inject(this);
-        planckComponent = DaggerPlanckComponent.builder()
-                .applicationComponent(applicationComponent)
-                .activityModule(new ActivityModule(this))
-                .planckModule(new PlanckModule(this, getSupportLoaderManager(), getSupportFragmentManager()))
-                .build();
+        planckComponent = getK9().getComponent().planckComponentFactory()
+                .create(this, this, LoaderManager.getInstance(this), getSupportFragmentManager());
     }
 
     public abstract void inject();

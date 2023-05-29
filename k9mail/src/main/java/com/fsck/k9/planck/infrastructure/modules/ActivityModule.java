@@ -1,15 +1,11 @@
 package com.fsck.k9.planck.infrastructure.modules;
 
 import android.app.Activity;
-import android.content.Context;
 
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.infrastructure.PerActivity;
 import com.fsck.k9.planck.infrastructure.ComposeView;
 import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
-
-import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,37 +17,19 @@ import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @Module
 public class ActivityModule {
-    private final Activity activity;
 
-    public ActivityModule(Activity activity) {
-        this.activity = activity;
-    }
-
-    @Provides
-    @PerActivity
-    Activity provideActivity() {
-        return this.activity;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("ActivityContext")
-    Context provideActivityContext() {
-        return this.activity;
-    }
-
-    @Provides
-    PermissionRequester providepEpPermissionRequestProvider() {
+   @Provides
+    PermissionRequester providepEpPermissionRequestProvider(Activity activity) {
         return new PlanckPermissionRequester(activity);
     }
 
     @Provides
-    ToolBarCustomizer provideToolbarCustomizer() {
+    ToolBarCustomizer provideToolbarCustomizer(Activity activity) {
         return new ToolBarCustomizer(activity);
     }
 
     @Provides
-    public ResourcesProvider providepEpResourcesProvider() {
+    public ResourcesProvider providepEpResourcesProvider(Activity activity) {
         return new PlanckResourcesProvider(activity);
     }
 

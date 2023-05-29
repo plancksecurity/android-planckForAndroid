@@ -8,6 +8,7 @@ import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.compose.RecipientSelectView;
 import com.fsck.k9.planck.DispatcherProvider;
+import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.modules.ApplicationModule;
@@ -32,7 +33,11 @@ import security.planck.provisioning.ProvisioningManager;
 import security.planck.provisioning.ProvisioningSettings;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, RestrictionsProviderModule.class})
+@Component(modules = {
+        ApplicationModule.class,
+        PlanckComponent.InstallerModule.class,
+        RestrictionsProviderModule.class
+})
 public interface ApplicationComponent {
 
     void inject(K9Activity k9Activity);
@@ -40,6 +45,8 @@ public interface ApplicationComponent {
     void inject(PlanckFragment planckFragment);
 
     ThreadExecutor getThreadExecutor();
+    void inject(PlanckActivity activity);
+    PlanckComponent.Factory planckComponentFactory();
 
     PostExecutionThread getPostExecutionThread();
 
