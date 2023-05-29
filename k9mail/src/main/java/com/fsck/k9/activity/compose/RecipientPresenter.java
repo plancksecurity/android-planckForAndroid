@@ -1023,10 +1023,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     private void notifyRecipientsChanged(
             RecipientSelectPresenter presenter
     ) {
-        for (Recipient recipient : presenter.getRecipients()) {
-            presenter.removeRecipient(recipient);
-            presenter.addRecipients(recipient);
-        }
-        presenter.restoreFirstRecipientTruncation();
+        presenter.notifyRecipientsChanged();
     }
 }
