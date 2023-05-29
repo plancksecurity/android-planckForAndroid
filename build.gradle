@@ -50,7 +50,7 @@ buildscript {
                 'crypto'             : '1.1.0-alpha03',
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',
-                'dagger'             : '2.41',
+                'hilt'               : '2.44',
                 'groupie'            : '2.1.0',
                 'ankoCoroutines'     : '0.10.4',
                 'kotlinCoroutines'   : '1.6.4',
@@ -94,6 +94,10 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     }
+}
+
+plugins {
+    id 'com.google.dagger.hilt.android' version '2.44' apply false
 }
 
 allprojects {

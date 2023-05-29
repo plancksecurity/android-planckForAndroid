@@ -21,6 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'com.google.dagger.hilt.android'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
@@ -94,8 +95,8 @@ dependencies {
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
 
     // Arch dependencies
-    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
-    implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycleViewModel}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycleExtensions}"
@@ -180,7 +181,11 @@ dependencies {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
-    kaptAndroidTest "com.google.dagger:dagger-compiler:${versions.dagger}"
+    kaptAndroidTest "com.google.dagger:hilt-compiler:${versions.hilt}"
+}
+
+kapt {
+    correctErrorTypes true
 }
 
 android {
