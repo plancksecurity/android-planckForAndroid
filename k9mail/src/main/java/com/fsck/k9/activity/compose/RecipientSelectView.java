@@ -81,7 +81,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
-    @Inject UnsecureAddressHelper unsecureAddressHelper;
+    @Inject
+    RecipientSelectPresenter recipientSelectPresenter;
 
     public RecipientSelectView(Context context) {
         super(context);
@@ -127,7 +128,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         setAdapter(adapter);
 
         setLongClickable(false);
-        unsecureAddressHelper.initialize(this);
+        recipientSelectPresenter.initialize(this);
 
         setOnEditorActionListener((v, actionId, event) -> {
             if ((actionId == EditorInfo.IME_ACTION_NEXT)) {
@@ -144,14 +145,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
             @Override
             public void onTokenAdded(Recipient token) {
-                unsecureAddressHelper.onRecipientsChanged();
+                recipientSelectPresenter.onRecipientsChanged();
             }
 
             @Override
             public void onTokenRemoved(Recipient token) {
-                unsecureAddressHelper.removeUnsecureAddressChannel(token.getAddress());
-                unsecureAddressHelper.handleUnsecureTokenWarning();
-                unsecureAddressHelper.onRecipientsChanged();
+                recipientSelectPresenter.removeUnsecureAddressChannel(token.getAddress());
+                recipientSelectPresenter.handleUnsecureTokenWarning();
+                recipientSelectPresenter.onRecipientsChanged();
             }
         });
     }
@@ -206,13 +207,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.bind(recipient);
 
-        unsecureAddressHelper.getRecipientRating(
+        recipientSelectPresenter.getRecipientRating(
                 recipient,
                 account.isPlanckPrivacyProtected(),
                 new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
-                unsecureAddressHelper.handleUnsecureTokenWarning();
+                recipientSelectPresenter.handleUnsecureTokenWarning();
                 setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
@@ -220,7 +221,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
             @Override
             public void onError(Throwable throwable) {
-                unsecureAddressHelper.handleUnsecureTokenWarning();
+                recipientSelectPresenter.handleUnsecureTokenWarning();
                 setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
@@ -397,7 +398,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     private void setCountColor(Editable editable, CountSpan countSpan, int count) {
-        boolean unsecure = unsecureAddressHelper.hasHiddenUnsecureAddressChannel(
+        boolean unsecure = recipientSelectPresenter.hasHiddenUnsecureAddressChannel(
                 getAddresses(),
                 count
         );
@@ -560,11 +561,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
-        unsecureAddressHelper.addRecipients(recipients);
+        recipientSelectPresenter.addRecipients(recipients);
     }
 
     public void setPresenter(RecipientPresenter presenter, Message.RecipientType type) {
-        unsecureAddressHelper.setPresenter(presenter, type);
+        recipientSelectPresenter.setPresenter(presenter, type);
     }
 
     @Override
@@ -619,7 +620,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public void postShowAlternatesPopup(final List<Recipient> data) {
         // We delay this call so the soft keyboard is gone by the time the popup is layouted
-        new Handler().post(() -> unsecureAddressHelper.rateAlternateRecipients(data));
+        new Handler().post(() -> recipientSelectPresenter.rateAlternateRecipients(data));
     }
 
     @Override
@@ -812,10 +813,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             return;
         }
 
-        unsecureAddressHelper.removeUnsecureAddressChannel(recipientToReplace.getAddress());
+        recipientSelectPresenter.removeUnsecureAddressChannel(recipientToReplace.getAddress());
         bindObjectView(currentRecipient, recipientTokenView);
 
-        unsecureAddressHelper.onRecipientsChanged();
+        recipientSelectPresenter.onRecipientsChanged();
     }
 
     @Override
