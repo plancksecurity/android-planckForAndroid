@@ -76,7 +76,11 @@ class RecipientSelectPresenter @Inject constructor(
 
     fun tryPerformCompletion(): Boolean = view.tryPerformCompletion()
 
-    fun restoreFirstRecipientTruncation() {
+    fun notifyRecipientsChanged() {
+        for (recipient in recipients) {
+            removeRecipient(recipient)
+            addRecipient(recipient)
+        }
         view.restoreFirstRecipientTruncation()
     }
 
