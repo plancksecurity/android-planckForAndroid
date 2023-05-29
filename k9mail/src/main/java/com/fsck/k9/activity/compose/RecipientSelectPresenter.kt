@@ -16,7 +16,7 @@ class RecipientSelectPresenter @Inject constructor(
 ) {
     private val unsecureAddresses = mutableSetOf<Address>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
-    private lateinit var view: RecipientSelectViewContract
+    private lateinit var view: RecipientSelectContract
     private lateinit var presenter: RecipientPresenter
 
     val unsecureAddressChannelCount: Int
@@ -28,7 +28,7 @@ class RecipientSelectPresenter @Inject constructor(
     val recipients: List<Recipient>
         get() = view.recipients
 
-    fun initialize(view: RecipientSelectViewContract) {
+    fun initialize(view: RecipientSelectContract) {
         this.view = view
     }
 
