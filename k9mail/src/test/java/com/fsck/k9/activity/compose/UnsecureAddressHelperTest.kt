@@ -260,7 +260,7 @@ class UnsecureAddressHelperTest {
             .returns(ResultCompat.success(Rating.pEpRatingReliable))
 
 
-        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        helper.rateAlternateRecipients(listOf(recipient1, recipient2), ratedListener)
         advanceUntilIdle()
 
 
@@ -280,7 +280,7 @@ class UnsecureAddressHelperTest {
         val recipient2 = Recipient(address2)
 
 
-        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        helper.rateAlternateRecipients(listOf(recipient1, recipient2), ratedListener)
         advanceUntilIdle()
 
         val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
@@ -311,7 +311,7 @@ class UnsecureAddressHelperTest {
         val recipient2 = Recipient(address2)
 
 
-        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        helper.rateAlternateRecipients(listOf(recipient1, recipient2), ratedListener)
         advanceUntilIdle()
 
         val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
@@ -342,7 +342,7 @@ class UnsecureAddressHelperTest {
         val recipient2 = Recipient(address2)
 
 
-        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        helper.rateAlternateRecipients(listOf(recipient1, recipient2), ratedListener)
         advanceUntilIdle()
 
 
