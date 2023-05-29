@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class UnsecureAddressHelper @Inject constructor(
+class RecipientSelectPresenter @Inject constructor(
     private val planck: PlanckProvider,
 ) {
     private val unsecureAddresses = mutableSetOf<Address>()
