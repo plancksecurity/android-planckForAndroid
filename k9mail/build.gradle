@@ -387,34 +387,34 @@ android {
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
     if (variant.name == "mdmDemoPlayStoreRelease") {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.pEp.enterprise\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.pep.enterprise"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.pEp.enterprise"
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.test.enterprise\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.test.enterprise"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.test.enterprise"
     } else {
         variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId.toLowerCase()}"
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId}"
         mergedFlavor.manifestPlaceholders["oAuthAppId"] = "${variant.applicationId}"
     }
     //noinspection GroovyFallthrough
     switch (variant.name) {
         case "enterprisePlayStoreRelease":
         case "mdmDemoPlayStoreRelease":
-            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-erualq1hufqvi6beiqdqdc5cej6fu88i.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-qqglr562sp36brq2eis24oh8loiqi4rf.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"1533a73d-1918-4d6e-b16f-9be285c34e92\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.enterprise/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D\""
             break
         case "enterprisePlayStoreDebug":
-            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-8jckv5bdd0n0fj3nfggajkdn58p9jmbl.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-oqh3d5elvui5gbndsjjo8o29ctgbe4sr.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"f5a5db72-c804-44e9-95ef-0a9380930a43\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.enterprise.debug/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D\""
             break
         case "endUserPlayStoreRelease":
-            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-e5dg5vtd1p3hk6moncnps67ed02v8rbk.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-298svmr5klnl9dpdi655vjsn3d13miob.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"411baad4-1682-4b51-bf3d-5d219b2cfb97\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/NNpRUrCyM0zbAKQkbt3aKegrREA%3D\""
             break
         case "endUserPlayStoreDebug":
-            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-jqoa776om9fq731beiqap4h52b1hu3bs.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-ckb8btb852h78k08jqsvlho1t8dmhv3o.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"b02baebf-9635-41fc-8cf0-023f4fa0b33e\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.debug/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D\""
             break

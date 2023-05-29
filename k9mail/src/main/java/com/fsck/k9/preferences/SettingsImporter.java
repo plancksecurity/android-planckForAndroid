@@ -417,7 +417,7 @@ public class SettingsImporter {
             String value = "";
             if (setting.getKey().equals("identity")) {
                 if(setting.getValue().contains("K-9")) {
-                    value = setting.getValue().replace("K-9", "p≡p");
+                    value = setting.getValue().replace("K-9", "planck");
                 }
             } else {
                 value = setting.getValue();

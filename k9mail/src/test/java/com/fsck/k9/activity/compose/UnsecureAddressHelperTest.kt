@@ -15,6 +15,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+private const val SENDER_ADDRESS = "sender address"
+
 @ExperimentalCoroutinesApi
 class UnsecureAddressHelperTest {
     @get:Rule
@@ -298,7 +300,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `rateRecipients uses rating undefined if PEpProvider_getRating fails`() = runTest {
+    fun `rateRecipients uses rating undefined if PlanckProvider_getRating fails`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
         coEvery { planck.getRating(address1) }
@@ -329,7 +331,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `rateRecipients calls view_showError if PEpProvider_getRating fails`() = runTest {
+    fun `rateRecipients calls view_showError if PlanckProvider_getRating fails`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
         coEvery { planck.getRating(address1) }
@@ -404,7 +406,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `sortRecipientsByRating uses undefined rating as default if PEpProvider_getRating fails`() =
+    fun `sortRecipientsByRating uses undefined rating as default if PlanckProvider_getRating fails`() =
         runTest {
             val unencryptedAddress: Address = mockk()
             val secureAddress: Address = mockk()
@@ -437,7 +439,7 @@ class UnsecureAddressHelperTest {
         }
 
     @Test
-    fun `sortRecipientsByRating calls view_showError if PEpProvider_getRating fails`() = runTest {
+    fun `sortRecipientsByRating calls view_showError if PlanckProvider_getRating fails`() = runTest {
         val undefinedAddress: Address = mockk()
         val secureAddress: Address = mockk()
         val trustedAddress: Address = mockk()
@@ -456,6 +458,132 @@ class UnsecureAddressHelperTest {
 
 
         coVerify(exactly = 3) { view.showError(TestException("test")) }
+    }
+
+    @Test
+    fun `updateRecipientsFromEcho gets rating for the recipient that sent the echo using PlanckProvider`() = runTest {
+        val unencryptedAddress: Address = mockk()
+        val secureAddress: Address = mockk(relaxed = true)
+        val trustedAddress: Address = mockk(relaxed = true)
+        val unencryptedRecipient = Recipient(unencryptedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+        addUnsecureRecipient(unencryptedRecipient)
+        coEvery { unencryptedAddress.address }.returns(SENDER_ADDRESS)
+        coEvery { planck.getRating(any<Address>()) }
+            .returns(ResultCompat.success(Rating.pEpRatingReliable))
+
+
+        helper.updateRecipientsFromEcho(
+            listOf(trustedRecipient, secureRecipient, unencryptedRecipient),
+            SENDER_ADDRESS,
+            ratedListener
+        )
+        advanceUntilIdle()
+
+
+        coVerify { planck.getRating(unencryptedAddress) }
+        coVerify(exactly = 0) { planck.getRating(trustedAddress) }
+        coVerify(exactly = 0) { planck.getRating(secureAddress) }
+    }
+
+    @Test
+    fun `updateRecipientsFromEcho calls listener with updated recipient`() = runTest {
+        val unencryptedAddress: Address = mockk()
+        val secureAddress: Address = mockk(relaxed = true)
+        val trustedAddress: Address = mockk(relaxed = true)
+        val unencryptedRecipient = Recipient(unencryptedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+        addUnsecureRecipient(unencryptedRecipient)
+        coEvery { unencryptedAddress.address }.returns(SENDER_ADDRESS)
+        coEvery { planck.getRating(any<Address>()) }
+            .returns(ResultCompat.success(Rating.pEpRatingReliable))
+
+
+        helper.updateRecipientsFromEcho(
+            listOf(trustedRecipient, secureRecipient, unencryptedRecipient),
+            SENDER_ADDRESS,
+            ratedListener
+        )
+        advanceUntilIdle()
+
+
+        val ratedRecipientSlot = slot<MutableList<RatedRecipient>>()
+        coVerify { ratedListener.ratedRecipientsReady(capture(ratedRecipientSlot)) }
+        assertEquals(1, ratedRecipientSlot.captured.size)
+        val ratedRecipient = ratedRecipientSlot.captured.first()
+        assertEquals(unencryptedRecipient, ratedRecipient.baseRecipient)
+        assertEquals(Rating.pEpRatingReliable, ratedRecipient.rating)
+    }
+
+    @Test
+    fun `updateRecipientsFromEcho uses undefined rating as default if PlanckProvider_getRating fails`() = runTest {
+        val unencryptedAddress: Address = mockk()
+        val secureAddress: Address = mockk(relaxed = true)
+        val trustedAddress: Address = mockk(relaxed = true)
+        val unencryptedRecipient = Recipient(unencryptedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+        addUnsecureRecipient(unencryptedRecipient)
+        coEvery { unencryptedAddress.address }.returns(SENDER_ADDRESS)
+        coEvery { planck.getRating(any<Address>()) }
+            .returns(ResultCompat.failure(TestException("test")))
+
+
+        helper.updateRecipientsFromEcho(
+            listOf(trustedRecipient, secureRecipient, unencryptedRecipient),
+            SENDER_ADDRESS,
+            ratedListener
+        )
+        advanceUntilIdle()
+
+
+        val ratedRecipientSlot = slot<MutableList<RatedRecipient>>()
+        coVerify { ratedListener.ratedRecipientsReady(capture(ratedRecipientSlot)) }
+        assertEquals(1, ratedRecipientSlot.captured.size)
+        val ratedRecipient = ratedRecipientSlot.captured.first()
+        assertEquals(unencryptedRecipient, ratedRecipient.baseRecipient)
+        assertEquals(Rating.pEpRatingUndefined, ratedRecipient.rating)
+    }
+
+    @Test
+    fun `updateRecipientsFromEcho calls view_showError if PlanckProvider_getRating fails`() = runTest {
+        val unencryptedAddress: Address = mockk()
+        val secureAddress: Address = mockk(relaxed = true)
+        val trustedAddress: Address = mockk(relaxed = true)
+        val unencryptedRecipient = Recipient(unencryptedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+        addUnsecureRecipient(unencryptedRecipient)
+        coEvery { unencryptedAddress.address }.returns(SENDER_ADDRESS)
+        coEvery { planck.getRating(any<Address>()) }
+            .returns(ResultCompat.failure(TestException("test")))
+
+
+        helper.updateRecipientsFromEcho(
+            listOf(trustedRecipient, secureRecipient, unencryptedRecipient),
+            SENDER_ADDRESS,
+            ratedListener
+        )
+        advanceUntilIdle()
+
+
+        coVerify { view.showError(TestException("test")) }
+    }
+
+    private fun addUnsecureRecipient(recipient: Recipient) {
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(recipient.address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
+
+
+        helper.getRecipientRating(recipient, true, callback)
+
+
+        verify { callback.onLoaded(Rating.pEpRatingCannotDecrypt) }
+        assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(recipient.address), 1))
     }
 
     private data class TestException(override val message: String) : Throwable()
