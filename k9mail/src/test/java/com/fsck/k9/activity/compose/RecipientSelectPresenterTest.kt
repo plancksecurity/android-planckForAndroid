@@ -25,7 +25,7 @@ class RecipientSelectPresenterTest {
     private val planck: PlanckProvider = mockk(relaxed = true)
     private val listener: RecipientsReadyListener = mockk(relaxed = true)
     private val ratedListener: RatedRecipientsReadyListener = mockk(relaxed = true)
-    private val view: RecipientSelectViewContract = mockk(relaxed = true)
+    private val view: RecipientSelectContract = mockk(relaxed = true)
 
     private val helper = RecipientSelectPresenter(planck)
 

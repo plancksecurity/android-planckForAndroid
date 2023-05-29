@@ -55,7 +55,7 @@ import timber.log.Timber;
 
 
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
-        AlternateRecipientListener, RecipientSelectViewContract {
+        AlternateRecipientListener, RecipientSelectContract {
 
     private static final int MINIMUM_LENGTH_FOR_FILTERING = 1;
 
