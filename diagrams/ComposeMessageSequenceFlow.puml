@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+'ComposeMessageUseCase.puml
+autoactivate on
+
+user -> app: remove unsecure recipients
+app -> core: calculate security status
+note right
+"security status"
+includes both
+message and recipients
+security statuses
+end note
+return security status
+return update security status
+
+user -> app: add and remove recipients
+app -> core: calculate security status
+return security status
+return update security status
+
+user -> app: establish trust with secure recipients
+note right
+"establish trust"
+detailed in
+diagram/page xxx
+end note
+return update security status
+
+user -> app: send message
+note right
+"send message"
+detailed in
+diagram/page xxx
+end note
+return send message feedback
+@enduml

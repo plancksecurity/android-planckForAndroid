@@ -7,33 +7,44 @@ skinparam linetype ortho
 
 
 rectangle "Compose Message" {
-    (Calculate message security status) as cmss
-    (Calculate recipents security status) as crss
-    (Remove unsecure recipients) as rur
-    (Send message) as sm
-    (Display recipients security status) as drss
-    (Display message security status) as dmss
-    (Establish trust with secure recipients) as etwsr
+    (Calculate message\nsecurity status) as (cmss)
+    (Calculate recipents\nsecurity status) as (crss)
+    (Remove unsecure\nrecipients) as (rur)
+    (Add and Remove\nRecipients) as (aarr)
+    (Send message) as (sm)
+    note bottom of (sm)
+    detailed in
+    diagram/page xxx
+    end note
+    (Display recipients\nsecurity status) as (drss)
+    (Display message\nsecurity status) as (dmss)
+    (Establish trust with\nsecure recipients) as (etwsr)
+    note bottom of (etwsr)
+    detailed in
+    diagram/page xxx
+    end note
 }
 
-user ---> sm
-user ---> rur
-user ---> etwsr
+user ---> (sm)
+user ---> (rur)
+user ---> (etwsr)
+user ---> (aarr)
 
 
-app -up---> sm
-app -up---> dmss
-app -up---> drss
-app -up---> cmss
-app -up---> crss
-app -up---> rur
-app -up---> etwsr
+app -up---> (sm)
+app -up---> (dmss)
+app -up---> (drss)
+app -up---> (cmss)
+app -up---> (crss)
+app -up---> (rur)
+app -up---> (etwsr)
+app -up---> (aarr)
 
 
-cmss <--- core
-crss <--- core
+(cmss) <--- core
+(crss) <--- core
 
 
-drss ........> crss : <<includes>>
-dmss ........> cmss : <<includes>>
+(drss) ........> (crss) : <<includes>>
+(dmss) ........> (cmss) : <<includes>>
 @enduml
