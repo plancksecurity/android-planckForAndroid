@@ -1,6 +1,6 @@
 package com.fsck.k9.activity.compose
 
-interface RecipientSelectViewContract {
+interface RecipientSelectContract {
     val isAlwaysUnsecure: Boolean
     val recipients: List<Recipient>
 
