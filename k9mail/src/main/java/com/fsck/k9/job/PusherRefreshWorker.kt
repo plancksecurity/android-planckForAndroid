@@ -14,7 +14,7 @@ class PusherRefreshWorker(
 ) : Worker(appContext, params) {
 
     override fun doWork(): Result {
-        inputData.getString(K9JobManager.EXTRA_KEY_ACCOUNT_UUID)
+        inputData.getString(EXTRA_ACCOUNT_UUID)
             ?.let { accountUuid ->
                 Timber.d("Executing periodic push refresh for account %s", accountUuid)
 

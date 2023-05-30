@@ -42,9 +42,4 @@ class K9JobManager(
         Timber.v("canceling pusher refresh job")
         workManager.cancelAllWorkByTag(PusherRefreshWorkerManager.PUSHER_REFRESH_TAG)
     }
-
-    companion object {
-        const val EXTRA_KEY_ACCOUNT_UUID = "param_key_account_uuid"
-    }
-
 }
