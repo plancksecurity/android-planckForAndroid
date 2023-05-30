@@ -64,7 +64,7 @@ class ConfiguredSettingsUpdater(
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PLANCK_DEBUG_LOG ->
                 K9.setDebug(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES ->
+            RESTRICTION_ALLOW_PLANCK_SYNC_NEW_DEVICES ->
                 k9.setAllowpEpSyncNewDevices(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_ENABLE_ECHO_PROTOCOL ->
                 K9.setEchoProtocolEnabled(getBooleanOrDefault(restrictions, entry))

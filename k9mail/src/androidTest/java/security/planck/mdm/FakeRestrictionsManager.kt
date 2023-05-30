@@ -420,8 +420,8 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
                     DEFAULT_UNSECURE_DELIVERY_WARNING
                 ),
-                RestrictionEntry(RESTRICTION_PLANCK_SYNC_FOLDER, DEFAULT_PEP_SYNC_FOLDER),
-                RestrictionEntry(RESTRICTION_PLANCK_DEBUG_LOG, DEFAULT_PEP_DEBUG_LOG),
+                RestrictionEntry(RESTRICTION_PLANCK_SYNC_FOLDER, DEFAULT_PLANCK_SYNC_FOLDER),
+                RestrictionEntry(RESTRICTION_PLANCK_DEBUG_LOG, DEFAULT_PLANCK_DEBUG_LOG),
                 RestrictionEntry(RESTRICTION_ACCOUNT_DESCRIPTION, DEFAULT_ACCOUNT_DESCRIPTION),
                 RestrictionEntry(
                     RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE,
@@ -451,8 +451,8 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 ),
                 RestrictionEntry(RESTRICTION_ACCOUNT_ENABLE_SYNC, DEFAULT_ACCOUNT_ENABLE_SYNC),
                 RestrictionEntry(
-                    RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES,
-                    DEFAULT_ALLOW_PEP_SYNC_NEW_DEVICES
+                    RESTRICTION_ALLOW_PLANCK_SYNC_NEW_DEVICES,
+                    DEFAULT_ALLOW_PLANCK_SYNC_NEW_DEVICES
                 ),
 
                 getMailSettingsRestrictionEntry()
