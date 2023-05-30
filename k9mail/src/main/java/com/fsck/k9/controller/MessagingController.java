@@ -4845,10 +4845,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private synchronized void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
-        Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
-        Transport transport = transportProvider.getTransport(K9.app, account);
-        sendMessage(transport, message);
-        Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
+        Timber.e("%s %s", "planckEngine", "Start sending planck management message: " + message.getMessageId());
+        sendMessage(account, message, null);
+        Timber.e("%s %s", "planckEngine", "Finish sending planck management message: " + message.getMessageId());
     }
 
     Account checkAccount(String address, Account account) {
