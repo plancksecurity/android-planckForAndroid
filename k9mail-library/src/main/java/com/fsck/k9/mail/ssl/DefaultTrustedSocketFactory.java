@@ -1,6 +1,12 @@
 package com.fsck.k9.mail.ssl;
 
 
+import android.content.Context;
+import android.net.SSLCertificateSocketFactory;
+import android.text.TextUtils;
+
+import com.fsck.k9.mail.MessagingException;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
@@ -9,16 +15,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.content.Context;
-import android.net.SSLCertificateSocketFactory;
-import android.text.TextUtils;
-
-import com.fsck.k9.mail.MessagingException;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+
 import timber.log.Timber;
 
 
@@ -31,34 +33,8 @@ import timber.log.Timber;
  */
 public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
     protected static final String[] ENABLED_CIPHERS;
-    protected static final String[] ENABLED_PROTOCOLS;
+    public static final String TLS_PROTOCOL = "TLSv1.3";
 
-    protected static final String[] ORDERED_KNOWN_CIPHERS = {
-            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-            "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
-            "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
-            "TLS_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
-            "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
-            "TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA",
-            "TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA",
-            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
-            "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
-            "TLS_RSA_WITH_AES_128_CBC_SHA",
-    };
 
     protected static final String[] BLACKLISTED_CIPHERS = {
             "SSL_RSA_WITH_DES_CBC_SHA",
@@ -84,39 +60,21 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
             "TLS_RSA_WITH_NULL_SHA256"
     };
 
-    protected static final String[] ORDERED_KNOWN_PROTOCOLS = {
-            "TLSv1.2", "TLSv1.1", "TLSv1"
-    };
-
-    protected static final String[] BLACKLISTED_PROTOCOLS = {
-            "SSLv3"
-    };
-
     static {
         String[] enabledCiphers = null;
-        String[] supportedProtocols = null;
 
         try {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance(TLS_PROTOCOL);
             sslContext.init(null, null, null);
             SSLSocketFactory sf = sslContext.getSocketFactory();
             SSLSocket sock = (SSLSocket) sf.createSocket();
             enabledCiphers = sock.getEnabledCipherSuites();
-
-            /*
-             * Retrieve all supported protocols, not just the (default) enabled
-             * ones. TLSv1.1 & TLSv1.2 are supported on API levels 16+, but are
-             * only enabled by default on API levels 20+.
-             */
-            supportedProtocols = sock.getSupportedProtocols();
         } catch (Exception e) {
             Timber.e(e, "Error getting information about available SSL/TLS ciphers and protocols");
         }
 
         ENABLED_CIPHERS = (enabledCiphers == null) ? null :
                 remove(enabledCiphers, BLACKLISTED_CIPHERS);
-        ENABLED_PROTOCOLS = (supportedProtocols == null) ? null :
-                remove(supportedProtocols, BLACKLISTED_PROTOCOLS);
 
     }
 
@@ -175,7 +133,7 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
             keyManagers = new KeyManager[] { new KeyChainKeyManager(context, clientCertificateAlias) };
         }
 
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+        SSLContext sslContext = SSLContext.getInstance(TLS_PROTOCOL);
         sslContext.init(keyManagers, trustManagers, null);
         SSLSocketFactory socketFactory = sslContext.getSocketFactory();
         Socket trustedSocket;
@@ -197,9 +155,6 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
     private static void hardenSocket(SSLSocket sock) {
         if (ENABLED_CIPHERS != null) {
             sock.setEnabledCipherSuites(ENABLED_CIPHERS);
-        }
-        if (ENABLED_PROTOCOLS != null) {
-            sock.setEnabledProtocols(ENABLED_PROTOCOLS);
         }
     }
 
