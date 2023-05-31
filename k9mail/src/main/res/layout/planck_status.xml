@@ -8,7 +8,7 @@
     android:id="@+id/pep_status_layout"
     android:background="?attr/screenDefaultBackgroundColor">
 
-    <include layout="@layout/big_pep_toolbar_layout" />
+    <include layout="@layout/simple_toolbar_layout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler_view"

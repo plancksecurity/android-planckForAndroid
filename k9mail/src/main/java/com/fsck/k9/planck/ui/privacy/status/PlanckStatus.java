@@ -10,15 +10,15 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -29,13 +29,11 @@ import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.models.PlanckIdentity;
 import com.fsck.k9.planck.ui.PlanckColoredActivity;
-
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
-import org.jetbrains.annotations.NotNull;
 
-import foundation.pEp.jniadapter.Rating;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +42,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import foundation.pEp.jniadapter.Rating;
 
 public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
@@ -155,28 +154,8 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     }
 
     private void setUpActionBar() {
-        initializeToolbar(false, R.string.pep_title_activity_privacy_status);
+        initializeToolbar(true, R.string.pep_title_activity_privacy_status);
         colorActionBar();
-    }
-
-    @Override
-    public void initializeToolbar(Boolean showUpButton, @StringRes int stringResource) {
-        setUpToolbar(showUpButton);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            TextView titleTV = findViewById(R.id.titleText);
-            titleTV.setText(getString(stringResource).toUpperCase());
-        }
-    }
-
-    @Override
-    public void initializeToolbar(Boolean showUpButton, String title) {
-        setUpToolbar(showUpButton);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            TextView titleTV = findViewById(R.id.titleText);
-            titleTV.setText(title);
-        }
     }
 
     @Override
