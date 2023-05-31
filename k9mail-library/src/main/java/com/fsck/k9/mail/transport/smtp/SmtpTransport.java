@@ -254,7 +254,6 @@ public class SmtpTransport extends Transport {
     public void open() throws MessagingException {
         try {
             Timber.e("Open");
-            boolean secureConnection = false;
             InetAddress[] addresses = InetAddress.getAllByName(mHost);
             for (int i = 0; i < addresses.length; i++) {
                 Timber.e("Open: " + addresses[i] + " " + addresses.length);
@@ -264,7 +263,6 @@ public class SmtpTransport extends Transport {
                     if (mConnectionSecurity == ConnectionSecurity.SSL_TLS_REQUIRED) {
                         mSocket = mTrustedSocketFactory.createSocket(null, mHost, mPort, mClientCertificateAlias);
                         mSocket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
-                        secureConnection = true;
                     } else {
                         mSocket = new Socket();
                         TrafficStats.setThreadStatsTag(((int) Thread.currentThread().getId()));
@@ -331,7 +329,6 @@ public class SmtpTransport extends Transport {
                      * Exim.
                      */
                     extensions = sendHello(localHost);
-                    secureConnection = true;
                 } else {
                     /*
                      * This exception triggers a "Certificate error"
@@ -368,13 +365,6 @@ public class SmtpTransport extends Transport {
                     AuthType.XOAUTH2 == mAuthType)) {
 
                 switch (mAuthType) {
-
-                /*
-                 * LOGIN is an obsolete option which is unavailable to users,
-                 * but it still may exist in a user's settings from a previous
-                 * version, or it may have been imported.
-                 */
-                    case LOGIN:
                     case EXTERNAL_PLAIN:
                     case PLAIN:
                         // try saslAuthPlain first, because it supports UTF-8 explicitly
@@ -421,39 +411,6 @@ public class SmtpTransport extends Transport {
                          * user can be notified of a problem during account setup.
                          */
                             throw new CertificateValidationException(MissingCapability);
-                        }
-                        break;
-
-                /*
-                 * AUTOMATIC is an obsolete option which is unavailable to users,
-                 * but it still may exist in a user's settings from a previous
-                 * version, or it may have been imported.
-                 */
-                    case AUTOMATIC:
-                        if (secureConnection) {
-                            // try saslAuthPlain first, because it supports UTF-8 explicitly
-                            if (authPlainSupported) {
-                                saslAuthPlain(mUsername, mPassword);
-                            } else if (authLoginSupported) {
-                                saslAuthLogin(mUsername, mPassword);
-                            } else if (authCramMD5Supported) {
-                                saslAuthCramMD5();
-                            } else {
-                                throw new MessagingException("No supported authentication methods available.");
-                            }
-                        } else {
-                            if (authCramMD5Supported) {
-                                saslAuthCramMD5();
-                            } else {
-                            /*
-                             * We refuse to insecurely transmit the password
-                             * using the obsolete AUTOMATIC setting because of
-                             * the potential for a MITM attack. Affected users
-                             * must choose a different setting.
-                             */
-                                throw new MessagingException(
-                                        "Update your outgoing server authentication setting. AUTOMATIC auth. is unavailable.");
-                            }
                         }
                         break;
 
