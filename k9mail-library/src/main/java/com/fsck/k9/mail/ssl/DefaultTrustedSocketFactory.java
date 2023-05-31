@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -32,94 +29,10 @@ import timber.log.Timber;
  * On more modern versions of Android we keep the system configuration.
  */
 public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
-    protected static final String[] ENABLED_CIPHERS;
     public static final String TLS_PROTOCOL = "TLSv1.3";
-
-
-    protected static final String[] BLACKLISTED_CIPHERS = {
-            "SSL_RSA_WITH_DES_CBC_SHA",
-            "SSL_DHE_RSA_WITH_DES_CBC_SHA",
-            "SSL_DHE_DSS_WITH_DES_CBC_SHA",
-            "SSL_RSA_EXPORT_WITH_RC4_40_MD5",
-            "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
-            "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
-            "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
-            "SSL_RSA_WITH_3DES_EDE_CBC_SHA",
-            "SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
-            "SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
-            "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
-            "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
-            "TLS_ECDH_RSA_WITH_RC4_128_SHA",
-            "TLS_ECDH_ECDSA_WITH_RC4_128_SHA",
-            "SSL_RSA_WITH_RC4_128_SHA",
-            "SSL_RSA_WITH_RC4_128_MD5",
-            "TLS_ECDH_RSA_WITH_NULL_SHA",
-            "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA",
-            "TLS_ECDH_anon_WITH_NULL_SHA",
-            "TLS_ECDH_anon_WITH_RC4_128_SHA",
-            "TLS_RSA_WITH_NULL_SHA256"
-    };
-
-    static {
-        String[] enabledCiphers = null;
-
-        try {
-            SSLContext sslContext = SSLContext.getInstance(TLS_PROTOCOL);
-            sslContext.init(null, null, null);
-            SSLSocketFactory sf = sslContext.getSocketFactory();
-            SSLSocket sock = (SSLSocket) sf.createSocket();
-            enabledCiphers = sock.getEnabledCipherSuites();
-        } catch (Exception e) {
-            Timber.e(e, "Error getting information about available SSL/TLS ciphers and protocols");
-        }
-
-        ENABLED_CIPHERS = (enabledCiphers == null) ? null :
-                remove(enabledCiphers, BLACKLISTED_CIPHERS);
-
-    }
 
     public DefaultTrustedSocketFactory(Context context) {
         this.context = context;
-    }
-
-    protected static String[] reorder(String[] enabled, String[] known, String[] blacklisted) {
-        List<String> unknown = new ArrayList<String>();
-        Collections.addAll(unknown, enabled);
-
-        // Remove blacklisted items
-        if (blacklisted != null) {
-            for (String item : blacklisted) {
-                unknown.remove(item);
-            }
-        }
-
-        // Order known items
-        List<String> result = new ArrayList<String>();
-        for (String item : known) {
-            if (unknown.remove(item)) {
-                result.add(item);
-            }
-        }
-
-        // Add unknown items at the end. This way security won't get worse when unknown ciphers
-        // start showing up in the future.
-        result.addAll(unknown);
-
-        return result.toArray(new String[result.size()]);
-    }
-
-    protected static String[] remove(String[] enabled, String[] blacklisted) {
-        List<String> items = new ArrayList<String>();
-        Collections.addAll(items, enabled);
-
-        // Remove blacklisted items
-        if (blacklisted != null) {
-            for (String item : blacklisted) {
-                items.remove(item);
-            }
-        }
-
-        return items.toArray(new String[items.size()]);
     }
 
     private Context context;
@@ -145,17 +58,9 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
 
         SSLSocket sslSocket = (SSLSocket) trustedSocket;
 
-        hardenSocket(sslSocket);
-
         setSniHost(socketFactory, sslSocket, host);
 
         return trustedSocket;
-    }
-
-    private static void hardenSocket(SSLSocket sock) {
-        if (ENABLED_CIPHERS != null) {
-            sock.setEnabledCipherSuites(ENABLED_CIPHERS);
-        }
     }
 
     public static void setSniHost(SSLSocketFactory factory, SSLSocket socket, String hostname) {
