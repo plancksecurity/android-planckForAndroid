@@ -946,6 +946,10 @@ public class WebDavStore extends RemoteStore {
                     needsParsing) {
                 try {
                     SAXParserFactory spf = SAXParserFactory.newInstance();
+                    //Allow DOCTYPE declarations and only prohibit external entities declarations.
+                    //For totally disable DOCTYPE declarations set feature http://apache.org/xml/features/disallow-doctype-decl to true
+                    spf.setFeature("http://xml.org/sax/features/external-parameter-entities",false);
+                    spf.setFeature("http://xml.org/sax/features/external-general-entities",false);
                     spf.setNamespaceAware(true); //This should be a no-op on Android, but makes the tests work
                     SAXParser sp = spf.newSAXParser();
                     XMLReader xr = sp.getXMLReader();
