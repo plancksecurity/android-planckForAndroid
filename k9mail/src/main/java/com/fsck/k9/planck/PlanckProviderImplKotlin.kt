@@ -765,7 +765,7 @@ class PlanckProviderImplKotlin(
     @WorkerThread
     private fun getRatingOnBackground(message: Message): Rating {
         return try {
-            engine.get().outgoing_message_rating(message)
+            engine.use { engine -> engine.get().outgoing_message_rating(message) }
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "during getRating:")
             Rating.pEpRatingUndefined

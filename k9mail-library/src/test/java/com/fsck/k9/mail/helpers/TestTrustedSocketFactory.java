@@ -7,6 +7,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -20,7 +21,7 @@ public class TestTrustedSocketFactory implements TrustedSocketFactory {
 
         TrustManager[] trustManagers = new TrustManager[] { new VeryTrustingTrustManager() };
 
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+        SSLContext sslContext = SSLContext.getInstance(DefaultTrustedSocketFactory.TLS_PROTOCOL);
         sslContext.init(null, trustManagers, null);
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
