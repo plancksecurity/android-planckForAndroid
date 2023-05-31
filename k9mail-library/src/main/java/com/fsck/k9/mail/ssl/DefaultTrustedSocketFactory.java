@@ -11,14 +11,17 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.List;
 
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-
-import timber.log.Timber;
 
 
 /**
@@ -68,15 +71,10 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
             SSLCertificateSocketFactory sslCertificateSocketFactory = (SSLCertificateSocketFactory) factory;
             sslCertificateSocketFactory.setHostname(socket, hostname);
         } else {
-            setHostnameViaReflection(socket, hostname);
-        }
-    }
-
-    private static void setHostnameViaReflection(SSLSocket socket, String hostname) {
-        try {
-            socket.getClass().getMethod("setHostname", String.class).invoke(socket, hostname);
-        } catch (Throwable e) {
-            Timber.e(e, "Could not call SSLSocket#setHostname(String) method ");
+            SSLParameters sslParameters = socket.getSSLParameters();
+            List<SNIServerName> sniServerNames = Collections.singletonList(new SNIHostName(hostname));
+            sslParameters.setServerNames(sniServerNames);
+            socket.setSSLParameters(sslParameters);
         }
     }
 }
