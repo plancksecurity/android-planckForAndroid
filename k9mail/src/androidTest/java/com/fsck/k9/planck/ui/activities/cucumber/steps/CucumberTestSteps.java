@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -69,7 +68,6 @@ import foundation.pEp.jniadapter.Rating;
 import security.planck.mdm.MailSettings;
 import timber.log.Timber;
 
-import static androidx.core.content.ContextCompat.getSystemService;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -89,7 +87,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.planck.ui.activities.TestUtils.assertFailWithMessage;
+import static com.fsck.k9.planck.ui.activities.TestUtils.fail;
 import static com.fsck.k9.planck.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.exists;
@@ -521,7 +519,7 @@ public class CucumberTestSteps {
     public void I_check_insecurity_warnings_are_not_there() {
         waitForIdle();
         if (viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
-            assertFailWithMessage("Is showing the Alert message and it shouldn't be there");
+            fail("Is showing the Alert message and it shouldn't be there");
         }
     }
 
@@ -530,15 +528,15 @@ public class CucumberTestSteps {
     public void I_check_unsecure_warnings_are_there() {
         // This method requires 2 or more Unsecure recipients to check the red color in the recipients and in the "+X"
         if (!viewIsDisplayed(onView(withId(R.id.user_action_banner)))) {
-            assertFailWithMessage("Is not showing the Alert message");
+            fail("Is not showing the Alert message");
         }
         String unsecureText = resources.getQuantityString(testUtils.pluralsStringToID("compose_unsecure_delivery_warning"), 2);
         unsecureText = unsecureText.substring(4);
         if (!getTextFromView(onView(withId(R.id.user_action_banner))).contains(unsecureText)) {
-            assertFailWithMessage("The text in the Alert message is not correct");
+            fail("The text in the Alert message is not correct");
         }
         if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
-            assertFailWithMessage("There is only 1 address or less and should be 2 or more");
+            fail("There is only 1 address or less and should be 2 or more");
         }
 
         BySelector selector;
@@ -561,7 +559,7 @@ public class CucumberTestSteps {
                 }
             }
             if (!isRed) {
-                assertFailWithMessage("Border color in the field TO is not red");
+                fail("Border color in the field TO is not red");
             }
             startingPointX = multiTextView.getVisibleBounds().centerX();
             endPointX = multiTextView.getVisibleBounds().centerX() + 100;
@@ -579,7 +577,7 @@ public class CucumberTestSteps {
                 }
             }
             if (!isRed) {
-                assertFailWithMessage("Text color in the field TO is not red");
+                fail("Text color in the field TO is not red");
             }
             startingPointX = multiTextView.getVisibleBounds().right;
             endPointX = multiTextView.getVisibleBounds().left;
@@ -596,7 +594,7 @@ public class CucumberTestSteps {
                 }
             }
             if (!isRed) {
-                assertFailWithMessage("Text color of the +X in field TO is not red");
+                fail("Text color of the +X in field TO is not red");
             }
         }
     }
@@ -645,14 +643,14 @@ public class CucumberTestSteps {
                 !getTextFromView(onView(withId(R.id.shortInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
                         "Master Roshi (turtle@mail.es)\n" +
                         "Organizer Name (organizer@mail.es) [Organizer]")) {
-            assertFailWithMessage("Wrong Calendar Text");
+            fail("Wrong Calendar Text");
         }
         BySelector selector = By.clazz("android.webkit.WebView");
         for (UiObject2 webv : device.findObjects(selector)) {
             if (webv.getParent().getResourceName() != null &&
                     webv.getParent().getResourceName().equals(BuildConfig.APPLICATION_ID+":id/calendarInviteLayout") &&
                     !webv.getChildren().get(0).getChildren().get(0).getText().contains(bodyText)) {
-                assertFailWithMessage("Wrong message body");
+                fail("Wrong message body");
             }
         }
         waitForIdle();
@@ -663,7 +661,7 @@ public class CucumberTestSteps {
             waitForIdle();
         }
         if (testUtils.textExistsOnScreen("https://www.pep.security")) {
-            assertFailWithMessage("URLs has not been clicked");
+            fail("URLs has not been clicked");
         }
         while (!testUtils.textExistsOnScreen("https://www.pep.security")) {
             device.pressBack();
@@ -672,12 +670,12 @@ public class CucumberTestSteps {
         testUtils.longClick("openCalendarImg");
         waitForIdle();
         if (viewIsDisplayed(calendarButton)) {
-            assertFailWithMessage("Calendar Button is not openning the calendar");
+            fail("Calendar Button is not openning the calendar");
         }
         device.pressBack();
         waitForIdle();
         if (!viewIsDisplayed(calendarButton)) {
-            assertFailWithMessage("Calendar Button???");
+            fail("Calendar Button???");
         }
     }
 
@@ -717,7 +715,7 @@ public class CucumberTestSteps {
         MailSettings settings = RestrictionsManager.getRestrictions();
         assert settings != null;
         if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getIncoming())) {
-            assertFailWithMessage("Incoming settings are not the same: " + server + " // " + settings.getIncoming().getServer() + " ; "  + securityType + " // " + settings.getIncoming().getSecurityType() + " ; "  + port + " // " + settings.getIncoming().getPort() + " ; "  + userName + " // " + settings.getIncoming().getUserName());
+            fail("Incoming settings are not the same: " + server + " // " + settings.getIncoming().getServer() + " ; "  + securityType + " // " + settings.getIncoming().getSecurityType() + " ; "  + port + " // " + settings.getIncoming().getPort() + " ; "  + userName + " // " + settings.getIncoming().getUserName());
         }
     }
 
@@ -726,7 +724,7 @@ public class CucumberTestSteps {
         MailSettings settings = RestrictionsManager.getRestrictions();
         assert settings != null;
         if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getOutgoing())) {
-            assertFailWithMessage("Outgoing settings are not the same: " + server + " // " + settings.getOutgoing().getServer() + " ; "  + securityType + " // " + settings.getOutgoing().getSecurityType() + " ; "  + port + " // " + settings.getOutgoing().getPort() + " ; "  + userName + " // " + settings.getOutgoing().getUserName());
+            fail("Outgoing settings are not the same: " + server + " // " + settings.getOutgoing().getServer() + " ; "  + securityType + " // " + settings.getOutgoing().getSecurityType() + " ; "  + port + " // " + settings.getOutgoing().getPort() + " ; "  + userName + " // " + settings.getOutgoing().getUserName());
         }
     }
 
@@ -734,7 +732,7 @@ public class CucumberTestSteps {
     public void I_compare_setting(String setting, String value) {
         String settingValue = RestrictionsManager.getSetting(setting);
         if (!settingValue.equals(value)) {
-            assertFailWithMessage("Setting " + setting + " has value " + settingValue + " and not " + value);
+            fail("Setting " + setting + " has value " + settingValue + " and not " + value);
         }
     }
 
@@ -800,7 +798,7 @@ public class CucumberTestSteps {
         TestUtils.getJSONObject("keys");
         waitForIdle();
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-            TestUtils.assertFailWithMessage("Wrong extra key");
+            TestUtils.fail("Wrong extra key");
         }
     }
 
@@ -860,7 +858,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        TestUtils.assertFailWithMessage("Wrong Trust Words");
+        TestUtils.fail("Wrong Trust Words");
     }
 
     private void assertTextInJSONArray(String text, JSONArray array, String textToCompare) {
@@ -873,7 +871,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        TestUtils.assertFailWithMessage("Text is not in JSON");
+        TestUtils.fail("Text is not in JSON");
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
@@ -881,14 +879,14 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
+        TestUtils.fail("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
         }
-        TestUtils.assertFailWithMessage("Texts are different");
+        TestUtils.fail("Texts are different");
     }
 
     private void confirmAllTrustWords(String webViewText) {
@@ -953,7 +951,7 @@ public class CucumberTestSteps {
     private void checkWordIsInText(String[] arrayToCompare, String webViewText) {
         for (String textToCompare : arrayToCompare) {
             if (!webViewText.contains(textToCompare)) {
-                TestUtils.assertFailWithMessage("Text not found in Trustwords");
+                TestUtils.fail("Text not found in Trustwords");
             }
         }
     }
@@ -1000,7 +998,7 @@ public class CucumberTestSteps {
         } else if (active.equals("on")) {
             testUtils.setWifi(true);
         } else {
-            testUtils.assertFailWithMessage("Option of Wi-Fi: " + active + "; doesn't exist");
+            testUtils.fail("Option of Wi-Fi: " + active + "; doesn't exist");
         }
         waitForIdle();
     }
@@ -1227,7 +1225,7 @@ public class CucumberTestSteps {
                     I_send_message_to_address(1, "bot" + currentDay, "Bucle"+currentDay+"Done", "Finishing first bucle");
                     break;
                 default:
-                    TestUtils.assertFailWithMessage("Unknown Sync Device: " + testUtils.test_number());
+                    TestUtils.fail("Unknown Sync Device: " + testUtils.test_number());
                     break;
             }
             try {
@@ -1268,7 +1266,7 @@ public class CucumberTestSteps {
                 testUtils.pressBack();
                 I_send_message_to_address(1, "bot1", "ResetKeyTest_3", "Sending message to Bot after Reset");
                 if (testUtils.clickLastMessage()) {
-                    assertFailWithMessage("Cannot read New Bot's message after Reset");
+                    fail("Cannot read New Bot's message after Reset");
                 }
                 testUtils.checkOwnKey(mainKeyID, false);
                 break;
@@ -1297,12 +1295,12 @@ public class CucumberTestSteps {
                 testUtils.pressBack();
                 I_wait_for_the_new_message();
                 if (testUtils.clickLastMessage()) {
-                    assertFailWithMessage("Cannot read New Bot's message after Reset");
+                    fail("Cannot read New Bot's message after Reset");
                 }
                 testUtils.checkOwnKey(mainKeyID2, false);
                 break;
             default:
-                TestUtils.assertFailWithMessage("Unknown Device for this test: " + testUtils.test_number());
+                TestUtils.fail("Unknown Device for this test: " + testUtils.test_number());
         }
 
     }
@@ -1350,10 +1348,10 @@ public class CucumberTestSteps {
         }
         testUtils.getMessageListSize();
         if (!ignoreThisTest && totalMessages >= getTotalMessagesSize()) {
-            assertFailWithMessage("There are more sync messages before sync than after sync");
+            fail("There are more sync messages before sync than after sync");
         }
         if (inboxMessages != 0 && inboxMessages != testUtils.getListSize()) {
-            assertFailWithMessage("Sync messages went to wrong folder");
+            fail("Sync messages went to wrong folder");
         }
         testUtils.getMessageListSize();
     }
@@ -1402,7 +1400,7 @@ public class CucumberTestSteps {
                 testUtils.checkDeviceIsSync("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
-                TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are sync");
+                TestUtils.fail("Unknown Sync Device to check devices are sync");
                 break;
         }
     }
@@ -1421,7 +1419,7 @@ public class CucumberTestSteps {
                 testUtils.checkAccountIsNotProtected("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
-                TestUtils.assertFailWithMessage("Unknown Account to assert is not protected");
+                TestUtils.fail("Unknown Account to assert is not protected");
                 break;
         }
     }
@@ -1439,7 +1437,7 @@ public class CucumberTestSteps {
                 testUtils.checkDeviceIsNotSync("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
-                TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are not sync");
+                TestUtils.fail("Unknown Sync Device to check devices are not sync");
                 break;
         }
     }
@@ -1611,7 +1609,7 @@ public class CucumberTestSteps {
                 if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
                     return;
                 }
-                testUtils.assertFailWithMessage("Rating is not Undefined");
+                testUtils.fail("Rating is not Undefined");
         }
     }
 
@@ -1624,21 +1622,21 @@ public class CucumberTestSteps {
             switch (status) {
                 case "pEpRatingUnencrypted":
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        assertFailWithMessage("Showing a rating that is not " + status);
+                        fail("Showing a rating that is not " + status);
                     }
                     if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")))) {
-                        assertFailWithMessage("Showing a text that is not " + resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
+                        fail("Showing a text that is not " + resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
                     }
                     //I_check_toolBar_color_is("planck_yellow");
                     return;
                 case "pEpRatingUndefined":
                     if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        assertFailWithMessage("Showing a rating when there is no recipient");
+                        fail("Showing a rating when there is no recipient");
                     }
                     return;
                 case "pEpRatingUnsecure":
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        assertFailWithMessage("Not showing Unsecure status");
+                        fail("Not showing Unsecure status");
                     }
                     if (pep_enable_privacy_protection) {
                         //I_check_toolBar_color_is("planck_red");
@@ -1838,7 +1836,7 @@ public class CucumberTestSteps {
             }
         }
         if (widgets != 3) {
-            TestUtils.assertFailWithMessage("Missing a Widget");
+            TestUtils.fail("Missing a Widget");
         }
         if (!testUtils.textExistsOnScreen("WidTest")) {
             Timber.e("Cannot find the message on the screen");
@@ -1879,7 +1877,7 @@ public class CucumberTestSteps {
         if (viewIsDisplayed(onView(withId(R.id.delete)))) {
             testUtils.pressBack();
             waitForIdle();
-            assertFailWithMessage("Toolbar is showing Message Options when there are no messages selected");
+            fail("Toolbar is showing Message Options when there are no messages selected");
         }
     }
 
@@ -2176,13 +2174,13 @@ public class CucumberTestSteps {
         testUtils.selectFromMenu(R.string.action_settings);
         size = testUtils.getListSize(R.id.recycler_view);
         if (size != totalGlobalSettings) {
-            assertFailWithMessage("There are " + size + " elements in global settings and should be " + totalGlobalSettings);
+            fail("There are " + size + " elements in global settings and should be " + totalGlobalSettings);
         }
         testUtils.selectAccountSettingsFromList(0);
         size = testUtils.getListSize(R.id.recycler_view);
         testUtils.pressBack();
         if (size != totalAccountSettings) {
-            assertFailWithMessage("There are " + size + " elements in account settings and should be " + totalAccountSettings);
+            fail("There are " + size + " elements in account settings and should be " + totalAccountSettings);
         }
     }
 
@@ -2274,7 +2272,7 @@ public class CucumberTestSteps {
                 folderID = R.string.special_mailbox_name_spam;
                 break;
             default:
-                assertFailWithMessage("Folder " + folder + " doesn't exist");
+                fail("Folder " + folder + " doesn't exist");
         }
         testUtils.selectFromScreen(folderID);
     }
@@ -2454,7 +2452,7 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.getMessageListSize();
         if (testUtils.getListSize() <= 101) {
-            assertFailWithMessage("Is not loading more messages");
+            fail("Is not loading more messages");
         }
         waitForIdle();
     }
@@ -2518,21 +2516,21 @@ public class CucumberTestSteps {
                 switch (viewView.getText()) {
                     case "Testing Header":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top <= textBoxHeight + 2) {
-                            assertFailWithMessage(viewView.getText() + " is not Header");
+                            fail(viewView.getText() + " is not Header");
                         }
                         break;
                     case "Testing Blue":
                         if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 1.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 0.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
-                            assertFailWithMessage(viewView.getText() + " is not BLUE");
+                            fail(viewView.getText() + " is not BLUE");
                         }
                         break;
                     case "Testing Red":
                         if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 1.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 0.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
-                            assertFailWithMessage(viewView.getText() + " is not RED");
+                            fail(viewView.getText() + " is not RED");
                         }
                         break;
                     case "Testing Italic\n":
@@ -2540,41 +2538,41 @@ public class CucumberTestSteps {
                         int italicCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(italicCentralXStart, viewView.getVisibleBounds().centerY());
                         if ((firstLetterCentralThickness[1] - firstLetterCentralThickness[0] + 1 < italicCentralXEnd - italicCentralXStart)
                                 || (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] - 1 > italicCentralXEnd - italicCentralXStart)) {
-                            assertFailWithMessage(viewView.getText() + " is not ITALIC");
+                            fail(viewView.getText() + " is not ITALIC");
                         }
                         firstLetterTopYPixel = testUtils.getNextVerticalColoredYPixelToTheBottom(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().top + 1);
                         int italicTopStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
                         int italicTopEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
                         if (firstLetterTopThickness[0] == italicTopStart || firstLetterTopThickness[1] == italicTopEnd) {
-                            assertFailWithMessage(viewView.getText() + " is not ITALIC");
+                            fail(viewView.getText() + " is not ITALIC");
                         }
                         if ((firstLetterTopThickness[1] - firstLetterTopThickness[0] - 2 > italicTopEnd - italicTopStart) || (firstLetterTopThickness[1] - firstLetterTopThickness[0] + 2 < italicTopEnd - italicTopStart)) {
-                            assertFailWithMessage(viewView.getText() + " is not the same size");
+                            fail(viewView.getText() + " is not the same size");
                         }
                         break;
                     case "Testing Bold\n":
                         int boldCentralXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
                         int boldCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(boldCentralXStart, viewView.getVisibleBounds().centerY());
                         if (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] >= boldCentralXEnd - boldCentralXStart) {
-                            assertFailWithMessage(viewView.getText() + " is not BOLD");
+                            fail(viewView.getText() + " is not BOLD");
                         }
                         break;
                     case "Testing Underline":
                         int underlineFirstLetterXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
                         int underlineFirstLetterXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(underlineFirstLetterXStart, viewView.getVisibleBounds().centerY());
                         if (firstLetterCentralThickness[1] != underlineFirstLetterXEnd || firstLetterCentralThickness[0] != underlineFirstLetterXStart) {
-                            assertFailWithMessage(viewView.getText() + " is not the same size");
+                            fail(viewView.getText() + " is not the same size");
                         }
                         int bottomUnderline = testUtils.getNextVerticalColoredYPixelToTheTop(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().bottom) - 1;
                         int underlineYStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         int underlineYEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         if (underlineYEnd - underlineYStart < 30) {
-                            assertFailWithMessage(viewView.getText() + " is not Underlined");
+                            fail(viewView.getText() + " is not Underlined");
                         }
                         break;
                     case "Testing No Format":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top >= textBoxHeight - 2) {
-                            assertFailWithMessage(viewView.getText() + " has format");
+                            fail(viewView.getText() + " has format");
                         }
                         break;
                 }
@@ -2602,7 +2600,7 @@ public class CucumberTestSteps {
         int newPic2 = testUtils.getPixelColor(images.get(2).getVisibleBounds().centerX(),
                 images.get(2).getVisibleBounds().centerY());
         if (pic0 == newPic0 || pic1 == newPic1 || pic2 == newPic2) {
-            assertFailWithMessage("Cannot show images or were shown before");
+            fail("Cannot show images or were shown before");
         }
         testUtils.pressBack();
         switch (testUtils.test_number()) {
@@ -2652,7 +2650,7 @@ public class CucumberTestSteps {
         }
         testUtils.clickSearch();
         if (viewIsDisplayed(R.id.fab_button_compose_message)) {
-            assertFailWithMessage("Compose message button is shown");
+            fail("Compose message button is shown");
         }
         if (exists(onView(withId(R.id.search_clear)))) {
             try {
@@ -2678,7 +2676,7 @@ public class CucumberTestSteps {
             }
         }
         if (messageListSize[0] - 1 != messages) {
-            TestUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
+            TestUtils.fail("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
         }
         while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
             testUtils.pressBack();
@@ -2729,7 +2727,7 @@ public class CucumberTestSteps {
                         messageTo = testUtils.getPassphraseAccount();
                         break;
                     default:
-                        TestUtils.assertFailWithMessage("Unknown Device for this test: " + testUtils.test_number());
+                        TestUtils.fail("Unknown Device for this test: " + testUtils.test_number());
                 }
                 break;
             case "bot1":
@@ -3066,7 +3064,7 @@ public class CucumberTestSteps {
                 String shaCode = new BigInteger(1, hash).toString(16);
                 String jsonObject = (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted").toString();
                 if (!jsonObject.contains(shaCode)) {
-                    TestUtils.assertFailWithMessage("couldn't find shaCode in json file");
+                    TestUtils.fail("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
@@ -3122,7 +3120,7 @@ public class CucumberTestSteps {
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
         masterKeyText2 = testUtils.readFile(Environment.getExternalStorageDirectory().toString(), "masterkeyfile.asc");
         if (!masterKeyText.equals(masterKeyText2)) {
-            TestUtils.assertFailWithMessage("Wrong Master key file");
+            TestUtils.fail("Wrong Master key file");
         }
         testUtils.emptyFolder("Download");
         testUtils.emptyFolder("");
@@ -3143,7 +3141,7 @@ public class CucumberTestSteps {
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
                 if (attachments == 0) {
-                    assertFailWithMessage("There are no attachments");
+                    fail("There are no attachments");
                 }
                 attachments = 0;
                 for (UiObject2 object : device.findObjects(layout)) {
@@ -3156,7 +3154,7 @@ public class CucumberTestSteps {
                             }
                         }
                         if (attachments != numberOfAttachments) {
-                            assertFailWithMessage("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                            fail("There are " + attachments + " attachments and there should be " + numberOfAttachments);
                         }
                         return;
                     }
@@ -3164,10 +3162,10 @@ public class CucumberTestSteps {
             } catch (Exception ex) {
                 Timber.i("Message Error: " + ex.getMessage());
                 if (attachments == 0) {
-                    assertFailWithMessage("There are no attachments");
+                    fail("There are no attachments");
                 }
                 if (attachments != numberOfAttachments) {
-                    assertFailWithMessage("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                    fail("There are " + attachments + " attachments and there should be " + numberOfAttachments);
                 }
             }
         }
@@ -3377,11 +3375,11 @@ public class CucumberTestSteps {
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (scenario == null) {
                         time[0] = 0;
-                        TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
+                        TestUtils.fail("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
                         try {
                             time[0] = 0;
-                            TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
+                            TestUtils.fail("Timeout. Couldn't finish the test");
                         } catch (Exception ex) {
                             Timber.e("Couldn't close the test");
                         }
