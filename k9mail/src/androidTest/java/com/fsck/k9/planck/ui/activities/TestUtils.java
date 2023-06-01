@@ -16,9 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -73,6 +71,7 @@ import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -83,8 +82,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -493,7 +490,7 @@ public class TestUtils {
                     } else if (line[1].equals("false")) {
                         testConfig.setTrusted_server(false, 0);
                     } else {
-                        assertFailWithMessage("Trusted_server must be true or false");
+                        fail("Trusted_server must be true or false");
                     }
                     break;
                 case "imap_server":
@@ -517,7 +514,7 @@ public class TestUtils {
                 case "password2":
                     testConfig.setPassword(line[1], 1);
                     if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
-                        assertFailWithMessage("Password is empty");
+                        fail("Password is empty");
                     }
                     break;
                 case "username2":
@@ -529,7 +526,7 @@ public class TestUtils {
                     } else if (line[1].equals("false")) {
                         testConfig.setTrusted_server(false, 1);
                     } else {
-                        assertFailWithMessage("Trusted_server must be true or false");
+                        fail("Trusted_server must be true or false");
                     }
                     break;
                 case "imap_server2":
@@ -553,7 +550,7 @@ public class TestUtils {
                 case "password3":
                     testConfig.setPassword(line[1], 2);
                     if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
-                        assertFailWithMessage("Password is empty");
+                        fail("Password is empty");
                     }
                     break;
                 case "username3":
@@ -565,7 +562,7 @@ public class TestUtils {
                     } else if (line[1].equals("false")) {
                         testConfig.setTrusted_server(false, 2);
                     } else {
-                        assertFailWithMessage("Trusted_server must be true or false");
+                        fail("Trusted_server must be true or false");
                     }
                     break;
                 case "imap_server3":
@@ -666,7 +663,7 @@ public class TestUtils {
             waitForIdle();
         }
         if (!viewIsDisplayed(R.id.afirmativeActionButton)) {
-            assertFailWithMessage("Cannot sync devices");
+            fail("Cannot sync devices");
         } else {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
             waitForIdle();
@@ -775,7 +772,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.assertFailWithMessage("Failed checking 1st devices is not sync");
+            TestUtils.fail("Failed checking 1st devices is not sync");
         }
     }
 
@@ -784,7 +781,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.assertFailWithMessage("Failed checking 2nd devices is not sync");
+            TestUtils.fail("Failed checking 2nd devices is not sync");
         }
         getMessageListSize();
         composeMessageButton();
@@ -891,7 +888,7 @@ public class TestUtils {
         }
     }
 
-    public static void assertFailWithMessage(String message) {
+    public static void fail(String message) {
         //Assume.assumeTrue(message, false);
         onView(withId(R.id.toolbar)).check(matches(forceFail(message)));
     }
@@ -967,7 +964,7 @@ public class TestUtils {
                 waitForIdle();
             }*/
             if (!selectOptionDisplayed) {
-                fail("No sign in options to choose");
+                Assert.fail("No sign in options to choose");
             }
             waitForIdle();
             switch (test_number()) {
@@ -1166,7 +1163,7 @@ public class TestUtils {
                 }
             } catch (Exception ex) {
                 if (!(accountToSelect < getAvailableAccounts())) {
-                    assertFailWithMessage("Cannot find account " + accountToSelect);
+                    fail("Cannot find account " + accountToSelect);
                 }
                 Timber.i("Cannot click account " + accountToSelect + ": " + ex.getMessage());
                 while (!exists(onView(withId(R.id.accounts_list)))) {
@@ -1214,7 +1211,7 @@ public class TestUtils {
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
         if (!(accountToSelect < getAvailableAccounts())) {
-            assertFailWithMessage("Cannot find account " + accountToSelect);
+            fail("Cannot find account " + accountToSelect);
         }
         goToFolder(folder, accountToSelect);
         if (exists(onView(withId(R.id.message_list)))) {
@@ -1312,7 +1309,7 @@ public class TestUtils {
         try {
             waitForIdle();
             if (!getTextFromView(onView(withId(view))).contains(text)) {
-                assertFailWithMessage("View doesn't contain text: " + text);
+                fail("View doesn't contain text: " + text);
             }
         } catch (Exception ex) {
             Timber.i("Cannot find view: " + ex.getMessage());
@@ -1613,7 +1610,7 @@ public class TestUtils {
     public void checkOwnKeyInJSON(String mainKeyID, boolean isTheSame) {
         try {
             if ((json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr").equals(mainKeyID)) != isTheSame) {
-                assertFailWithMessage("Own Key: " + mainKeyID + " // Key JSON file: " + json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr"));
+                fail("Own Key: " + mainKeyID + " // Key JSON file: " + json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr"));
             }
         } catch (JSONException e) {
             Timber.e("Cannot read the Key from the JSON file");
@@ -1623,7 +1620,7 @@ public class TestUtils {
     public void checkOwnKeyInDB(String mainKeyID, boolean isTheSame) {
         String newMainKeyID = getOwnKeyFromDB("management.db", "identity", "user_id");
         if ((mainKeyID.equals(newMainKeyID)) != isTheSame) {
-            assertFailWithMessage("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
+            fail("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
         }
     }
 
@@ -1631,7 +1628,7 @@ public class TestUtils {
         getJSONObject("keys");
         waitForIdle();
         if (!jsonArray.toString().contains(key)) {
-            assertFailWithMessage("The key " + key + " is not in the JSON file");
+            fail("The key " + key + " is not in the JSON file");
         }
     }
 
@@ -1658,7 +1655,7 @@ public class TestUtils {
             }
         } catch (Exception e) {
             removeDBFolder();
-            assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column);
+            fail("Failed to read DB when trying to find: " + table + "/" + column);
         }
         return null;
     }
@@ -1686,11 +1683,11 @@ public class TestUtils {
             }
         } catch (Exception e) {
             removeDBFolder();
-            assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column + "/" + value);
+            fail("Failed to read DB when trying to find: " + table + "/" + column + "/" + value);
         }
         removeDBFolder();
         if (!rightValue) {
-            assertFailWithMessage("Column " + column + " is " + valueInDB + " and it should be " + value);
+            fail("Column " + column + " is " + valueInDB + " and it should be " + value);
         }
     }
 
@@ -1728,7 +1725,7 @@ public class TestUtils {
             }
         }
         if (directory.exists()) {
-            assertFailWithMessage("Cannot remove the old DB");
+            fail("Cannot remove the old DB");
         }
     }
 
@@ -1736,7 +1733,7 @@ public class TestUtils {
         File directory= getExportFolder();
         String[] directoryPath = directory.list();
         if (directoryPath.length > 1) {
-            assertFailWithMessage("There are more than 1 DB");
+            fail("There are more than 1 DB");
         }
         FileWriter dbFile = null;
         try {
@@ -2236,7 +2233,7 @@ public class TestUtils {
         statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                assertFailWithMessage("Wrong Status, it should be empty");
+                fail("Wrong Status, it should be empty");
             }
         } else {
             int value = rating.value;
@@ -2262,7 +2259,7 @@ public class TestUtils {
         statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                assertFailWithMessage("Wrong Status, it should be empty");
+                fail("Wrong Status, it should be empty");
             }
         } else {
             int value = rating.value;
@@ -2298,7 +2295,7 @@ public class TestUtils {
         statusColor = getSecurityStatusDrawableColor(status);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                assertFailWithMessage("Wrong Status, it should be empty");
+                fail("Wrong Status, it should be empty");
             }
         } else {
             if (R.drawable.planck_status_green != statusColor
@@ -2307,7 +2304,7 @@ public class TestUtils {
                     && BuildConfig.IS_ENTERPRISE
                     && R.drawable.enterprise_status_unsecure != statusColor
             ) {
-                assertFailWithMessage("Wrong Status color");
+                fail("Wrong Status color");
             }
             if (visible) {
                 waitUntilViewDisplayed(R.id.securityStatusText);
@@ -2481,7 +2478,7 @@ public class TestUtils {
             }
         }
         if (!exists) {
-            assertFailWithMessage("Cannot find " + textToCompare + " on the screen");
+            fail("Cannot find " + textToCompare + " on the screen");
         }
     }
 
@@ -2495,7 +2492,7 @@ public class TestUtils {
                 int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
                 expectedColor = ContextCompat.getColor(context, expectedColor);
                 if (iconColor != expectedColor) {
-                        assertFailWithMessage("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
+                        fail("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
                     break;
                 }
             }
@@ -2539,14 +2536,14 @@ public class TestUtils {
             waitForIdle();
             if (BuildConfig.IS_ENTERPRISE) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
-                    assertFailWithMessage("Status is not shown");
+                    fail("Status is not shown");
                 }
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
                 String statusText = getTextFromView(onView(withId(R.id.securityStatusText))) + " " + getTextFromView(onView(withId(R.id.securityStatusSecondLine)));
                 if (!statusText.contains(text)) {
-                    assertFailWithMessage("Status are not the same. It is " + statusText + " and it should be " + text);
+                    fail("Status are not the same. It is " + statusText + " and it should be " + text);
                 }
                 return;
             }
@@ -2563,7 +2560,7 @@ public class TestUtils {
             waitForIdle();
             if (BuildConfig.IS_ENTERPRISE) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
-                    assertFailWithMessage("Status is not shown");
+                    fail("Status is not shown");
                 }
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
@@ -2638,7 +2635,7 @@ public class TestUtils {
                         else {
                             int pixel = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
                             if (pixel != resources.getColor(statusColor)) {
-                                assertFailWithMessage("Badge status colors are different");
+                                fail("Badge status colors are different");
                             }
                             assertedBadgeColor = true;
                             break;
@@ -2778,7 +2775,7 @@ public class TestUtils {
         int upperToolbarColor = getCurrentActivity().getWindow().getStatusBarColor();
         org.junit.Assert.assertEquals("Text", upperToolbarColor, color);
         if (upperToolbarColor != color) {
-            assertFailWithMessage("Upper toolbar color is wrong");
+            fail("Upper toolbar color is wrong");
         }
     }
 
@@ -3321,7 +3318,7 @@ public class TestUtils {
         if (folderInteraction != null) {
             folderInteraction.perform(click());
         } else {
-            fail("Folder " + folder +  " not found in navigation drawer");
+            Assert.fail("Folder " + folder +  " not found in navigation drawer");
         }
     }
 
@@ -3712,7 +3709,7 @@ public class TestUtils {
         onView(withId(R.id.message_list)).check(matches(isDisplayed()));
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
         if (messageListSize[1] != numberOfMessages) {
-            assertFailWithMessage("Wrong number of messages");
+            fail("Wrong number of messages");
         }
         getMessageListSize();
     }
@@ -3898,7 +3895,7 @@ public class TestUtils {
                 } else {
                     waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-                    assertFailWithMessage("Error: BODY TEXT=" + text[0] + " ---*****--- TEXT TO COMPARE=" + cucumberBody);
+                    fail("Error: BODY TEXT=" + text[0] + " ---*****--- TEXT TO COMPARE=" + cucumberBody);
                 }
             }
         }
@@ -3917,7 +3914,7 @@ public class TestUtils {
                 waitForIdle();
                 String messageBody = object.getText().replaceAll("\n", "");
                 if (!messageBody.contains(cucumberBody)) {
-                    assertFailWithMessage("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
+                    fail("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
                 }
                 return;
             } else {
@@ -3956,7 +3953,7 @@ public class TestUtils {
                 waitForIdle();
                 return;
             } else {
-                assertFailWithMessage("Message Body text is different");
+                fail("Message Body text is different");
             }
         }
     }
@@ -4060,7 +4057,7 @@ public class TestUtils {
                 }
             }
         }
-        assertFailWithMessage("CheckBox " +  resources.getString(resource) + " is not " + check);
+        fail("CheckBox " +  resources.getString(resource) + " is not " + check);
     }
 
     public void getScreenShot() {
@@ -4238,7 +4235,7 @@ public class TestUtils {
                 }
             }
         }
-        assertFailWithMessage("Item " + item + " of the list is not " + isSelected);
+        fail("Item " + item + " of the list is not " + isSelected);
     }
 
     public void setTimeInRadialPicker (int hour) {
@@ -4267,7 +4264,7 @@ public class TestUtils {
                 try {
                     if (time.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/time_header")) {
                         if (!time.getChildren().get(0).getText().contains((String.valueOf(hour)))){
-                            assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
+                            fail("Time is " + time.getText() + " and it should be " + hour);
                         }
                         timeAssertDone = true;
                         break;
@@ -4284,7 +4281,7 @@ public class TestUtils {
                 try {
                     if (clock.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/radial_picker")) {
                         if (!clock.getChildren().get(hour).isSelected()) {
-                            assertFailWithMessage("Wrong time selected");
+                            fail("Wrong time selected");
                         }
                         return;
                     }
@@ -4457,7 +4454,7 @@ public class TestUtils {
         if (!aboutText.contains(shortTextInAbout[0][0])
                 || !librariesText.contains(shortTextInAbout[1][0])
                 || !aboutText.contains(shortTextInAbout[2][0])) {
-            assertFailWithMessage("Wrong text in About");
+            fail("Wrong text in About");
         }
         pressBack();
     }
@@ -4806,7 +4803,7 @@ public class TestUtils {
             }
         }
         if (fail) {
-            assertFailWithMessage("Account name has not been modified");
+            fail("Account name has not been modified");
         }
         pressOKButtonInDialog();
     }
@@ -4982,7 +4979,7 @@ public class TestUtils {
                     }
                 }
                 if (!keys.contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-                    assertFailWithMessage("Wrong key");
+                    fail("Wrong key");
                 }
                 break;
             case "rating":
