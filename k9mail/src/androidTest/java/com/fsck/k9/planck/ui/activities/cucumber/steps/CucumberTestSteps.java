@@ -992,13 +992,17 @@ public class CucumberTestSteps {
     }
 
     @When("^I switch (\\S+) Wi-Fi")
-    public void I_switch_wifi(String active) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
-        if (active.equals("off")) {
-            testUtils.setWifi(false);
-        } else if (active.equals("on")) {
-            testUtils.setWifi(true);
-        } else {
-            testUtils.fail("Option of Wi-Fi: " + active + "; doesn't exist");
+    public void I_switch_wifi(String state) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+        switch (state){
+            case "on":
+                testUtils.setWifi(true);
+                break;
+            case "off":
+                testUtils.setWifi(false);
+                break;
+            default:
+                testUtils.fail("Option of Wi-Fi: " + state + "; doesn't exist");
+                break;
         }
         waitForIdle();
     }
