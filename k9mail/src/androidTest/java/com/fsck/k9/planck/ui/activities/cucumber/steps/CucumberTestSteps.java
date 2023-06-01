@@ -4,7 +4,6 @@ package com.fsck.k9.planck.ui.activities.cucumber.steps;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -996,7 +995,6 @@ public class CucumberTestSteps {
 
     @When("^I switch (\\S+) Wi-Fi")
     public void I_switch_wifi(String active) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
-        boolean wifi;
         if (active.equals("off")) {
             testUtils.setWifi(false);
         } else if (active.equals("on")) {
