@@ -49,7 +49,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation project(":pEpJNIAdapter")
+    implementation project(":planckJNIWrapper")
     implementation project(':k9mail-library')
     implementation project(':plugins:HoloColorPicker')
     implementation project(':plugins:openpgp-api-lib:openpgp-api')

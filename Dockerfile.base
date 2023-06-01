@@ -6,7 +6,7 @@ RUN git config --global advice.detachedHead false
 
 # yml2
 ARG YML2_VERSION
-RUN git clone --depth=1 https://gitea.pep.foundation/fdik/yml2.git -b ${YML2_VERSION} $HOME/yml2
+RUN git clone --depth=1 https://git.planck.security/foundation/yml2.git -b ${YML2_VERSION} $HOME/yml2
 
 # ASN1C
 RUN git clone https://github.com/vlm/asn1c.git $HOME/code/asn1c
@@ -25,22 +25,21 @@ ARG LIBPEPTRANSPORT_VERSION
 ARG FOLDABLE_FOLDER_VERSION
 
 # Fetch planck for Android First-Party Dependencies
-RUN git clone --depth=1 https://git.planck.security/foundation/pEpEngine.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
-RUN git clone --depth=1 https://git.planck.security/foundation/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
-RUN git clone --depth=1 https://git.planck.security/foundation/libpEpAdapter.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
-RUN git clone --depth=1 https://git.planck.security/foundation/libpEpCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libpEpCxx11
-RUN git clone --depth=1 https://git.planck.security/foundation/libpEpTransport.git -b ${LIBPEPTRANSPORT_VERSION} $HOME/code/libpEpTransport
-RUN git clone --depth=1 http://git.pep.security/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
+RUN git clone --depth=1 https://git.planck.security/foundation/planckCoreV3.git -b ${ENGINE_VERSION} $HOME/code/planckCoreV3
+RUN git clone --depth=1 https://git.planck.security/foundation/planckJNIWrapper.git -b ${JNI_ADAPTER_VERSION} $HOME/code/planckJNIWrapper
+RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckWrapper.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libPlanckWrapper
+RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libPlanckCxx11
+RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckTransport.git -b ${LIBPEPTRANSPORT_VERSION} $HOME/code/libPlanckTransport
+RUN git clone --depth=1 https://git.pep.security/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
 COPY . /root/code/planck
 
-RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/planckJNIWrapper/local.conf
 # TODO PEMA-103 move this to chuck all files into a local include
-RUN echo "PREFIX=$HOME/code/pEpEngine/build-android/" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "PREFIX=$HOME/code/planckCoreV3/build-android/" >> $HOME/code/planckJNIWrapper/local.conf
 RUN echo "rootProject.name = 'planck'" >> $HOME/code/planck/settings.gradle
 
-
 # WORKAROUND JNI-176
-RUN cd $HOME/code/pEpEngine && \
+RUN cd $HOME/code/planckCoreV3 && \
     sh build-android/takeOutHeaderFiles.sh $PWD
 
 # SET GRADLE DAEMON CONFIGURATION
@@ -48,7 +47,6 @@ RUN mkdir -p $HOME/.gradle
 RUN echo -e "\norg.gradle.jvmargs=-Xmx4g -XX:MaxPermSize=16384m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> $HOME/.gradle/gradle.properties
 RUN echo -e "\nthreadsToUse=4" >> $HOME/.gradle/gradle.properties
 RUN cat $HOME/.gradle/gradle.properties
-
 
 # BUILD DEPENDENCIES
 WORKDIR /root/code/planck

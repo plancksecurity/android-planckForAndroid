@@ -14,20 +14,20 @@ workflow:
 .compose_deps: &compose_deps
   - cat DEPENDENCIES
   - source DEPENDENCIES
-  - echo "pEpJNIAdapter Version = ${pEpJNIAdapter}"
-  - wget -q -O - https://git.planck.security/foundation/pEpJNIAdapter/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - echo "planckJNIWrapper Version = ${pEpJNIAdapter}"
+  - wget -q -O - https://git.planck.security/foundation/planckJNIWrapper/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
-  - echo "pEpEngine Version = ${pEpEngine}"
-  - echo "libpEpAdapter Version = ${libpEpAdapter}"
-  - echo "libpEpCxx11 Version = ${libpEpCxx11}"
-  - wget -q -O - https://git.planck.security/foundation/pEpEngine/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - echo "planckCoreV3 Version = ${pEpEngine}"
+  - echo "libPlanckWrapper Version = ${libpEpAdapter}"
+  - echo "libPlanckCxx11 Version = ${libpEpCxx11}"
+  - wget -q -O - https://git.planck.security/foundation/planckCoreV3/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
-  - echo "libpEpTransport Version = ${libpEpTransport}"
-  - echo "pEpEngineSequoiaBackend Version = ${pEpEngineSequoiaBackend}"
+  - echo "libPlanckTransport Version = ${libpEpTransport}"
+  - echo "planckCoreSequoiaBackend Version = ${pEpEngineSequoiaBackend}"
 
 stages:
   - toolchain
@@ -107,7 +107,7 @@ build:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
@@ -131,7 +131,7 @@ test:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
