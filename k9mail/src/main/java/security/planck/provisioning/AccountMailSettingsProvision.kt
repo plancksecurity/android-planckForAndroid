@@ -19,7 +19,7 @@ data class SimpleMailSettings(
     var userName: String? = null,
     var authType: AuthType? = null,
 ) {
-    fun getConnectionSecurityString(): String = when (connectionSecurity) {
+    private fun getConnectionSecurityString(): String = when (connectionSecurity) {
         null, ConnectionSecurity.NONE -> ""
         ConnectionSecurity.SSL_TLS_REQUIRED -> "ssl"
         ConnectionSecurity.STARTTLS_REQUIRED -> "tls"
@@ -31,4 +31,16 @@ data class SimpleMailSettings(
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
                 && authType != null
+
+    fun toSeverUriTemplate(outgoing: Boolean): String {
+        val protocol = if (outgoing) "smtp" else "imap"
+        return (protocol +
+                "+" +
+                getConnectionSecurityString() +
+                "+" +
+                "://" +
+                server +
+                ":" +
+                port)
+    }
 }

@@ -1,5 +1,7 @@
 package com.fsck.k9.mail.store.webdav;
 
+import static com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory.TLS_PROTOCOL;
+
 import com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.LayeredSocketFactory;
@@ -28,7 +30,7 @@ public class WebDavSocketFactory implements LayeredSocketFactory {
     private org.apache.http.conn.ssl.SSLSocketFactory mSchemeSocketFactory;
 
     public WebDavSocketFactory(String host, int port) throws NoSuchAlgorithmException, KeyManagementException {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+        SSLContext sslContext = SSLContext.getInstance(TLS_PROTOCOL);
         sslContext.init(null, new TrustManager[] {
                 TrustManagerFactory.get(host, port)
         }, null);

@@ -23,6 +23,7 @@ import java.util.zip.InflaterInputStream;
 
 import android.annotation.SuppressLint;
 
+import com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import javax.net.ssl.KeyManagerFactory;
@@ -362,7 +363,7 @@ public class MockImapServer {
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(defaultAlgorithm);
             keyManagerFactory.init(keyStore, KEYSTORE_PASSWORD.toCharArray());
 
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance(DefaultTrustedSocketFactory.TLS_PROTOCOL);
             sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 

@@ -4,18 +4,18 @@
     <restriction
         android:defaultValue="@bool/default_enable_privacy_protection"
         android:description="@string/enable_privacy_protection_description"
-        android:key="pep_enable_privacy_protection"
+        android:key="planck_enable_privacy_protection"
         android:restrictionType="bool"
         android:title="@string/enable_privacy_protection_title"/>
 
     <restriction
         android:description="@string/extra_keys_description"
-        android:key="pep_extra_keys"
+        android:key="planck_extra_keys"
         android:restrictionType="bundle_array"
         android:title="@string/extra_keys_title">
 
         <restriction
-            android:key="pep_extra_key"
+            android:key="planck_extra_key"
             android:restrictionType="bundle"
             android:title="@string/extra_key">
 
@@ -36,12 +36,12 @@
 
     <restriction
         android:description="@string/media_keys_description"
-        android:key="pep_media_keys"
+        android:key="planck_media_keys"
         android:restrictionType="bundle_array"
         android:title="@string/media_keys_title">
 
         <restriction
-            android:key="pep_media_key"
+            android:key="planck_media_key"
             android:restrictionType="bundle"
             android:title="@string/media_key_title">
 
@@ -69,7 +69,7 @@
     <restriction
         android:defaultValue="@bool/default_use_trustwords"
         android:description="@string/use_trustwords_setting_description"
-        android:key="pep_use_trustwords"
+        android:key="planck_use_trustwords"
         android:restrictionType="bool"
         android:title="@string/use_trustwords_setting_title"/>
 
@@ -83,7 +83,7 @@
     <restriction
         android:defaultValue="@bool/default_use_pep_sync_folder"
         android:description="@string/pep_sync_folder_description"
-        android:key="pep_sync_folder"
+        android:key="planck_sync_folder"
         android:restrictionType="bool"
         android:title="@string/pep_sync_folder"/>
 
@@ -96,7 +96,7 @@
 
     <restriction
         android:defaultValue="@bool/default_enable_echo_protocol"
-        android:key="pep_enable_echo_protocol"
+        android:key="planck_enable_echo_protocol"
         android:restrictionType="bool"
         android:title="@string/enable_echo_protocol_title"/>
 
@@ -213,34 +213,34 @@
     <restriction
         android:defaultValue="@bool/default_pep_save_encrypted"
         android:description="@string/account_settings_save_encrypted_summary_enabled"
-        android:key="pep_save_encrypted_on_server"
+        android:key="planck_save_encrypted_on_server"
         android:restrictionType="bool"
         android:title="@string/pep_mistrust_server_and_store_mails_encrypted"/>
 
     <restriction
         android:defaultValue="@bool/default_pep_enable_sync_account"
         android:description="@string/pep_sync_enable_account"
-        android:key="pep_enable_sync_account"
+        android:key="planck_enable_sync_account"
         android:restrictionType="bool"
         android:title="@string/pep_sync_enable_account"/>
 
     <!--restriction
         android:defaultValue=""
         android:description="@string/provisioning_url_description"
-        android:key="pep_user_provisioning_url"
+        android:key="planck_user_provisioning_url"
         android:restrictionType="string"
         android:title="@string/provisioning_url_title"/-->
 
     <restriction
         android:defaultValue="@bool/default_allow_pep_sync_new_devices"
         android:description="@string/allow_pep_sync_new_devices_description"
-        android:key="allow_pep_sync_new_devices"
+        android:key="allow_planck_sync_new_devices"
         android:restrictionType="bool"
         android:title="@string/allow_pep_sync_new_devices_title"/>
 
     <restriction
         android:description="@string/mail_settings_description"
-        android:key="pep_mail_settings"
+        android:key="planck_mail_settings"
         android:restrictionType="bundle"
         android:title="@string/mail_settings_title">
 

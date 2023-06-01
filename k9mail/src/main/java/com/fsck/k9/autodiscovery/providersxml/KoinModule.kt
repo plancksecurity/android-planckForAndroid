@@ -4,5 +4,6 @@ import org.koin.dsl.module.applicationContext
 
 val autodiscoveryProvidersXmlModule = applicationContext {
     factory { ProvidersXmlProvider(context = get()) }
-    factory { ProvidersXmlDiscovery(xmlProvider = get(), oAuthConfigurationProvider = get()) }
+    factory { MiniDnsRecordsResolver() }
+    factory { ProvidersXmlDiscovery(xmlProvider = get(), oAuthConfigurationProvider = get(), dnsRecordsResolver = get()) }
 }
