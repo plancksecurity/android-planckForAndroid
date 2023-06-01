@@ -44,7 +44,6 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
-import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
@@ -252,33 +251,6 @@ public class AccountSetupIncomingFragment extends PlanckFragment {
 
                 if (!editSettings) {
                     rootView.findViewById(R.id.imap_folder_setup_section).setVisibility(View.GONE);
-                }
-            } else if (ServerSettings.Type.WebDAV == settings.type) {
-                serverLabelView.setText(R.string.account_setup_incoming_webdav_server_label);
-                mConnectionSecurityChoices = new ConnectionSecurity[] {
-                        ConnectionSecurity.NONE,
-                        ConnectionSecurity.SSL_TLS_REQUIRED };
-
-                // Hide the unnecessary fields
-                rootView.findViewById(R.id.imap_path_prefix_section).setVisibility(View.GONE);
-                rootView.findViewById(R.id.account_auth_type_label).setVisibility(View.GONE);
-                rootView.findViewById(R.id.account_auth_type).setVisibility(View.GONE);
-                rootView.findViewById(R.id.compression_section).setVisibility(View.GONE);
-                rootView.findViewById(R.id.compression_label).setVisibility(View.GONE);
-                mSubscribedFoldersOnly.setVisibility(View.GONE);
-
-                WebDavStoreSettings webDavSettings = (WebDavStoreSettings) settings;
-
-                if (webDavSettings.path != null) {
-                    mWebdavPathPrefixView.setText(webDavSettings.path);
-                }
-
-                if (webDavSettings.authPath != null) {
-                    mWebdavAuthPathView.setText(webDavSettings.authPath);
-                }
-
-                if (webDavSettings.mailboxPath != null) {
-                    mWebdavMailboxPathView.setText(webDavSettings.mailboxPath);
                 }
             } else {
                 throw new Exception("Unknown account type: " + mAccount.getStoreUri());
@@ -646,15 +618,8 @@ public class AccountSetupIncomingFragment extends PlanckFragment {
                     Boolean.toString(mImapAutoDetectNamespaceView.isChecked()));
             extra.put(ImapStoreSettings.PATH_PREFIX_KEY,
                     mImapPathPrefixView.getText().toString());
-        } else if (ServerSettings.Type.WebDAV == mStoreType) {
-            extra = new HashMap<String, String>();
-            extra.put(WebDavStoreSettings.PATH_KEY,
-                    mWebdavPathPrefixView.getText().toString());
-            extra.put(WebDavStoreSettings.AUTH_PATH_KEY,
-                    mWebdavAuthPathView.getText().toString());
-            extra.put(WebDavStoreSettings.MAILBOX_PATH_KEY,
-                    mWebdavMailboxPathView.getText().toString());
         }
+
         mAccount.deleteCertificate(host, port, AccountSetupCheckSettings.CheckDirection.INCOMING);
         ServerSettings settings = new ServerSettings(mStoreType, host, port,
                 connectionSecurity, authType, username, password, clientCertificateAlias, extra);
