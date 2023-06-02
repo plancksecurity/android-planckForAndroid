@@ -14,7 +14,6 @@ import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.fragment.MessageListFragment;
-import com.fsck.k9.planck.infrastructure.PerActivity;
 import com.fsck.k9.planck.infrastructure.modules.ActivityModule;
 import com.fsck.k9.planck.infrastructure.modules.PlanckModule;
 import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
@@ -48,7 +47,6 @@ import security.planck.ui.permissions.PermissionsActivity;
 import security.planck.ui.support.export.ExportpEpSupportDataActivity;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
-@PerActivity
 @Subcomponent(modules = {
         ActivityModule.class, PlanckModule.class,
 })
