@@ -1,0 +1,36 @@
+task accountRemoveIgnore(type: Exec) {
+    def command = [
+            'sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'enable',
+            'src/androidTest/java/com/fsck/k9/helper/SetupAccountsTask.kt'
+    ]
+    commandLine command
+}
+
+task installApkAddAccount(type: Exec, dependsOn: 'uninstallAll') {
+    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
+    commandLine command
+}
+
+task installTestAddAccount(type: Exec, dependsOn: 'installApkAddAccount') {
+    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
+    commandLine command
+}
+
+task setAccount(type: Exec, dependsOn: 'installTestAddAccount') {
+    def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
+                   'class', 'com.fsck.k9.helper.SetupAccountsTask#setupAccounts',
+                   'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
+    commandLine command
+}
+
+task accountAddIgnore(type: Exec, dependsOn: 'setAccount') {
+    def command = [
+            'sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'disable',
+            'src/androidTest/java/com/fsck/k9/helper/SetupAccountsTask.kt'
+    ]
+    commandLine command
+}
+
+task setupAccount() {
+    dependsOn accountAddIgnore
+}

@@ -53,6 +53,7 @@ public class MessageTopView extends RelativeLayout {
     private AttachmentViewCallback attachmentCallback;
     private View showPicturesButton;
     private boolean isShowingProgress;
+    private boolean messageLoaded = false;
 
     private MessageCryptoPresenter messageCryptoPresenter;
 
@@ -110,27 +111,30 @@ public class MessageTopView extends RelativeLayout {
     }
 
     public void showMessage(Account account, MessageViewInfo messageViewInfo, boolean shouldStopProgressDialog) {
-        resetAndPrepareMessageView(messageViewInfo);
+        if(!messageLoaded) {
+            messageLoaded = true;
+            resetAndPrepareMessageView(messageViewInfo);
 
-        ShowPictures showPicturesSetting = account.getShowPictures();
-        boolean automaticallyLoadPictures =
-                shouldAutomaticallyLoadPictures(showPicturesSetting, messageViewInfo.message);
+            ShowPictures showPicturesSetting = account.getShowPictures();
+            boolean automaticallyLoadPictures =
+                    shouldAutomaticallyLoadPictures(showPicturesSetting, messageViewInfo.message);
 
-        MessageContainerView view = (MessageContainerView) mInflater.inflate(R.layout.message_container,
-                containerView, false);
-        containerView.addView(view);
+            MessageContainerView view = (MessageContainerView) mInflater.inflate(R.layout.message_container,
+                    containerView, false);
+            containerView.addView(view);
 
-        boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
-        view.displayMessageViewContainer(
-                messageViewInfo,
-                () -> {
-                    if (shouldStopProgressDialog)
-                        displayViewOnLoadFinished(true);
-                },
-                automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
+            boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
+            view.displayMessageViewContainer(
+                    messageViewInfo,
+                    () -> {
+                        if (shouldStopProgressDialog)
+                            displayViewOnLoadFinished(true);
+                    },
+                    automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
-        if (view.hasHiddenExternalImages()) {
-            showShowPicturesButton();
+            if (view.hasHiddenExternalImages()) {
+                showShowPicturesButton();
+            }
         }
     }
 
@@ -323,9 +327,6 @@ public class MessageTopView extends RelativeLayout {
         }
     }
 
-    public void setPrivacyProtected(boolean ispEpEnabled) {
-        mHeaderContainer.setPrivacyProtected(ispEpEnabled);
-    }
 
     public String toHtml() {
         View messageContainerViewCandidate = containerView.getChildAt(0);

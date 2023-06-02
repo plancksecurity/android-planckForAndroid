@@ -3,16 +3,16 @@
     <!-- === App-specific strings ============================================================= -->
     <!-- This should make it easier for forks to change the branding -->
     <!-- Used in AndroidManifest.xml -->
-    <string name="app_name" translatable="false">p≡p</string>
-    <string name="shortcuts_title">p≡p Accounts</string>
-    <string name="unread_widget_label">p≡p Unread</string>
-    <string name="remote_control_label">p≡p remote control</string>
-    <string name="remote_control_desc">Allows this application to control p≡p activities and settings.</string>
+    <string name="app_name" translatable="false">planck</string>
+    <string name="shortcuts_title">planck Accounts</string>
+    <string name="unread_widget_label">planck Unread</string>
+    <string name="remote_control_label">planck remote control</string>
+    <string name="remote_control_desc">Allows this application to control planck activities and settings.</string>
     <!-- Used in the about dialog -->
-    <string name="app_authors" translatable="false">The K-9 Dog Walkers, p≡p Security S.A.</string>
-    <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_authors" translatable="false">The K-9 Dog Walkers, planck Security S.A.</string>
+    <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <!-- Welcome message -->
-    <string name="welcome_message_title">Welcome to p≡p</string>
+    <string name="welcome_message_title">Welcome to planck</string>
     <!--<string name="accounts_welcome"><![CDATA[-->
     <!--<p>-->
     <!--K-9 Mail is a powerful free email client for Android.-->
@@ -44,9 +44,9 @@
     <!--</p>-->
     <!--]]></string>-->
     <!-- Default signature -->
-    <string name="default_signature">"--  Sent from my p≡p for Android. "</string>
+    <string name="default_signature">"--  Sent from planck for Android. "</string>
     <!-- General strings that include the app name -->
-    <string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from p≡p.</string>
+    <string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from planck.</string>
     <string name="account_recreate_dlg_instructions_fmt">All local data for \\\"<xliff:g id="account">%s</xliff:g>\\\" will be removed. Account settings will be retained.</string>
     <string name="account_clear_dlg_instructions_fmt">Local copies of messages in \"<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
     <!-- === App Store-specific strings ======================================================= -->
@@ -57,8 +57,6 @@
     <string name="app_revision_fmt">Revision Information: <xliff:g id="app_revision_url">%s</xliff:g></string>
     <string name="app_libraries">We\'re using the following third-party libraries:</string>
     <string name="app_emoji_icons">Emoji icons: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
-    <string name="read_attachment_label">Read Email attachments</string>
-    <string name="read_attachment_desc">Allows this application to read your Email attachments.</string>
     <string name="read_messages_label">Read Emails</string>
     <string name="read_messages_desc">Allows this application to read your Emails.</string>
     <string name="delete_messages_label">Delete Emails</string>
@@ -126,10 +124,9 @@
     <string name="send_alternate_action">Share</string>
     <string name="print_action">Print</string>
     <string name="send_alternate_chooser_title">Choose sender</string>
-    <string name="flag_action">Add star</string>
-    <string name="unflag_action">Remove star</string>
+    <string name="flag_action">Add flag</string>
+    <string name="unflag_action">Remove flag</string>
     <string name="copy_action">Copy</string>
-    <string name="select_text_action">Select text</string>
     <string name="show_headers_action">Show headers</string>
     <string name="hide_headers_action">Hide headers</string>
     <plurals name="copy_address_to_clipboard">
@@ -145,6 +142,7 @@
     <string name="clear_local_folder_action">Clear local messages</string>
     <string name="about_action">About</string>
     <string name="prefs_title">Settings</string>
+    <string name="action_user_manual">User manual</string>
     <string name="accounts_context_menu_title">Account options</string>
     <!-- Shown in place of the subject when a message has no subject. Showing this in parentheses is customary. -->
     <string name="general_no_subject">(No subject)</string>
@@ -274,13 +272,13 @@
     <string name="global_settings_confirm_actions_title">Confirm actions</string>
     <string name="global_settings_confirm_actions_summary">Show a dialog whenever you perform selected actions</string>
     <string name="global_settings_confirm_action_delete">Delete</string>
-    <string name="global_settings_confirm_action_delete_starred">Delete Starred (in message view)</string>
+    <string name="global_settings_confirm_action_delete_starred">Delete Flagged (in message view)</string>
     <string name="global_settings_confirm_action_spam">Spam</string>
     <string name="global_settings_confirm_menu_discard">Discard message</string>
     <string name="global_settings_confirm_menu_mark_all_read">Mark all messages as read</string>
     <string name="global_settings_confirm_action_delete_notif">Delete (from notification)</string>
     <string name="global_settings_privacy_hide_useragent">Hide mail client</string>
-    <string name="global_settings_privacy_hide_useragent_detail">Remove p≡p User-Agent from mail headers</string>
+    <string name="global_settings_privacy_hide_useragent_detail">Remove planck User-Agent from mail headers</string>
     <string name="global_settings_privacy_hide_timezone">Hide timezone</string>
     <string name="global_settings_privacy_hide_timezone_detail">Use UTC instead of local timezone in mail headers and reply header</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting">Hide hostname</string>
@@ -311,7 +309,7 @@
     <string name="account_setup_basics_password_hint">Password</string>
     <string name="account_setup_basics_show_password">Show password</string>
     <string name="account_setup_basics_manual_setup_action">Manual setup</string>
-    <string name="account_setup_check_settings_title" translatable="false">.</string>
+    <string name="account_setup_check_settings_title">Checking settings</string>
     <string name="account_setup_check_settings_retr_info_msg">Retrieving account information\u2026</string>
     <string name="account_setup_check_settings_check_incoming_msg">Checking incoming server settings\u2026</string>
     <string name="account_setup_check_settings_check_outgoing_msg">Checking outgoing server settings\u2026</string>
@@ -329,7 +327,7 @@
     <string name="account_setup_auth_type_normal_password">Normal password</string>
     <string name="account_setup_auth_type_insecure_password">Password, transmitted insecurely</string>
     <string name="account_setup_auth_type_encrypted_password">Encrypted password</string>
-    <string name="account_setup_auth_type_xoauth2">OAuth 2.0 Token</string>
+    <string name="account_setup_auth_type_xoauth2">OAuth 2.0</string>
     <string name="account_setup_auth_type_tls_client_certificate">Client certificate</string>
     <string name="account_setup_incoming_title">Incoming server settings</string>
     <string name="account_setup_incoming_username_label">Username</string>
@@ -635,8 +633,8 @@
     <string name="sort_subject_re_alpha">Subject reverse alphabetical</string>
     <string name="sort_sender_alpha">Sender alphabetical</string>
     <string name="sort_sender_re_alpha">Sender reverse alphabetical</string>
-    <string name="sort_flagged_first">Starred messages first</string>
-    <string name="sort_flagged_last">Unstarred messages first</string>
+    <string name="sort_flagged_first">Flagged messages first</string>
+    <string name="sort_flagged_last">Unflagged messages first</string>
     <string name="sort_unread_first">Unread messages first</string>
     <string name="sort_unread_last">Read messages first</string>
     <string name="sort_attach_first">Messages with attachments first</string>
@@ -646,7 +644,7 @@
     <string name="sort_by_arrival">Arrival</string>
     <string name="sort_by_subject">Subject</string>
     <string name="sort_by_sender">Sender</string>
-    <string name="sort_by_flag">Star</string>
+    <string name="sort_by_flag">Flag</string>
     <string name="sort_by_unread">Read/unread</string>
     <string name="sort_by_attach">Attachments</string>
     <string name="account_delete_dlg_title">Remove Account</string>
@@ -658,7 +656,7 @@
     <string name="account_setup_failed_dlg_invalid_certificate_title">Unrecognized Certificate</string>
     <string name="account_setup_failed_dlg_invalid_certificate_accept">Accept Key</string>
     <string name="account_setup_failed_dlg_invalid_certificate_reject">Reject Key</string>
-    <string name="message_list_help_key">Del (or D) - Delete\nR - Reply\nA - Reply All\nC - Compose\nF - Forward\nM - Move\nV - Archive\nY - Copy\nZ - Mark (Un)read\nG - Star\nO - Sort type\nI - Sort order\nQ - Return to Folders\nS - Select/deselect\nJ or P - Previous Message\nK or N - Next Message</string>
+    <string name="message_list_help_key">Del (or D) - Delete\nR - Reply\nA - Reply All\nC - Compose\nF - Forward\nM - Move\nV - Archive\nY - Copy\nZ - Mark (Un)read\nG - Flag\nO - Sort type\nI - Sort order\nQ - Return to Folders\nS - Select/deselect\nJ or P - Previous Message\nK or N - Next Message</string>
     <string name="folder_list_help_key">1 - Display only 1st Class folders\n2 - Display 1st and 2nd Class folders\n3 - Display all except 2nd Class folders\n4 - Display all folders\nQ - Return to Accounts\nS - Edit Account Settings</string>
     <string name="folder_list_filter_hint">folder name contains</string>
     <string name="folder_list_display_mode_label">Show folders…</string>
@@ -719,13 +717,13 @@
     <string name="hide_special_accounts_title">Hide special accounts</string>
     <string name="hide_special_accounts_summary">Hide the unified inbox and all messages accounts</string>
     <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
-    <string name="flagged_modifier"> - Starred</string>
+    <string name="flagged_modifier"> - Flagged</string>
     <string name="unread_modifier"> - Unread</string>
     <string name="search_all_messages_title">All messages</string>
     <string name="search_all_messages_detail">All messages in searchable folders</string>
     <string name="integrated_inbox_title">Unified Inbox</string>
     <string name="integrated_inbox_detail">All messages in unified folders</string>
-    <string name="tap_hint">Tap circle or star for unread or starred messages</string>
+    <string name="tap_hint">Tap circle or flag for unread or flagged messages</string>
     <string name="folder_settings_include_in_integrated_inbox_label">Unify</string>
     <string name="folder_settings_include_in_integrated_inbox_summary">All messages are shown in Unified Inbox</string>
     <string name="account_settings_searchable_label">Folders to search</string>
@@ -836,7 +834,6 @@
     <string name="settings_import_use_incoming_server_password">Use the incoming server password</string>
     <string name="activate_account_action">Activate</string>
     <string name="account_unavailable">Account \"<xliff:g id="account">%s</xliff:g>\" is unavailable; check storage</string>
-    <string name="settings_attachment_default_path">Save attachments to…</string>
     <string name="attachment_save_title">Save attachment</string>
     <string name="attachment_save_desc">No file browser found. Where would you like to save this attachment?</string>
     <string name="manage_accounts_move_up_action">Move up</string>
@@ -917,7 +914,7 @@
     <string name="auth_external_error">Unable to authenticate.  The server does not advertise the SASL EXTERNAL capability.  This could be due to a problem with the client certificate (expired, unknown certificate authority) or some other configuration problem.</string>
     <!-- === Client certificates specific ================================================================== -->
     <string name="account_setup_basics_client_certificate">Use client certificate</string>
-    <string name="account_setup_basics_oauth2_token">Use OAuth 2.0 token (Google accounts)</string>
+    <string name="account_setup_basics_oauth2_token">Use OAuth 2.0</string>
     <string name="client_certificate_spinner_empty">No client certificate</string>
     <string name="client_certificate_spinner_delete">Remove client certificate selection</string>
     <string name="client_certificate_retrieval_failure">"Failed to retrieve client certificate for alias \"<xliff:g id="alias">%s</xliff:g>\""</string>
@@ -1022,7 +1019,7 @@
     <string name="decrypt_message_explanation" translatable="false">This email is encrypted and it may take a few seconds to decrypt it. Do you want to continue?</string>
     <string name="pep_menu_long_trustwords">Show long Trustwords</string>
     <string name="pep_menu_short_trustwords">Show short Trustwords</string>
-    <string name="mail_list_widget_text">p≡p Message List</string>
+    <string name="mail_list_widget_text">planck Message List</string>
     <string name="mail_list_widget_loading">Loading messages…</string>
     <string name="fetching_folders_failed">Fetching folder list failed</string>
     <string name="messageview_crypto_warning_details">Show Details</string>
@@ -1071,4 +1068,5 @@ You can keep this message and use it as a backup for your secret key. If you wan
     <string name="switch_off">Off</string>
     <string name="port_is_empty">Port can\'t be empty</string>
     <string name="port_is_out_of_range">The port is out of range</string>
+    <string name="rooted_device_error">Unsupported Operating System</string>
 </resources>

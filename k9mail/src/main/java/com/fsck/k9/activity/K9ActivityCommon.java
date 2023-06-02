@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,13 +17,16 @@ import android.webkit.WebView;
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.pEp.LangUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.LangUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import java.util.Locale;
 
-import security.pEp.ui.passphrase.PassphraseActivity;
-import security.pEp.ui.passphrase.PassphraseActivityKt;
+import security.planck.auth.OAuthTokenRevokedReceiver;
+import security.planck.mdm.ConfigurationManager;
+import security.planck.mdm.RestrictionsListener;
+import security.planck.ui.passphrase.PassphraseActivity;
+import security.planck.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;
 
 
@@ -32,11 +34,12 @@ import timber.log.Timber;
  * This class implements functionality common to most activities used in K-9 Mail.
  *
  * @see K9Activity
- * @see K9ListActivity
  */
 public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
     private IntentFilter passphraseReceiverfilter;
+    private ConfigurationManager configurationManager;
+    private OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver;
 
     /**
      * Creates a new instance of {@link K9ActivityCommon} bound to the specified activity.
@@ -47,8 +50,11 @@ public class K9ActivityCommon {
      * @return The {@link K9ActivityCommon} instance that will provide the base functionality of the
      *         "K9" activities.
      */
-    public static K9ActivityCommon newInstance(Activity activity) {
-        return new K9ActivityCommon(activity);
+    public static K9ActivityCommon newInstance(
+            Activity activity,
+            ConfigurationManager.Factory configurationManagerFactory
+    ) {
+        return new K9ActivityCommon(activity, configurationManagerFactory);
     }
 
     public static void setLanguage(Context context, String language) {
@@ -66,20 +72,17 @@ public class K9ActivityCommon {
         Resources resources = context.getResources();
         Configuration config = resources.getConfiguration();
         config.locale = locale;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Locale.setDefault(locale);
-        else {
-            Configuration systemConfig = Resources.getSystem().getConfiguration();
-            systemConfig.setLocale(locale);
-            Resources.getSystem().updateConfiguration(systemConfig, null);
-        }
+        Locale.setDefault(locale);
 
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
     private static void invalidateChromeLocaleForWebView(Context context) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            new WebView(context).destroy();
-        }
+        new WebView(context).destroy();
+    }
+
+    public void setConfigurationManagerListener(RestrictionsListener listener) {
+        configurationManager.setListener(listener);
     }
 
     /**
@@ -100,17 +103,25 @@ public class K9ActivityCommon {
     private SwipeGestureDetector swipeGestureDetector;
 
 
-    private K9ActivityCommon(Activity activity) {
+    private K9ActivityCommon(
+            Activity activity,
+            ConfigurationManager.Factory configurationManagerFactory
+    ) {
         mActivity = activity;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         initPassphraseRequestReceiver();
-
+        initConfigurationManager(configurationManagerFactory);
+        initOAuthTokenRevokedReceiver();
         configureNavigationBar(activity);
     }
 
+    private void initConfigurationManager(ConfigurationManager.Factory configurationManagerFactory) {
+        configurationManager = configurationManagerFactory.create(mActivity);
+    }
+
     public static void configureNavigationBar(Activity activity) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ThemeManager.isDarkTheme()) {
+        if(ThemeManager.isDarkTheme()) {
             View decorView = activity.getWindow().getDecorView();
             int vis = decorView.getSystemUiVisibility();
             vis &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
@@ -173,6 +184,10 @@ public class K9ActivityCommon {
         passphraseReceiverfilter.setPriority(1);
     }
 
+    private void initOAuthTokenRevokedReceiver() {
+        oAuthTokenRevokedReceiver = new OAuthTokenRevokedReceiver();
+    }
+
     public void registerPassphraseReceiver() {
         Timber.e("pEpEngine-passphrase register receiver");
         mActivity.getApplicationContext()
@@ -182,6 +197,23 @@ public class K9ActivityCommon {
     public void unregisterPassphraseReceiver() {
         mActivity.getApplicationContext().unregisterReceiver(passphraseReceiver);
     }
+
+    public void registerOAuthTokenRevokedReceiver() {
+        oAuthTokenRevokedReceiver.register(mActivity);
+    }
+
+    public void unregisterOAuthTokenRevokedReceiver() {
+        oAuthTokenRevokedReceiver.unregister(mActivity);
+    }
+
+    public void registerConfigurationManager() {
+        configurationManager.registerReceiver();
+    }
+
+    public void unregisterConfigurationManager() {
+        configurationManager.unregisterReceiver();
+    }
+
     public static class PassphraseRequestReceiver extends BroadcastReceiver {
 
         @Override

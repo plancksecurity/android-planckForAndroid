@@ -86,12 +86,19 @@
                     android:text="@string/available_accounts_title"
                     android:textColor="?attr/colorAccent" />
 
-                <com.fsck.k9.pEp.ui.tools.NestedListView
+                <com.fsck.k9.planck.ui.tools.NestedListView
                     android:id="@+id/accounts_list"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/available_accounts_title" />
                 </RelativeLayout>
+
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/terms_and_conditions"
+                style="@style/TermsAndConditionsText"
+                android:visibility="gone"
+                tools:text="Terms and Conditions" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

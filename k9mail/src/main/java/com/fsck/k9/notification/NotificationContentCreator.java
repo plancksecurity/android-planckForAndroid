@@ -17,8 +17,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
 
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.ui.permissions.PlanckPermissionChecker;
 
 
 class NotificationContentCreator {
@@ -102,7 +101,7 @@ class NotificationContentCreator {
 
     private String getMessageSender(Account account, Message message) {
         boolean isSelf = false;
-        final Contacts contacts = new PEpPermissionChecker(context.getApplicationContext()).hasContactsPermission() &&
+        final Contacts contacts = new PlanckPermissionChecker(context.getApplicationContext()).hasContactsPermission() &&
                 K9.showContactName() ? Contacts.getInstance(context) : null;
         final Address[] fromAddresses = message.getFrom();
 

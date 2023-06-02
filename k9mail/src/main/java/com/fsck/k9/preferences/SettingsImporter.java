@@ -16,7 +16,7 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -261,7 +261,7 @@ public class SettingsImporter {
                         throw new SettingsImportExportException("Failed to set default account");
                     }
                     for (Account account : Preferences.getPreferences(context).getAccounts()) {
-                        PEpUtils.pEpGenerateAccountKeys(context, account);
+                        PlanckUtils.pEpGenerateAccountKeys(context, account);
                     }
                 } else {
                     Timber.w("Was asked to import at least one account but none found.");
@@ -417,7 +417,7 @@ public class SettingsImporter {
             String value = "";
             if (setting.getKey().equals("identity")) {
                 if(setting.getValue().contains("K-9")) {
-                    value = setting.getValue().replace("K-9", "p≡p");
+                    value = setting.getValue().replace("K-9", "planck");
                 }
             } else {
                 value = setting.getValue();

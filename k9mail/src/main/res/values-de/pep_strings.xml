@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="pep_reset_trust">Vertrauen aufheben</string>
     <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
-    <string name="pEp_trustwords">p≡p Trustwords</string>
+    <string name="pEp_trustwords">planck Trustwords</string>
     <string name="pep_account_setup_generating_keys">"Datenschutz wird eingerichtet "</string>
     <string name="pep_dialog_weaker_forward_warning_message">Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, besteht das Risiko, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Fortfahren</string>
@@ -26,16 +26,16 @@
     <string name="pep_receivedSecretKey">Es wurde der folgende private Schlüssel empfangen:</string>
     <string name="pep_username">Benutzername</string>
     <string name="pep_userAddress">Benutzeradresse</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Dem Server vertrauen und Nachrichten ungeschützt speichern</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">PlanckProvider - Dem Server vertrauen und Nachrichten ungeschützt speichern</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Nachrichten geschützt speichern</string>
-    <string name="pep_enable_privacy_protection">p≡p-Datenschutz</string>
+    <string name="pep_enable_privacy_protection">PlanckProvider-Datenschutz</string>
     <string name="pep_explanation">Erklärung</string>
     <string name="pep_suggestion">Vorschlag</string>
     <string name="pep_trust_server_description">Nachrichten auf dem Server geschützt speichern.</string>
-    <string name="pep_account_privacy_protection_explanation">p≡p-Datenschutz für dieses Konto aktivieren</string>
+    <string name="pep_account_privacy_protection_explanation">PlanckProvider-Datenschutz für dieses Konto aktivieren</string>
     <string name="key_list_title">Verfügbare Schlüssel</string>
-    <string name="pep_add_device_ask_trustwords">Sie möchten ein neues Gerät zu Ihrer p≡p-Gerätegruppe hinzufügen. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
-    <string name="pep_device_group">p≡p-Gerätegruppe</string>
+    <string name="pep_add_device_ask_trustwords">Sie möchten ein neues Gerät zu Ihrer PlanckProvider-Gerätegruppe hinzufügen. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
+    <string name="pep_device_group">PlanckProvider-Gerätegruppe</string>
     <string name="handshake_reset_dialog_message">Warnung: Dieser Kommunikationspartner wurde vorgängig als nicht vertrauenswürdig eingestuft. Sind Sie sicher, dass trotzdem erneut ein Handshake durchgeführt werden soll\?</string>
     <string name="pep_gpg_compatibility">OpenPGP-Kompatibilität</string>
     <string name="crash_toast_text">Entschuldigung, etwas ist schiefgelaufen</string>
@@ -44,12 +44,12 @@
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
     <string-array name="pep_title">
-        <item>Unbekannt<!--pEpRatingUndefined--></item>
+        <item><!--pEpRatingUndefined--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingCannotDecrypt--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingHaveNoKey--></item>
         <item>Nicht sicher<!--pEpRatingUnencrypted--></item>
-        <item>Teilweise unsicher<!--pEpRatingUnencryptedForSome--></item>
-        <item>Unzuverlässig<!--pEpRatingUnreliable--></item>
+        <item>Nicht sicher<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Sicher<!--pEpRatingReliable--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrusted--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrustedAndAnonymized--></item>
@@ -63,8 +63,8 @@
         <item>Diese Nachricht kann nicht entschlüsselt werden.<!--pEpRatingCannotDecrypt--></item>
         <item>Der Schlüssel zur Entschlüsselung dieser Nachricht wurde nicht gefunden..<!--pEpRatingHaveNoKey--></item>
         <item>Diese Nachricht ist unsicher.<!--pEpRatingUnencrypted--></item>
-        <item>Diese Nachricht kann an einige Kommunikationspartner nicht sicher übertragen werden.<!--pEpRatingUnencryptedForSome--></item>
         <item>Diese Nachricht wurde nicht zuverlässig geschützt.<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Diese Nachricht ist sicher, aber Sie sollten die Identität Ihres Kommunikationspartners prüfen.<!--pEpRatingReliable--></item>
         <item>Diese Nachricht ist sicher und vertrauenswürdig.<!--pEpRatingTrusted--></item>
         <item>Diese Nachricht ist sicher und vertrauenswürdig.<!--pEpRatingTrustedAndAnonymized--></item>
@@ -77,9 +77,9 @@
         <item>Bitte ergänzen Sie die notwendigen Informationen.<!--pEpRatingUndefined--></item>
         <item>Falls diese Nachricht für Sie verschlüsselt wurde, informieren Sie den Absender, dass Sie nicht im Besitz des notwendigen Schlüssels sind.<!--pEpRatingCannotDecrypt--></item>
         <item>Falls diese Nachricht für Sie verschlüsselt wurde, informieren Sie den Absender, dass Sie nicht im Besitz des notwendigen Schlüssels sind.<!--pEpRatingHaveNoKey--></item>
-        <item>Bitten Sie Ihren Kommunikationspartner, eine Verschlüsselungslösung einzusetzen oder p≡p zu installieren.<!--pEpRatingUnencrypted--></item>
-        <item>Bitte stellen Sie sicher, dass der Privacy Status aller Kommunikationspartner mindestens \"Sicher\" ist.<!--pEpRatingUnencryptedForSome--></item>
-        <item>Diese Nachricht besitzt keine zuverlässige Verschlüsselung oder keine digitale Signatur. Bitten Sie Ihren Kommunikationspartner, seine Verschlüsselungslösung zu verbessern oder p≡p zu installieren.<!--pEpRatingUnreliable--></item>
+        <item>Bitten Sie Ihren Kommunikationspartner, eine Verschlüsselungslösung einzusetzen oder PlanckProvider zu installieren.<!--pEpRatingUnencrypted--></item>
+        <item>Diese Nachricht besitzt keine zuverlässige Verschlüsselung oder keine digitale Signatur. Bitten Sie Ihren Kommunikationspartner, seine Verschlüsselungslösung zu verbessern oder PlanckProvider zu installieren.<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Führen Sie einen Handshake mit dem Kommunikationspartner durch. Nach einem erfolgreichen Handshake wird jede folgende Korrespondenz mit diesem Kommunikationspartner als sicher und vertrauenswürdig eingestuft.<!--pEpRatingReliable--></item>
         <item>Keine weiteren Schritte nötig!<!--pEpRatingTrusted--></item>
         <item>Keine weiteren Schritte nötig!<!--pEpRatingTrustedAndAnonymized--></item>
@@ -96,20 +96,18 @@
     <string name="message_list_item_removed">Entfernt</string>
     <string name="message_list_item_undo">Rückgängig</string>
     <string name="available_accounts_title">Verfügbare Konten</string>
-    <string name="pep_app_description">p≡p ist ein tolles kostenloses E-Mail Programm für Android mit pretty Easy privacy.</string>
+    <string name="pep_app_description">PlanckProvider ist ein tolles kostenloses E-Mail Programm für Android mit pretty Easy privacy.</string>
     <string name="global_settings_title">Globale Einstellungen</string>
     <string name="configure_account_action">Konten verwalten</string>
-    <string name="pep_add_device_ask_move_trustwords">Sie möchten neues Gerät in eine andere p≡p-Gerätegruppe verschieben. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
-    <string name="pep_keysync_timeout">Zeitüberschreitung bei p≡p Sync</string>
-    <string name="read_permission_first_explanation">p≡p benötigt die Berechtigung, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
+    <string name="pep_add_device_ask_move_trustwords">Sie möchten neues Gerät in eine andere PlanckProvider-Gerätegruppe verschieben. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
+    <string name="pep_keysync_timeout">Zeitüberschreitung bei PlanckProvider Sync</string>
+    <string name="read_permission_first_explanation">PlanckProvider benötigt die Berechtigung, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
     <string name="button_settings">Einstellungen</string>
-    <string name="read_snackbar_permission_rationale">p≡p benötigt die Berechtigung, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
-    <string name="read_snackbar_permission_permanently_denied">Wenn p≡p nicht auf die Kontakte zuzugreifen darf, können unerwartete Probleme entstehen</string>
+    <string name="read_snackbar_permission_rationale">PlanckProvider benötigt die Berechtigung, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
+    <string name="read_snackbar_permission_permanently_denied">Wenn PlanckProvider nicht auf die Kontakte zuzugreifen darf, können unerwartete Probleme entstehen</string>
     <string name="read_permission_rationale_title">Zugriff auf Kontakte</string>
-    <string name="download_permission_first_explanation">p≡p benötigt die Berechtigung, um Dateien auf Ihr Gerät herunterzuladen</string>
-    <string name="download_snackbar_permission_rationale">p≡p benötigt die Berechtigung, um Anhänge auf Ihr Gerät herunterzuladen.</string>
-    <string name="download_snackbar_permission_permanently_denied">Wenn p≡p keine Dateien herunterladen darf, können unerwartete Probleme entstehen</string>
-    <string name="download_permission_rationale_title">Dateien herunterladen</string>
+    <string name="download_permission_first_explanation">PlanckProvider benötigt die Berechtigung, um Dateien auf Ihr Gerät herunterzuladen</string>
+    <string name="download_snackbar_permission_permanently_denied">Wenn PlanckProvider keine Dateien herunterladen darf, können unerwartete Probleme entstehen</string>
     <string name="add_fpr">Fingerabdruck hinzufügen</string>
     <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
     <string name="is_always_secure">Nachrichten auf Server gesichert speichern</string>
@@ -125,8 +123,8 @@
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep" translatable="false">p≡p</string>
-    <string name="intro_frag_first_text_1">Willkommen zur &lt;font color="%s"&gt;p≡p&lt;/font&gt; Anleitung</string>
+    <string name="pep" translatable="false">PlanckProvider</string>
+    <string name="intro_frag_first_text_1">Willkommen zur &lt;font color=#4caf50&gt;PlanckProvider&lt;/font&gt; Anleitung<font color="#4caf50">PlanckProvider</font> Anleitung</string>
     <string name="search_empty_error">Bitte Suchtext eingeben</string>
     <string name="pep_key_reset_own_id_warning_title">Konto %s zurücksetzen</string>
     <string name="ellipsized_text" translatable="false">%s …</string>
@@ -134,48 +132,41 @@
 \nSind Sie sicher, dass sie einen Reset wünschen\?</string>
     <string name="pep_key_reset_all_own_ids_warning">Dies wird alle Ihre Konten zurücksetzen.
 \nSind Sie sicher, dass sie einen Reset für alle Konten wünschen\?</string>
-    <string name="key_reset_all_own_identitities_feedback">Alle p≡p-Konten wurden zurückgesetzt.</string>
+    <string name="key_reset_all_own_identitities_feedback">Alle PlanckProvider-Konten wurden zurückgesetzt.</string>
     <string name="pep_key_reset_all_own_ids_summary">Alle Konten zurücksetzen</string>
     <string name="mistrust_identity_feedback">%s ist nicht mehr vertrauenswürdig</string>
     <string name="trust_identity_feedback">%s ist jetzt vertrauenswürdig</string>
     <string name="key_reset_own_identity_feedback">Das Konto wurde zurückgesetzt.</string>
-    <string name="key_reset_identity_feedback">Alle p≡p Daten dieses Kommunikationspartners wurden zurückgesetzt.</string>
-    <string name="key_reset_for_identity_context_title">Alle p≡p Daten für diesen Kommunikationspartner zurücksetzen:</string>
+    <string name="key_reset_identity_feedback">Alle PlanckProvider Daten dieses Kommunikationspartners wurden zurückgesetzt.</string>
+    <string name="key_reset_for_identity_context_title">Alle PlanckProvider Daten für diesen Kommunikationspartner zurücksetzen:</string>
     <string name="reset_all">Alles zurücksetzen</string>
     <string name="reset">Zurücksetzen</string>
-    <string name="key_import_success">Schlüssel erfolgreich importiert</string>
-    <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüssel ein.</string>
-    <string name="key_import_failure">Fehler beim Importieren und Verwenden jeglicher Schlüsselcodes</string>
+    <string name="key_import_success">Privater Schlüssel erfolgreich importiert.</string>
+    <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüssels ein.</string>
+    <string name="key_import_failure">Es gab einen Fehler, Es wurde kein Key importiert.</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Falls Sie einen Schlüsselimport für das Konto %s ausgelöst haben, clicken Sie bitte Start.</string>
-    <string name="pgp_key_import_instructions">Um mit dem Schlüsselimport fortzufahren, importieren Sie bitte den angehängten öffentlichen p≡p Schlüssel und antworten Sie mit einer Nachricht, die: 
+    <string name="pgp_key_import_instructions">Um mit dem Schlüsselimport fortzufahren, importieren Sie bitte den angehängten öffentlichen PlanckProvider Schlüssel und antworten Sie mit einer Nachricht, die:
 \n
 \n
 \n 1. Ihren öffentlichen PGP Schlüssel enthält und 
-\n 2. verschlüsselt und signiert ist mit dem p≡p Schlüssel den Sie soeben importiert haben.</string>
-    <string name="key_import_wizard_from_pgp_send_private_key_msg">Verschlüsseln und signieren Sie die Antwortnachricht erneut mit Ihrem öffentlichen p≡p Schlüssel und senden Sie diese.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">Auf Ihrem Gerät mit PGP antworten Sie bitte auf die von p≡p erhaltene Nachricht und fügen Sie diesmal Ihren privaten PGP Schlüssel hinzu.</string>
+\n 2. verschlüsselt und signiert ist mit dem PlanckProvider Schlüssel den Sie soeben importiert haben.</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Verschlüsseln und signieren Sie die Antwortnachricht erneut mit Ihrem öffentlichen PlanckProvider Schlüssel und senden Sie diese.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">Auf Ihrem Gerät mit PGP antworten Sie bitte auf die von PlanckProvider erhaltene Nachricht und fügen Sie diesmal Ihren privaten PGP Schlüssel hinzu.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Bitte vergleichen Sie die PGP Fingerprints der untenstehenden Schlüssel mit denen auf ihrem Gerät mit PGP. Bestätigen Sie eine Übereinstimmung.</string>
-    <string name="key_import_wizard_from_pgp_send_handshake_request">Verschlüsseln und signieren Sie die Antwortnachricht mit dem soeben importierten öffentlichen p≡p-Schlüssel und senden Sie sie.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">Auf Ihrem Gerät mit PGP antworten Sie bitte auf die p≡p Nachricht und fügen Sie Ihren öffentlichen PGP Schlüssel als Anhang hinzu.</string>
-    <string name="key_import_wizard_from_pgp_key_sent">Eine Nachricht mit Ihrem öffentlichen p≡p Schlüssel wurde an Sie selbst gesendet. Bitte öffnen Sie diese und importieren Sie den Schlüssel in Ihr Gerät mit PGP.</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Verschlüsseln und signieren Sie die Antwortnachricht mit dem soeben importierten öffentlichen PlanckProvider-Schlüssel und senden Sie sie.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">Auf Ihrem Gerät mit PGP antworten Sie bitte auf die PlanckProvider Nachricht und fügen Sie Ihren öffentlichen PGP Schlüssel als Anhang hinzu.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">Eine Nachricht mit Ihrem öffentlichen PlanckProvider Schlüssel wurde an Sie selbst gesendet. Bitte öffnen Sie diese und importieren Sie den Schlüssel in Ihr Gerät mit PGP.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Wir starten den Schlüsselimport vom Gerät mit PGP</string>
-    <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dazu importieren wir Ihren p≡p-Schlüssel und verwenden ihn, um Ihren privaten Schlüssel von diesem Gerät zu exportieren.</string>
+    <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dazu importieren wir Ihren PlanckProvider-Schlüssel und verwenden ihn, um Ihren privaten Schlüssel von diesem Gerät zu exportieren.</string>
     <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
     <string name="pgp">PGP</string>
     <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
-    <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
-    <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
-    <string name="pep_sync">p≡p Sync</string>
+    <string name="pep_sync_is_disabled_global">PlanckProvider Sync ist deaktiviert</string>
+    <string name="pep_sync_is_enabled_global">PlanckProvider Sync ist aktiviert</string>
+    <string name="pep_sync">PlanckProvider Sync</string>
     <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen, versuchen Sie es erneut</string>
     <string name="key_import_accept">Akzeptieren</string>
-    <string name="nnf_filename">Dateiname</string>
-    <string name="nnf_permission_external_write_denied">Zugriff auf den Speicher verweigert</string>
-    <string name="nnf_need_valid_filename">Bitte einen gültigen Dateinamen eingeben oder auswählen</string>
-    <string name="nnf_select_something_first">Bitte wählen Sie zuerst etwas aus</string>
-    <string name="nnf_name">Name</string>
-    <string name="nnf_create_folder_error">Fehler beim Erstellen des Ordners</string>
-    <string name="nnf_new_folder">Neuer Ordner</string>
     <string name="permissions_needed_message">Ohne die notwendigen Berechtigungen können unerwartete Probleme entstehen. Mit OK können Sie die Berechtigungen erteilen.</string>
     <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
     <string name="account_already_exists">Dieses Konto existiert bereits</string>
@@ -188,9 +179,11 @@
     <string name="intro_frag_first_text_3">Und in der oberen Leiste, wenn Sie eine E-Mail öffnen oder schreiben:</string>
     <string name="intro_frag_first_text_2">Sie können diese Anleitung jederzeit schließen. 
 \n 
-\n&lt;font color="%s"&gt;p≡p&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
+\n&lt;font color=#4caf50&gt;PlanckProvider&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
 \n 
-\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.</string>
+\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.<font color="#4caf50">PlanckProvider</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
+\n
+\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt</string>
     <string name="message_failed_to_encrypt">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
     <string name="action_tutorial">Anleitung</string>
@@ -199,7 +192,7 @@
     <string name="pep_rating_secure">Sicher</string>
     <string name="pep_rating_secure_trusted">Sicher &amp; Verifiziert</string>
     <string name="intro_frag_fourth_text_3">In diesem Fall ist der Datenschutzstatus der Nachricht \"Sicher\", da es sich dabei um den kleinsten gemeinsamen Nenner der beiden Kommunikationspartner handelt.</string>
-    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
     <string name="intro_frag_third_text_3">OUTDRAW\t\t\tFLEECER\t\t\tPUPPING\t\t\tCOMFORTING\t\t\tTEATIME\t\t\t…</string>
     <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
@@ -223,22 +216,21 @@
     <string name="keysync_wizard_handshake_message">Stellen Sie sicher, dass Sie beide Geräte zusammen haben, damit Sie die Trustwords auf beiden Geräten vergleichen können. Entsprechen die folgenden Trustwords den Trustwords auf dem anderen Gerät\?</string>
     <string name="license">Lizenz</string>
     <string name="keysync_wizard_action_try_again">Versuchen Sie es nochmal</string>
-    <string name="keysync_disable_warning_title">p≡p Sync deaktivieren</string>
-    <string name="keysync_disable_warning_explanation">Wenn Sie p≡p Sync deaktivieren, werden Ihre Geräte nicht mehr synchronisiert. 
-\n<b>Möchten Sie die p≡p-Synchronisierung wirklich deaktivieren\?</b></string>
+    <string name="keysync_disable_warning_title">PlanckProvider Sync deaktivieren</string>
+    <string name="keysync_disable_warning_explanation">Wenn Sie PlanckProvider Sync deaktivieren, werden Ihre Geräte nicht mehr synchronisiert.
+\n<b>Möchten Sie die PlanckProvider-Synchronisierung wirklich deaktivieren\?</b></string>
     <string name="keysync_disable_warning_action_disable">Deaktivieren</string>
     <string name="passhphrase_action_disable_sync">Sync stoppen</string>
     <string name="about_documentation">Dokumentation:</string>
-    <string name="passhphrase_body_sync_passphrase">Für p≡p Sync, geben Sie Ihre Passphrase ein:</string>
+    <string name="passhphrase_body_sync_passphrase">Für PlanckProvider Sync, geben Sie Ihre Passphrase ein:</string>
     <string name="passhphrase_body_wrong_passphrase">Sie haben eine falsche Passphrase eingegeben.
 \nBitte geben Sie die richtige an, um weiterzufahren.</string>
     <string name="passhphrase_body_insert_passphrase">Um weiterzufahren, geben Sie Ihre Passphrase ein</string>
     <string name="passhphrase_input_hint">Passphrase</string>
     <string name="passhphrase_title">Passphrase</string>
-    <string name="about_contact">Kontakt:</string>
-    <string name="pep_sync_folder_is_disabled">p≡p Sync Ordner ist deaktiviert, INBOX wird verwendet</string>
-    <string name="pep_sync_folder_is_enabled">p≡p Sync Ordner ist aktiviert</string>
-    <string name="pep_sync_folder">p≡p Sync Ordner</string>
+    <string name="pep_sync_folder_is_disabled">PlanckProvider Sync Ordner ist deaktiviert, INBOX/Posteingang wird verwendet</string>
+    <string name="pep_sync_folder_is_enabled">PlanckProvider Sync Ordner ist aktiviert</string>
+    <string name="pep_sync_folder">PlanckProvider Sync Ordner</string>
     <string name="pgp_key_import_dialog_empty_edittext">Die Eingabe des Fingerabdrucks ist notwendig</string>
     <string name="pgp_key_import_dialog_summary">Import aus dem Dateisystem</string>
     <string name="pgp_key_import_dialog_accept_button">Wähle und importiere Schlüssel</string>
@@ -251,9 +243,49 @@
     <string name="account_settings_save_encrypted_summary_enabled">Verschlüsselte Nachrichten auf dem Server ebenso sicher speichern.</string>
     <string name="global_settings_blacklist_summary">OpenPGP-Schlüssel eines Kommunikationspartenrs nicht mehr verwenden</string>
     <string name="global_settings_subject_protection_summary">Nachricht schützen, wenn der Kommunikationspartner OpenPGP verwendet</string>
-    <string name="global_settings_passive_mode_summary">Keinen Schlüssel mitsenden, wenn der Kommunikationspartner kein p≡p verwendet</string>
+    <string name="global_settings_passive_mode_summary">Keinen Schlüssel mitsenden, wenn der Kommunikationspartner kein PlanckProvider verwendet</string>
     <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>
     <string name="key_reset_own_identity_feedback_error">Das Konto konnte nicht zurückgesetzt werden.</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
-    <string name="support_email" translatable="false">support@pep.security</string>
+    <string name="message_view_message_no_longer_available">Diese Nachricht ist nicht mehr verfügbar, vermutlich wurde sie mittels eines anderen E-Mail-Programmes gelöscht.</string>
+    <string name="no_results_found">Kein Ergebnis gefunden</string>
+    <string name="pgp_key_import_disabled_summary">Dieses Gerät ist Teil einer Gerätegruppe, Schlüssel kann nicht importiert werden</string>
+    <string name="passhphrase_body_new_keys_passphrase">Wir empfehlen eine Geräteverschlüsselung statt eines Passworts. Auf dem Wege schützen Sie alle Daten, nicht nur die Schlüssel. Falls Sie trotzdem ein Passwort haben wollen, geben Sie dies nun ein und aktivieren Sie dieses.</string>
+    <string name="passhphrase_new_keys_settings_title">Passwort für neue Schlüssel benutzen</string>
+    <string name="pgp_key_import_confirmation_fingerprint_label">Der Fingerprint für den ausgewählten Key ist:</string>
+    <string name="pgp_key_import_confirmation_dialog_question">Sind sich sicher dass Sie diesen Schlüssel importieren und nutzen wollen\?</string>
+    <string name="pgp_key_import_confirmation_confirm">Ja</string>
+    <string name="pgp_key_import_confirmation_reject">Nein</string>
+
+    <string name="calendar_event_time_content_desc">Datum und Zeit des Events</string>
+    <string name="calendar_event_location_content_desc">Ort des Events</string>
+    <string name="calendar_event_invitees_content_desc">Eingeladene Personen</string>
+    <string name="calendar_event_open_calendar_desc">Im Kalender öffnen</string>
+    <string name="no_calendar_app_found_msg">Es wurde keine Kalenderapp gefunden, bitte installiere eine.</string>
+    <string name="calendar_invite_error_title">Fehler: Event-Einladung kann nicht geladen werden</string>
+    <string name="calendar_invite_short_invitees">%s und %d weitere</string>
+    <string name="calendar_invite_show_all_invitees_desc">(alle) eingeladenen Personen anzeigen</string>
+    <string name="organizer_tag">Veranstalter</string>
+    <string name="compose_message_attachments_too_big">Der Anhang ist zu groß. Die maximale Größe ist %1$d MB.</string>
+
+
+    <string name="compose_unsecure_delivery_warning">Sichere Nachrichtenübertragung unmöglich. Bitte erwägen Sie, markierte Empfänger zu entfernen, um eine sichere Emailübertragung zu gewährleisten.</string>
+    <string name="waiting_for_provisioning">Warten auf die Bereitstellung</string>
+    <string name="provisioning_in_progress">Bereitstellung in Bearbeitung</string>
+    <string name="initializing_application">Initialisieren der Anwendung</string>
+    <string name="provisioning_successful_initializing_application">Erfolgreiche Bereitstellung, Initialisierung der Anwendung</string>
+    <string name="initialization_complete">Initialisierung abgeschlossen</string>
+    <string name="provisioning_error_template">Bereitstellung Fehlermeldung error:\n%s\nBitte wenden Sie sich an Ihre IT-Abteilung.</string>
+    <string name="initialization_error_template">Initialisierung Fehlermeldung error:\n%s\nBitte wenden Sie sich an Ihre IT-Abteilung.</string>
+    <string name="account_setup_oauth_description">Um dieses E-Mail-Konto mit PlanckProvider zu verwenden, müssen Sie sich anmelden und der App Zugriff auf Ihre E-Mails gewähren.</string>
+    <!--Displayed below the 'account_setup_oauth_description' text-->
+    <string name="account_setup_oauth_sign_in">Anmelden</string>
+    <!--Displayed below the 'account_setup_oauth_description' text-->
+    <string name="account_setup_oauth_sign_in_with_google">Mit Google anmelden</string>
+
+    <string name="account_setup_failed_dlg_oauth_flow_canceled">Berechtigung aufgehoben</string>
+    <string name="account_setup_failed_dlg_oauth_flow_failed">Die Autorisierung ist aufgrund des folgenden Fehlers fehlgeschlagen: <xliff:g id="error">%s</xliff:g></string>
+    <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 wird von diesem Anbieter derzeit nicht unterstützt.</string>
+    <string name="account_setup_failed_dlg_browser_not_found">PlanckProvider konnte keinen Browser finden, der für den Zugriff auf Ihr Konto verwendet werden kann.</string>
+
 </resources>

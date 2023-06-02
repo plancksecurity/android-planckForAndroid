@@ -1,45 +1,6 @@
 package com.fsck.k9.common
 
-import android.app.Activity
-import android.app.UiAutomation
-import android.content.Context
-import android.content.res.Resources
-import android.os.Build
-import android.view.ViewGroup
-import android.widget.ScrollView
-import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.Until
-import com.fsck.k9.BuildConfig
-import com.fsck.k9.R
-import com.fsck.k9.pEp.ui.activities.SplashActivity
-import com.fsck.k9.pEp.ui.activities.TestUtils
-import com.fsck.k9.pEp.ui.activities.UtilsPackage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.hamcrest.CoreMatchers
-import org.hamcrest.Matchers
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import timber.log.Timber
-
+/*
 open class BaseTest {
 
     lateinit var device: UiDevice
@@ -52,10 +13,6 @@ open class BaseTest {
 
     @get:Rule
     var mActivityRule = ActivityTestRule(SplashActivity::class.java)
-
-    @Test
-    fun emptyTest() {
-    }
 
     @Before
     fun setUp() {
@@ -91,8 +48,8 @@ open class BaseTest {
 
     private fun resetFocus() = runBlocking(Dispatchers.Main) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-            Iterables.getOnlyElement(activities)?.let { activity ->
+            val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+            activities.firstOrNull()?.let { activity ->
                 val content = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
                 val oldDefaultFocusHighlightEnabled = content.defaultFocusHighlightEnabled
                 content.isFocusable = true
@@ -129,13 +86,13 @@ open class BaseTest {
 
     suspend fun waitForIdle() = withContext(Dispatchers.IO) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-        device.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
         waitForIdle()
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-        return@runBlocking Iterables.getOnlyElement(activities)
+        val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+        return@runBlocking activities.firstOrNull()
     }
 
     fun click(resourceId: Int) {
@@ -252,38 +209,32 @@ open class BaseTest {
         waitMessageView()
         click(R.id.openCloseButton)
         waitMessageCompose()
+        runBlocking { waitForIdle() }
+        Espresso.closeSoftKeyboard()
         click(R.id.send)
-        sleep(3000)
+        runBlocking { waitForIdle() }
         Espresso.pressBack()
+        runBlocking { waitForIdle() }
+        sleep(3000)
     }
 
     fun sendNewMessageToSelf() {
-        sendMessage(BuildConfig.PEP_TEST_EMAIL_ADDRESS)
+        sendMessage(BuildConfig.PLANCK_TEST_EMAIL_ADDRESS)
     }
 
     private fun sendMessage(email: String) {
         click(R.id.fab_button_compose_message)
         waitMessageCompose()
         val message = TestUtils.BasicMessage(email, "reset", "", email)
-        fillMessage(message)
-        sleep(2000)
+        testUtils.fillMessage(message, false)
+        TestUtils.waitForIdle()
         click(R.id.send)
-        sleep(3000)
-    }
-
-    private fun fillMessage(message: TestUtils.BasicMessage) {
-        Espresso.closeSoftKeyboard()
-        sleep(500)
-        addTextTo(R.id.to, message.to)
-        sleep(500)
-        addTextTo(R.id.subject, message.subject)
-        sleep(500)
-        addTextTo(R.id.message_content, message.message)
+        TestUtils.waitForIdle()
     }
 
     fun allowPermissions() {
         Timber.e("allowPermissions")
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         try {
             val popUpMessage = By.clazz("android.widget.Button")
             var buttonExists = true
@@ -333,3 +284,4 @@ open class BaseTest {
     }
 
 }
+*/

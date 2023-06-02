@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/fingerprintLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:text="@string/fpr_title"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="Fingerprints" />
+
+    <TextView
+        android:id="@+id/partnerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="Partner:"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/partnerFpr"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:fontFamily="sans-serif"
+        android:gravity="start"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
+
+    <TextView
+        android:id="@+id/myselfLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="Myself:"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/myselfFpr"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:fontFamily="sans-serif"
+        android:gravity="start"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D " />
+
+
+</LinearLayout>

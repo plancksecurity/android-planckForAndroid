@@ -5,13 +5,14 @@ import android.os.Environment;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
 import com.fsck.k9.K9.SplitViewMode;
-import com.fsck.k9.pEp.ui.tools.AppTheme;
-import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.planck.ui.tools.AppTheme;
+import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.R;
 import com.fsck.k9.preferences.Settings.BooleanSetting;
 import com.fsck.k9.preferences.Settings.ColorSetting;
@@ -36,6 +37,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import static com.fsck.k9.K9.LockScreenNotificationVisibility;
+
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 
 
 public class GlobalSettings {
@@ -152,7 +156,7 @@ public class GlobalSettings {
                 new V(1, new LanguageSetting())
         ));
         s.put("measureAccounts", Settings.versions(
-                new V(1, new BooleanSetting(true))
+                new V(1, new BooleanSetting(false))
         ));
         s.put("messageListCheckboxes", Settings.versions(
                 new V(1, new BooleanSetting(false))
@@ -185,7 +189,7 @@ public class GlobalSettings {
                 new V(1, new ColorSetting(K9.DEFAULT_CONTACT_NAME_COLOR))
         ));
         s.put("showContactName", Settings.versions(
-                new V(1, new BooleanSetting(false))
+                new V(1, new BooleanSetting(BuildConfig.IS_ENTERPRISE))
         ));
         s.put("showCorrespondentNames", Settings.versions(
                 new V(1, new BooleanSetting(true))
@@ -275,7 +279,7 @@ public class GlobalSettings {
                 new V(38, new BooleanSetting(true))
         ));
         s.put("messageListSenderAboveSubject", Settings.versions(
-                new V(38, new BooleanSetting(false))
+                new V(38, new BooleanSetting(BuildConfig.IS_ENTERPRISE))
         ));
         s.put("notificationQuickDelete", Settings.versions(
                 new V(38, new EnumSetting<>(NotificationQuickDelete.class, NotificationQuickDelete.NEVER))
@@ -296,7 +300,12 @@ public class GlobalSettings {
                 new V(43, new BooleanSetting(true))
         ));
         s.put("pEpForwardWarningEnabled", Settings.versions(
-                new V(47, new BooleanSetting(false))
+                new V(
+                        47,
+                        new BooleanSetting(
+                                BuildConfig.IS_ENTERPRISE
+                        )
+                )
         ));
         s.put("pEpEnableSync", Settings.versions(
                 new V(49, new BooleanSetting(true))
@@ -307,6 +316,16 @@ public class GlobalSettings {
         ));
         s.put("pEpSyncFolder", Settings.versions(
                 new V(51, new BooleanSetting(true))
+        ));
+        s.put("pEpUseTrustwords", Settings.versions(
+                new V(54, new StringSetting(
+                        ManageableSettingKt.encodeBooleanToString(
+                                new ManageableSetting<>(
+                                        !BuildConfig.IS_ENTERPRISE,
+                                        true
+                                )
+                        )
+                ))
         ));
         SETTINGS = Collections.unmodifiableMap(s);
 

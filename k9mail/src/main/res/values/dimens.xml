@@ -7,6 +7,7 @@
     <dimen name="floating_height">380dp</dimen>
 
     <dimen name="key_import_floating_width">320dp</dimen>
+    <dimen name="wizard_floating_height_handshake_wizard">448dp</dimen>
     <dimen name="key_import_floating_height">330dp</dimen>
 
     <dimen name="key_import_floating_horizontal_margin">8dp</dimen>
@@ -16,5 +17,9 @@
     <dimen name="progressbar_layout_height">120dp</dimen>
     <dimen name="progressbar_padding">16dp</dimen>
     <dimen name="progressbar_size">48dp</dimen>
+
+    <dimen name="remove_recipient_button_padding">4dp</dimen>
+    <!-- FIXME: Find out why this free space is needed in order to work -->
+    <dimen name="first_recipient_token_end_reserved_space">64dp</dimen>
 
 </resources>

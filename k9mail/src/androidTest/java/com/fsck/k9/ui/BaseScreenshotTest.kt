@@ -1,10 +1,6 @@
 package com.fsck.k9.ui
-
+/*
 import android.app.Activity
-import android.app.Instrumentation
-import android.content.Intent
-import android.net.Uri
-import android.os.Environment
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -20,8 +16,6 @@ import androidx.test.espresso.action.ViewActions.swipeRight
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
@@ -33,7 +27,6 @@ import com.fsck.k9.common.ChildViewAction.clickChildViewWithId
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import org.hamcrest.core.IsNot.not
 import org.junit.After
 import timber.log.Timber
 import java.io.File
@@ -57,10 +50,11 @@ open class BaseScreenshotTest : BaseTest() {
 
     private fun getScreenShot(className: String, action: String) {
         sleep(500) // Wait for screen to change
-        val imageDir = File(IMAGE_DIR)
-        if (!imageDir.exists()) imageDir.mkdir()
         val index = testSet + "%2d".format(count++)
-        device.takeScreenshot(File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25)
+        val destinationFolder = File(context.getExternalFilesDir(null), PEP_SCREENSHOTS_DIR)
+        if(!destinationFolder.exists()) destinationFolder.mkdirs()
+        val destinationFile = File(destinationFolder, "${File.separator}$index $className ${action}.png")
+        device.takeScreenshot(destinationFile, 0.5f, 25)
         Timber.e("Screenshot #" + (count - 1))
     }
 
@@ -165,7 +159,7 @@ open class BaseScreenshotTest : BaseTest() {
     }
 
     companion object {
-        private const val IMAGE_DIR = "/sdcard/Screenshots/"
+        const val PEP_SCREENSHOTS_DIR = "PEpScreenshots"
         const val SWIPE_LEFT_ACTION = "SWIPE_LEFT_ACTION"
         const val SWIPE_RIGHT_ACTION = "SWIPE_RIGHT_ACTION"
         private var count = 0
@@ -191,3 +185,4 @@ open class BaseScreenshotTest : BaseTest() {
         }
 }
 
+*/

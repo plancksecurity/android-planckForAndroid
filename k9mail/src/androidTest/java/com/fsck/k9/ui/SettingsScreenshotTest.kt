@@ -1,4 +1,4 @@
-package com.fsck.k9.ui
+/*package com.fsck.k9.ui
 
 import android.os.Build
 import androidx.test.espresso.Espresso
@@ -7,11 +7,13 @@ import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@Ignore("Only to be run via ./gradlew generateScreenshots")
 class SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
@@ -176,6 +178,8 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("account fetching email setting scrolled")
 
         clickSettingDialog(R.string.account_settings_incoming_label, "account incoming server setting")
+        expandSetting(R.string.account_settings_mail_display_count_label)
+
         clickSettingDialog(R.string.account_settings_mail_display_count_label, "account local folder size setting")
         clickSettingDialog(R.string.account_settings_message_age_label, "account sync messages from setting")
         clickSettingDialog(R.string.account_settings_autodownload_message_size_label, "account fetch messages up to setting")
@@ -197,9 +201,12 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("account sending email setting")
 
         clickSettingDialog(R.string.account_settings_composition_label, "account composition defaults setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_identities_label, "account manage identities setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_message_format_label, "account message format setting")
         clickSettingDialog(R.string.account_settings_outgoing_label, "account outgoing server setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_quote_style_label, "account reply quoting style setting")
         clickSettingDialog(R.string.account_settings_quote_prefix_label, "account quoted text preview setting")
         Espresso.pressBack()
@@ -272,4 +279,4 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import key step 2")
     }
 
-}
+}*/

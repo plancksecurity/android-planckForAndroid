@@ -19,7 +19,7 @@ Feature: Test
     And I fill messageSubject field with subject
     And I fill messageBody field with body
     And I click view pEp_indicator
-    And I check color is pep_green at position 0
+    And I check color is planck_green at position 0
     Then I press back
     And I discard message
     Then I remove account

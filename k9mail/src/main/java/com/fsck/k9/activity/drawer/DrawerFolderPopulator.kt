@@ -3,10 +3,9 @@ package com.fsck.k9.activity.drawer
 import com.fsck.k9.Account
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.models.FolderModel
+import com.fsck.k9.planck.models.FolderModel
 import kotlinx.coroutines.*
-import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
-import security.pEp.ui.PEpUIUtils.orderFolderLists
+import security.planck.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject

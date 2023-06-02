@@ -7,18 +7,19 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.AccountUtils
-import com.fsck.k9.pEp.models.FolderModel
+import com.fsck.k9.planck.AccountUtils
+import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
-import security.pEp.foldable.folders.model.LevelListItem
-import security.pEp.foldable.folders.util.Constants
-import security.pEp.foldable.folders.util.LevelListBuilderImpl
+import security.planck.foldable.folders.model.LevelListItem
+import security.planck.foldable.folders.util.Constants
+import security.planck.foldable.folders.util.LevelListBuilderImpl
 import javax.inject.Inject
 import javax.inject.Named
 
 const val DEFAULT_PATH_DEPTH = 4
+const val DEFAULT_SEPARATOR = "."
 
 class DrawerLayoutPresenter @Inject constructor(
         @Named("ActivityContext") private val context: Context,
@@ -93,15 +94,15 @@ class DrawerLayoutPresenter @Inject constructor(
     }
 
     private fun setAccountAdapter() {
-        val accounts: MutableList<Account> = ArrayList(preferences.accounts)
+        val accounts: MutableList<Account> = ArrayList(preferences.availableAccounts)
         accounts.remove(account)
         val collection = ListAdapteeCollection(accounts)
         drawerView.setAccountsAdapter(collection)
     }
 
-    private fun setFoldersAdapter() {
+    fun setFoldersAdapter() {
         val account = account?: return
-        val separator = account.remoteStore?.pathDelimiter ?: return
+        val separator = account.remoteStore?.pathDelimiter ?: DEFAULT_SEPARATOR
         val filter: (LevelListItem<FolderModel>) -> Int = { levelItem ->
             when {
                 levelItem.item.itemName == account.inboxFolderName -> 0
@@ -129,7 +130,7 @@ class DrawerLayoutPresenter @Inject constructor(
         }
         drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
 
-        val accounts: MutableList<Account> = ArrayList(preferences.accounts).apply {
+        val accounts: MutableList<Account> = ArrayList(preferences.availableAccounts).apply {
             remove(account)
         }
         drawerView.setupAccountsListeners(account!!, accounts)

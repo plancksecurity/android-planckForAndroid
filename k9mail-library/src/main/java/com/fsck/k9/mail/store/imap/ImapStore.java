@@ -43,7 +43,6 @@ import timber.log.Timber;
 public class ImapStore extends RemoteStore {
     private Set<Flag> permanentFlagsIndex = EnumSet.noneOf(Flag.class);
     private ConnectivityManager connectivityManager;
-    private OAuth2TokenProvider oauthTokenProvider;
 
     private String host;
     private int port;
@@ -77,7 +76,7 @@ public class ImapStore extends RemoteStore {
 
     public ImapStore(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory,
             ConnectivityManager connectivityManager, OAuth2TokenProvider oauthTokenProvider) throws MessagingException {
-        super(storeConfig, trustedSocketFactory);
+        super(storeConfig, trustedSocketFactory, oauthTokenProvider);
 
         ImapStoreSettings settings;
         try {
@@ -91,7 +90,6 @@ public class ImapStore extends RemoteStore {
 
         connectionSecurity = settings.connectionSecurity;
         this.connectivityManager = connectivityManager;
-        this.oauthTokenProvider = oauthTokenProvider;
 
         authType = settings.authenticationType;
         username = settings.username;

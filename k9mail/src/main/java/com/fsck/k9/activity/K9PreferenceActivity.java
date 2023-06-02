@@ -1,13 +1,11 @@
 package com.fsck.k9.activity;
 
 import android.app.Dialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -24,10 +22,10 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
-import security.pEp.ui.toolbar.PEpToolbarCustomizer;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.PlanckToolbarCustomizer;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
 
 public abstract class K9PreferenceActivity extends PreferenceActivity implements LifecycleOwner {
@@ -53,7 +51,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         if (icicle != null) {
             currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
         }
-        toolBarCustomizer = new PEpToolbarCustomizer(this);
+        toolBarCustomizer = new PlanckToolbarCustomizer(this);
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(State.CREATED);
     }
@@ -134,7 +132,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     public void setStatusBar() {
         toolbar.setTitleTextColor(ThemeManager.getColorFromAttributeResource(this, R.attr.defaultToolbarTextColor));
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
     }
 
     /**
@@ -234,22 +232,12 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         ViewGroup root = (ViewGroup) content.getParent().getParent();
         if (root.findViewById(R.id.toolbar) == null) {
             LinearLayout bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                int height;
-                TypedValue tv = new TypedValue();
-                if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-                    height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-                } else {
-                    height = bar.getHeight();
-                }
-                content.setPadding(0, height, 0, 0);
-            }
             root.addView(bar, 0); // insert at top
             toolbar = (Toolbar) bar.getChildAt(0);
             toolbar.setTitle(preferenceScreen.getTitle());
             setStatusBar();
             getDelegate().setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(Build.VERSION.SDK_INT > Build.VERSION_CODES.M);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             toolbar.setNavigationOnClickListener(v -> {
                 dialog.dismiss();
                 dialog = null;

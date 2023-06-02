@@ -1,17 +1,23 @@
 package com.fsck.k9.preferences;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import android.app.Application;
 import android.content.res.Resources;
+
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
+import com.fsck.k9.RobolectricTest;
+import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
+
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
@@ -20,10 +26,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.Assert.*;
 
-@RunWith(AndroidJUnit4.class)
-public class SettingsExporterTest {
+public class SettingsExporterTest extends RobolectricTest {
 
     @Test
     public void exportPreferences_producesXML() throws Exception {

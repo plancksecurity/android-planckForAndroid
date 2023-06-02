@@ -42,6 +42,7 @@ import com.fsck.k9.mail.filter.PeekableInputStream;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.oauth.XOAuth2ChallengeParser;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
+import com.fsck.k9.mail.store.imap.sasl.OAuthBearer;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 
@@ -80,7 +81,7 @@ class ImapConnection {
     private ImapSettings settings;
     private Exception stacktraceForClose;
     private boolean open = false;
-    private boolean retryXoauth2WithNewToken = true;
+    private boolean retryOAuthWithNewToken = true;
 
 
     public ImapConnection(ImapSettings settings, TrustedSocketFactory socketFactory,
@@ -345,10 +346,14 @@ class ImapConnection {
             case XOAUTH2:
                 if (oauthTokenProvider == null) {
                     throw new MessagingException("No OAuthToken Provider available.");
-                } else if (hasCapability(Capabilities.AUTH_XOAUTH2) && hasCapability(Capabilities.SASL_IR)) {
-                    return authXoauth2withSASLIR();
+                } else if (!hasCapability(Capabilities.SASL_IR)) {
+                    throw new MessagingException("SASL-IR capability is missing.");
+                } else if (hasCapability(Capabilities.AUTH_OAUTHBEARER)) {
+                    return authWithOAuthToken(OAuthMethod.OAUTHBEARER);
+                } else if (hasCapability(Capabilities.AUTH_XOAUTH2)) {
+                    return authWithOAuthToken(OAuthMethod.XOAUTH2);
                 } else {
-                    throw new MessagingException("Server doesn't support SASL XOAUTH2.");
+                    throw new MessagingException("Server doesn't support SASL OAUTHBEARER or XOAUTH2.");
                 }
             case CRAM_MD5: {
                 if (hasCapability(Capabilities.AUTH_CRAM_MD5)) {
@@ -357,7 +362,6 @@ class ImapConnection {
                     throw new MessagingException("Server doesn't support encrypted passwords using CRAM-MD5.");
                 }
             }
-            case EXTERNAL_PLAIN:
             case PLAIN: {
                 if (hasCapability(Capabilities.AUTH_PLAIN)) {
                     return saslAuthPlainWithLoginFallback();
@@ -382,62 +386,63 @@ class ImapConnection {
         }
     }
 
-    private List<ImapResponse> authXoauth2withSASLIR() throws IOException, MessagingException {
-        retryXoauth2WithNewToken = true;
+    private List<ImapResponse> authWithOAuthToken(OAuthMethod method) throws IOException, MessagingException {
+        retryOAuthWithNewToken = true;
         try {
-            return attemptXOAuth2();
+            return attemptOAuth(method);
         } catch (NegativeImapResponseException e) {
             //TODO: Check response code so we don't needlessly invalidate the token.
-            oauthTokenProvider.invalidateToken(settings.getUsername());
+            oauthTokenProvider.invalidateToken();
 
-            if (!retryXoauth2WithNewToken) {
-                throw handlePermanentXoauth2Failure(e);
+            if (!retryOAuthWithNewToken) {
+                throw handlePermanentOAuthFailure(e);
             } else {
-                return handleTemporaryXoauth2Failure(e);
+                return handleTemporaryOAuthFailure(method, e);
             }
         }
     }
 
-    private AuthenticationFailedException handlePermanentXoauth2Failure(NegativeImapResponseException e) {
+    private AuthenticationFailedException handlePermanentOAuthFailure(NegativeImapResponseException e) {
         Timber.v(e, "Permanent failure during XOAUTH2");
         return new AuthenticationFailedException(e.getMessage(), e);
     }
 
-    private List<ImapResponse> handleTemporaryXoauth2Failure(NegativeImapResponseException e) throws IOException, MessagingException {
-        //We got a response indicating a retry might suceed after token refresh
+    private List<ImapResponse> handleTemporaryOAuthFailure(OAuthMethod method, NegativeImapResponseException e)
+            throws IOException, MessagingException {
+        //We got a response indicating a retry might succeed after token refresh
         //We could avoid this if we had a reasonable chance of knowing
         //if a token was invalid before use (e.g. due to expiry). But we don't
         //This is the intended behaviour per AccountManager
 
         Timber.v(e, "Temporary failure - retrying with new token");
         try {
-            return attemptXOAuth2();
+            return attemptOAuth(method);
         } catch (NegativeImapResponseException e2) {
             //Okay, we failed on a new token.
             //Invalidate the token anyway but assume it's permanent.
             Timber.v(e, "Authentication exception for new token, permanent error assumed");
-            oauthTokenProvider.invalidateToken(settings.getUsername());
-            throw handlePermanentXoauth2Failure(e2);
+            oauthTokenProvider.invalidateToken();
+            throw handlePermanentOAuthFailure(e2);
         }
     }
 
-    private List<ImapResponse> attemptXOAuth2() throws MessagingException, IOException {
-        String token = oauthTokenProvider.getToken(settings.getUsername(), OAuth2TokenProvider.OAUTH2_TIMEOUT);
-        String authString = Authentication.computeXoauth(settings.getUsername(), token);
-        String tag = sendSaslIrCommand(Commands.AUTHENTICATE_XOAUTH2, authString, true);
+    private List<ImapResponse> attemptOAuth(OAuthMethod method) throws MessagingException, IOException {
+        String token = oauthTokenProvider.getToken(OAuth2TokenProvider.OAUTH2_TIMEOUT);
+        String authString = method.buildInitialClientResponse(settings.getUsername(), token);
+        String tag = sendSaslIrCommand(method.getCommand(), authString, true);
 
-        return responseParser.readStatusResponse(tag, Commands.AUTHENTICATE_XOAUTH2, getLogId(),
+        return responseParser.readStatusResponse(tag, method.getCommand(), getLogId(),
                 new UntaggedHandler() {
                     @Override
                     public void handleAsyncUntaggedResponse(ImapResponse response) throws IOException {
-                        handleXOAuthUntaggedResponse(response);
+                        handleOAuthUntaggedResponse(response);
                     }
                 });
     }
 
-    private void handleXOAuthUntaggedResponse(ImapResponse response) throws IOException {
+    private void handleOAuthUntaggedResponse(ImapResponse response) throws IOException {
         if (response.isString(0)) {
-            retryXoauth2WithNewToken = XOAuth2ChallengeParser.shouldRetry(response.getString(0), settings.getHost());
+            retryOAuthWithNewToken = XOAuth2ChallengeParser.shouldRetry(response.getString(0), settings.getHost());
         }
 
         if (response.isContinuationRequested()) {
@@ -852,5 +857,33 @@ class ImapConnection {
         } while (!response.isContinuationRequested());
 
         return response;
+    }
+
+    private enum OAuthMethod {
+        XOAUTH2 {
+            @Override
+            String getCommand() {
+                return Commands.AUTHENTICATE_XOAUTH2;
+            }
+
+            @Override
+            String buildInitialClientResponse(String username, String token) {
+                return Authentication.computeXoauth(username, token);
+            }
+        },
+        OAUTHBEARER {
+            @Override
+            String getCommand() {
+                return Commands.AUTHENTICATE_OAUTHBEARER;
+            }
+
+            @Override
+            String buildInitialClientResponse(String username, String token) {
+                return OAuthBearer.buildOAuthBearerInitialClientResponse(username, token);
+            }
+        };
+
+        abstract String getCommand();
+        abstract String buildInitialClientResponse(String username, String token);
     }
 }

@@ -19,21 +19,23 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
+import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
+import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
-import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.pEp.PEpImporterActivity
-import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
-import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.NestedListView
+import com.fsck.k9.planck.PlanckImporterActivity
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.ui.listeners.IndexedFolderClickListener
+import com.fsck.k9.planck.ui.listeners.indexedFolderClickListener
+import com.fsck.k9.planck.ui.tools.FeedbackTools
+import com.fsck.k9.planck.ui.tools.NestedListView
 import com.fsck.k9.preferences.SettingsExporter
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
@@ -50,20 +52,21 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
-import security.pEp.permissions.PermissionChecker
-import security.pEp.permissions.PermissionRequester
-import security.pEp.ui.about.AboutActivity
-import security.pEp.ui.intro.startWelcomeMessage
-import security.pEp.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
-import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
-import security.pEp.ui.resources.ResourcesProvider
+import security.planck.permissions.PermissionChecker
+import security.planck.permissions.PermissionRequester
+import security.planck.ui.about.AboutActivity
+import security.planck.ui.intro.startOnBoarding
+import security.planck.ui.intro.startWelcomeMessage
+import security.planck.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
+import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import security.planck.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
-class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
     private var controller: MessagingController? = null
 
@@ -99,6 +102,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
+    private lateinit var termsAndConditionsTextView: TextView
     private var addAccountButton: View? = null
 
     @Inject
@@ -203,6 +207,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         bindViews(R.layout.accounts)
         accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
+        termsAndConditionsTextView = findViewById<TextView>(R.id.terms_and_conditions)
+
+        termsAndConditionsTextView.text = HtmlCompat.fromHtml(
+            "<a href=\"#\">Terms and Conditions</a>",
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+
+        termsAndConditionsTextView.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
+        }
+
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts()
         }
@@ -213,11 +228,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
-        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        scope.launch {
-            val app = application as K9
-            app.pEpInitSyncEnvironment()
-        }
+        initializeSyncEnvironmentOnStartup()
 
         val intent = intent
         //onNewIntent(intent);
@@ -226,8 +237,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         if (ACTION_IMPORT_SETTINGS == intent.action) {
             onSettingsImport()
         } else if (accounts.size < 1) {
-
-            startWelcomeMessage()
+            startOnBoarding()
             finish()
             return
         }
@@ -258,7 +268,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             }
         }
 
-        registerForContextMenu(accountsList)
+        if (!BuildConfig.IS_ENTERPRISE) {
+            registerForContextMenu(accountsList)
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             val accountUuid = savedInstanceState.getString("selectedContextAccount")
@@ -275,6 +287,29 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
+        setupAvailableAccounts()
+    }
+
+    private fun setupAvailableAccounts() {
+        if (BuildConfig.IS_ENTERPRISE) {
+            accountsList?.visibility = View.GONE
+            findViewById<View>(R.id.available_accounts_title)?.visibility = View.GONE
+        }
+    }
+
+    private fun startOnBoarding() {
+        if (BuildConfig.IS_ENTERPRISE) {
+            startOnBoarding(this)
+        } else {
+            startWelcomeMessage()
+        }
+    }
+    private fun initializeSyncEnvironmentOnStartup() {
+        if(!k9.ispEpSyncEnvironmentInitialized()) {
+            CoroutineScope(PlanckDispatcher).launch {
+                k9.pEpInitSyncEnvironment()
+            }
+        }
     }
 
     override fun search(query: String) {
@@ -282,12 +317,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
-        addAccountButton!!.setOnClickListener { onAddNewAccount() }
+
+        if (BuildConfig.IS_ENTERPRISE) {
+            addAccountButton?.visibility = View.GONE
+        } else {
+            addAccountButton?.setOnClickListener { onAddNewAccount() }
+        }
     }
 
     private fun initializeActionBar() {
@@ -396,11 +436,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         adapter = AccountListAdapter(accounts,
                 indexedFolderClickListener { position ->
-                    val account = accountsList!!.getItemAtPosition(position) as BaseAccount
+                    val account = accountsList?.getItemAtPosition(position) as BaseAccount
                     onEditAccount(account as Account)
                 }
         )
-        accountsList!!.adapter = adapter
+        accountsList?.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
 
@@ -467,7 +507,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun openSearchAccount(searchAccount: SearchAccount?) {
-        MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+        MessageList.actionDisplaySearch(this, searchAccount?.relatedSearch, false, false)
     }
 
     private fun accountWasOpenable(realAccount: Account): Boolean {
@@ -530,7 +570,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 } else ConfirmationDialog.create(
                         this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description),
+                        selectedContextAccount?.description),
                         R.string.okay_action,
                         R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
@@ -605,21 +645,23 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         uiScope.launch {
 
             if (selectedContextAccount is Account) {
-                val realAccount = selectedContextAccount as Account?
-                try {
-                    realAccount!!.localStore.delete()
-                } catch (e: Exception) {
-                    // Ignore, this may lead to localStores on sd-cards that
-                    // are currently not inserted to be left
+                withContext(PlanckDispatcher) {
+                    val realAccount = selectedContextAccount as Account?
+                    try {
+                        realAccount!!.localStore.delete()
+                    } catch (e: Exception) {
+                        // Ignore, this may lead to localStores on sd-cards that
+                        // are currently not inserted to be left
+                    }
+
+                    MessagingController.getInstance(application)
+                        .deleteAccount(realAccount)
+                    Preferences.getPreferences(this@SettingsActivity)
+                        .deleteAccount(realAccount)
+                    K9.setServicesEnabled(this@SettingsActivity)
+
+                    anyAccountWasDeleted = true
                 }
-
-                MessagingController.getInstance(application)
-                        .deleteAccount(realAccount)
-                Preferences.getPreferences(this@SettingsActivity)
-                        .deleteAccount(realAccount)
-                K9.setServicesEnabled(this@SettingsActivity)
-
-                anyAccountWasDeleted = true
 
                 refresh()
 
@@ -835,31 +877,22 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 }
         )
 
-        if (permissionChecker.hasWriteExternalPermission()) {
-            // TODO, prompt to allow a user to choose which accounts to export
-            var accountUuids: ArrayList<String>? = null
-            if (account != null) {
-                accountUuids = ArrayList()
-                accountUuids.add(account.uuid)
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                exportGlobalSettings = includeGlobals
-                exportAccountUuids = accountUuids
-
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-
-                intent.type = "application/octet-stream"
-                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.generateDatedExportFileName())
-
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                startActivityForResult(intent, ACTIVITY_REQUEST_SAVE_SETTINGS_FILE)
-
-            } else {
-                //Pre-Kitkat
-                startExport(includeGlobals, accountUuids, null)
-            }
+        var accountUuids: ArrayList<String>? = null
+        if (account != null) {
+            accountUuids = ArrayList()
+            accountUuids.add(account.uuid)
         }
+
+        exportGlobalSettings = includeGlobals
+        exportAccountUuids = accountUuids
+
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+
+        intent.type = "application/octet-stream"
+        intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.generateDatedExportFileName())
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        startActivityForResult(intent, ACTIVITY_REQUEST_SAVE_SETTINGS_FILE)
     }
 
     fun onExport(intent: Intent) {
@@ -960,8 +993,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (account is SearchAccount) {
-                holder.folders!!.visibility = View.GONE
+            if (BuildConfig.IS_ENTERPRISE || account is SearchAccount) {
+                holder.folders?.visibility = View.GONE
             } else {
                 holder.folders?.let {
                     it.visibility = View.VISIBLE
@@ -1041,7 +1074,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         private const val DIALOG_NO_FILE_MANAGER = 4
 
 
-        private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1
+        private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0
         private const val ACTIVITY_REQUEST_SAVE_SETTINGS_FILE = 2
 
         private const val ACCOUNT_STATS = "accountStats"
@@ -1139,23 +1172,19 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun createComposeDynamicShortcut() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val composeIntent = MessageActions.getDefaultComposeShortcutIntent(this)
-            val composeShortcut = ShortcutInfo.Builder(this, MessageCompose.SHORTCUT_COMPOSE)
-                .setShortLabel(resources.getString(R.string.compose_action))
-                .setLongLabel(resources.getString(R.string.compose_action))
-                .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
-                .setIntent(composeIntent)
-                .build()
-            val shortcutManager = getSystemService(ShortcutManager::class.java)
-            shortcutManager.dynamicShortcuts = listOf(composeShortcut)
-        }
+        val composeIntent = MessageActions.getDefaultComposeShortcutIntent(this)
+        val composeShortcut = ShortcutInfo.Builder(this, MessageCompose.SHORTCUT_COMPOSE)
+            .setShortLabel(resources.getString(R.string.compose_action))
+            .setLongLabel(resources.getString(R.string.compose_action))
+            .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
+            .setIntent(composeIntent)
+            .build()
+        val shortcutManager = getSystemService(ShortcutManager::class.java)
+        shortcutManager.dynamicShortcuts = listOf(composeShortcut)
     }
 
     private fun removeComposeDynamicShortcut() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val shortcutManager = getSystemService(ShortcutManager::class.java)
-            shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
-        }
+        val shortcutManager = getSystemService(ShortcutManager::class.java)
+        shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
     }
 }

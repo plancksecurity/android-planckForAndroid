@@ -48,6 +48,8 @@ import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.oauth.XOAuth2ChallengeParser;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.StoreConfig;
+import com.fsck.k9.mail.store.imap.sasl.OAuthBearer;
+
 import javax.net.ssl.SSLException;
 import org.apache.commons.io.IOUtils;
 import timber.log.Timber;
@@ -223,7 +225,7 @@ public class SmtpTransport extends Transport {
     private boolean m8bitEncodingAllowed;
     private boolean mEnhancedStatusCodesProvided;
     private int mLargestAcceptableMessage;
-    private boolean retryXoauthWithNewToken;
+    private boolean retryOAuthWithNewToken;
 
     public SmtpTransport(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory,
             OAuth2TokenProvider oauth2TokenProvider) throws MessagingException {
@@ -252,7 +254,6 @@ public class SmtpTransport extends Transport {
     public void open() throws MessagingException {
         try {
             Timber.e("Open");
-            boolean secureConnection = false;
             InetAddress[] addresses = InetAddress.getAllByName(mHost);
             for (int i = 0; i < addresses.length; i++) {
                 Timber.e("Open: " + addresses[i] + " " + addresses.length);
@@ -262,7 +263,6 @@ public class SmtpTransport extends Transport {
                     if (mConnectionSecurity == ConnectionSecurity.SSL_TLS_REQUIRED) {
                         mSocket = mTrustedSocketFactory.createSocket(null, mHost, mPort, mClientCertificateAlias);
                         mSocket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
-                        secureConnection = true;
                     } else {
                         mSocket = new Socket();
                         TrafficStats.setThreadStatsTag(((int) Thread.currentThread().getId()));
@@ -329,7 +329,6 @@ public class SmtpTransport extends Transport {
                      * Exim.
                      */
                     extensions = sendHello(localHost);
-                    secureConnection = true;
                 } else {
                     /*
                      * This exception triggers a "Certificate error"
@@ -348,6 +347,7 @@ public class SmtpTransport extends Transport {
             boolean authCramMD5Supported = false;
             boolean authExternalSupported = false;
             boolean authXoauth2Supported = false;
+            boolean authOAuthBearerSupported = false;
             if (extensions.containsKey("AUTH")) {
                 List<String> saslMech = Arrays.asList(extensions.get("AUTH").split(" "));
                 authLoginSupported = saslMech.contains("LOGIN");
@@ -355,6 +355,7 @@ public class SmtpTransport extends Transport {
                 authCramMD5Supported = saslMech.contains("CRAM-MD5");
                 authExternalSupported = saslMech.contains("EXTERNAL");
                 authXoauth2Supported = saslMech.contains("XOAUTH2");
+                authOAuthBearerSupported = saslMech.contains("OAUTHBEARER");
             }
             parseOptionalSizeValue(extensions);
 
@@ -364,13 +365,6 @@ public class SmtpTransport extends Transport {
                     AuthType.XOAUTH2 == mAuthType)) {
 
                 switch (mAuthType) {
-
-                /*
-                 * LOGIN is an obsolete option which is unavailable to users,
-                 * but it still may exist in a user's settings from a previous
-                 * version, or it may have been imported.
-                 */
-                    case LOGIN:
                     case EXTERNAL_PLAIN:
                     case PLAIN:
                         // try saslAuthPlain first, because it supports UTF-8 explicitly
@@ -386,16 +380,20 @@ public class SmtpTransport extends Transport {
 
                     case CRAM_MD5:
                         if (authCramMD5Supported) {
-                            saslAuthCramMD5(mUsername, mPassword);
+                            saslAuthCramMD5();
                         } else {
                             throw new MessagingException("Authentication method CRAM-MD5 is unavailable.");
                         }
                         break;
                     case XOAUTH2:
-                        if (authXoauth2Supported && oauthTokenProvider != null) {
-                            saslXoauth2(mUsername);
+                        if (oauthTokenProvider == null) {
+                            throw new MessagingException("No OAuth2TokenProvider available.");
+                        } else if (authOAuthBearerSupported) {
+                            saslOAuth(OAuthMethod.OAUTHBEARER);
+                        } else if (authXoauth2Supported) {
+                            saslOAuth(OAuthMethod.XOAUTH2);
                         } else {
-                            throw new MessagingException("Authentication method XOAUTH2 is unavailable.");
+                            throw new MessagingException("Server doesn't support SASL OAUTHBEARER or XOAUTH2.");
                         }
                         break;
                     case EXTERNAL:
@@ -413,39 +411,6 @@ public class SmtpTransport extends Transport {
                          * user can be notified of a problem during account setup.
                          */
                             throw new CertificateValidationException(MissingCapability);
-                        }
-                        break;
-
-                /*
-                 * AUTOMATIC is an obsolete option which is unavailable to users,
-                 * but it still may exist in a user's settings from a previous
-                 * version, or it may have been imported.
-                 */
-                    case AUTOMATIC:
-                        if (secureConnection) {
-                            // try saslAuthPlain first, because it supports UTF-8 explicitly
-                            if (authPlainSupported) {
-                                saslAuthPlain(mUsername, mPassword);
-                            } else if (authLoginSupported) {
-                                saslAuthLogin(mUsername, mPassword);
-                            } else if (authCramMD5Supported) {
-                                saslAuthCramMD5(mUsername, mPassword);
-                            } else {
-                                throw new MessagingException("No supported authentication methods available.");
-                            }
-                        } else {
-                            if (authCramMD5Supported) {
-                                saslAuthCramMD5(mUsername, mPassword);
-                            } else {
-                            /*
-                             * We refuse to insecurely transmit the password
-                             * using the obsolete AUTOMATIC setting because of
-                             * the potential for a MITM attack. Affected users
-                             * must choose a different setting.
-                             */
-                                throw new MessagingException(
-                                        "Update your outgoing server authentication setting. AUTOMATIC auth. is unavailable.");
-                            }
                         }
                         break;
 
@@ -821,7 +786,7 @@ public class SmtpTransport extends Transport {
         }
     }
 
-    private void saslAuthCramMD5(String username, String password) throws MessagingException,
+    private void saslAuthCramMD5() throws MessagingException,
         AuthenticationFailedException, IOException {
 
         List<String> respList = executeCommand("AUTH CRAM-MD5").results;
@@ -844,21 +809,21 @@ public class SmtpTransport extends Transport {
         }
     }
 
-    private void saslXoauth2(String username) throws MessagingException, IOException {
-        retryXoauthWithNewToken = true;
+    private void saslOAuth(OAuthMethod method) throws MessagingException, IOException {
+        retryOAuthWithNewToken = true;
         try {
-            attemptXoauth2(username);
+            attemptOAuth(method, mUsername);
         } catch (NegativeSmtpReplyException negativeResponse) {
             if (negativeResponse.getReplyCode() != SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
                 throw negativeResponse;
             }
 
-            oauthTokenProvider.invalidateToken(username);
+            oauthTokenProvider.invalidateToken();
 
-            if (!retryXoauthWithNewToken) {
+            if (!retryOAuthWithNewToken) {
                 handlePermanentFailure(negativeResponse);
             } else {
-                handleTemporaryFailure(username, negativeResponse);
+                handleTemporaryFailure(method, mUsername, negativeResponse);
             }
         }
     }
@@ -867,7 +832,11 @@ public class SmtpTransport extends Transport {
         throw new AuthenticationFailedException(negativeResponse.getMessage(), negativeResponse);
     }
 
-    private void handleTemporaryFailure(String username, NegativeSmtpReplyException negativeResponseFromOldToken)
+    private void handleTemporaryFailure(
+            OAuthMethod method,
+            String username,
+            NegativeSmtpReplyException negativeResponseFromOldToken
+    )
         throws IOException, MessagingException {
         // Token was invalid
 
@@ -877,7 +846,7 @@ public class SmtpTransport extends Transport {
 
         Timber.v(negativeResponseFromOldToken, "Authentication exception, re-trying with new token");
         try {
-            attemptXoauth2(username);
+            attemptOAuth(method, username);
         } catch (NegativeSmtpReplyException negativeResponseFromNewToken) {
             if (negativeResponseFromNewToken.getReplyCode() != SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
                 throw negativeResponseFromNewToken;
@@ -887,20 +856,20 @@ public class SmtpTransport extends Transport {
             //Invalidate the token anyway but assume it's permanent.
             Timber.v(negativeResponseFromNewToken, "Authentication exception for new token, permanent error assumed");
 
-            oauthTokenProvider.invalidateToken(username);
+            oauthTokenProvider.invalidateToken();
 
             handlePermanentFailure(negativeResponseFromNewToken);
         }
     }
 
-    private void attemptXoauth2(String username) throws MessagingException, IOException {
-        String token = oauthTokenProvider.getToken(username, OAuth2TokenProvider.OAUTH2_TIMEOUT);
-        String authString = Authentication.computeXoauth(username, token);
-        CommandResponse response = executeSensitiveCommand("AUTH XOAUTH2 %s", authString);
+    private void attemptOAuth(OAuthMethod method, String username) throws MessagingException, IOException {
+        String token = oauthTokenProvider.getToken((long) OAuth2TokenProvider.OAUTH2_TIMEOUT);
+        String authString = method.buildInitialClientResponse(username, token);
+        CommandResponse response = executeSensitiveCommand("%s %s", method.getCommand(), authString);
 
         if (response.replyCode == SMTP_CONTINUE_REQUEST) {
-            String replyText = TextUtils.join("", response.results);
-            retryXoauthWithNewToken = XOAuth2ChallengeParser.shouldRetry(replyText, mHost);
+            String replyText = TextUtils.join(" ", response.results);
+            retryOAuthWithNewToken = XOAuth2ChallengeParser.shouldRetry(replyText, mHost);
 
             //Per Google spec, respond to challenge with empty response
             executeCommand("");
@@ -914,5 +883,33 @@ public class SmtpTransport extends Transport {
     @VisibleForTesting
     protected String getCanonicalHostName(InetAddress localAddress) {
         return localAddress.getCanonicalHostName();
+    }
+
+    private enum OAuthMethod {
+        XOAUTH2 {
+            @Override
+            String getCommand() {
+                return "AUTH XOAUTH2";
+            }
+
+            @Override
+            String buildInitialClientResponse(String username, String token) {
+                return Authentication.computeXoauth(username, token);
+            }
+        },
+        OAUTHBEARER {
+            @Override
+            String getCommand() {
+                return "AUTH OAUTHBEARER";
+            }
+
+            @Override
+            String buildInitialClientResponse(String username, String token) {
+                return OAuthBearer.buildOAuthBearerInitialClientResponse(username, token);
+            }
+        };
+
+        abstract String getCommand();
+        abstract String buildInitialClientResponse(String username, String token);
     }
 }

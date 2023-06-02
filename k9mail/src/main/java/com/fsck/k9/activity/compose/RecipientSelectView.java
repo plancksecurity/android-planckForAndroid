@@ -3,26 +3,31 @@ package com.fsck.k9.activity.compose;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 import android.text.Editable;
+import android.text.Layout;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -30,25 +35,26 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
+import com.tokenautocomplete.CountSpan;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
-import foundation.pEp.jniadapter.Rating;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
-        AlternateRecipientListener {
+        AlternateRecipientListener, RecipientSelectViewContract {
 
     private static final int MINIMUM_LENGTH_FOR_FILTERING = 1;
 
@@ -67,38 +73,47 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private ListPopupWindow alternatesPopup;
     private Recipient alternatesPopupRecipient;
     private TokenListener<Recipient> listener;
-    private PEpProvider pEp;
     private Context context;
     private Account account;
-    private PePUIArtefactCache uiCache;
+    private PlanckUIArtefactCache uiCache;
+    private boolean alwaysUnsecure;
+
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
+    @Inject UnsecureAddressHelper unsecureAddressHelper;
 
     public RecipientSelectView(Context context) {
         super(context);
-        initView(context);
+        initView(context, null, 0);
     }
 
     public RecipientSelectView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initView(context);
+        initView(context, attrs, 0);
     }
 
     public RecipientSelectView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initView(context);
+        initView(context, attrs, defStyle);
     }
 
-    private void initView(Context context) {
+    private void initView(Context context, AttributeSet attrs, int defStyle) {
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(
+                    attrs, R.styleable.RecipientSelectView, defStyle, 0);
+            alwaysUnsecure = a.getBoolean(
+                    R.styleable.RecipientSelectView_alwaysUnsecure, false);
+            a.recycle();
+        }
         // TODO: validator?
         this.context = context;
         getApplicationComponent(context).inject(this);
 
-        uiCache = PePUIArtefactCache.getInstance(context);
-        account = uiCache.getComposingAccount();
+        uiCache = PlanckUIArtefactCache.getInstance(context);
+
         alternatesPopup = new ListPopupWindow(context);
-        alternatesAdapter.setUp(this, account);
+        alternatesAdapter.setUp(this);
         alternatesPopup.setAdapter(alternatesAdapter);
 
         // don't allow duplicates, based on equality of recipient objects, which is e-mail addresses
@@ -110,14 +125,56 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         adapter = new RecipientAdapter(context, contactPictureLoader);
         setAdapter(adapter);
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
         setLongClickable(false);
+        unsecureAddressHelper.initialize(this);
+
+        setOnEditorActionListener((v, actionId, event) -> {
+            if ((actionId == EditorInfo.IME_ACTION_NEXT)) {
+                if (hasUncompletedText()) {
+                    performCompletion();
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        setSplitChar(new char[]{',', ';', ' '});
+
+        setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
+            @Override
+            public void onTokenAdded(Recipient token) {
+                if (listener != null) {
+                    listener.onTokenAdded(token);
+                }
+            }
+
+            @Override
+            public void onTokenRemoved(Recipient token) {
+                if (listener != null) {
+                    unsecureAddressHelper.removeUnsecureAddressChannel(token.getAddress());
+                    listener.handleUnsecureTokenWarning();
+                    listener.onTokenRemoved(token);
+                }
+            }
+        });
+    }
+
+    public void restoreFirstRecipientTruncation() {
+        post(() -> {
+            if (!hasFocus()) {
+                resetFocus();
+            }
+        });
+    }
+
+    private void resetFocus() {
+        requestFocus();
+        clearFocus();
     }
 
     @Override
     protected View getViewForObject(Recipient recipient) {
-        uiCache = PePUIArtefactCache.getInstance(getContext());
         account = uiCache.getComposingAccount();
 
         View view = inflateLayout();
@@ -142,21 +199,33 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.bind(recipient);
 
-        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+        unsecureAddressHelper.getRecipientRating(
+                recipient,
+                account.isPlanckPrivacyProtected(),
+                new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                if (listener != null) {
+                    listener.handleUnsecureTokenWarning();
+                }
+                setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
             }
 
             @Override
             public void onError(Throwable throwable) {
+                if (listener != null) {
+                    listener.handleUnsecureTokenWarning();
+                }
+                setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
             }
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility") //Comes from library
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         int action = event.getActionMasked();
@@ -168,13 +237,231 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             if (offset != -1) {
                 TokenImageSpan[] links = text.getSpans(offset, offset, RecipientTokenSpan.class);
                 if (links.length > 0) {
-                    showAlternates(links[0].getToken());
+                    TokenImageSpan span = links[0];
+                    Recipient recipient = span.getToken();
+                    if (isRemoveRecipientClicked(event, span)) {
+                        removeRecipient(recipient);
+                    } else {
+                        showAlternates(recipient);
+                    }
                     return true;
                 }
             }
         }
 
         return super.onTouchEvent(event);
+    }
+
+    private boolean isRemoveRecipientClicked(
+        MotionEvent event,
+        TokenImageSpan span
+    ) {
+        float touchAreaExtension = getResources().getDimension(R.dimen.remove_recipient_button_padding);
+
+        Recipient recipient = span.getToken();
+        RecipientTokenViewHolder.ViewLocation viewLocation = getRemoveButtonLocationForRecipient(recipient);
+
+        Layout layout = getLayout();
+        Editable text = getText();
+        if (viewLocation != null && layout != null && text != null) {
+            float spanX = layout.getPrimaryHorizontal(text.getSpanStart(span));
+            float absoluteX = spanX + viewLocation.getX();
+            float absoluteY = viewLocation.getY();
+
+            if (event.getX() + touchAreaExtension >= absoluteX
+                    && event.getX() - touchAreaExtension - absoluteX <= viewLocation.getWidth()
+            ) {
+                int heightOffset = getHeightOffsetForSpan(span);
+                if (heightOffset >= 0) {
+                    float realTop = absoluteY + heightOffset;
+                    return (event.getY() + touchAreaExtension >= realTop
+                            && event.getY() - touchAreaExtension - realTop <= viewLocation.getHeight());
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getHeightOffsetForSpan(TokenImageSpan span) {
+        int lines = getLineCount();
+        int spanStart = getText().getSpanStart(span);
+        int spanEnd = getText().getSpanEnd(span);
+        for (int line = 0; line < lines; line++) {
+            if (getLayout().getLineStart(line) <= spanStart
+                && getLayout().getLineEnd(line) >= spanEnd) {
+                return getLineOffset(getLayout(), line);
+            }
+        }
+        return -1;
+    }
+
+    private int realLineHeight(Layout layout, int line) {
+        return layout.getLineBottom(line) - layout.getLineTop(line);
+    }
+
+    private int getLineOffset(Layout layout, int currentLine) {
+        int realLineHeight = 0;
+        for (int line = 0; line < currentLine; line++) {
+            realLineHeight += realLineHeight(layout, line);
+        }
+        return realLineHeight;
+    }
+
+    /**
+     * Find location data of the "x" remove button placed in the view tied to a given recipient.
+     * This method relies on spans to be of the RecipientTokenSpan class, as created by the
+     * buildSpanForObject method.
+     */
+    private RecipientTokenViewHolder.ViewLocation getRemoveButtonLocationForRecipient(Recipient currentRecipient) {
+        Editable text = getText();
+        if (text != null) {
+            RecipientTokenSpan[] spans = text.getSpans(
+                    0,
+                    text.length(), RecipientTokenSpan.class
+            );
+            for (RecipientTokenSpan span : spans) {
+                if (span.getToken() == currentRecipient) {
+                    return span.getRemoveButtonLocation();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void performCollapse(boolean hasFocus) {
+        if (!hasFocus) {
+            truncateFirstDisplayNameIfNeeded();
+            super.performCollapse(false);
+            setCountColorIfNeeded();
+        } else {
+            restoreFirstDisplayNameIfNeeded();
+            super.performCollapse(true);
+        }
+    }
+
+    private void restoreFirstDisplayNameIfNeeded() {
+        List<Recipient> recipients = getObjects();
+        if (!recipients.isEmpty()) {
+            restoreRecipientDisplayName(recipients.get(0));
+        }
+    }
+
+    private void restoreRecipientDisplayName(Recipient recipient) {
+        View recipientTokenView = getTokenViewForRecipient(recipient);
+        if (recipientTokenView == null) {
+            Timber.e("Tried to refresh invalid view token!");
+            return;
+        }
+        RecipientTokenViewHolder vh = (RecipientTokenViewHolder) recipientTokenView.getTag();
+        vh.restoreNameSize();
+    }
+
+    private void truncateFirstDisplayNameIfNeeded() {
+        if (getTokenCount() >= 2) {
+            Editable text = getText();
+            Layout lastLayout = getLayout();
+            if (text != null && lastLayout != null) {
+                int lastPosition = lastLayout.getLineVisibleEnd(0);
+                TokenImageSpan[] tokens = text.getSpans(0, lastPosition, TokenImageSpan.class);
+                int count = getTokenCount() - tokens.length;
+                if (tokens.length == 1) {
+                    CountSpan[] countSpans = text.getSpans(0, lastPosition, CountSpan.class);
+                    if (count > 0 && countSpans.length == 0) {
+                        truncateFirstDisplayName(lastLayout, count);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setCountColorIfNeeded() {
+        Editable text = getText();
+        if(text != null) {
+            CountSpan[] countSpans = text.getSpans(0, text.length(), CountSpan.class);
+            if (countSpans.length > 0) {
+                CountSpan countSpan = countSpans[0];
+                if(text.getSpanStart(countSpan) >= 0) {
+                    try {
+                        int count = Integer.parseInt(countSpan.text.substring(1));
+                        setCountColor(text, countSpan, count);
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
+            }
+        }
+    }
+
+    private void setCountColor(Editable editable, CountSpan countSpan, int count) {
+        boolean unsecure = unsecureAddressHelper.hasHiddenUnsecureAddressChannel(
+                getAddresses(),
+                count
+        );
+        int countColor = unsecure
+                ? ContextCompat.getColor(
+                        context, R.color.compose_unsecure_delivery_warning)
+                : getCurrentTextColor();
+
+        CountSpan coloredCountSpan = new CountSpan(
+                count,
+                getContext(),
+                countColor,
+                (int) getTextSize(),
+                (int) maxTextWidth()
+        );
+        editable.setSpan(
+                coloredCountSpan,
+                editable.getSpanStart(countSpan),
+                editable.getSpanEnd(countSpan),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        editable.removeSpan(countSpan);
+    }
+
+    private void truncateFirstDisplayName(Layout lastLayout, int count) {
+        Recipient firstRecipient = findFirstVisibleRecipient();
+        String countText = "+" + count;
+        String textToDisplay = firstRecipient.getDisplayNameOrAddress();
+        float requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+        int maxTextWidth = availableTextWidthWithRemoveButton();
+        if (maxTextWidth < requiredWidth) {
+            do {
+                textToDisplay = textToDisplay.substring(0, textToDisplay.length() - 1);
+                requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+            } while (maxTextWidth < requiredWidth);
+            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 1);
+        }
+    }
+
+    private int availableTextWidthWithRemoveButton() {
+        return (int) (maxTextWidth() - getResources().getDimension(
+                R.dimen.first_recipient_token_end_reserved_space));
+    }
+
+    private Recipient findFirstVisibleRecipient() {
+        Editable text = getText();
+        RecipientTokenSpan[] spans = getText().getSpans(
+                0, getText().length(), RecipientTokenSpan.class);
+        int firstSpanStart = spans.length;
+        Recipient out = spans[0].getToken();
+        for (RecipientTokenSpan span : spans) {
+            if (text.getSpanStart(span) < firstSpanStart) {
+                firstSpanStart = text.getSpanStart(span);
+                out = span.getToken();
+            }
+        }
+        return out;
+    }
+
+    private void truncateRecipientDisplayName(Recipient recipient, int limit) {
+        View recipientTokenView = getTokenViewForRecipient(recipient);
+        if (recipientTokenView == null) {
+            Timber.e("Tried to refresh invalid view token!");
+            return;
+        }
+        RecipientTokenViewHolder vh = (RecipientTokenViewHolder) recipientTokenView.getTag();
+        vh.truncateName(limit);
     }
 
     @Override
@@ -270,8 +557,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
-        for (Recipient recipient : recipients) {
-            addObject(recipient);
+        if (recipients.length == 1) {
+            addObject(recipients[0]);
+        } else {
+            unsecureAddressHelper.sortRecipientsByRating(recipients, sortedRecipients -> {
+                for (Recipient recipient : sortedRecipients) {
+                    addObject(recipient);
+                }
+            });
         }
     }
 
@@ -283,6 +576,19 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
 
         return address;
+    }
+
+    public int getUnsecureRecipientCount() {
+        return unsecureAddressHelper.getUnsecureAddressChannelCount();
+    }
+
+    public void clearUnsecureRecipients() {
+        for (Recipient recipient : getObjects()) {
+            if (unsecureAddressHelper.isUnsecure(recipient.getAddress())) {
+                removeObject(recipient);
+            }
+        }
+        resetCollapsedViewIfNeeded();
     }
 
     public void emptyAddresses() {
@@ -315,15 +621,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public void postShowAlternatesPopup(final List<Recipient> data) {
         // We delay this call so the soft keyboard is gone by the time the popup is layouted
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                showAlternatesPopup(data);
-            }
-        });
+        new Handler().post(() -> unsecureAddressHelper.rateRecipients(
+                data,
+                this::showAlternatesPopup
+        ));
     }
 
-    public void showAlternatesPopup(List<Recipient> data) {
+    public void showAlternatesPopup(List<RatedRecipient> data) {
         if (loaderManager == null) {
             return;
         }
@@ -331,9 +635,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         // Copy anchor settings from the autocomplete dropdown
         View anchorView = getRootView().findViewById(getDropDownAnchor());
         alternatesPopup.setAnchorView(anchorView);
+        alternatesPopup.setPromptPosition(ListPopupWindow.POSITION_PROMPT_BELOW);
+        if (anchorView != null) {
+            alternatesPopup.setVerticalOffset(getAlternatesPopupOffset(anchorView.getHeight()));
+        }
         alternatesPopup.setWidth(getDropDownWidth());
 
-        alternatesAdapter.setCurrentRecipient(alternatesPopupRecipient);
+        alternatesAdapter.setCurrentRecipient(
+                findCurrentRatedRecipient(data, alternatesPopupRecipient));
         alternatesAdapter.setAlternateRecipientInfo(data);
 
         // Clear the checked item.
@@ -342,12 +651,56 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
     }
 
+    private RatedRecipient findCurrentRatedRecipient(
+            List<RatedRecipient> recipients,
+            Recipient currentRecipient
+    ) {
+        for (RatedRecipient recipient : recipients) {
+            if (recipient.getBaseRecipient().equals(currentRecipient)) {
+                return recipient;
+            }
+        }
+        return null;
+    }
+
+    private int getAlternatesPopupOffset(int anchorViewHeight) {
+        View tokenView = getTokenViewForRecipient(alternatesPopupRecipient);
+        if (tokenView != null) {
+            int tokenViewHeight = tokenView.getHeight();
+            if (anchorViewHeight < tokenViewHeight * 2) {
+                return 0;
+            }
+            int size = getTokenCount();
+            int index = getObjects().indexOf(alternatesPopupRecipient) + 1;
+            return (index - size) * tokenViewHeight;
+        }
+        return  0;
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         alternatesPopup.dismiss();
         return super.onKeyDown(keyCode, event);
     }
 
+    public void removeRecipient(Recipient recipient) {
+        removeObject(recipient);
+        resetCollapsedViewIfNeeded();
+    }
+
+    private void resetCollapsedViewIfNeeded() {
+        post(() -> {
+            if (!hasFocus()) {
+                if (getTokenCount() == 1) {
+                    requestFocus();
+                } else if (getTokenCount() > 1) {
+                    resetFocus();
+                }
+            }
+        });
+    }
+
+    @NotNull
     @Override
     public Loader<List<Recipient>> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -370,7 +723,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Recipient>> loader, List<Recipient> data) {
+    public void onLoadFinished(@NotNull Loader<List<Recipient>> loader, List<Recipient> data) {
         if (loaderManager == null) {
             return;
         }
@@ -424,7 +777,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public void onRecipientRemove(Recipient currentRecipient) {
         alternatesPopup.dismiss();
-        removeObject(currentRecipient);
+        removeRecipient(currentRecipient);
     }
 
     @Override
@@ -436,6 +789,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         if (indexOfRecipient == -1) {
             Timber.e("Tried to refresh invalid view token!");
             return;
+        }
+        for (Recipient object : getObjects()) {
+            if (object.getAddress().equals(alternateAddress.getAddress())) {
+                Timber.e("Recipient already present!");
+                return;
+            }
         }
         Recipient currentRecipient = currentRecipients.get(indexOfRecipient);
 
@@ -449,11 +808,32 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             return;
         }
 
+        unsecureAddressHelper.removeUnsecureAddressChannel(recipientToReplace.getAddress());
         bindObjectView(currentRecipient, recipientTokenView);
 
         if (listener != null) {
             listener.onTokenChanged(currentRecipient);
         }
+    }
+
+    public void updateRecipientsFromEcho(String echoSender) {
+        unsecureAddressHelper.updateRecipientsFromEcho(
+                getObjects(),
+                echoSender,
+                recipients -> {
+                    for (RatedRecipient recipient : recipients) {
+                        setCountColorIfNeeded();
+                        RecipientTokenViewHolder holder = getRecipientHolder(recipient.getBaseRecipient());
+                        if (holder == null) {
+                            Timber.e("Tried to refresh invalid view token!");
+                        } else {
+                            holder.updateRating(recipient.getRating());
+                            postInvalidateDelayed(100);
+                            listener.handleUnsecureTokenWarning();
+                        }
+                    }
+                }
+        );
     }
 
     /**
@@ -491,18 +871,41 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return null;
     }
 
+    private RecipientTokenViewHolder getRecipientHolder(Recipient currentRecipient) {
+        View view = getTokenViewForRecipient(currentRecipient);
+        return view != null
+                ? (RecipientTokenViewHolder) view.getTag()
+                : null;
+    }
+
     /**
      * We use a specialized version of TokenCompleteTextView.TokenListener as well,
      * adding a callback for onTokenChanged.
      */
     public void setTokenListener(TokenListener<Recipient> listener) {
-        super.setTokenListener(listener);
         this.listener = listener;
     }
 
     public void notifyDatasetChanged() {
         alternatesAdapter.notifyDataSetChanged();
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean hasRecipient(@NonNull Recipient recipient) {
+        return getObjects().contains(recipient);
+    }
+
+    @Override
+    public boolean isAlwaysUnsecure() {
+        return alwaysUnsecure;
+    }
+
+    @Override
+    public void showError(@NonNull Throwable throwable) {
+        if (listener != null) {
+            listener.onError(throwable);
+        }
     }
 
     public enum RecipientCryptoStatus {
@@ -518,6 +921,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
         void onTokenChanged(T token);
+        void handleUnsecureTokenWarning();
+        void onError(Throwable throwable);
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {
@@ -527,6 +932,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         public RecipientTokenSpan(View view, Recipient recipient, int token) {
             super(view, recipient, token);
             this.view = view;
+        }
+
+        public RecipientTokenViewHolder.ViewLocation getRemoveButtonLocation() {
+            RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
+            return holder.getRemoveButtonLocation();
         }
     }
 

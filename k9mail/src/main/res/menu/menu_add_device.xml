@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".pEp.ui.keysync.PEpAddDevice">
+    tools:context=".planck.ui.keysync.PlanckAddDevice">
     <item
         android:id="@+id/action_advanced_options"
         android:title="@string/advanced_options"
@@ -15,26 +15,12 @@
         android:icon="?attr/iconLanguage"
         app:showAsAction="always" >
         <item
-            android:id="@+id/catalan"
-            android:title="Català"/>
-        <item
-            android:id="@+id/german"
-            android:title="Deutsch"/>
-        <item
-            android:id="@+id/spanish"
-            android:title="Español"/>
-        <item
-            android:id="@+id/french"
-            android:title="Français"/>
-        <item
-            android:id="@+id/turkish"
-            android:title="Türkçe"/>
-        <item
             android:id="@+id/english"
             android:title="English"/>
         <item
-            android:id="@+id/nederlands"
-            android:title="Nederlands"/>
+            android:id="@+id/german"
+            android:title="Deutsch"/>
+
     </item>
 
     <item

@@ -1,14 +1,14 @@
 import com.android.build.OutputFile
 
-def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
-def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
-def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
+def planckTestEmailAddress = "\"$System.env.PLANCK_TEST_EMAIL_ADDRESS\""
+def planckTestEmailPassword = "\"$System.env.PLANCK_TEST_EMAIL_PASSWORD\""
+def planckTestEmailServer = "\"$System.env.PLANCK_TEST_EMAIL_SERVER\""
 
 
-def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
-def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
-def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
-def pEpDragonUsername = "\"$System.env.PEP_DRAGON_USERNAME\""
+def planckDragonEmail = "\"$System.env.PLANCK_DRAGON_EMAIL_ADDRESS\""
+def planckDragonPassword = "\"$System.env.PLANCK_DRAGON_PASSWORD\""
+def planckDragonServer = "\"$System.env.PLANCK_DRAGON_SERVER\""
+def planckDragonUsername = "\"$System.env.PLANCK_DRAGON_USERNAME\""
 
 buildscript {
     repositories {
@@ -20,36 +20,43 @@ apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
+apply from: '../gradle/plugins/utils/appconfig-test.gradle'
+apply from: '../gradle/plugins/utils/git-version.gradle'
+apply from: '../gradle/plugins/utils/addaccount.gradle'
+apply from: '../gradle/plugins/cucumber.gradle'
+apply from: '../gradle/plugins/customTest.gradle'
+try {
+    apply from: '../gradle/plugins/mdmDemoConfig.gradle'
+} catch(Exception ignored) {}
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     google()
 }
 
-//noinspection GroovyAssignabilityCheck
-configurations.all {
-    resolutionStrategy {
-        force "com.android.support:support-annotations:${versions.supportLibrary}"
-    }
-}
-
 dependencies {
+    //Required for certification; Only required in enterprise variants
+    implementation "com.scottyab:rootbeer-lib:${versions.rootbeer}"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation project(":pEpJNIAdapter")
+    implementation project(":planckJNIWrapper")
     implementation project(':k9mail-library')
     implementation project(':plugins:HoloColorPicker')
     implementation project(':plugins:openpgp-api-lib:openpgp-api')
     implementation project(':foldableFolders')
 
+    implementation "net.openid:appauth:${versions.appauth}"
+    implementation "com.auth0.android:jwtdecode:${versions.jwtDecode}"
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
     implementation "androidx.legacy:legacy-support-v4:${versions.legacySupport}"
@@ -59,6 +66,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
     implementation "androidx.vectordrawable:vectordrawable:${versions.vectordrawable}"
     implementation "net.jcip:jcip-annotations:${versions.jcipAnnotations}"
+    testImplementation "org.apache.ant:ant:${versions.ant}"
 
     implementation "com.squareup.moshi:moshi:${versions.moshi}"
     implementation "com.splitwise:tokenautocomplete:${versions.tokenAutoComplete}"
@@ -70,7 +78,6 @@ dependencies {
     implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
     implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar"
     implementation "com.karumi:dexter:${versions.dexter}"
-    implementation "ch.acra:acra:${versions.acra}"
     implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
     implementation "org.jsoup:jsoup:${versions.jsoup}"
@@ -82,15 +89,19 @@ dependencies {
     implementation "androidx.webkit:webkit:1.4.0"
 
 
-    implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
     implementation "androidx.security:security-crypto:${versions.crypto}"
+    implementation 'com.google.ar.sceneform:filament-android:1.17.1'
 
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycleViewModel}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycleExtensions}"
+    implementation "androidx.lifecycle:lifecycle-common:${versions.androidxLifecycle}"
+    //implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidxLifecycle}"
     implementation "com.xwray:groupie:${versions.groupie}"
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
@@ -101,27 +112,37 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinCoroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.kotlinSerialization}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
+
+    implementation "net.sf.biweekly:biweekly:${versions.biweekly}"
+    implementation 'org.minidns:minidns-hla:1.0.4'
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
     }
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.3.0'
-    // androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
+    //implementation "androidx.annotation:annotation:1.1.0"
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.5.1'
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.mockito:mockito-inline:${versions.mockito}"
     testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
+    testImplementation "io.mockk:mockk:${versions.mockk}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
 
     implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
 
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
+
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:${versions.espresso}") {
+        exclude module: "protobuf-lite"
+    }
     testImplementation "androidx.test:core:${versions.androidXcoreTest}"
     testImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
     androidTestImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
@@ -131,7 +152,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
-    testImplementation "org.jdom:jdom2:2.0.6"
+    testImplementation "org.jdom:jdom2:${versions.jdom}"
     testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
@@ -152,7 +173,7 @@ dependencies {
     androidTestImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '4.2.3'*/
 
     androidTestImplementation "io.cucumber:cucumber-android:${versions.cucumber}"
-    androidTestImplementation "io.cucumber:cucumber-picocontainer:${versions.cucumber}"
+    androidTestImplementation "io.cucumber:cucumber-picocontainer:${versions.cucumber_pico}"
 
     // Screenshots
     androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
@@ -160,6 +181,7 @@ dependencies {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
+    kaptAndroidTest "com.google.dagger:dagger-compiler:${versions.dagger}"
 }
 
 android {
@@ -167,48 +189,76 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
+        versionName "${gitVersionName}"
         versionCode buildConfig.versionCode
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
 
-        setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
+        setProperty("archivesBaseName", "${gitVersionName}-${versionCode}")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
-        testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        //testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testApplicationId "com.fsck.k9.planck.ui.activities.test"
+        testInstrumentationRunner "com.fsck.k9.planck.ui.activities.test.CucumberTestCase"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
-        buildConfigField "String", "ENGINE_REVISION", "\"${buildConfig.pEpEngineRevision}\""
-        buildConfigField "String", "ADAPTER_REVISION", "\"${buildConfig.pEpJNIAdapterRevision}\""
-        buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
-        buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
-        buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"
+        buildConfigField "String", "PLANCK_TEST_EMAIL_ADDRESS", "${planckTestEmailAddress}"
+        buildConfigField "String", "PLANCK_TEST_EMAIL_PASSWORD", "${planckTestEmailPassword}"
+        buildConfigField "String", "PLANCK_TEST_EMAIL_SERVER", "${planckTestEmailServer}"
 
-        buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
-        buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
-        buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
+        buildConfigField "String", "PLANCK_DRAGON_EMAIL_ADDRESS", "${planckDragonEmail}"
+        buildConfigField "String", "PLANCK_DRAGON_PASSWORD", "${planckDragonPassword}"
+        buildConfigField "String", "PLANCK_DRAGON_SERVER", "${planckDragonServer}"
 
-        buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
+        buildConfigField "String", "PLANCK_DRAGON_USERNAME", "${planckDragonUsername}"
 
-        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
+        buildConfigField "boolean", "USE_CUCUMBER", "${project.property("useCucumber")}"
+        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.property("useFakeManager")}"
+        buildConfigField "int", "USER", "0"
+        testBuildType project.property("testBuildType")
     }
-    flavorDimensions "sync", "store"
+
+    signingConfigs {
+        endUserRelease {
+            if (project.hasProperty("keyAlias")) { keyAlias = project.keyAlias }
+            if (project.hasProperty("keyPassword")) { keyPassword = project.keyPassword }
+            if (project.hasProperty("storeFile")) { storeFile = file(project.storeFile) }
+            if (project.hasProperty("storePassword")) { storePassword = project.storePassword }
+        }
+        enterpriseRelease {
+            if (project.hasProperty("enterpriseKeyAlias")) { keyAlias = project.enterpriseKeyAlias }
+            if (project.hasProperty("enterpriseKeyPassword")) { keyPassword = project.enterpriseKeyPassword }
+            if (project.hasProperty("enterpriseStoreFile")) { storeFile = file(project.enterpriseStoreFile) }
+            if (project.hasProperty("enterpriseStorePassword")) { storePassword = project.enterpriseStorePassword }
+        }
+    }
+
+    flavorDimensions "type", "store"
 
     productFlavors {
 
-
-        withkeysync {
-            buildConfigField "boolean", "WITH_KEY_SYNC", "true"
-            versionName "${buildConfig.versionName}"
-            dimension "sync"
+        enterprise {
+            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            versionNameSuffix ".enterprise"
+            dimension "type"
+            applicationIdSuffix ".enterprise"
         }
-        withoutkeysync {
-            buildConfigField "boolean", "WITH_KEY_SYNC", "false"
-            versionName "${buildConfig.versionName}" + ".withoutKeysync"
-            dimension "sync"
+
+        endUser {
+            buildConfigField "boolean", "IS_ENTERPRISE", "false"
+            dimension "type"
+        }
+
+        if (hasMdmDemoProperties()) {
+            mdmDemo {
+                buildConfigField "boolean", "IS_ENTERPRISE", "true"
+                versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
+                dimension "type"
+                applicationIdSuffix ".enterprise" + demoAppIdSuffix
+                versionCode demoVersionCode
+            }
         }
 
         playStore {
@@ -221,14 +271,32 @@ android {
 
     }
 
-    signingConfigs {
-        release
+    variantFilter { variant ->
+        def names = variant.getFlavors()*.name
+        if (names.contains('enterprise') && names.contains('fDroid')) {
+            variant.setIgnore(true)
+        }
+        if (hasMdmDemoProperties()) {
+            def type = variant.getBuildType().name
+            if (names.contains('mdmDemo') && (names.contains('fDroid') || type != 'release')) {
+                variant.setIgnore(true)
+            }
+        }
     }
+
     buildTypes {
         release {
             if (project.hasProperty("storeFile")) {
-                signingConfig signingConfigs.release
-
+                productFlavors.endUser.signingConfig signingConfigs.endUserRelease
+                if (hasMdmDemoProperties() && demoUseEndUserSigningConfig) {
+                    productFlavors.mdmDemo.signingConfig signingConfigs.endUserRelease
+                }
+            }
+            if (project.hasProperty("enterpriseStoreFile")) {
+                productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
+                if (hasMdmDemoProperties() && !demoUseEndUserSigningConfig) {
+                    productFlavors.mdmDemo.signingConfig signingConfigs.enterpriseRelease
+                }
             }
 
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
@@ -282,6 +350,7 @@ android {
     }
 
     applicationVariants.all { variant ->
+        defineOAuthConfigs(variant)
         variant.outputs.each { output ->
             def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
             if (baseAbiVersionCode != null) {
@@ -296,8 +365,66 @@ android {
             manifest.srcFile "src/androidTest/AndroidManifest.xml"
             assets.srcDirs = ['src/androidTest/assets']
         }
+        if (hasMdmDemoProperties()) {
+            mdmDemo {
+                res.srcDirs += ['src/enterprise/res']
+                java.srcDirs += ['src/enterprise/java']
+            }
+        }
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+}
+
+private static void defineOAuthConfigs(variant) {
+    def mergedFlavor = variant.getMergedFlavor()
+    if (variant.name == "mdmDemoPlayStoreRelease") {
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.test.enterprise\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.test.enterprise"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.test.enterprise"
+    } else {
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId}"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "${variant.applicationId}"
+    }
+    //noinspection GroovyFallthrough
+    switch (variant.name) {
+        case "enterprisePlayStoreRelease":
+        case "mdmDemoPlayStoreRelease":
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-qqglr562sp36brq2eis24oh8loiqi4rf.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"9f2d4a99-ebe1-48dc-9837-a45a7f3252ba\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.test.enterprise/%2B3NsYzN%2Fk%2Fj11m2ClpTTuvKL2eY%3D\""
+            break
+        case "enterprisePlayStoreDebug":
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-oqh3d5elvui5gbndsjjo8o29ctgbe4sr.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"a3b9de0c-0201-4206-88e0-5155a4794f49\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.test.enterprise.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
+            break
+        case "endUserPlayStoreRelease":
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-298svmr5klnl9dpdi655vjsn3d13miob.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"411baad4-1682-4b51-bf3d-5d219b2cfb97\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/NNpRUrCyM0zbAKQkbt3aKegrREA%3D\""
+            break
+        case "endUserPlayStoreDebug":
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-ckb8btb852h78k08jqsvlho1t8dmhv3o.apps.googleusercontent.com\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"b02baebf-9635-41fc-8cf0-023f4fa0b33e\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.debug/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D\""
+            break
+        default:
+            variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"\""
+            break
+    }
 }
 
 androidExtensions {
@@ -310,15 +437,19 @@ androidExtensions {
     }
 }*/
 
-if (project.hasProperty("keyAlias")) {
-    android.signingConfigs.release.keyAlias = keyAlias
+afterEvaluate {
+    if (hasMdmDemoProperties()) {
+        tasks.findAll { task ->
+            task.name.contains("MdmDemo") && (task.name.contains("test") || task.name.contains("lint"))
+        }.forEach {
+            it.enabled = false
+        }
+    }
 }
-if (project.hasProperty("keyPassword")) {
-    android.signingConfigs.release.keyPassword = keyPassword
-}
-if (project.hasProperty("storeFile")) {
-    android.signingConfigs.release.storeFile = file(storeFile)
-}
-if (project.hasProperty("storePassword")) {
-    android.signingConfigs.release.storePassword = storePassword
+
+boolean hasMdmDemoProperties() {
+    return project.hasProperty("demoAppVersionNameSuffix") &&
+            project.hasProperty("demoAppIdSuffix") &&
+            project.hasProperty("demoVersionCode") &&
+            project.hasProperty("demoUseEndUserSigningConfig")
 }

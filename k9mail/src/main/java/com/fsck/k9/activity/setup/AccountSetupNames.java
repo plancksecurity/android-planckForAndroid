@@ -29,17 +29,17 @@ import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.planck.ui.tools.KeyboardUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
-public class AccountSetupNames extends PepActivity implements OnClickListener {
+public class AccountSetupNames extends PlanckActivity implements OnClickListener {
     public static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MANUAL_SETUP = "manualSetup";
 
@@ -51,7 +51,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
     private Button mDoneButton;
     private SwitchCompat pepSyncAccount;
-    private PePUIArtefactCache pePUIArtefactCache;
+    private PlanckUIArtefactCache planckUIArtefactCache;
     private NonConfigurationInstance nonConfigurationInstance;
 
     @Inject
@@ -81,12 +81,13 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
-        toolBarCustomizer.setStatusBarPepColor(
+        toolBarCustomizer.setStatusBarPlanckColor(
                 ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
         pepSyncAccount = findViewById(R.id.pep_enable_sync_account);
+        pepSyncAccount.setVisibility(BuildConfig.IS_ENTERPRISE ? View.GONE : View.VISIBLE);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
@@ -121,12 +122,9 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             mDoneButton.setEnabled(false);
         }
 
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            pepSyncAccount.setVisibility(View.GONE);
-        }
 
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
-        pePUIArtefactCache.removeCredentialsInPreferences();
+        planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
+        planckUIArtefactCache.removeCredentialsInPreferences();
 
         restoreNonConfigurationInstance();
     }
@@ -145,7 +143,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -153,7 +151,6 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
-                AccountSetupBasics.actionBackToOutgoingSettings(this, mAccount);
 
                 finish();
                 return true;
@@ -173,14 +170,14 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             mAccount.setDescription(mDescription.getText().toString());
         }
         mAccount.setName(mName.getText().toString());
-        mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
+        mAccount.setPlanckSyncAccount(pepSyncAccount.isChecked());
         boolean isManualSetup = getIntent().getBooleanExtra(EXTRA_MANUAL_SETUP, false);
-        pEpGenerateAccountKeysTask accountGenerationTask = new pEpGenerateAccountKeysTask(this, mAccount);
+        PanckGenerateAccountKeysTask accountGenerationTask = new PanckGenerateAccountKeysTask(this, mAccount);
         launchGenerateAccountKeysTask(accountGenerationTask, isManualSetup);
     }
 
     @VisibleForTesting
-    public void launchGenerateAccountKeysTask(pEpGenerateAccountKeysTask accountGenerationTask, boolean manualSetup) {
+    public void launchGenerateAccountKeysTask(PanckGenerateAccountKeysTask accountGenerationTask, boolean manualSetup) {
         nonConfigurationInstance = accountGenerationTask;
         accountGenerationTask.execute(manualSetup);
     }
@@ -194,13 +191,13 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     }
 
     @VisibleForTesting
-    public static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Boolean, Void, Void> {
+    public static class PanckGenerateAccountKeysTask extends ExtendedAsyncTask<Boolean, Void, Void> {
         Account account;
 
         @VisibleForTesting public AccountKeysGenerator accountKeysGenerator = new AccountKeysGenerator() {
             @Override
             public void generateAccountKeys() {
-                PEpUtils.pEpGenerateAccountKeys(mContext, account);
+                PlanckUtils.pEpGenerateAccountKeys(mContext, account);
                 K9.setServicesEnabled(mContext);
             }
 
@@ -214,7 +211,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             }
         };
 
-        protected pEpGenerateAccountKeysTask(Activity activity, Account account) {
+        protected PanckGenerateAccountKeysTask(Activity activity, Account account) {
             super(activity);
             this.account = account;
         }
@@ -241,7 +238,13 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             if(manualSetup) {
                 account.setOptionsOnInstall();
             }
-            account.save(Preferences.getPreferences(mActivity));
+            if (((K9) mContext.getApplicationContext()).isRunningOnWorkProfile()) {
+                ((K9) mContext.getApplicationContext()).getComponent()
+                        .configurationManagerFactory().create(mContext)
+                        .loadConfigurationsBlocking();
+            } else {
+                account.save(Preferences.getPreferences(mActivity));
+            }
             MessagingController.getInstance(mActivity).refreshRemoteSynchronous(account);
             accountKeysGenerator.generateAccountKeys();
             return null;

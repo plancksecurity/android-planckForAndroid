@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <restriction
+        android:defaultValue="@bool/default_enable_privacy_protection"
+        android:description="@string/enable_privacy_protection_description"
+        android:key="planck_enable_privacy_protection"
+        android:restrictionType="bool"
+        android:title="@string/enable_privacy_protection_title"/>
+
+    <restriction
+        android:description="@string/extra_keys_description"
+        android:key="planck_extra_keys"
+        android:restrictionType="bundle_array"
+        android:title="@string/extra_keys_title">
+
+        <restriction
+            android:key="planck_extra_key"
+            android:restrictionType="bundle"
+            android:title="@string/extra_key">
+
+            <restriction
+                android:defaultValue=""
+                android:key="extra_key_fingerprint"
+                android:restrictionType="string"
+                android:title="@string/fingerprint_title"/>
+
+            <restriction
+                android:defaultValue=""
+                android:key="extra_key_material"
+                android:restrictionType="string"
+                android:title="@string/extra_key_material_title"/>
+
+        </restriction>
+    </restriction>
+
+    <restriction
+        android:description="@string/media_keys_description"
+        android:key="planck_media_keys"
+        android:restrictionType="bundle_array"
+        android:title="@string/media_keys_title">
+
+        <restriction
+            android:key="planck_media_key"
+            android:restrictionType="bundle"
+            android:title="@string/media_key_title">
+
+            <restriction
+                android:defaultValue=""
+                android:key="media_key_address_pattern"
+                android:restrictionType="string"
+                android:title="@string/media_key_address_pattern_title"/>
+
+            <restriction
+                android:defaultValue=""
+                android:key="media_key_fingerprint"
+                android:restrictionType="string"
+                android:title="@string/fingerprint_title"/>
+
+            <restriction
+                android:defaultValue=""
+                android:key="media_key_material"
+                android:restrictionType="string"
+                android:title="@string/media_key_material_title"/>
+
+        </restriction>
+    </restriction>
+
+    <restriction
+        android:defaultValue="@bool/default_use_trustwords"
+        android:description="@string/use_trustwords_setting_description"
+        android:key="planck_use_trustwords"
+        android:restrictionType="bool"
+        android:title="@string/use_trustwords_setting_title"/>
+
+    <restriction
+        android:defaultValue="@bool/default_unsecure_delivery_warning"
+        android:description="@string/pep_forward_warning_description"
+        android:key="unsecure_delivery_warning"
+        android:restrictionType="bool"
+        android:title="@string/pep_forward_warning"/>
+
+    <restriction
+        android:defaultValue="@bool/default_use_pep_sync_folder"
+        android:description="@string/pep_sync_folder_description"
+        android:key="planck_sync_folder"
+        android:restrictionType="bool"
+        android:title="@string/pep_sync_folder"/>
+
+    <restriction
+        android:defaultValue="@bool/default_debug_logging"
+        android:description="@string/debug_enable_debug_logging_summary"
+        android:key="debug_logging"
+        android:restrictionType="bool"
+        android:title="@string/debug_enable_debug_logging_title"/>
+
+    <restriction
+        android:defaultValue="@bool/default_enable_echo_protocol"
+        android:key="planck_enable_echo_protocol"
+        android:restrictionType="bool"
+        android:title="@string/enable_echo_protocol_title"/>
+
+    <restriction
+        android:defaultValue="@string/default_account_display_count"
+        android:description="@string/account_display_count_description"
+        android:key="account_display_count"
+        android:restrictionType="choice"
+        android:entries="@array/display_count_entries"
+        android:entryValues="@array/display_count_values"
+        android:title="@string/account_settings_mail_display_count_label"/>
+
+    <restriction
+        android:defaultValue="@string/default_max_push_folders"
+        android:description="@string/account_setup_push_limit_label"
+        android:key="max_push_folders"
+        android:restrictionType="choice"
+        android:entries="@array/push_limit_entries"
+        android:entryValues="@array/push_limit_values"
+        android:title="@string/account_setup_push_limit_label"/>
+
+    <restriction
+        android:defaultValue=""
+        android:description="@string/account_description_description"
+        android:key="account_description"
+        android:restrictionType="string"
+        android:title="@string/account_settings_description_label"/>
+
+    <restriction
+        android:description="@string/composition_description"
+        android:key="composition_settings"
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_composition_label">
+        <restriction
+            android:defaultValue=""
+            android:key="composition_sender_name"
+            android:restrictionType="string"
+            android:title="@string/composition_sender_name_title"/>
+        <restriction
+            android:defaultValue="@bool/default_use_signature"
+            android:key="composition_use_signature"
+            android:restrictionType="bool"
+            android:title="@string/account_settings_signature_use_label"/>
+        <restriction
+            android:defaultValue="@string/default_signature"
+            android:key="composition_signature"
+            android:restrictionType="string"
+            android:title="@string/account_settings_signature_label"/>
+        <restriction
+            android:defaultValue="@bool/default_signature_before_quoted_message"
+            android:key="composition_signature_before_quoted_message"
+            android:restrictionType="bool"
+            android:title="@string/account_settings_signature__location_before_quoted_text"/>
+    </restriction>
+
+    <restriction
+        android:defaultValue="@bool/default_quoted_text_shown"
+        android:description="@string/default_quoted_text_shown_description"
+        android:key="default_quoted_text_shown"
+        android:restrictionType="bool"
+        android:title="@string/account_settings_default_quoted_text_shown_label"/>
+
+    <restriction
+        android:key="account_default_folders"
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_folders">
+        <restriction
+            android:defaultValue=""
+            android:key="archive_folder"
+            android:restrictionType="string"
+            android:title="@string/archive_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="drafts_folder"
+            android:restrictionType="string"
+            android:title="@string/drafts_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="sent_folder"
+            android:restrictionType="string"
+            android:title="@string/sent_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="spam_folder"
+            android:restrictionType="string"
+            android:title="@string/spam_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="trash_folder"
+            android:restrictionType="string"
+            android:title="@string/trash_folder_label"/>
+    </restriction>
+
+    <restriction
+        android:defaultValue="@bool/default_remote_search_enabled"
+        android:description="@string/remote_search_enabled_description"
+        android:key="remote_search_enabled"
+        android:restrictionType="bool"
+        android:title="@string/account_settings_remote_search_enabled"/>
+
+    <restriction
+        android:defaultValue="@string/default_account_remote_search_num_results"
+        android:description="@string/account_remote_search_num_results_description"
+        android:key="account_remote_search_num_results"
+        android:restrictionType="choice"
+        android:entries="@array/remote_search_num_results_entries"
+        android:entryValues="@array/remote_search_num_results_values"
+        android:title="@string/account_settings_remote_search_num_label"/>
+
+    <restriction
+        android:defaultValue="@bool/default_pep_save_encrypted"
+        android:description="@string/account_settings_save_encrypted_summary_enabled"
+        android:key="planck_save_encrypted_on_server"
+        android:restrictionType="bool"
+        android:title="@string/pep_mistrust_server_and_store_mails_encrypted"/>
+
+    <restriction
+        android:defaultValue="@bool/default_pep_enable_sync_account"
+        android:description="@string/pep_sync_enable_account"
+        android:key="planck_enable_sync_account"
+        android:restrictionType="bool"
+        android:title="@string/pep_sync_enable_account"/>
+
+    <!--restriction
+        android:defaultValue=""
+        android:description="@string/provisioning_url_description"
+        android:key="planck_user_provisioning_url"
+        android:restrictionType="string"
+        android:title="@string/provisioning_url_title"/-->
+
+    <restriction
+        android:defaultValue="@bool/default_allow_pep_sync_new_devices"
+        android:description="@string/allow_pep_sync_new_devices_description"
+        android:key="allow_planck_sync_new_devices"
+        android:restrictionType="bool"
+        android:title="@string/allow_pep_sync_new_devices_title"/>
+
+    <restriction
+        android:description="@string/mail_settings_description"
+        android:key="planck_mail_settings"
+        android:restrictionType="bundle"
+        android:title="@string/mail_settings_title">
+
+        <restriction
+            android:defaultValue=""
+            android:description="@string/account_email_address_description"
+            android:key="account_email_address"
+            android:restrictionType="string"
+            android:title="@string/account_email_address_title"/>
+
+        <restriction
+            android:defaultValue="@string/account_oauth_provider_default"
+            android:description="@string/account_oauth_provider_description"
+            android:key="account_oauth_provider"
+            android:restrictionType="choice"
+            android:entries="@array/account_oauth_provider_entries"
+            android:entryValues="@array/account_oauth_provider_values"
+            android:title="@string/account_oauth_provider_title"/>
+
+        <restriction
+            android:description="@string/account_settings_incoming_summary"
+            android:key="incoming_mail_settings"
+            android:restrictionType="bundle"
+            android:title="@string/account_settings_incoming_label">
+
+            <restriction
+                android:defaultValue=""
+                android:key="incoming_mail_settings_server"
+                android:restrictionType="string"
+                android:title="@string/account_setup_incoming_imap_server_label"/>
+            <restriction
+                android:defaultValue="@string/account_setup_incoming_security_ssl_label"
+                android:key="incoming_mail_settings_security_type"
+                android:restrictionType="choice"
+                android:entries="@array/mail_settings_security_type_entries"
+                android:entryValues="@array/mail_settings_security_type_values"
+                android:title="@string/account_setup_incoming_security_label"/>
+            <restriction
+                android:defaultValue="@integer/mail_settings_incoming_port_default"
+                android:key="incoming_mail_settings_port"
+                android:restrictionType="integer"
+                android:title="@string/account_setup_incoming_port_label"/>
+            <restriction
+                android:defaultValue=""
+                android:key="incoming_mail_settings_user_name"
+                android:restrictionType="string"
+                android:title="@string/account_setup_incoming_username_label"/>
+
+            <restriction
+                android:defaultValue="@string/account_authentication_type_default"
+                android:key="incoming_mail_settings_auth_type"
+                android:restrictionType="choice"
+                android:entries="@array/account_authentication_type_entries"
+                android:entryValues="@array/account_authentication_type_values"
+                android:title="@string/account_authentication_type_title"/>
+        </restriction>
+
+        <restriction
+            android:description="@string/account_settings_outgoing_summary"
+            android:key="outgoing_mail_settings"
+            android:restrictionType="bundle"
+            android:title="@string/account_settings_outgoing_label">
+
+            <restriction
+                android:defaultValue=""
+                android:key="outgoing_mail_settings_server"
+                android:restrictionType="string"
+                android:title="@string/account_setup_outgoing_smtp_server_label"/>
+            <restriction
+                android:defaultValue="@string/account_setup_incoming_security_tls_label"
+                android:key="outgoing_mail_settings_security_type"
+                android:restrictionType="choice"
+                android:entries="@array/mail_settings_security_type_entries"
+                android:entryValues="@array/mail_settings_security_type_values"
+                android:title="@string/account_setup_outgoing_security_label"/>
+            <restriction
+                android:defaultValue="@integer/mail_settings_outgoing_port_default"
+                android:key="outgoing_mail_settings_port"
+                android:restrictionType="integer"
+                android:title="@string/account_setup_outgoing_port_label"/>
+            <restriction
+                android:defaultValue=""
+                android:key="outgoing_mail_settings_user_name"
+                android:restrictionType="string"
+                android:title="@string/account_setup_outgoing_username_label"/>
+            <restriction
+                android:defaultValue="@string/account_authentication_type_default"
+                android:key="outgoing_mail_settings_auth_type"
+                android:restrictionType="choice"
+                android:entries="@array/account_authentication_type_entries"
+                android:entryValues="@array/account_authentication_type_values"
+                android:title="@string/account_authentication_type_title"/>
+        </restriction>
+    </restriction>
+
+</restrictions>

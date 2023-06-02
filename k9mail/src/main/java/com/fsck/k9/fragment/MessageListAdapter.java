@@ -21,8 +21,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import foundation.pEp.jniadapter.Rating;
 
 import static android.view.View.GONE;
@@ -151,9 +151,9 @@ public class MessageListAdapter extends CursorAdapter {
         Address[] ccAddrs = Address.unpack(ccList);
         Rating pEpRating;
         try {
-            pEpRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            pEpRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
         } catch (IllegalArgumentException ex) {
-            pEpRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            pEpRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
         }
         boolean fromMe = fragment.messageHelper.toMe(account, fromAddrs);
 
@@ -208,6 +208,9 @@ public class MessageListAdapter extends CursorAdapter {
         );
     }
 
+    public boolean isClosed() {
+        return getCursor()!= null && getCursor().isClosed();
+    }
     private void setSwipeLayout(View view) {
         SwipeLayout swipeView = view.findViewById(R.id.swipe_container);
         swipeView.addDrag(SwipeLayout.DragEdge.Left, swipeView.findViewById(R.id.archive_email_container));

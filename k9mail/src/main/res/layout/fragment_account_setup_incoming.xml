@@ -2,8 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment">
+    tools:context="com.fsck.k9.planck.ui.fragments.AccountSetupIncomingFragment">
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -102,6 +103,12 @@
                 android:fontFamily="sans-serif"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/account_password_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                custom:passwordToggleEnabled="true"
+                custom:passwordToggleContentDescription="@string/account_setup_basics_show_password">
             <EditText
                 android:id="@+id/account_password"
                 android:inputType="textPassword"
@@ -109,6 +116,7 @@
                 android:fontFamily="sans-serif"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent" />
+            </com.google.android.material.textfield.TextInputLayout>
             <TextView
                 android:id="@+id/account_client_certificate_label"
                 android:text="@string/account_setup_incoming_client_certificate_label"

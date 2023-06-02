@@ -4,10 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    tools:context="com.fsck.k9.activity.SettingsActivity">
+    tools:context="com.fsck.k9.planck.ui.fragments.AccountSetupBasicsFragment">
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingLeft="16dp"
@@ -39,16 +39,8 @@
                     android:contentDescription="@string/account_settings_email_label"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <Spinner
-                android:id="@+id/account_spinner"
-                android:hint="@string/account_setup_basics_email_hint"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-            </Spinner>
-
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/account_password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 custom:passwordToggleEnabled="true"
@@ -73,17 +65,13 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
-            <CheckBox
-                android:id="@+id/account_oauth2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:text="@string/account_setup_basics_oauth2_token" />
+
             <com.fsck.k9.view.FoldableLinearLayout
                 android:id="@+id/foldable_advanced_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:visibility="gone"
                 custom:foldedLabel="@string/client_certificate_advanced_options"
                 custom:unFoldedLabel="@string/client_certificate_advanced_options" >
 
@@ -97,10 +85,6 @@
 
             </com.fsck.k9.view.FoldableLinearLayout>
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="0dip"
-                android:layout_weight="1" />
         </LinearLayout>
     </ScrollView>
 

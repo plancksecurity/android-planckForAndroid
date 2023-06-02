@@ -18,8 +18,8 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mailstore.LocalMessage;
 
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.permissions.PermissionChecker;
+import security.planck.ui.permissions.PlanckPermissionChecker;
 
 public class MessageHelper {
     /**
@@ -49,7 +49,7 @@ public class MessageHelper {
 
     private MessageHelper(final Context context) {
         mContext = context;
-        this.permissionChecker = new PEpPermissionChecker(context.getApplicationContext());
+        this.permissionChecker = new PlanckPermissionChecker(context.getApplicationContext());
     }
 
     public void populate(final MessageInfoHolder target,

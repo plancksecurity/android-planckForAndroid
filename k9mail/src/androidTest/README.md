@@ -1,17 +1,45 @@
+## Running instrumentation tests (excluding screenshots and AppRestrictions ones)
+
+### Running from IDE
+
+* Run Cucumber instrumentation tests: Edit configurations -> Instrumentation Arguments -> Add boolean parameter `useCucumber` under "instrumentation extra params".
+* Run "plain" Espresso instrumentation tests : Nothing needed, just run normally.
+
+### Running from command line
+* Run Cucumber instrumentation tests: `./gradlew cucumberTest`
+* Run "plain" Espresso instrumentation tests : `./gradldew connectedCheck`
+* Run all instrumentation tests (both "plain" Espresso and Cucumber instrumentation tests): `./gradldew connectedCheckAll`
+
+### Running any instrumentation tests from gradle on release build
+* `./gradlew -PtestBuildType="release" <test task>`
+
+### Running on already installed app
+* Command: `./gradlew customTest`. 
+* Applicable project properties:
+  * `-PtestBuildType` (build type for tests, "release" or "debug". Default `debug`)
+  * `-Pflavor` (build variant or flavor. Default `enterprisePlayStore`)
+  * `-Pwork` (whether to run tests on work profile. Default `false`)
+  * `-PuseFakeManager` (whether to use FakeRestrictionsManager for the tests. Default `false`)
+  * `-Pdevice` (which device to run tests on, when we have several devices connected, result of `adb devices`. Default `null`)
+  * `-PuseCucumber` (whether to run Cucumber or "plain Espresso" tests. Default `false`)
+  * `-Pverbose` (more verbose output. Default `false`)
+
+* Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" -PuseCucumber=true -Pverbose=true`
+
 
 ## generate app screenshots 
 
 Prerequisites:
 
 - This globals settings need to be added
-    PEP_TEST_EMAIL_ADDRESS
-    PEP_TEST_EMAIL_PASSWORD
-    PEP_TEST_EMAIL_SERVER
+    PLANCK_TEST_EMAIL_ADDRESS
+    PLANCK_TEST_EMAIL_PASSWORD
+    PLANCK_TEST_EMAIL_SERVER
 
     Example:
-    export PEP_TEST_EMAIL_ADDRESS=account@server.com
-    export PEP_TEST_EMAIL_PASSWORD=password
-    export PEP_TEST_EMAIL_SERVER=server.com
+    export PLANCK_TEST_EMAIL_ADDRESS=account@server.com
+    export PLANCK_TEST_EMAIL_PASSWORD=password
+    export PLANCK_TEST_EMAIL_SERVER=server.com
 
 - A k9 settings should be added to the device downloads folder with name "stubAccount.k9s"
 
@@ -25,3 +53,28 @@ Prerequisites:
 
 Command:
    ./gradlew generateScreenshots
+
+
+## AppRestrictions test 
+
+1. install and run https://pep-security.lu/gitlab/francisco/apprestrictionenforcer
+
+2. get adb users:
+    adb shell pm list users
+    - example output:
+        Users:
+            UserInfo{0:Owner:13} running
+            UserInfo{44:pEpMdmEnforcer:30} running
+            Use the pEpMdmEnforcer one, in this case, 44
+3. run command:
+    ./gradlew testRestrictions -Puser=<user_id>
+    - change <user_id> to pEpMdmEnforcer created user
+
+## Add account
+
+Cleans the app and adds ANDROID_DEV_TEST_1_ADDRESS to app
+
+This task needs the app to be installed
+
+Command:
+   ./gradlew setupAccount

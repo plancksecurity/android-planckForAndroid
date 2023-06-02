@@ -13,7 +13,7 @@ import com.fsck.k9.mail.filter.CountingOutputStream;
 import com.fsck.k9.mail.filter.EOLConvertingOutputStream;
 import timber.log.Timber;
 
-public abstract class Message implements Part, Body {
+public abstract class Message implements Part, Body, TransitoryFileBody {
 
     public enum RecipientType {
         TO, CC, BCC, X_ORIGINAL_TO, DELIVERED_TO, X_ENVELOPE_TO

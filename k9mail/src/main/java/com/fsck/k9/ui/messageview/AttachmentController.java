@@ -10,9 +10,9 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import androidx.annotation.WorkerThread;
-import timber.log.Timber;
 import android.view.View;
+
+import androidx.annotation.WorkerThread;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -28,7 +28,10 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.planck.MediaStoreUtilsKt;
+import com.fsck.k9.planck.UriUtilsKt;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentTempFileProvider;
 
 import org.apache.commons.io.IOUtils;
@@ -39,6 +42,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 public class AttachmentController {
@@ -144,11 +149,13 @@ public class AttachmentController {
 
     private File saveAttachmentWithUniqueFileName(File directory) throws IOException {
         String filename = FileHelper.sanitizeFilename(attachment.displayName);
-        File file = FileHelper.createUniqueFile(directory, filename);
+        File file;
 
-        writeAttachmentToStorage(file);
+        file = writeAttachmentToMediaStoreDownloads(filename);
 
-        addSavedAttachmentToDownloadsDatabase(file);
+        if (file != null) {
+            addSavedAttachmentToDownloadsDatabase(file);
+        }
 
         return file;
     }
@@ -166,6 +173,17 @@ public class AttachmentController {
         } finally {
             in.close();
         }
+    }
+
+    private File writeAttachmentToMediaStoreDownloads(String filename) throws IOException {
+        InputStream in = context.getContentResolver().openInputStream(attachment.internalUri);
+        Uri mediaStoreUri = MediaStoreUtilsKt.saveToDownloads(
+                in, context, attachment.mimeType, filename, null);
+        if (mediaStoreUri != null) {
+            String absolutePath =
+                    UriUtilsKt.getMediaStoreAbsoluteFilePathOrNull(mediaStoreUri, context);
+            return absolutePath != null ? new File(absolutePath) : null;
+        } else return null;
     }
 
     private void addSavedAttachmentToDownloadsDatabase(File file) {
@@ -356,7 +374,7 @@ public class AttachmentController {
             try {
                 File directory = params[0];
                 return saveAttachmentWithUniqueFileName(directory);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Timber.e(e, "Error saving attachment");
                 return null;
             }
@@ -369,5 +387,16 @@ public class AttachmentController {
                 displayAttachmentNotSavedMessage();
             }
         }
+    }
+
+    public static AttachmentViewInfo findCalendarInviteAttachment(MessageViewInfo messageViewInfo) {
+        if (messageViewInfo.attachments != null) {
+            for (AttachmentViewInfo attachmentViewInfo : messageViewInfo.attachments) {
+                if ("text/calendar".equals(attachmentViewInfo.mimeType)) {
+                    return attachmentViewInfo;
+                }
+            }
+        }
+        return null;
     }
 }

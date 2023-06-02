@@ -7,7 +7,7 @@
     android:paddingLeft="16dp"
     android:background="?attr/screenDefaultBackgroundColor">
 
-    <com.fsck.k9.pEp.ui.PEpContactBadge
+    <com.fsck.k9.planck.ui.PlanckContactBadge
         android:id="@+id/status_badge"
         style="?android:attr/quickContactBadgeStyleWindowLarge"
         android:layout_width="52dp"

@@ -16,16 +16,18 @@ import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.message.html.HtmlConverter;
+import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.AttachmentResolver;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 
 public class MessageWebView extends RigidWebView {
 
     private static final String NEW_BODY_START = "<body style=\"overflow-wrap: break-word; word-wrap: break-word;\">";
+    private OnHtmlSetListener onHtmlSetListener;
 
     public MessageWebView(Context context) {
         super(context);
@@ -136,6 +138,10 @@ public class MessageWebView extends RigidWebView {
         setHtmlContent(htmlText);
     }
 
+    public void setOnHtmlSetListener(OnHtmlSetListener onHtmlSetListener) {
+        this.onHtmlSetListener = onHtmlSetListener;
+    }
+
     private void setWebViewClient(@Nullable AttachmentResolver attachmentResolver,
             @Nullable OnPageFinishedListener onPageFinishedListener) {
         K9WebViewClient webViewClient = K9WebViewClient.newInstance(attachmentResolver);
@@ -153,6 +159,10 @@ public class MessageWebView extends RigidWebView {
     private void setHtmlContent(@NonNull String htmlText) {
         String html = forceBreakWordsHeader(htmlText);
         html = removeAllHttp(html);
+        if (onHtmlSetListener != null) {
+            String text = HtmlConverter.htmlToText(html);
+            onHtmlSetListener.onHtmlSet(text);
+        }
         loadDataWithBaseURL("about:blank", html, "text/html", "utf-8", null);
         resumeTimers();
     }
@@ -179,5 +189,9 @@ public class MessageWebView extends RigidWebView {
 
     public interface OnPageFinishedListener {
         void onPageFinished(WebView webView);
+    }
+
+    public interface OnHtmlSetListener {
+        void onHtmlSet(String htmlText);
     }
 }

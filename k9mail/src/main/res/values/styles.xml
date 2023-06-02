@@ -54,7 +54,7 @@
         <item name="android:tint">?attr/tintColorBulletPointNegative</item>
     </style>
 
-    <style name="pEpIndicatorTVActionBarStyle">
+    <style name="planckIndicatorTVActionBarStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:fontFamily">@font/univers_lts_sd</item>
         <item name="android:layout_height">match_parent</item>
@@ -91,31 +91,31 @@
         <item name="android:textColorSecondary">?attr/defaultToolbarTextColor</item>
     </style>
 
-    <style name="PEpStyleButton" parent="Theme.AppCompat.Light">
+    <style name="planckStyleButton" parent="Theme.AppCompat.Light">
         <item name="android:textColor">?attr/defaultButtonTextColor</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="PEpStyleButton.Red">
+    <style name="planckStyleButton.Red">
         <item name="colorControlHighlight">@color/dark_red</item>
         <item name="colorButtonNormal">?attr/rejectButtonDefaultColor</item>
     </style>
 
-    <style name="PEpStyleButton.Green">
-        <item name="colorControlHighlight">@color/pep_green</item>
+    <style name="planckStyleButton.Green">
+        <item name="colorControlHighlight">@color/planck_green</item>
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="PEpStyleButton.Grey">
+    <style name="planckStyleButton.Grey">
         <item name="colorControlHighlight">?attr/grayScaleColorOnBackground2</item>
-        <item name="colorButtonNormal">@color/pep_no_color</item>
+        <item name="colorButtonNormal">@color/planck_no_color</item>
     </style>
 
-    <style name="PEpThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
+    <style name="planckThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
     </style>
 
-    <style name="PEpThemeOverlay2" parent="Theme.AppCompat.Light">
+    <style name="planckThemeOverlay2" parent="Theme.AppCompat.Light">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -167,74 +167,6 @@
         <item name="android:textColor">?attr/dialogBodyDefaultTextColor</item>
     </style>
 
-    <style name="FilePickerTheme.Light" parent="NNF_BaseTheme.Light">
-        <!-- Set these to match your theme -->
-        <item name="colorPrimary">@color/pep_green</item>
-        <item name="colorPrimaryDark">@color/pep_green</item>
-        <item name="colorAccent">@color/pep_green</item>
-
-        <!-- Setting a divider is entirely optional -->
-        <item name="nnf_list_item_divider">?android:attr/listDivider</item>
-
-        <!-- Need to set this also to style create folder dialog -->
-        <item name="alertDialogTheme">@style/FilePickerAlertDialogTheme</item>
-
-        <!-- If you want to set a specific toolbar theme, do it here -->
-        <!-- <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item> -->
-    </style>
-
-    <style name="FilePickerTheme.Dark" parent="NNF_BaseTheme.Dark">
-        <!-- Set these to match your theme -->
-        <item name="colorPrimary">@color/pep_green</item>
-        <item name="colorPrimaryDark">@color/pep_green</item>
-        <item name="colorAccent">@color/pep_green</item>
-
-        <!-- Setting a divider is entirely optional -->
-        <item name="nnf_list_item_divider">?android:attr/listDivider</item>
-
-        <!-- Need to set this also to style create folder dialog -->
-        <item name="alertDialogTheme">@style/FilePickerAlertDialogTheme</item>
-
-        <!-- If you want to set a specific toolbar theme, do it here -->
-        <!-- <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item> -->
-    </style>
-
-    <style name="FilePickerAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/pep_green</item>
-        <item name="colorPrimaryDark">@color/pep_green</item>
-        <item name="colorAccent">@color/pep_green</item>
-        <item name="android:background">?attr/defaultDialogBackground</item>
-        <item name="android:textColorPrimary">?attr/defaultColorOnBackground</item>
-    </style>
-
-    <style name="NNF_BaseTheme.Dark" parent="Theme.AppCompat.DialogWhenLarge">
-        <!-- You can override this in your sub theme -->
-        <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.ActionBar</item>
-        <item name="nnf_separator_color">@color/nnf_dark_separator_color</item>
-        <item name="nnf_save_icon_color">?attr/colorAccent</item>
-        <item name="nnf_dir_icon_color">?attr/colorAccent</item>
-        <item name="android:statusBarColor">@color/dark_theme_overlay_1</item>
-        <item name="android:windowBackground">?attr/screenDefaultBackgroundColor</item>
-        <item name="android:textColorPrimary">@color/dark_theme_text_color_primary</item>
-
-        <!-- These are important. Handled by toolbar. -->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="NNF_BaseTheme.Light" parent="Theme.AppCompat.Light.DialogWhenLarge">
-        <!-- You can override this in your sub theme -->
-        <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.ActionBar</item>
-        <item name="nnf_separator_color">@color/nnf_light_separator_color</item>
-        <item name="nnf_save_icon_color">?attr/colorAccent</item>
-        <item name="nnf_dir_icon_color">?attr/colorAccent</item>
-        <item name="android:windowBackground">?attr/screenDefaultBackgroundColor</item>
-
-        <!-- These are important. Handled by toolbar. -->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
     <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textColor">?attr/negativeButtonColor</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
@@ -246,7 +178,7 @@
     </style>
 
     <style name="RedButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/pep_red</item>
+        <item name="android:textColor">@color/planck_red</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
@@ -281,5 +213,48 @@
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
     </style>
+
+    <style name="CalendarInviteScreen">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">24dp</item>
+        <item name="android:background">@drawable/calendar_event_background</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+    </style>
+
+    <style name="AccountSelectAuthScreen">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/background_startup</item>
+        <item name="android:paddingStart">32dp</item>
+        <item name="android:paddingEnd">32dp</item>
+    </style>
+
+    <style name="AccountSelectAuthScreen.plancklogo" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="srcCompat">@drawable/planck_logo_green_60</item>
+        <item name="tint">@color/white_transparent_70</item>
+    </style>
+
+    <style name="PermissionsScreen">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="PermissionsScreen.planckLogo" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="srcCompat">@drawable/planck_logo_green_60</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
 </resources>
 

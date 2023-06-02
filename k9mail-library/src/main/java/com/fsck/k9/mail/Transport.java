@@ -3,7 +3,6 @@ package com.fsck.k9.mail;
 
 import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.transport.smtp.SmtpTransport;
-import com.fsck.k9.mail.transport.WebDavTransport;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -26,13 +25,10 @@ public abstract class Transport {
      * @return A {@link ServerSettings} object holding the settings contained in the URI.
      *
      * @see SmtpTransport#decodeUri(String)
-     * @see WebDavTransport#decodeUri(String)
      */
     public static ServerSettings decodeTransportUri(String uri) {
         if (uri.startsWith("smtp")) {
             return SmtpTransport.decodeUri(uri);
-        } else if (uri.startsWith("webdav")) {
-            return WebDavTransport.decodeUri(uri);
         } else {
             throw new IllegalArgumentException("Not a valid transport URI");
         }
@@ -47,13 +43,10 @@ public abstract class Transport {
      * @return A transport URI that holds the same information as the {@code server} parameter.
      *
      * @see SmtpTransport#createUri(ServerSettings)
-     * @see WebDavTransport#createUri(ServerSettings)
      */
     public static String createTransportUri(ServerSettings server) {
         if (Type.SMTP == server.type) {
             return SmtpTransport.createUri(server);
-        } else if (Type.WebDAV == server.type) {
-            return WebDavTransport.createUri(server);
         } else {
             throw new IllegalArgumentException("Not a valid transport URI");
         }

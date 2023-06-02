@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFourthFragment"
+            tools:context="com.fsck.k9.security.planck.ui.intro.IntroFourthFragment"
             android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_privacy_status" />
 
 
-            <com.fsck.k9.pEp.ui.PEpContactBadge
+            <com.fsck.k9.planck.ui.PlanckContactBadge
                 android:id="@+id/secureBadge"
                 android:layout_width="@dimen/intro_contact_badge_width_height"
                 android:layout_height="@dimen/intro_contact_badge_width_height"
@@ -60,7 +60,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/image" />
 
-            <com.fsck.k9.pEp.ui.PEpContactBadge
+            <com.fsck.k9.planck.ui.PlanckContactBadge
                 android:id="@+id/secureTrustedBadge"
                 android:layout_width="@dimen/intro_contact_badge_width_height"
                 android:layout_height="@dimen/intro_contact_badge_width_height"

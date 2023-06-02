@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.loader.app.LoaderManager;
@@ -20,6 +21,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.AttachErrorState;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.ComposeCryptoStatusBuilder;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
@@ -34,8 +36,9 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.infrastructure.Poller;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
@@ -49,13 +52,14 @@ import java.util.Collections;
 import java.util.List;
 
 import foundation.pEp.jniadapter.Rating;
+import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
-import static com.fsck.k9.pEp.ui.PepColoredActivity.CURRENT_RATING;
-import static com.fsck.k9.pEp.ui.privacy.status.PEpStatus.REQUEST_STATUS;
+import static com.fsck.k9.planck.ui.PlanckColoredActivity.CURRENT_RATING;
+import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.REQUEST_STATUS;
 
 
-public class RecipientPresenter {
+public class RecipientPresenter implements EchoMessageReceivedListener {
     private static final String STATE_KEY_CC_SHOWN = "state:ccShown";
     private static final String STATE_KEY_BCC_SHOWN = "state:bccShown";
     private static final String STATE_KEY_LAST_FOCUSED_TYPE = "state:lastFocusedType";
@@ -72,6 +76,8 @@ public class RecipientPresenter {
     public static final String STATE_RATING = "rating";
 
     private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
+    private static final int ZERO_RECIPIENTS = 0;
+    private static final int ONE_ADDRESS = 1;
 
 
     // transient state, which is either obtained during construction and initialization, or cached
@@ -88,7 +94,7 @@ public class RecipientPresenter {
     private OpenPgpApiManager openPgpApiManager;
 
     private OpenPgpServiceConnection openPgpServiceConnection;
-    private PEpProvider pEp;
+    private PlanckProvider planck;
 
     // persistent state, saved during onSaveInstanceState
     private RecipientType lastFocusedType = RecipientType.TO;
@@ -97,24 +103,21 @@ public class RecipientPresenter {
     private boolean cryptoEnablePgpInline = false;
     private boolean forceUnencrypted = false;
     private boolean isAlwaysSecure = false;
-    private List<Address> toAdresses;
-    private List<Address> ccAdresses;
-    private List<Address> bccAdresses;
     private Rating privacyState = Rating.pEpRatingUnencrypted;
-    private boolean dirty;
     private boolean isReplyToEncryptedMessage = false;
+    private long lastRequestTime;
 
 
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
             OpenPgpApiManager openPgpApiManager, RecipientMvpView recipientMvpView, Account account,
             ComposePgpInlineDecider composePgpInlineDecider,
-            PEpProvider pEpProvider,
+            PlanckProvider planckProvider,
             ReplyToParser replyToParser, RecipientsChangedListener recipientsChangedListener) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
-        this.pEp = pEpProvider;
+        this.planck = planckProvider;
         this.listener = recipientsChangedListener;
         this.openPgpApiManager = openPgpApiManager;
 
@@ -122,10 +125,9 @@ public class RecipientPresenter {
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
         updateCryptoStatus();
-        setupPEPStatusPolling();
     }
 
-    private void setupPEPStatusPolling() {
+    private void setupPlanckStatusPolling() {
         if (poller == null) {
             poller = new Poller(new Handler());
             poller.init(POLLING_INTERVAL, this::loadPEpStatus);
@@ -145,6 +147,22 @@ public class RecipientPresenter {
 
     public List<Address> getBccAddresses() {
         return recipientMvpView.getBccAddresses();
+    }
+
+    public void clearUnsecureRecipients() {
+        recipientMvpView.clearUnsecureRecipients();
+    }
+
+    public void startHandshakeWithSingleRecipient(MessageReference relatedMessageReference) {
+        recipientMvpView.refreshRecipients();
+        if (canHandshakeSingleAddress(
+                recipientMvpView.getToAddresses(),
+                recipientMvpView.getCcAddresses(),
+                recipientMvpView.getBccAddresses()
+        )) {
+            recipientMvpView.setMessageReference(relatedMessageReference);
+            onPEpPrivacyStatus();
+        }
     }
 
     private List<Recipient> getAllRecipients() {
@@ -177,7 +195,7 @@ public class RecipientPresenter {
             return true;
         }
 
-        if (getToAddresses().isEmpty() && getCcAddresses().isEmpty() && getBccAddresses().isEmpty()) {
+        if (addressesAreEmpty(getToAddresses(), getCcAddresses(), getBccAddresses())) {
             recipientMvpView.showNoRecipientsError();
             return true;
         }
@@ -233,12 +251,10 @@ public class RecipientPresenter {
         isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
-        recipientMvpView.setpEpRating(privacyState);
-        setupPEPStatusPolling();
+        recipientMvpView.setPlanckRating(privacyState);
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        poller.stopPolling();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
@@ -283,7 +299,6 @@ public class RecipientPresenter {
 
     public void addBccAddresses(Address... bccRecipients) {
         if (bccRecipients.length > 0) {
-            forceUnencrypted = true;
             addRecipientsFromAddresses(RecipientType.BCC, bccRecipients);
             String bccAddress = account.getAlwaysBcc();
 
@@ -319,7 +334,9 @@ public class RecipientPresenter {
             menu.findItem(R.id.openpgp_sign_only_disable).setVisible(false);
         }*/
 
-        menu.findItem(R.id.privacyStatus).setVisible(getAllRecipients().size() > 0);
+        menu.findItem(R.id.privacyStatus).setVisible(
+                K9.isUsingTrustwords() && getAllRecipients().size() > 0
+        );
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
@@ -411,7 +428,7 @@ public class RecipientPresenter {
 
     public void updateCryptoStatus() {
         cachedCryptoStatus = null;
-        handlepEpState();
+        loadPEpStatus();
 
         OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
 
@@ -482,16 +499,12 @@ public class RecipientPresenter {
     }
 
     void onBccTokenAdded() {
-        forceUnencrypted = true;
         updateCryptoStatus();
-        dirty = true;
         listener.onRecipientsChanged();
     }
 
     void onBccTokenRemoved() {
-        forceUnencrypted = false;
         updateCryptoStatus();
-        dirty = true;
         listener.onRecipientsChanged();
     }
 
@@ -584,7 +597,7 @@ public class RecipientPresenter {
             boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
             boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
             if (forceUncrypted != this.forceUnencrypted) {
-                switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
+                switchPrivacyProtection(PlanckProvider.ProtectionScope.MESSAGE);
             }
             if (alwaysSecure != this.isAlwaysSecure) {
                 setAlwaysSecure(alwaysSecure);
@@ -772,7 +785,8 @@ public class RecipientPresenter {
     }
 
 
-    public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... protection) {
+    public void switchPrivacyProtection(PlanckProvider.ProtectionScope scope, boolean... protection) {
+        List<Address> bccAdresses = recipientMvpView.getBccAddresses();
         if (bccAdresses == null || bccAdresses.size() == 0) {
             switch (scope) {
                 case MESSAGE:
@@ -789,8 +803,7 @@ public class RecipientPresenter {
         } else {
             forceUnencrypted = !forceUnencrypted;
         }
-        dirty = true;
-        handlepEpState();
+        updateCryptoStatus();
     }
 
     public boolean isForceUnencrypted() {
@@ -802,30 +815,20 @@ public class RecipientPresenter {
     }
 
     public void onResume() {
-        toAdresses = getToAddresses();
-        ccAdresses = getCcAddresses();
-        bccAdresses = getBccAddresses();
-
-        dirty = true;
-
-        this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
-        setupPEPStatusPolling();
-    }
-
-    public void onPause() {
-        poller.stopPolling();
+        refreshRecipients();
+        updateCryptoStatus();
     }
 
     public void onPEpPrivacyStatus() {
         recipientMvpView.onPEpPrivacyStatus();
     }
 
-    public void handlepEpState(boolean... withToast) {
-        recipientMvpView.handlepEpState(withToast);
+    public void handlepEpState() {
+        recipientMvpView.handlepEpState(getAllRecipients().isEmpty());
     }
 
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
-        Rating currentRating = recipientMvpView.getpEpRating();
+        Rating currentRating = recipientMvpView.getPlanckRating();
         return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
     }
 
@@ -841,6 +844,16 @@ public class RecipientPresenter {
     public boolean shouldSaveRemotely() {
         // TODO more appropriate logic?
         return cachedCryptoStatus == null || !cachedCryptoStatus.isEncryptionEnabled();
+    }
+
+    @Override
+    public void echoMessageReceived(@NonNull String from, @NonNull String to) {
+        updateCryptoStatus();
+        if (account.isPlanckPrivacyProtected() && K9.isPlanckForwardWarningEnabled()) {
+            if (to.equalsIgnoreCase(recipientMvpView.getFromAddress().getAddress())) {
+                recipientMvpView.updateRecipientsFromEcho(from);
+            }
+        }
     }
 
     public interface RecipientsChangedListener {
@@ -885,45 +898,96 @@ public class RecipientPresenter {
         List<Address> newToAdresses = recipientMvpView.getToAddresses();
         List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
         List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
-        toAdresses = initializeAdresses(toAdresses);
-        ccAdresses = initializeAdresses(ccAdresses);
-        bccAdresses = initializeAdresses(bccAdresses);
         if (privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
             showDefaultStatus();
             recipientMvpView.messageRatingLoaded();
             return;
         }
-        if (fromAddress != null
-                && (dirty
-                || addressesChanged(toAdresses, newToAdresses)
-                || addressesChanged(ccAdresses, newCcAdresses)
-                || addressesChanged(bccAdresses, newBccAdresses))) {
-            dirty = false;
-            toAdresses = newToAdresses;
-            ccAdresses = newCcAdresses;
-            bccAdresses = newBccAdresses;
-            recipientMvpView.messageRatingIsBeingLoaded();
-            pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-            pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
-                @Override
-                public void onLoaded(Rating rating) {
-                    if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
-                        showDefaultStatus();
-                    } else {
-                        privacyState = rating;
-                        showRatingFeedback(rating);
-                    }
-                    recipientMvpView.messageRatingLoaded();
+        recipientMvpView.messageRatingIsBeingLoaded();
+        long requestTime = System.currentTimeMillis();
+        lastRequestTime = requestTime;
+        planck.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PlanckProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                if (isRequestOutdated(requestTime)) {
+                    return;
                 }
-
-                @Override
-                public void onError(Throwable throwable) {
+                if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
                     showDefaultStatus();
-                    recipientMvpView.messageRatingLoaded();
+                    handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
+                } else {
+                    privacyState = rating;
+                    handleSingleAddressHandshakeFeedback(newToAdresses, newCcAdresses, newBccAdresses);
+                    showRatingFeedback(rating);
                 }
-            });
-        }
+                recipientMvpView.messageRatingLoaded();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                recipientMvpView.showError(throwable);
+                if (isRequestOutdated(requestTime)) {
+                    return;
+                }
+                showDefaultStatus();
+                recipientMvpView.messageRatingLoaded();
+            }
+        });
         recipientMvpView.messageRatingLoaded();
+    }
+
+    private boolean isRequestOutdated(long requestTime) {
+        return lastRequestTime > requestTime;
+    }
+
+    private boolean addressesAreEmpty(List<Address> newToAdresses, List<Address> newCcAdresses, List<Address> newBccAdresses) {
+        return newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty();
+    }
+
+    public void handleUnsecureDeliveryWarning() {
+        int unsecureRecipientsCount = K9.isPlanckForwardWarningEnabled()
+                && account.isPlanckPrivacyProtected()
+                ? getUnsecureRecipientsCount()
+                : ZERO_RECIPIENTS;
+        handleUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    private void handleUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        if (unsecureRecipientsCount > ZERO_RECIPIENTS) {
+            recipientMvpView.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+        } else {
+            recipientMvpView.hideUnsecureDeliveryWarning();
+        }
+    }
+
+    private void handleSingleAddressHandshakeFeedback(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        if (canHandshakeSingleAddress(newToAdresses, newCcAdresses, newBccAdresses)) {
+            recipientMvpView.showSingleRecipientHandshakeBanner();
+        } else {
+            recipientMvpView.hideSingleRecipientHandshakeBanner();
+        }
+    }
+
+    private boolean canHandshakeSingleAddress(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        if (!newBccAdresses.isEmpty()) return false;
+        List<Address> candidates = new ArrayList<>();
+        candidates.addAll(newToAdresses);
+        candidates.addAll(newCcAdresses);
+        return candidates.size() == ONE_ADDRESS && PlanckUtils.isHandshakeRating(privacyState);
+    }
+
+    private int getUnsecureRecipientsCount() {
+        return recipientMvpView.getToUnsecureRecipientCount() +
+                recipientMvpView.getCcUnsecureRecipientCount() +
+                recipientMvpView.getBccUnsecureRecipientCount();
     }
 
     private void showDefaultStatus() {
@@ -932,18 +996,15 @@ public class RecipientPresenter {
     }
 
     private void showRatingFeedback(Rating rating) {
-        recipientMvpView.setpEpRating(rating);
+        recipientMvpView.setPlanckRating(rating);
         handlepEpState();
     }
 
-    private List<Address> initializeAdresses(List<Address> addresses) {
-        if(addresses == null) {
-            addresses = Collections.emptyList();
-        }
-        return addresses;
-    }
-
-    private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
-        return !oldAdresses.equals(newAdresses);
+    public void refreshRecipients() {
+        recipientMvpView.notifyRecipientsChanged(
+                recipientMvpView.getToRecipients(),
+                recipientMvpView.getCcRecipients(),
+                recipientMvpView.getBccRecipients()
+        );
     }
 }

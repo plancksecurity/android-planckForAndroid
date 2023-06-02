@@ -1,5 +1,21 @@
 package com.fsck.k9.activity.compose;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
@@ -7,45 +23,34 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.loader.app.LoaderManager;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.helper.ReplyToParser;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.message.ComposePgpInlineDecider;
-import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
+@LooperMode(LEGACY)
 //@Config(shadows = { ShadowOpenPgpAsyncTask.class })
-public class RecipientPresenterTest {
+public class RecipientPresenterTest extends RobolectricTest {
     private static final ReplyToParser.ReplyToAddresses TO_ADDRESSES = new ReplyToParser.ReplyToAddresses(Address.parse("to@example.org"));
     private static final List<Address> ALL_TO_ADDRESSES = Arrays.asList(Address.parse("allTo@example.org"));
     private static final List<Address> ALL_CC_ADDRESSES = Arrays.asList(Address.parse("allCc@example.org"));
@@ -65,7 +70,7 @@ public class RecipientPresenterTest {
     public void setUp() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
 
-        PEpProvider pEpProvider = mock(PEpProvider.class);
+        PlanckProvider planckProvider = mock(PlanckProvider.class);
 
         recipientMvpView = mock(RecipientMvpView.class);
         account = mock(Account.class);
@@ -82,7 +87,7 @@ public class RecipientPresenterTest {
                 recipientMvpView,
                 account,
                 composePgpInlineDecider,
-                pEpProvider,
+                planckProvider,
                 replyToParser, listener);
         recipientPresenter.updateCryptoStatus();
     }
@@ -139,7 +144,7 @@ public class RecipientPresenterTest {
         assertNull(status.getAttachErrorStateOrNull());
         assertFalse(status.isProviderStateOk());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(2)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -153,7 +158,7 @@ public class RecipientPresenterTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(3)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -168,7 +173,7 @@ public class RecipientPresenterTest {
         assertTrue(status.isEncryptionOpportunistic());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -182,7 +187,7 @@ public class RecipientPresenterTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isCryptoDisabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -196,7 +201,7 @@ public class RecipientPresenterTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -211,7 +216,7 @@ public class RecipientPresenterTest {
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
         verify(recipientMvpView).showOpenPgpSignOnlyDialog(true);
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -227,7 +232,7 @@ public class RecipientPresenterTest {
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
         verify(recipientMvpView).showOpenPgpInlineDialog(true);
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -282,6 +287,76 @@ public class RecipientPresenterTest {
     public void onBccTokenRemoved_notifiesListenerOfRecipientChange() {
         recipientPresenter.onBccTokenRemoved();
         verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void clearUnsecureRecipients_callsViewMethod() {
+        recipientPresenter.clearUnsecureRecipients();
+
+        verify(recipientMvpView).clearUnsecureRecipients();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void handleUnsecureDeliveryWarning_usesViewToHandleWarning() {
+        doReturn(true).when(account).isPlanckPrivacyProtected();
+        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
+            mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(true);
+
+
+            recipientPresenter.handleUnsecureDeliveryWarning();
+
+
+            verify(recipientMvpView).getToUnsecureRecipientCount();
+            verify(recipientMvpView).getCcUnsecureRecipientCount();
+            verify(recipientMvpView).getBccUnsecureRecipientCount();
+            verify(recipientMvpView).showUnsecureDeliveryWarning(6);
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfPEpIsDisabledForAccount() {
+        doReturn(false).when(account).isPlanckPrivacyProtected();
+        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
+            mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(true);
+
+
+            recipientPresenter.handleUnsecureDeliveryWarning();
+
+
+            verify(recipientMvpView, never()).getToUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
+            verify(recipientMvpView).hideUnsecureDeliveryWarning();
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfWarningSettingNotEnabled() {
+        doReturn(true).when(account).isPlanckPrivacyProtected();
+        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
+            mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(false);
+
+
+            recipientPresenter.handleUnsecureDeliveryWarning();
+
+
+            verify(recipientMvpView, never()).getToUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
+            verify(recipientMvpView).hideUnsecureDeliveryWarning();
+        }
     }
 
     private void setupCryptoProvider() throws android.os.RemoteException {

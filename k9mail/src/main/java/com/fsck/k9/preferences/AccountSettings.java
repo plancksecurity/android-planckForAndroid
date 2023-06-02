@@ -17,6 +17,7 @@ import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Account.Searchable;
 import com.fsck.k9.Account.ShowPictures;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.StorageManager;
@@ -30,6 +31,9 @@ import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
+
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -83,7 +87,9 @@ public class AccountSettings {
                         R.array.expunge_policy_values))
         ));
         s.put("folderDisplayMode", Settings.versions(
-                new V(1, new EnumSetting<>(FolderMode.class, FolderMode.NOT_SECOND_CLASS))
+                new V(1, new EnumSetting<>(
+                        FolderMode.class, Account.getDefaultFolderDisplayMode()
+                ))
         ));
         s.put("folderPushMode", Settings.versions(
                 new V(1, new EnumSetting<>(FolderMode.class, FolderMode.FIRST_CLASS))
@@ -92,7 +98,9 @@ public class AccountSettings {
                 new V(1, new EnumSetting<>(FolderMode.class, FolderMode.FIRST_CLASS))
         ));
         s.put("folderTargetMode", Settings.versions(
-                new V(1, new EnumSetting<>(FolderMode.class, FolderMode.NOT_SECOND_CLASS))
+                new V(1, new EnumSetting<>(
+                        FolderMode.class, Account.getDefaultFolderDisplayMode()
+                ))
         ));
         s.put("goToUnreadMessageSearch", Settings.versions(
                 new V(1, new BooleanSetting(false))
@@ -225,14 +233,52 @@ public class AccountSettings {
                 new V(42, new BooleanSetting(false))
             ));
         s.put("pEpPrivacyProtected", Settings.versions(
-                new V(45, new BooleanSetting(true))
-            ));
+                new V(45, new BooleanSetting(true)),
+                new V(52, new StringSetting(
+                        ManageableSettingKt.encodeBooleanToString(
+                                new ManageableSetting<>(true, BuildConfig.IS_ENTERPRISE)
+                        ))
+                )
+        ));
+        s.put("pEpSync", Settings.versions(
+                new V(53, new BooleanSetting(true))
+        ));
+        s.put("pEpStoreEncryptedOnServer", Settings.versions(
+                new V(53, new BooleanSetting(true))
+        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 
         // noinspection MismatchedQueryAndUpdateOfCollection, this map intentionally left blank
         Map<Integer, SettingsUpgrader> u = new HashMap<>();
+        u.put(52, new SettingsUpgraderV52());
+
         UPGRADERS = Collections.unmodifiableMap(u);
+    }
+
+
+    /**
+     * Upgrades the settings from version 51 to 52.
+     *
+     * <p>
+     * Convert boolean from <em>pEpPrivacyProtected</em> to
+     * String
+     * </p>
+     */
+    public static class SettingsUpgraderV52 implements SettingsUpgrader {
+
+        @Override
+        public Set<String> upgrade(Map<String, Object> settings) {
+            String settingId = "pEpPrivacyProtected";
+            Boolean oldValue = (Boolean) settings.get(settingId);
+
+            if (oldValue != null) {
+                String newValue = ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(oldValue, false));
+                settings.put(settingId, newValue);
+            }
+            return null;
+        }
+
     }
 
     static Map<String, Object> validate(int version, Map<String, String> importedSettings, boolean useDefaultValues) {

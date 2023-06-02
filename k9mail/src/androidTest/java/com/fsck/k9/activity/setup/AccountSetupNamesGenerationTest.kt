@@ -1,9 +1,11 @@
 package com.fsck.k9.activity.setup
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.ActivityTestRule
+import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.Account
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.Identity
@@ -23,10 +25,19 @@ class AccountSetupNamesGenerationTest {
     private val preferences = Preferences.getPreferences(context)
 
     @get:Rule
+    var permissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+        )
+
+    @get:Rule
     var namesRule = object : ActivityTestRule<AccountSetupNames>(AccountSetupNames::class.java) {
         override fun getActivityIntent(): Intent {
             account = preferences.newAccount().apply {
-                identities = listOf(Identity().apply { this.email = BuildConfig.PEP_TEST_EMAIL_ADDRESS })
+                identities = listOf(Identity().apply { this.email = BuildConfig.PLANCK_TEST_EMAIL_ADDRESS })
             }
 
             return Intent(ApplicationProvider.getApplicationContext(), AccountSetupNames::class.java).apply {
@@ -44,7 +55,11 @@ class AccountSetupNamesGenerationTest {
     fun doInBackgroundIsRunOnceAndShowProgressDialogIsRunEveryTimeWithRuleMock() {
         val activity = namesRule.activity
         val accountKeysGenerator: AccountSetupNames.AccountKeysGenerator = mock()
-        val generateAccountKeysTask = AccountSetupNames.pEpGenerateAccountKeysTask (activity, account)
+        val generateAccountKeysTask =
+            AccountSetupNames.PanckGenerateAccountKeysTask(
+                activity,
+                account
+            )
         generateAccountKeysTask.accountKeysGenerator = accountKeysGenerator
 
 

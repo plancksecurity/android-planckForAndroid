@@ -15,7 +15,7 @@ Feature: Handshake_1.2.9_HandshakeInNewMessage
 
     Then I click message compose
     And I fill messageTo field with bot1
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
 
   Click “Secure…”. You will see a new Window called “Privacy Status”.
 

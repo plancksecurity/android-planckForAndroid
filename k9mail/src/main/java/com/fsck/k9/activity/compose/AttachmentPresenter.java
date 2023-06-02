@@ -1,18 +1,14 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
@@ -24,6 +20,11 @@ import com.fsck.k9.activity.misc.Attachment.LoadingState;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
+import timber.log.Timber;
+
 
 public class AttachmentPresenter {
     private static final String STATE_KEY_ATTACHMENTS = "com.fsck.k9.activity.MessageCompose.attachments";
@@ -34,6 +35,8 @@ public class AttachmentPresenter {
     private static final int LOADER_ID_MASK = 1 << 6;
     private static final int MAX_TOTAL_LOADERS = LOADER_ID_MASK - 1;
     private static final int REQUEST_CODE_ATTACHMENT_URI = 1;
+    public static final int ATTACHMENTS_MAX_ALLOWED_MB = 25;
+    private static final int ATTACHMENTS_MAX_ALLOWED_SIZE = ATTACHMENTS_MAX_ALLOWED_MB * 1000 * 1000;
 
 
     // injected state
@@ -241,7 +244,13 @@ public class AttachmentPresenter {
 
                     attachmentMvpView.updateAttachmentView(attachment);
                     attachments.put(attachment.uri, attachment);
-                    initAttachmentContentLoader(attachment);
+                    if (areAttachmentsTooBig()) {
+                        attachmentMvpView.showAttachmentsTooBigFeedback();
+                        Timber.i("Attempt to attach a bigger than %s file to a message", ATTACHMENTS_MAX_ALLOWED_MB);
+                        removeAttachment(attachment);
+                    } else {
+                        initAttachmentContentLoader(attachment);
+                    }
                 }
 
                 @Override
@@ -249,6 +258,16 @@ public class AttachmentPresenter {
                     // nothing to do
                 }
             };
+
+    private boolean areAttachmentsTooBig() {
+        long totalSize = 0;
+        for (Attachment att : attachments.values()) {
+            if(att.size != null) {
+                totalSize += att.size;
+            }
+        }
+        return totalSize > ATTACHMENTS_MAX_ALLOWED_SIZE;
+    }
 
     private LoaderManager.LoaderCallbacks<Attachment> mAttachmentContentLoaderCallback =
             new LoaderManager.LoaderCallbacks<Attachment>() {
@@ -311,20 +330,18 @@ public class AttachmentPresenter {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
     private void addAttachmentsFromResultIntent(Intent data) {
         // TODO draftNeedsSaving = true
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            ClipData clipData = data.getClipData();
-            if (clipData != null) {
-                for (int i = 0, end = clipData.getItemCount(); i < end; i++) {
-                    Uri uri = clipData.getItemAt(i).getUri();
-                    if (uri != null) {
-                        addAttachment(uri);
-                    }
+        ClipData clipData = data.getClipData();
+        if (clipData != null) {
+            for (int i = 0, end = clipData.getItemCount(); i < end; i++) {
+                Uri uri = clipData.getItemAt(i).getUri();
+                if (uri != null) {
+                    addAttachment(uri);
                 }
-                return;
             }
+            return;
         }
 
         Uri uri = data.getData();
@@ -340,11 +357,14 @@ public class AttachmentPresenter {
     public void onClickRemoveAttachment(Uri uri) {
         Attachment attachment = attachments.get(uri);
 
+        removeAttachment(attachment);
+    }
+
+    private void removeAttachment(Attachment attachment) {
         loaderManager.destroyLoader(attachment.loaderId);
 
         attachmentMvpView.removeAttachmentView(attachment);
-        attachments.remove(uri);
-        listener.onAttachmentRemoved();
+        attachments.remove(attachment.uri);
     }
 
     public void onActivityResult(int resultCode, int requestCode, Intent data) {
@@ -381,6 +401,7 @@ public class AttachmentPresenter {
         void performSaveAfterChecks();
 
         void showMissingAttachmentsPartialMessageWarning();
+        void showAttachmentsTooBigFeedback();
     }
 
     public interface AttachmentsChangedListener {

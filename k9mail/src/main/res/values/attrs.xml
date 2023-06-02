@@ -69,11 +69,11 @@
         <attr name="tintColorBulletPointPositive" format="reference|color"/>
         <attr name="tintColorBulletPointNeutral" format="reference|color"/>
         <attr name="tintColorBulletPointNegative" format="reference|color"/>
-        <attr name="iconpEpShield" format="reference"/>
+        <attr name="iconplanckShield" format="reference"/>
         <attr name="iconLanguage" format="reference"/>
         <attr name="iconLanguageGray" format="reference"/>
 
-        <attr name="iconpEpDeviceGroup" format="reference"/>
+        <attr name="iconplanckDeviceGroup" format="reference"/>
         <attr name="iconAdavancedSettings" format="reference"/>
         <attr name="iconFlagButton" format="reference"/>
         <attr name="iconFlagButtonGreen" format="reference"/>
@@ -87,7 +87,7 @@
         <attr name="openpgp_blue" format="reference|color" />
         <attr name="openpgp_grey" format="reference|color" />
         <attr name="openpgp_dark_grey" format="reference|color" />
-        <attr name="iconPepLogo" format="reference|color" />
+        <attr name="iconPlanckLogo" format="reference|color" />
         <attr name="toolbarDefaultColor" format="reference|color" />
         <attr name="messageViewToolbarColor" format="reference|color" />
         <attr name="messageViewStatusBarColor" format="reference|color"/>
@@ -116,6 +116,8 @@
         <attr name="iconActionFilter" format="reference"/>
         <attr name="dialogBodyDefaultTextColor" format="reference|color"/>
         <attr name="intenseColorOnBackground" format="reference|color"/>
+        <attr name="removeRecipientButtonColor" format="reference|color"/>
+        <attr name="selectAuthKeyIconColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
@@ -138,16 +140,6 @@
         <attr name="previewInitialChild" format="integer" />
     </declare-styleable>
 
-    <!-- Specifies theme to apply to the toolbar -->
-    <attr name="nnf_toolbarTheme" format="reference"/>
-    <!-- Color to apply to separator for OK/Cancel buttons -->
-    <attr name="nnf_separator_color" format="color"/>
-    <!-- Color to apply to the save icon -->
-    <attr name="nnf_save_icon_color" format="color"/>
-    <!-- Color to apply to the directory icons in list -->
-    <attr name="nnf_dir_icon_color" format="color"/>
-    <!-- Drawable to use as a divider between list items (optional) -->
-    <attr name="nnf_list_item_divider" format="reference"/>
     <declare-styleable name="AutocryptPreferEncryptPreference">
         <attr name="summaryOn" format="string" />
         <attr name="summaryOff" format="string" />
@@ -173,6 +165,10 @@
         <attr name="compose_fab_background_tint" format="reference|color"/>
         <attr name="compose_fab_drawable_color" format="reference|color"/>
         <attr name="negativeButtonColor" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="RecipientSelectView">
+        <attr name="alwaysUnsecure" format="boolean" />
     </declare-styleable>
 
 </resources>

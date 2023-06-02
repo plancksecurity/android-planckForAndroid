@@ -3,10 +3,8 @@ package com.fsck.k9.ui.settings.general
 import android.content.Context
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
-import com.fsck.k9.pEp.ui.tools.Theme
 import com.fsck.k9.Preferences
-import com.fsck.k9.pEp.ui.tools.AppTheme
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 
@@ -46,12 +44,13 @@ class GeneralSettingsDataStore(
             "privacy_hide_timezone" -> K9.hideTimeZone()
             "debug_logging" -> K9.isDebug()
             "sensitive_logging" -> K9.DEBUG_SENSITIVE
-            "pep_use_keyserver" -> K9.getPEpUseKeyserver()
-            "pep_passive_mode" -> K9.getPEpPassiveMode()
-            "pep_subject_protection" -> K9.ispEpSubjectProtection()
-            "pep_forward_warning" -> K9.ispEpForwardWarningEnabled()
-            "pep_enable_sync" -> K9.ispEpSyncEnabled()
+            "pep_use_keyserver" -> K9.getPlanckUseKeyserver()
+            "pep_passive_mode" -> K9.getPlanckPassiveMode()
+            "pep_subject_protection" -> K9.isPlanckSubjectProtection()
+            "pep_forward_warning" -> K9.isPlanckForwardWarningEnabled()
+            "pep_enable_sync" -> K9.isPlanckSyncEnabled()
             "pep_sync_folder" -> K9.isUsingpEpSyncFolder()
+            "pep_use_passphrase_for_new_keys" -> K9.isPlanckUsePassphraseForNewKeys()
             else -> defValue
         }
     }
@@ -86,12 +85,13 @@ class GeneralSettingsDataStore(
             "privacy_hide_timezone" -> K9.setHideTimeZone(value)
             "debug_logging" -> K9.setDebug(value)
             "sensitive_logging" -> K9.DEBUG_SENSITIVE = value
-            "pep_use_keyserver" -> app.setPEpUseKeyserver(value)
-            "pep_passive_mode" -> app.setPEpPassiveMode(value)
-            "pep_subject_protection" -> app.setpEpSubjectProtection(value)
-            "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
-            "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
+            "pep_use_keyserver" -> app.setPlanckUseKeyserver(value)
+            "pep_passive_mode" -> app.setPlanckPassiveMode(value)
+            "pep_subject_protection" -> app.setPlanckSubjectProtection(value)
+            "pep_forward_warning" -> app.setPlanckForwardWarningEnabled(value)
+            "pep_enable_sync" -> app.setPlanckSyncEnabled(value) //TODO: CHECK
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
+            "pep_use_passphrase_for_new_keys" -> K9.setPlanckUsePassphraseForNewKeys(value)
             else -> return
         }
 
@@ -127,7 +127,6 @@ class GeneralSettingsDataStore(
             "lock_screen_notification_visibility" -> K9.getLockScreenNotificationVisibility().name
             "background_ops" -> K9.getBackgroundOps().name
             "notification_hide_subject" -> K9.getNotificationHideSubject().name
-            "attachment_default_path" -> K9.getAttachmentDefaultPath()
             "quiet_time_starts" -> K9.getQuietTimeStarts()
             "quiet_time_ends" -> K9.getQuietTimeEnds()
             else -> defValue
@@ -152,7 +151,6 @@ class GeneralSettingsDataStore(
             "lock_screen_notification_visibility" -> K9.setLockScreenNotificationVisibility(K9.LockScreenNotificationVisibility.valueOf(value))
             "background_ops" -> setBackgroundOps(value)
             "notification_hide_subject" -> K9.setNotificationHideSubject(K9.NotificationHideSubject.valueOf(value))
-            "attachment_default_path" -> K9.setAttachmentDefaultPath(value)
             "quiet_time_starts" -> K9.setQuietTimeStarts(value)
             "quiet_time_ends" -> K9.setQuietTimeEnds(value)
             else -> return

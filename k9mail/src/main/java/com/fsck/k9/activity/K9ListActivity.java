@@ -3,38 +3,22 @@ package com.fsck.k9.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
-import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
-
-import butterknife.Bind;
 
 
-public abstract class K9ListActivity extends AppCompatActivity implements K9ActivityMagic {
-
-    @Nullable
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    private K9ActivityCommon mBase;
+public abstract class K9ListActivity extends K9Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_activity);
-        mList = (ListView)findViewById(android.R.id.list);
+        mList = (ListView) findViewById(android.R.id.list);
         if (mList == null) {
             throw new RuntimeException(
                     "Your content must have a ListView whose id attribute is " +
@@ -43,24 +27,9 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        mBase.preDispatchTouchEvent(event);
-        return super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void setupGestureDetector(OnSwipeGestureListener listener) {
-        mBase.setupGestureDetector(listener);
-    }
-
-    @Override
-    public void removeGestureDetector() {
-        mBase.onPause();
+    protected void onPause() {
+        super.onPause();
+        removeGestureDetector();
     }
 
     @Override
@@ -68,7 +37,7 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
         // Shortcuts that work no matter what is selected
         if (K9.useVolumeKeysForListNavigationEnabled() &&
                 (keyCode == KeyEvent.KEYCODE_VOLUME_UP ||
-                keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+                        keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
 
             final ListView listView = getListView();
 
@@ -95,7 +64,7 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
         // Swallow these events too to avoid the audible notification of a volume change
         if (K9.useVolumeKeysForListNavigationEnabled() &&
                 (keyCode == KeyEvent.KEYCODE_VOLUME_UP ||
-                keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+                        keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             return true;
         }
 
@@ -103,40 +72,9 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        mBase.onPause();
-    }
-
-    @Override
     protected void onDestroy() {
-        mBase = null;
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
-    }
-
-    public void setUpToolbar(boolean showUpButton) {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
-            }
-            if (ThemeManager.isDarkTheme()) {
-                toolbar.setPopupTheme(R.style.PEpThemeOverlay);
-            }
-        }
-    }
-
-    public void initializeToolbar(Boolean showUpButton, @StringRes int stringResource) {
-        setUpToolbar(showUpButton);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            getSupportActionBar().setTitle(getResources().getString(stringResource));
-        }
-    }
-    public Toolbar getToolbar() {
-        return toolbar;
     }
 
     /**
@@ -150,10 +88,10 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
      */
     protected ListView mList;
 
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     private boolean mFinishedStart = false;
 
-    private Runnable mRequestFocus = new Runnable() {
+    private final Runnable mRequestFocus = new Runnable() {
         public void run() {
             mList.focusableViewAvailable(mList);
         }
@@ -165,10 +103,10 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
      * getListView().getItemAtPosition(position) if they need to access the
      * data associated with the selected item.
      *
-     * @param l The ListView where the click happened
-     * @param v The view that was clicked within the ListView
+     * @param l        The ListView where the click happened
+     * @param v        The view that was clicked within the ListView
      * @param position The position of the view in the list
-     * @param id The row id of the item that was clicked
+     * @param id       The row id of the item that was clicked
      */
     protected void onListItemClick(ListView l, View v, int position, long id) {
     }
@@ -187,7 +125,7 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     public void onContentChanged() {
         super.onContentChanged();
         View emptyView = findViewById(android.R.id.empty);
-        mList = (ListView)findViewById(android.R.id.list);
+        mList = (ListView) findViewById(android.R.id.list);
         if (mList == null) {
             throw new RuntimeException(
                     "Your content must have a ListView whose id attribute is " +
@@ -241,14 +179,14 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
 
     }
 
-    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id)
-        {
-            onListItemClick((ListView)parent, v, position, id);
-        }
-    };
+    private final AdapterView.OnItemClickListener mOnClickListener =
+            (parent, v, position, id) -> onListItemClick((ListView) parent, v, position, id);
 
+    @Override
     public View getRootView() {
         return mList;
     }
+
+    @Override
+    public void search(String query) {}
 }

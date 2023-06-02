@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/calendar_invite_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <!-- Content area -->
     <com.fsck.k9.view.MessageWebView
         android:id="@+id/message_content"

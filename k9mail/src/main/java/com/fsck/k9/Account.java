@@ -6,24 +6,37 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 import timber.log.Timber;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
+import com.fsck.k9.auth.OAuthProviderType;
+import com.fsck.k9.backends.RealOAuthTokenProviderFactory;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
+import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.StoreConfig;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.mailstore.StorageManager.StorageProvider;
+import com.fsck.k9.planck.ui.ConnectionSettings;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -62,23 +75,103 @@ public class Account implements BaseAccount, StoreConfig {
      */
     public static final String OUTBOX = "PEP_INTERNAL_OUTBOX";
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
-    private boolean pEpSyncEnabled;
+    private boolean planckSyncEnabled;
+    private String oAuthState;
+    private OAuthProviderType mandatoryOAuthProviderType;
 
-    public boolean ispEpPrivacyProtected() {
-        return pEpPrivacyProtectected;
+    public OAuthProviderType getMandatoryOAuthProviderType() {
+        return mandatoryOAuthProviderType;
     }
 
-
-    public void setpEpPrivacyProtection(boolean privacyProtection) {
-         this.pEpPrivacyProtectected = privacyProtection;
+    /**
+     * Only to be done when the OAuth type is set as mandatory. This can be:
+     * - when the user chooses this type of provider at the beginning of the account setup
+     * - when the IT Manager sets this value via MDM
+     * NOT to be used when the OAuth type is guessed from mail settings (case of Google)
+     *
+     * @param oAuthProviderType [OAuthProviderType] to be set as mandatory.
+     */
+    public void setMandatoryOAuthProviderType(OAuthProviderType oAuthProviderType) {
+        this.mandatoryOAuthProviderType = oAuthProviderType;
     }
 
-    public Boolean isPepSyncEnabled() {
-        return pEpSyncEnabled;
+    public synchronized String getOAuthState() {
+        return oAuthState;
     }
 
-    public void setPEpSyncAccount(Boolean pEpSyncEnabled) {
-        this.pEpSyncEnabled = pEpSyncEnabled;
+    public synchronized void setOAuthState(String oAuthState) {
+        this.oAuthState = oAuthState;
+    }
+
+    public boolean isPlanckPrivacyProtected() {
+        return planckPrivacyProtected.getValue();
+    }
+
+    public ManageableSetting<Boolean> getPlanckPrivacyProtected() {
+        return planckPrivacyProtected;
+    }
+
+    public void setPlanckPrivacyProtection(ManageableSetting<Boolean> config) {
+        planckPrivacyProtected = config;
+    }
+
+    public void setMailSettings(
+            Context context,
+            ConnectionSettings connectionSettings,
+            boolean keepPasswords
+    ) {
+        ServerSettings incomingServerSettings = connectionSettings.getIncoming();
+        ServerSettings outgoingServerSettings = connectionSettings.getOutgoing();
+
+        if (keepPasswords) {
+            String incomingPassword = null;
+            String outgoingPassword = null;
+            if (storeUri != null) {
+                incomingPassword = RemoteStore.decodeStoreUri(storeUri).password;
+            }
+            if (transportUri != null) {
+                outgoingPassword = Transport.decodeTransportUri(transportUri).password;
+            }
+            incomingServerSettings = incomingServerSettings.newPassword(incomingPassword);
+            outgoingServerSettings = outgoingServerSettings.newPassword(outgoingPassword);
+        }
+        storeUri = RemoteStore.createStoreUri(incomingServerSettings);
+        transportUri = Transport.createTransportUri(outgoingServerSettings);
+        deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingServerSettings.type);
+        setupFolderNames(context, incomingServerSettings.host.toLowerCase());
+    }
+
+    private void setupFolderNames(Context context, String domain) {
+        draftsFolderName = context.getString(R.string.special_mailbox_name_drafts);
+        trashFolderName = context.getString(R.string.special_mailbox_name_trash);
+        sentFolderName = context.getString(R.string.special_mailbox_name_sent);
+        archiveFolderName = context.getString(R.string.special_mailbox_name_archive);
+
+        // Yahoo! has a special folder for Spam, called "Bulk Mail".
+        if (domain != null && domain.endsWith(".yahoo.com")) {
+            spamFolderName = "Bulk Mail";
+        } else {
+            spamFolderName = context.getString(R.string.special_mailbox_name_spam);
+        }
+    }
+
+    public void setPlanckPrivacyProtection(boolean privacyProtection) {
+        this.planckPrivacyProtected.setValue(privacyProtection);
+    }
+
+    public Boolean isPlanckSyncEnabled() {
+        return planckSyncEnabled;
+    }
+
+    public void setPlanckSyncAccount(Boolean planckSyncEnabled) {
+        this.planckSyncEnabled = planckSyncEnabled;
+    }
+
+    @NonNull
+    public static FolderMode getDefaultFolderDisplayMode() {
+        return BuildConfig.IS_ENTERPRISE
+                ? FolderMode.ALL
+                : FolderMode.NOT_SECOND_CLASS;
     }
 
     public enum Expunge {
@@ -129,12 +222,13 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final MessageFormat DEFAULT_MESSAGE_FORMAT = MessageFormat.HTML;
     public static final boolean DEFAULT_MESSAGE_FORMAT_AUTO = false;
-    public static final QuoteStyle DEFAULT_QUOTE_STYLE = QuoteStyle.PREFIX;
+    public static final QuoteStyle DEFAULT_QUOTE_STYLE =
+            BuildConfig.IS_ENTERPRISE ? QuoteStyle.HEADER : QuoteStyle.PREFIX;
     public static final String DEFAULT_QUOTE_PREFIX = ">";
     public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = true;
     public static final boolean DEFAULT_REPLY_AFTER_QUOTE = false;
     public static final boolean DEFAULT_STRIP_SIGNATURE = true;
-    public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = 25;
+    public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = BuildConfig.IS_ENTERPRISE ? 50 : 25;
 
     public static final String ACCOUNT_DESCRIPTION_KEY = "description";
     public static final String STORE_URI_KEY = "storeUri";
@@ -265,8 +359,8 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean remoteSearchFullText;
     private int remoteSearchNumResults;
 
-    private boolean pEpUntrustedServer;
-    private boolean pEpPrivacyProtectected;
+    private boolean planckUntrustedServer;
+    private ManageableSetting<Boolean> planckPrivacyProtected;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -324,10 +418,10 @@ public class Account implements BaseAccount, StoreConfig {
         notifySync = true;
         notifySelfNewMail = true;
         notifyContactsMailOnly = false;
-        folderDisplayMode = FolderMode.NOT_SECOND_CLASS;
+        folderDisplayMode = getDefaultFolderDisplayMode();
         folderSyncMode = FolderMode.FIRST_CLASS;
         folderPushMode = FolderMode.FIRST_CLASS;
-        folderTargetMode = FolderMode.NOT_SECOND_CLASS;
+        folderTargetMode = getDefaultFolderDisplayMode();
         sortType = DEFAULT_SORT_TYPE;
         sortAscending.put(DEFAULT_SORT_TYPE, DEFAULT_SORT_ASCENDING);
         showPictures = ShowPictures.NEVER;
@@ -375,9 +469,12 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setRingtone("content://settings/system/notification_sound");
         notificationSetting.setLedColor(chipColor);
 
-        pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
-        pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
-        pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
+        planckUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
+        planckPrivacyProtected = new ManageableSetting<>(
+                DEFAULT_PEP_PRIVACY_PROTECTED,
+                BuildConfig.IS_ENTERPRISE
+        );
+        planckSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
 
     /*
@@ -488,13 +585,13 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setLed(storage.getBoolean(accountUuid + ".led", true));
         notificationSetting.setLedColor(storage.getInt(accountUuid + ".ledColor", chipColor));
 
-        folderDisplayMode = getEnumStringPref(storage, accountUuid + ".folderDisplayMode", FolderMode.NOT_SECOND_CLASS);
+        folderDisplayMode = getEnumStringPref(storage, accountUuid + ".folderDisplayMode", getDefaultFolderDisplayMode());
 
         folderSyncMode = getEnumStringPref(storage, accountUuid + ".folderSyncMode", FolderMode.FIRST_CLASS);
 
         folderPushMode = getEnumStringPref(storage, accountUuid + ".folderPushMode", FolderMode.FIRST_CLASS);
 
-        folderTargetMode = getEnumStringPref(storage, accountUuid + ".folderTargetMode", FolderMode.NOT_SECOND_CLASS);
+        folderTargetMode = getEnumStringPref(storage, accountUuid + ".folderTargetMode", getDefaultFolderDisplayMode());
 
         searchableFolders = getEnumStringPref(storage, accountUuid + ".searchableFolders", Searchable.ALL);
 
@@ -512,14 +609,22 @@ public class Account implements BaseAccount, StoreConfig {
         isEnabled = storage.getBoolean(accountUuid + ".enabled", true);
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
-        pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
-        pEpPrivacyProtectected = storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
-        pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
+        planckUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
+
+        planckPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
+                storage.getString(accountUuid + ".pEpPrivacyProtected", null)
+        );
+        planckSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
 
         // Use email address as account description if necessary
         if (description == null) {
             description = getEmail();
         }
+        oAuthState = storage.getString(accountUuid + ".oAuthState", null);
+        String oAuthProvider = storage.getString(accountUuid + ".oAuthProviderType", null);
+        mandatoryOAuthProviderType = oAuthProvider != null
+                ? OAuthProviderType.valueOf(oAuthProvider)
+                : null;
     }
 
     protected synchronized void delete(Preferences preferences) {
@@ -801,9 +906,14 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".ringtone", notificationSetting.getRingtone());
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
-        editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
-        editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
-        editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
+        editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", planckUntrustedServer);
+        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(planckPrivacyProtected));
+        editor.putBoolean(accountUuid + ".pEpSync", planckSyncEnabled);
+        editor.putString(accountUuid + ".oAuthState", oAuthState);
+        editor.putString(
+                accountUuid + ".oAuthProviderType",
+                mandatoryOAuthProviderType != null ? mandatoryOAuthProviderType.toString() : null
+        );
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
@@ -905,6 +1015,11 @@ public class Account implements BaseAccount, StoreConfig {
 
     public synchronized String getTransportUri() {
         return transportUri;
+    }
+
+    @Override
+    public OAuth2TokenProvider getOAuth2TokenProvider() throws MessagingException {
+        return getRemoteStore().getOauthTokenProvider();
     }
 
     public synchronized void setTransportUri(String transportUri) {
@@ -1082,14 +1197,14 @@ public class Account implements BaseAccount, StoreConfig {
 
     public String getCurrentpEpSyncFolderName() {
         if (K9.isUsingpEpSyncFolder()) {
-            return Store.PEP_FOLDER;
+            return Store.PLANCK_FOLDER;
         } else {
             return inboxFolderName;
         }
     }
 
     public String getDefaultpEpSyncFolderName() {
-        return Store.PEP_FOLDER;
+        return Store.PLANCK_FOLDER;
     }
 
     public synchronized String getDraftsFolderName() {
@@ -1317,7 +1432,11 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public RemoteStore getRemoteStore() throws MessagingException {
-        return RemoteStore.getInstance(K9.app, this, K9.oAuth2TokenStore);
+        return RemoteStore.getInstance(K9.app, this, getOAuthTokenProviderFactory());
+    }
+
+    private OAuthTokenProviderFactory getOAuthTokenProviderFactory() {
+        return new RealOAuthTokenProviderFactory(K9.app, ((K9) K9.app).getComponent().preferences());
     }
 
     // It'd be great if this actually went into the store implementation
@@ -1713,11 +1832,11 @@ public class Account implements BaseAccount, StoreConfig {
 
     // TODO: pEp: do we really *need* synchronized here?!
     public synchronized boolean isUntrustedSever() {
-        return pEpUntrustedServer;
+        return planckUntrustedServer;
     }
 
-    public synchronized void setPEpStoreEncryptedOnServer(boolean mPEpStoreEncryptedOnServer) {
-        this.pEpUntrustedServer = mPEpStoreEncryptedOnServer;
+    public synchronized void setPlanckStoreEncryptedOnServer(boolean mPlanckStoreEncryptedOnServer) {
+        this.planckUntrustedServer = mPlanckStoreEncryptedOnServer;
     }
 
     /**

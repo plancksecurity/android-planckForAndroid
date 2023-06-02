@@ -14,7 +14,7 @@ import timber.log.Timber;
 
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
-import com.fsck.k9.pEp.PEpColorUtils;
+import com.fsck.k9.planck.PlanckColorUtils;
 
 /*
  * TODO:
@@ -37,7 +37,7 @@ public class Settings {
      *
      * @see SettingsExporter
      */
-    public static final int VERSION = 52;
+    public static final int VERSION = 54;
 
     static Map<String, Object> validate(int version, Map<String, TreeMap<Integer, SettingsDescription>> settings,
             Map<String, String> importedSettings, boolean useDefaultValues) {
@@ -419,7 +419,7 @@ public class Settings {
 
         @Override
         public String toPrettyString(Integer value) {
-            int color = PEpColorUtils.makeColorTransparent(value);
+            int color = PlanckColorUtils.makeColorTransparent(value);
             return String.format("#%06x", color);
         }
 
@@ -427,7 +427,7 @@ public class Settings {
         public Integer fromPrettyString(String value) throws InvalidSettingValueException {
             try {
                 if (value.length() == 7) {
-                    return PEpColorUtils.makeColorOpaque(Integer.parseInt(value.substring(1), 16));
+                    return PlanckColorUtils.makeColorOpaque(Integer.parseInt(value.substring(1), 16));
                 }
             } catch (NumberFormatException e) { /* do nothing */ }
 

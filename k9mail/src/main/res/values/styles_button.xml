@@ -16,5 +16,33 @@
     <style name="PepFabButton.ComposeMessage">
         <item name="backgroundTint">?attr/compose_fab_background_tint</item>
     </style>
+
+    <style name="SelectAuthScreenCardViews">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="android:outlineProvider">background</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="SelectAuthScreenButtons">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:paddingStart">60dp</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:lines">1</item>
+    </style>
+
+    <style name="PermissionsScreen.ContinueButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">?attr/defaultButtonTextColor</item>
+        <item name="android:background">@drawable/planck_button_selector</item>
+    </style>
 </resources>
 

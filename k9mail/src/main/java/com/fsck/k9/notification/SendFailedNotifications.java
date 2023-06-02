@@ -11,7 +11,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.ExceptionHelper;
 import com.fsck.k9.mail.Flag;
-import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
+import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageException;
 
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_BLINK_FAST;
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_FAILURE_COLOR;
@@ -41,7 +41,11 @@ class SendFailedNotifications {
             MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
             folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
         } else {
-            folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
+            folderListPendingIntent = actionBuilder.createViewFolderPendingIntent(
+                    account,
+                    account.getOutboxFolderName(),
+                    notificationId
+            );
         }
 
         NotificationCompat.Builder builder = controller
@@ -51,7 +55,10 @@ class SendFailedNotifications {
                 .setAutoCancel(true)
                 .setTicker(title)
                 .setContentTitle(title)
-                .setContentText(text)
+                .setStyle(
+                        new NotificationCompat.BigTextStyle()
+                                .bigText(text)
+                )
                 .setContentIntent(folderListPendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_ERROR);

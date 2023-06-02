@@ -22,8 +22,9 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.Contacts;
@@ -34,12 +35,11 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
-import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
-import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.ui.PlanckContactBadge;
+import com.fsck.k9.planck.ui.infrastructure.MessageAction;
+import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import java.util.Arrays;
@@ -51,7 +51,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.permissions.PermissionChecker;
+import security.planck.permissions.PermissionChecker;
 import timber.log.Timber;
 
 
@@ -78,7 +78,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private SavedState mSavedState;
 
     private MessageHelper mMessageHelper;
-    private PEpContactBadge mContactBadge;
+    private PlanckContactBadge mContactBadge;
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
@@ -399,52 +399,47 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     private void populateRating(Message message, Account account) {
-        if (PEpUtils.isMessageOnOutgoingFolder(message, account)) {
-            loadpEpRating(message, account.ispEpPrivacyProtected());
+        if (PlanckUtils.isMessageOnOutgoingFolder(message, account)) {
+            loadpEpRating(message, account.isPlanckPrivacyProtected());
         }
         else {
             if (message.getFrom() != null && message.getFrom().length > 0) {
-                loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
+                loadpEpRating(message.getFrom()[0], account.isPlanckPrivacyProtected());
             } else {
                 Timber.e("Message %s from is null or empty, uid = %s",
                         message.getMessageId(), message.getUid());
                 pEpRating = Rating.pEpRatingUndefined;
-                mContactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
             }
         }
     }
 
     private void loadpEpRating(Address from, boolean isPrivacyProtected) {
-        PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
-        pEp.getRating(from, new PEpProvider.ResultCallback<Rating>() {
+        PlanckProvider pEp = ((K9) getContext().getApplicationContext()).getPlanckProvider();
+        pEp.getRating(from, new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 pEpRating = rating;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 Timber.e(throwable);
                 pEpRating = Rating.pEpRatingUndefined;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
         });
     }
     private void loadpEpRating(Message message, boolean isPrivacyProtected) {
-        PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
-        pEp.getRating(message, new PEpProvider.ResultCallback<Rating>() {
+        PlanckProvider pEp = ((K9) getContext().getApplicationContext()).getPlanckProvider();
+        pEp.getRating(message, new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 pEpRating = rating;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 Timber.e(throwable);
                 pEpRating = Rating.pEpRatingUndefined;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
         });
     }
@@ -639,10 +634,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void setOnCryptoClickListener(OnCryptoClickListener onCryptoClickListener) {
         this.onCryptoClickListener = onCryptoClickListener;
-    }
-
-    public void setPrivacyProtected(boolean enabled) {
-        mContactBadge.setPepRating(pEpRating, enabled);
     }
 
     private ApplicationComponent getApplicationComponent() {

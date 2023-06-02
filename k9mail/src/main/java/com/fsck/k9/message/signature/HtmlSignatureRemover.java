@@ -23,7 +23,7 @@ public class HtmlSignatureRemover {
 
     private String stripSignatureInternal(String content) {
         if (content == null) {
-            return  "Unable to remove signature, please file a bug sending a message to: support@pep.security";
+            return  "Unable to remove signature";
         }
         Document document = Jsoup.parse(content);
 

@@ -13,8 +13,10 @@ import com.fsck.k9.activity.ConfirmationDialog
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
+import security.planck.mdm.RestrictionsListener
 
-class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
+class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
+    RestrictionsListener {
     private var newLanguage : String? = null
 
     override fun search(query: String?) {
@@ -26,6 +28,8 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
         bindViews(R.layout.general_settings)
 
         initializeActionBar()
+
+        setConfigurationManagerListener(this)
 
         if (savedInstanceState == null) {
             intent.getStringExtra(PREFERENCE_KEY)?.let {
@@ -98,5 +102,11 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
         val fragment: GeneralSettingsFragment = supportFragmentManager
                 .findFragmentById(R.id.generalSettingsContainer) as GeneralSettingsFragment
         fragment.setLanguage(newLanguage)
+    }
+
+    override fun updatedRestrictions() {
+        val fragment = supportFragmentManager
+            .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
+        fragment?.refreshPreferences()
     }
 }

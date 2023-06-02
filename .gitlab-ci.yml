@@ -1,0 +1,151 @@
+variables:
+  DOCKER_REGISTRY_HOST: dockerreg.planck.security
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GIT_SUBMODULE_STRATEGY: recursive
+  IMAGE_NAME: ${DOCKER_REGISTRY_HOST}/${CI_PROJECT_PATH_SLUG}
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$CI_COMMIT_SHORT_SHA/$CI_PROJECT_PATH
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: always
+
+.compose_deps: &compose_deps
+  - cat DEPENDENCIES
+  - source DEPENDENCIES
+  - echo "planckJNIWrapper Version = ${pEpJNIAdapter}"
+  - wget -q -O - https://git.planck.security/foundation/planckJNIWrapper/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - echo -e "\n" >> DEPENDENCIES
+  - cat DEPENDENCIES
+  - source DEPENDENCIES
+  - echo "planckCoreV3 Version = ${pEpEngine}"
+  - echo "libPlanckWrapper Version = ${libpEpAdapter}"
+  - echo "libPlanckCxx11 Version = ${libpEpCxx11}"
+  - wget -q -O - https://git.planck.security/foundation/planckCoreV3/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - echo -e "\n" >> DEPENDENCIES
+  - cat DEPENDENCIES
+  - source DEPENDENCIES
+  - echo "libPlanckTransport Version = ${libpEpTransport}"
+  - echo "planckCoreSequoiaBackend Version = ${pEpEngineSequoiaBackend}"
+
+stages:
+  - toolchain
+  - base
+  - build
+  - test
+
+# Jobs:
+toolchain image:
+  extends: .docker_in_docker
+  image: ${DOCKER_REGISTRY_HOST}/docker:20.10.16
+  stage: toolchain
+  before_script:
+  # Auth to our registry using runner-provided credentials
+    - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+  script:
+    - docker pull  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG} || true
+    - echo "testing stuff??"
+    - docker build
+      --cache-from ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+      --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
+      --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+      --tag=${IMAGE_NAME}/toolchain:latest
+      --file Dockerfile.toolchain
+      .
+    - echo "${IMAGE_NAME}"
+    - echo "${CI_COMMIT_SHORT_SHA}"
+    - echo "${CI_COMMIT_REF_SLUG}"
+    - docker push  ${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
+    - docker push  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+    - docker push  ${IMAGE_NAME}/toolchain:latest
+  rules:
+    - changes:
+    # Only run this job when the Dockerfile is modified
+        - Dockerfile.toolchain
+        - docker/packages.txt
+
+base image:
+  extends: .docker_in_docker
+  image: ${DOCKER_REGISTRY_HOST}/docker:20.10.16
+  stage: base
+  before_script:
+  # Auth to our registry using runner-provided credentials
+    - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+    - *compose_deps
+  script:
+    - cat DEPENDENCIES
+    - docker pull  ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG} || docker pull  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+    - docker build
+      --cache-from ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+      --build-arg ENGINE_VERSION=${pEpEngine}
+      --build-arg JNI_ADAPTER_VERSION=${pEpJNIAdapter}
+      --build-arg LIBPEPADAPTER_VERSION=${libpEpAdapter}
+      --build-arg LIBPEPCXX_VERSION=${libpEpCxx11}
+      --build-arg LIBPEPTRANSPORT_VERSION=${libpEpTransport}
+      --build-arg FOLDABLE_FOLDER_VERSION=${foldableFolderList}
+      --build-arg TOOLCHAIN_IMAGE_NAME=${IMAGE_NAME}/toolchain
+      --build-arg YML2_VERSION=${yml2}
+      --tag=${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+      --tag=${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+      --tag=${IMAGE_NAME}/base:latest
+      --file Dockerfile.base
+      .
+    - docker image inspect ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA} | grep Size
+    - docker push  ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+    - docker push  ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+    - docker push  ${IMAGE_NAME}/base:latest
+  rules:
+    - changes:
+        - DEPENDENCIES
+        - Dockerfile.base
+        - Dockerfile.toolchain
+
+build:
+  image: ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+  stage: build
+  script:
+    - pwd
+    - echo ${HOME}
+    - for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ;
+      do rm -f ../$i && 
+      ln -s ${HOME}/code/$i ../$i ; done
+    - ls -la ..
+    - ./gradlew --build-cache assembleEnterprisePlayStoreDebug
+    - mkdir -p packages
+    - mv k9mail/build/outputs/apk/* packages/
+    - du -h packages
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull-push
+    paths:
+      - build
+      - .gradle
+  artifacts:
+    paths:
+      - packages
+
+test:
+  image: ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+  stage: test
+  script:
+    - pwd
+    - echo ${HOME}
+    - for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ;
+      do rm -f ../$i && 
+      ln -s ${HOME}/code/$i ../$i ; done
+    - ls -la ..
+    - ./gradlew --build-cache check
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull-push
+    paths:
+      - build
+      - .gradle
+
+
+.docker_in_docker:
+  services:
+    - name: docker:20.10.16-dind
+  variables:
+    DOCKER_DRIVER: overlay2

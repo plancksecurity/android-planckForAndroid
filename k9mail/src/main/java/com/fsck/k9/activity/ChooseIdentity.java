@@ -15,7 +15,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
 import java.util.List;
 
@@ -30,11 +30,7 @@ public class ChooseIdentity extends K9ListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            requestWindowFeature(Window.getDefaultFeatures(this));
-        } else {
-            requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        }
+        supportRequestWindowFeature(Window.getDefaultFeatures(this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_content_simple);
 

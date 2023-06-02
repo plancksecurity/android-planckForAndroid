@@ -20,6 +20,10 @@
     </module>
     -->
 
+    <module name="LineLength">
+        <property name="max" value="140"/>
+    </module>
+
     <module name="FileTabCharacter">
         <property name="eachLine" value="false"/>
     </module>
@@ -57,10 +61,6 @@
 
         <module name="LeftCurly">
             <property name="option" value="eol"/>
-        </module>
-
-        <module name="LineLength">
-            <property name="max" value="140"/>
         </module>
 
         <module name="LocalFinalVariableName">

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<k9settings version="51" format="1">
+<k9settings version="53" format="1">
   <global>
     <value key="animations">true</value>
     <value key="attachmentdefaultpath">/storage/emulated/0/Download</value>
@@ -10,7 +10,7 @@
     <value key="confirmSpam">false</value>
     <value key="confirmMarkAllRead">true</value>
     <value key="countSearchMessages">true</value>
-    <value key="enableDebugLogging">true</value>
+    <value key="enableDebugLogging">false</value>
     <value key="enableSensitiveLogging">false</value>
     <value key="fontSizeMessageComposeInput">medium</value>
     <value key="fontSizeMessageViewTime" />
@@ -33,27 +33,27 @@
     <value key="sortTypeEnum">SORT_DATE</value>
     <value key="sortAscending">false</value>
     <value key="startIntegratedInbox">false</value>
-    <value key="theme">light</value>
+    <value key="theme">follow_system</value>
     <value key="messageViewTheme">use_global</value>
     <value key="useVolumeKeysForListNavigation">false</value>
     <value key="useVolumeKeysForNavigation">false</value>
     <value key="wrapFolderNames">false</value>
     <value key="notificationHideSubject">NEVER</value>
-    <value key="useBackgroundAsUnreadIndicator">false</value>
+    <value key="useBackgroundAsUnreadIndicator">true</value>
     <value key="threadedView">true</value>
     <value key="splitViewMode">NEVER</value>
     <value key="messageComposeTheme">use_global</value>
     <value key="fixedMessageViewTheme">true</value>
     <value key="showContactPicture">true</value>
     <value key="autofitWidth">true</value>
-    <value key="colorizeMissingContactPictures">false</value>
+    <value key="colorizeMissingContactPictures">true</value>
     <value key="messageViewDeleteActionVisible">true</value>
     <value key="messageViewArchiveActionVisible">false</value>
     <value key="messageViewMoveActionVisible">false</value>
     <value key="messageViewCopyActionVisible">false</value>
     <value key="messageViewSpamActionVisible">false</value>
     <value key="fontSizeMessageViewContentPercent">100</value>
-    <value key="hideUserAgent">true</value>
+    <value key="hideUserAgent">false</value>
     <value key="hideTimeZone">false</value>
     <value key="lockScreenNotificationVisibility">MESSAGE_COUNT</value>
     <value key="confirmDeleteFromNotification">true</value>
@@ -70,7 +70,7 @@
     <value key="pEpSyncFolder">true</value>
   </global>
   <accounts>
-    <account uuid="fc4a87ef-3826-486e-ae4f-fa988f7f9692">
+    <account uuid="43e940a0-4c8d-4852-9475-cb4091eefb00">
       <name>android10@peptest.ch</name>
       <incoming-server type="IMAP">
         <host>peptest.ch</host>
@@ -91,8 +91,9 @@
       </outgoing-server>
       <settings>
         <value key="allowRemoteSearch">true</value>
+        <value key="alwaysBcc"></value>
         <value key="alwaysShowCcBcc">false</value>
-        <value key="archiveFolderName">Archive</value>
+        <value key="archiveFolderName">-NONE-</value>
         <value key="autoExpandFolderName">INBOX</value>
         <value key="automaticCheckIntervalMinutes">-1</value>
         <value key="chipColor">#0099cc</value>
@@ -123,7 +124,9 @@
         <value key="notifyMailCheck">true</value>
         <value key="notifyNewMail">true</value>
         <value key="notifySelfNewMail">true</value>
-        <value key="pEpPrivacyProtected">true</value>
+        <value key="pEpPrivacyProtected">{"value":true,"locked":false}</value>
+        <value key="pEpStoreEncryptedOnServer">true</value>
+        <value key="pEpSync">false</value>
         <value key="pushPollOnConnect">true</value>
         <value key="quotePrefix">&gt;</value>
         <value key="quoteStyle">PREFIX</value>
@@ -152,11 +155,11 @@
       </settings>
       <identities>
         <identity>
-          <name>6</name>
+          <name>10</name>
           <email>android10@peptest.ch</email>
           <description>Initial identity</description>
           <settings>
-            <value key="signature">--  Sent from my p≡p for Android. </value>
+            <value key="signature">--  Sent from my PlanckProvider for Android. </value>
             <value key="signatureUse">true</value>
           </settings>
         </identity>

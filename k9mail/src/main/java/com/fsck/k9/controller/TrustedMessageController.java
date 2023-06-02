@@ -4,14 +4,13 @@ import android.content.Context;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
 
 import foundation.pEp.jniadapter.Rating;
 
@@ -19,11 +18,11 @@ import timber.log.Timber;
 
 class TrustedMessageController {
 
-    boolean shouldReuploadMessageInTrustedServer(PEpProvider.DecryptResult result,
+    boolean shouldReuploadMessageInTrustedServer(PlanckProvider.DecryptResult result,
                                                  MimeMessage decryptedMessage,
                                                  Account account,
                                                  boolean alreadyDecrypted) {
-        return account.ispEpPrivacyProtected()
+        return account.isPlanckPrivacyProtected()
                 && !account.isUntrustedSever()
                 && result.flags == -1
                 && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
@@ -35,8 +34,8 @@ class TrustedMessageController {
         return !account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE);
     }
 
-    boolean getAlreadyDecrypted(Message sourceMessage, PEpProvider.DecryptResult decryptResult, Account account, Rating rating) {
-        return account.ispEpPrivacyProtected()
+    boolean getAlreadyDecrypted(Message sourceMessage, PlanckProvider.DecryptResult decryptResult, Account account, Rating rating) {
+        return account.isPlanckPrivacyProtected()
                 && !account.isUntrustedSever()
                 && !sourceMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
                 && !rating.equals(Rating.pEpRatingUndefined)
@@ -47,7 +46,7 @@ class TrustedMessageController {
         return !account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined);
     }
 
-    Message getOwnMessageCopy(Context context, PEpProvider pEpProvider, Account account, LocalMessage localMessage) throws MessagingException {
+    Message getOwnMessageCopy(Context context, PlanckProvider planckProvider, Account account, LocalMessage localMessage) throws MessagingException {
         /*
         if, never insecure
             act 100% as untrusted -> This case should be applied if and if not is trusted server.
@@ -61,7 +60,7 @@ class TrustedMessageController {
 
         if (account.isUntrustedSever() ||
                 localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
-            encryptedMessage = encryptUntrustedMessage(context, pEpProvider, account, localMessage);
+            encryptedMessage = encryptUntrustedMessage(context, planckProvider, account, localMessage);
         } else { // Trusted
             localMessage.setInternalDate(localMessage.getSentDate());
             return localMessage;
@@ -69,18 +68,18 @@ class TrustedMessageController {
         return encryptedMessage;
     }
 
-    private Message encryptUntrustedMessage(Context context, PEpProvider pEpProvider, Account account, LocalMessage localMessage) throws MessagingException {
+    private Message encryptUntrustedMessage(Context context, PlanckProvider planckProvider, Account account, LocalMessage localMessage) throws MessagingException {
         Message encryptedMessage;
         try {
             //TODO: Move to pEp provider
             String[] keys = K9.getMasterKeys().toArray(new String[0]);
-            if (PEpUtils.ispEpDisabled(account, null)) {
+            if (PlanckUtils.ispEpDisabled(account, null)) {
                 encryptedMessage = localMessage;
             } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName()) ||
                     account.getTrashFolderName().equals(localMessage.getFolder().getName()) ) {
-                encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage, keys);
+                encryptedMessage = planckProvider.encryptMessageToSelf(localMessage, keys);
             } else {
-                encryptedMessage = pEpProvider.encryptMessage(localMessage, keys).get(0);
+                encryptedMessage = planckProvider.encryptMessage(localMessage, keys).get(0);
             }
 
         } catch (Exception ex) {

@@ -1,33 +1,6 @@
 package com.fsck.k9.controller;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -98,14 +71,16 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpProviderImplKotlin;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
-import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
-import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
-import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckProviderFactory;
+import com.fsck.k9.planck.PlanckProviderImplKotlin;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageException;
+import com.fsck.k9.planck.infrastructure.exceptions.AuthFailurePassphraseNeeded;
+import com.fsck.k9.planck.infrastructure.exceptions.AuthFailureWrongPassphrase;
+import com.fsck.k9.planck.infrastructure.threading.AutoCloseableEngineThread;
+import com.fsck.k9.preferences.Storage;
+import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -114,12 +89,39 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import security.planck.auth.OAuthTokenRevokedReceiver;
+import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -161,7 +163,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private final MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
     private final TransportProvider transportProvider;
-    private PEpProvider pEpProvider;
+    private PlanckProvider planckProvider;
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
     private final Preferences preferences;
@@ -169,14 +171,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @VisibleForTesting
     MessagingController(Context context, NotificationController notificationController,
-                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PEpProvider pEpProvider) {
+                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PlanckProvider planckProvider) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
         this.transportProvider = transportProvider;
-        this.pEpProvider = pEpProvider;
+        this.planckProvider = planckProvider;
         this.preferences = preferences;
-        controllerThread = new Thread(new Runnable() {
+        controllerThread = new AutoCloseableEngineThread(new Runnable() {
             @Override
             public void run() {
                 runInBackground();
@@ -194,8 +196,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Contacts contacts = Contacts.getInstance(context);
             TransportProvider transportProvider = TransportProvider.getInstance();
             Preferences preferences = Preferences.getPreferences(appContext);
-            PEpProvider pEpProvider = PEpProviderFactory.createProvider(appContext);
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
+            PlanckProvider planckProvider = PlanckProviderFactory.createProvider(appContext);
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider);
         }
         return inst;
     }
@@ -250,7 +252,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         Timber.d("createIfNeeded messaging controller");
-        pEpProvider.setup();
+
         while (!stopped) {
             String commandDescription = null;
             try {
@@ -317,6 +319,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
         }
         throw new Error(e);
+    }
+
+    public void setEchoMessageReceivedListener(EchoMessageReceivedListener listener) {
+        planckProvider.setEchoMessageReceivedListener(listener);
     }
 
     public void addListener(MessagingListener listener) {
@@ -1018,7 +1024,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.i("Done synchronizing folder %s:%s", account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
-            handleAuthenticationFailure(account, true);
+            handleAuthenticationFailure(account, true, e);
 
             for (MessagingListener l : getListeners(listener)) {
                 l.synchronizeMailboxFailed(account, folder, "Authentication failure");
@@ -1236,7 +1242,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
-            handleAuthenticationFailure(account, true);
+            handleAuthenticationFailure(account, true, e);
         } catch (Exception e) {
             Timber.e(e, "synchronizeMailbox");
             // If we don't set the last checked, it can try too often during
@@ -1262,8 +1268,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    void handleAuthenticationFailure(Account account, boolean incoming) {
+    void handleAuthenticationFailure(
+            Account account,
+            boolean incoming,
+            AuthenticationFailedException exception
+    ) {
         notificationController.showAuthenticationErrorNotification(account, incoming);
+        if (exception.isOAuthTokenRevoked()) {
+            OAuthTokenRevokedReceiver.sendOAuthTokenRevokedBroadcast(context, account.getUuid());
+        }
     }
 
     private void updateMoreMessages(Folder remoteFolder, LocalFolder localFolder, Date earliestDate, int remoteStart)
@@ -1590,6 +1603,44 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return true;
     }
 
+    private <MSG extends Message> void updateStatus(
+            final Account account,
+            final String folder,
+            final LocalFolder localFolder,
+            final AtomicInteger progress,
+            final AtomicInteger newMessages,
+            final int todo,
+            final LocalMessage localMessage,
+            final MSG originalMessage,
+            final boolean shouldRemoveId,
+            final List<LocalMessage> messagesToNotify,
+            final StorageEditor storageEditor) {
+        if (shouldRemoveId) {
+            storageEditor.removeOngoingDecryptMessageId(originalMessage.getMessageId());
+        }
+        // Increment the number of "new messages" if the newly downloaded message is
+        // not marked as read.
+        if (!localMessage.isSet(Flag.SEEN)) {
+            newMessages.incrementAndGet();
+        }
+
+        Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
+                account, folder, originalMessage.getUid());
+
+        // Update the listener with what we've found
+        for (MessagingListener l : getListeners()) {
+            l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
+            if (!localMessage.isSet(Flag.SEEN)) {
+                l.synchronizeMailboxNewMessage(account, folder, localMessage);
+            }
+        }
+
+        // Send a notification of this message
+        if (shouldNotifyForMessage(account, localFolder, originalMessage)) {
+            messagesToNotify.add(localMessage);
+        }
+    }
+
     private <T extends Message> void downloadSmallMessages(final Account account, final Folder<T> remoteFolder,
                                                            final LocalFolder localFolder,
                                                            List<T> smallMessages,
@@ -1607,11 +1658,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Fetching %d small messages for folder %s", smallMessages.size(), folder);
 
         List<LocalMessage> messagesToNotify = new ArrayList<>();
+        Storage storage = preferences.getStorage();
+        StorageEditor storageEditor = preferences.getStorage().edit();
         remoteFolder.fetch(smallMessages,
                 fp, new MessageRetrievalListener<T>() {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
+                            if (storage.getOngoingDecryptMessages().contains(message.getMessageId())) {
+                                throw new CrashedWhileDecryptingException(message.getMessageId());
+                            }
+                            storageEditor.addOngoingDecryptMessageId(message.getMessageId());
+                            storageEditor.addOngoingDecryptMessageTempFilePaths(message.getTransitoryFilePaths());
                             long time = System.currentTimeMillis();
 
                             if (!shouldImportMessage(account, message, earliestDate)) {
@@ -1625,16 +1683,16 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 return;
                             }
 
-                            Timber.d("pep in download loop (nr= + %s ) pre", number);
+                            Timber.d("pep in download loop (nr= %s ) pre", number);
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                            final PEpProvider.DecryptResult result;
+                            final PlanckProvider.DecryptResult result;
                             //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
                             boolean alreadyDecrypted = false;
                             if (message.getFrom() != null
                                     && message.getFrom().length > 0
                                     && message.getFrom()[0].getAddress() != null) {
-                                PEpProvider.DecryptResult tempResult;
-                                tempResult = decryptMessage((MimeMessage) message, account);
+                                PlanckProvider.DecryptResult tempResult;
+                                tempResult = planckProvider.decryptMessage((MimeMessage) message, account.getEmail());
                                 if (controller.shouldAppendMessageInTrustedServer(message, account)) { //trusted server
                                     Rating rating = tempResult.rating;
                                     if (!rating.equals(Rating.pEpRatingUndefined)) {
@@ -1650,7 +1708,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 result = tempResult;
                                 Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));
                             } else {
-                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
+                                result = new PlanckProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
                             }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                             // Store message
@@ -1658,10 +1716,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
 
-                                Rating ratingToSave = PEpUtils.shouldUseOutgoingRating(message, account, result.rating)
-                                        ? pEpProvider.getRating(message)
+                                Rating ratingToSave = PlanckUtils.shouldUseOutgoingRating(message, account, result.rating)
+                                        ? planckProvider.getRating(message)
                                         : result.rating;
-                                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(ratingToSave));
+                                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(ratingToSave));
 
                                 // Store the updated message locally
                                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
@@ -1673,31 +1731,30 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (controller.shouldReuploadMessageInTrustedServer(result, decryptedMessage, account, alreadyDecrypted)) {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
-                                    Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
-                                    // not marked as read.
-                                    if (!localMessage.isSet(Flag.SEEN)) {
-                                        newMessages.incrementAndGet();
-                                    }
-
-                                    Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
-                                            account, folder, message.getUid());
-
-                                    // Update the listener with what we've found
-                                    for (MessagingListener l : getListeners()) {
-                                        l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                                        if (!localMessage.isSet(Flag.SEEN)) {
-                                            l.synchronizeMailboxNewMessage(account, folder, localMessage);
-                                        }
-                                    }
-                                    // Send a notification of this message
-
-                                    if (shouldNotifyForMessage(account, localFolder, message)) {
-                                        messagesToNotify.add(localMessage);
-                                    }
-                                    //End message Store
-
+                            Timber.d("pep in download loop (nr= %s ) post", number);
+                            updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                    localMessage, message, true, messagesToNotify, storageEditor);
+                            //End message Store
                         } catch (MessagingException | RuntimeException me) {
-                            Timber.e(me, "SYNC: fetch small messages");
+                            Timber.e(me, "SYNC: failed to pEpProcess small messages " +
+                                    "-> Only saving original message without pEp processing");
+                            try {
+                                final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
+                                boolean shouldRemoveId = me instanceof CrashedWhileDecryptingException;
+                                updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                        localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
+
+                            } catch (MessagingException e) {
+                                Timber.e(me, "SYNC: fetch small messages");
+                            }
+                        } finally {
+                            Set<String> filePaths = storage.getOngoingDecryptMessageTempFilePaths();
+                            for (String filePath : filePaths) {
+                                if(!new File(filePath).delete()) {
+                                    Timber.i("Could not delete temp file %s", filePath);
+                                }
+                            }
+                            storageEditor.clearOngoingDecryptMessageTempFilePaths();
                         }
                     }
 
@@ -1713,16 +1770,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 });
 
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
-    }
-
-    private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message, Account account) {
-        PEpProvider.DecryptResult tempResult;
-        try {
-            tempResult = pEpProvider.decryptMessage(message, account.getEmail());
-        } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, -1, false);
-        }
-        return tempResult;
     }
 
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
@@ -2023,7 +2070,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Timber.d("Done processing pending command '%s'", command);
                 } catch (MessagingException me) {
                      if (command instanceof PendingAppend
-                            && ((PendingAppend) command).folder.equalsIgnoreCase("pEp")) {
+                            && ((PendingAppend) command).folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
                         Timber.e(me, "pEpEngine append to pEp folder failed");
                     }
 
@@ -2061,7 +2108,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * TODO update the local message UID instead of deleting it
      */
     void processPendingAppend(PendingAppend command, Account account) throws MessagingException {
-        if (command.folder.equalsIgnoreCase("pEp")) {
+        if (command.folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
             Timber.e("pEpEngine start pEp folder append");
         }
         Folder remoteFolder = null;
@@ -2083,7 +2130,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             remoteFolder = remoteStore.getFolder(folder);
             if (!remoteFolder.exists()) {
                 if (!remoteFolder.create(FolderType.HOLDS_MESSAGES)) {
-                    if (folder.equalsIgnoreCase("pEp")) {
+                    if (folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
                         Timber.e("pEpEngine could not create pEp sync folder");
                     }
                     return;
@@ -2182,7 +2229,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
-                        localMessage.setpEpRating(pEpProvider.getRating(localMessage));
+                        localMessage.setPlanckRating(planckProvider.getRating(localMessage));
                     }
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -2195,21 +2242,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                 }
             }
-            if (command.folder.equalsIgnoreCase("pEp")) {
+            if (command.folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
                 Timber.e("pEpEngine finish pEp folder append success");
             }
         } finally {
             closeFolder(remoteFolder);
             closeFolder(localFolder);
         }
-        if (command.folder.equalsIgnoreCase("pEp")){
+        if (command.folder.equalsIgnoreCase(Store.PLANCK_FOLDER)){
             Timber.e("pEpEngine finish pEp folder append");
         }
     }
 
     private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
         TrustedMessageController controller = new TrustedMessageController();
-        return controller.getOwnMessageCopy(context, pEpProvider, account,
+        return controller.getOwnMessageCopy(context, planckProvider, account,
                 localMessage);
     }
 
@@ -2837,13 +2884,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             // Only add rating to the local copy, not on headers
             // to avoid sending the rating to the server
-            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))
+            if (PlanckUtils.ispEpDisabled(account, planckProvider.getRating(message))
                     || message.isSet(X_PEP_DISABLED)) {
-                ((LocalMessage) localMessage).setpEpRating(Rating.pEpRatingUnencrypted);
+                ((LocalMessage) localMessage).setPlanckRating(Rating.pEpRatingUnencrypted);
                 //message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
             } else {
-                Rating privacyState = pEpProvider.getRating(message);
-                ((LocalMessage) localMessage).setpEpRating(privacyState);
+                Rating privacyState = planckProvider.getRating(message);
+                ((LocalMessage) localMessage).setPlanckRating(privacyState);
                 //message.setHeader(MimeHeader.HEADER_PEP_RATING, privacyState.name());
             }
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
@@ -2964,7 +3011,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.i("Scanning folder '%s' (%d) for messages to send",
                     account.getOutboxFolderName(), localFolder.getId());
 
-            Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
+            Transport transport = transportProvider.getTransport(K9.app, account);
 
             for (LocalMessage message : localMessages) {
                 if (message.isSet(Flag.DELETED)) {
@@ -3003,8 +3050,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         //If it is a pEpSyncMessage there is no need to encrypt it
                         if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
-                                || PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
-                            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
+                                || PlanckUtils.ispEpDisabled(account, planckProvider.getRating(message))) {
+                            message.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;
                         } else {
@@ -3013,7 +3060,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
 
                         if (message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
-                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PEpProvider.PEP_ALWAYS_SECURE_TRUE);
+                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PlanckProvider.PLANCK_ALWAYS_SECURE_TRUE);
                         }
 
                         progress++;
@@ -3025,7 +3072,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         lastFailure = e;
                         wasPermanentFailure = false;
 
-                        handleAuthenticationFailure(account, false);
+                        handleAuthenticationFailure(account, false, e);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (CertificateValidationException e) {
                         lastFailure = e;
@@ -3040,10 +3087,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }  catch (AppDidntEncryptMessageException e) {
                         // TODO: 06/07/2020 Check if this catch branch is really needed.
-                        lastFailure = e;
                         wasPermanentFailure = true;
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+
+                        lastFailure = new AppDidntEncryptMessageException(message);
+                        lastFailure.setStackTrace(e.getStackTrace());
                     } catch (AuthFailurePassphraseNeeded e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -3115,7 +3164,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (pEpVersionHeader.length > 0) {
                 message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
             }
-            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(message.getpEpRating()));
+            message.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(message.getPlanckRating()));
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
@@ -3128,7 +3177,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     account.getSentFolderName(), localSentFolder.getId());
 
 
-            Rating rating = PEpUtils.extractRating(message);
+            Rating rating = PlanckUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
             if (controller.shouldAppendMessageOnUntrustedServer(account, rating)) {
                 // TODO: 16/07/18 Check if this is really needed: that means review trusted servers behavior
@@ -3156,8 +3205,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException, AppDidntEncryptMessageException  {
         //TODO: Move to pEp provider
         String[] keys = K9.getMasterKeys().toArray(new String[0]);
-        List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
-        Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
+        List<MimeMessage> encryptedMessages = planckProvider.encryptMessage(message, keys);
+        Message encryptedMessageToSave = encryptedMessages.get(PlanckProvider.ENCRYPTED_MESSAGE_POSITION); //
 
         for (Message encryptedMessage : encryptedMessages) {
             sendMessage(transport, encryptedMessage);
@@ -3957,7 +4006,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     synchronized public void checkpEpSyncMail(final Context context,
-                                 final PEpProvider.CompletedCallback completedCallback) {
+                                 final PlanckProvider.CompletedCallback completedCallback) {
         Timber.d("fastpoll %s ", "add pEpSyncJob");
 
         TracingWakeLock twakeLock;
@@ -4278,7 +4327,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         // Do not notify if the user does not have notifications enabled or if the message has
         // been read or it is an pep-autoconsume-message.
         if (!account.isNotifyNewMail() || message.isSet(Flag.SEEN)
-                || PEpUtils.isAutoConsumeMessage(message)) {
+                || PlanckUtils.isAutoConsumeMessage(message)) {
             return false;
         }
 
@@ -4348,7 +4397,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.clearNewMailNotifications(account);
         memorizingMessagingListener.removeAccount(account);
         Address address = new Address(account.getEmail());
-        pEpProvider.setIdentityFlag(PEpUtils.createIdentity(address, context), false);
+        planckProvider.setIdentityFlag(PlanckUtils.createIdentity(address, context), false);
+        notificationController.updateChannels();
     }
 
     /**
@@ -4618,6 +4668,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.clearCertificateErrorNotifications(account, incoming);
     }
 
+    public void checkIncomingServerSettings(Account account) throws MessagingException {
+        Store store = account.getRemoteStore();
+        store.checkSettings();
+    }
+
+    public void checkOutgoingServerSettings(Account account) throws MessagingException {
+        Transport transport = TransportProvider.getInstance().getTransport(K9.app, account);
+        transport.close();
+        try {
+            transport.open();
+        } finally {
+            transport.close();
+        }
+    }
+
     public void notifyUserIfCertificateProblem(Account account, Exception exception, boolean incoming) {
         if (!(exception instanceof CertificateValidationException)) {
             return;
@@ -4688,7 +4753,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void setSubjectProtected(boolean pEpSubjectProtection) {
-        pEpProvider.setSubjectProtection(pEpSubjectProtection);
+        planckProvider.setSubjectProtection(pEpSubjectProtection);
     }
 
     private synchronized Message appendpEpSyncMessage(final Account account, final Message message) throws MessagingException{
@@ -4721,7 +4786,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     return;
                 }
 
-                Message message = PEpProviderImplKotlin.getMimeMessage(pEpMessage);
+                Message message = PlanckProviderImplKotlin.getMimeMessage(pEpMessage);
 
                 if (message == null) {
                     Timber.e("pEpEngine  messageToSend: Cannot convert pEpMessage into K9Message");
@@ -4780,15 +4845,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private synchronized void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
-        Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
-        Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
-        sendMessage(transport, message);
-        Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
+        Timber.e("%s %s", "planckEngine", "Start sending planck management message: " + message.getMessageId());
+        sendMessage(account, message, null);
+        Timber.e("%s %s", "planckEngine", "Finish sending planck management message: " + message.getMessageId());
     }
 
     Account checkAccount(String address, Account account) {
         for (Identity identity : account.getIdentities()) {
-            if (identity.getEmail().equals(address)) {
+            if (identity.getEmail().equalsIgnoreCase(address)) {
                 return account;
             }
         }
@@ -4807,15 +4871,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return currentAccount;
     }
 
-    public PEpProvider getpEpProvider() {
-        return pEpProvider;
+    public PlanckProvider getPlanckProvider() {
+        return planckProvider;
     }
 
     private interface MessageActor {
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
     }
 
-    public void checkMailBlocking(Account account) {
+    public void performPeriodicMailSync(Account account) {
         final CountDownLatch latch = new CountDownLatch(1);
         checkMail(context, account, true, false, new SimpleMessagingListener() {
             @Override
@@ -4862,7 +4926,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     @WorkerThread
     public void consumeMessages(final Context context) throws MessagingException {
         Timber.e("Delete pEp-auto-consume messages older than %d min for All accounts",
-                PEpProvider.TIMEOUT / (60 * 1000));
+                PlanckProvider.TIMEOUT / (60 * 1000));
         List<Account> accounts = preferences.getAccounts();
         for (Account account : accounts) {
             consumeMessages(account);

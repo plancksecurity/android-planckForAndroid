@@ -2,6 +2,8 @@
 package com.fsck.k9.mail;
 
 
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+
 import java.util.List;
 
 /**
@@ -21,7 +23,12 @@ public abstract class Store {
     /**
      * Folder name for the pEp management messages
      */
-    public static final String PEP_FOLDER = "pEp";
+    public static final String PLANCK_FOLDER = "planck";
+
+    /**
+     * OAuth provider for this store
+     */
+    protected OAuth2TokenProvider oauthTokenProvider;
 
     public abstract Folder<? extends Message> getFolder(String name);
 

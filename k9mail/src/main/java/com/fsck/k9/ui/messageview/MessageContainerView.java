@@ -1,11 +1,17 @@
 package com.fsck.k9.ui.messageview;
 
 
+import static android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+
+import android.animation.LayoutTransition;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -21,6 +27,7 @@ import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,11 +40,12 @@ import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.pEp.infrastructure.MessageView;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.infrastructure.MessageView;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
+import security.planck.ui.calendar.CalendarInviteLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +89,8 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     private String currentHtmlText;
     private AttachmentResolver currentAttachmentResolver;
 
+    private CalendarInviteLayout calendarInviteLayout;
+
     @Inject
     @MessageView
     DisplayHtml displayHtml;
@@ -88,14 +98,6 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-
-        mMessageContentView = (MessageWebView) findViewById(R.id.message_content);
-        mMessageContentView.refreshTheme();
-        if (!isInEditMode()) {
-            mMessageContentView.configure();
-        }
-        mMessageContentView.setOnCreateContextMenuListener(this);
-        mMessageContentView.setVisibility(View.VISIBLE);
 
         mAttachmentsContainer = findViewById(R.id.attachments_container);
         mAttachments = (LinearLayout) findViewById(R.id.attachments);
@@ -109,6 +111,12 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         Context context = getContext();
         mInflater = LayoutInflater.from(context);
         mClipboardManager = ClipboardManager.getInstance(context);
+
+        LayoutTransition transition = new LayoutTransition();
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        setLayoutTransition(
+                transition
+        );
     }
 
     @Override
@@ -198,8 +206,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
                                 if (inlineImage) {
                                     attachmentCallback.onSaveAttachment(attachmentViewInfo);
                                 } else {
-                                    //TODO: Use download manager
-                                    new DownloadImageTask(getContext()).execute(uri.toString());
+                                    downloadImage(uri);
                                 }
                                 break;
                             }
@@ -328,6 +335,16 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         }
     }
 
+    private void downloadImage(Uri uri) {
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        String filename = uri.getLastPathSegment();
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+        request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+        DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
+    }
+
     private AttachmentViewInfo getAttachmentViewInfoIfCidUri(Uri uri) {
         if (!"cid".equals(uri.getScheme())) {
             return null;
@@ -388,6 +405,8 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
 
         this.attachmentCallback = attachmentCallback;
 
+        initializeMessageContentView(messageViewInfo);
+
         resetView();
 
         renderAttachments(messageViewInfo);
@@ -425,6 +444,39 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
             unsignedTextDivider.setVisibility(hideUnsignedTextDivider ? View.GONE : View.VISIBLE);
             unsignedText.setText(messageViewInfo.extraText);
         }
+    }
+
+    private void initializeMessageContentView(MessageViewInfo messageViewInfo) {
+        if (mMessageContentView == null) {
+            AttachmentViewInfo calendarAttachment =
+                    AttachmentController.findCalendarInviteAttachment(messageViewInfo);
+            if (calendarAttachment != null) {
+                mMessageContentView = findViewById(R.id.message_content);
+                initCalendarInviteView(messageViewInfo, calendarAttachment);
+                this.removeView(mMessageContentView);
+            }
+            mSavedState = null;
+            mMessageContentView = findViewById(R.id.message_content);
+            mMessageContentView.refreshTheme();
+            if (!isInEditMode()) {
+                mMessageContentView.configure();
+            }
+            mMessageContentView.setOnCreateContextMenuListener(this);
+            mMessageContentView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void initCalendarInviteView(
+            MessageViewInfo messageViewInfo,
+            AttachmentViewInfo calendarAttachment
+    ) {
+        calendarInviteLayout = new CalendarInviteLayout(
+                        getContext(),
+                        null
+                );
+        calendarInviteLayout.initialize(calendarAttachment, messageViewInfo);
+        FrameLayout calendarInviteContainer = findViewById(R.id.calendar_invite_container);
+        calendarInviteContainer.addView(calendarInviteLayout);
     }
 
     public boolean hasHiddenExternalImages() {

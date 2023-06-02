@@ -14,6 +14,7 @@ import timber.log.Timber;
  */
 public class XOAuth2ChallengeParser {
     public static final String BAD_RESPONSE = "400";
+    public static final String INVALID_REQUEST = "invalid_request";
 
 
     public static boolean shouldRetry(String response, String host) {
@@ -26,7 +27,7 @@ public class XOAuth2ChallengeParser {
         try {
             JSONObject json = new JSONObject(decodedResponse);
             String status = json.getString("status");
-            if (!BAD_RESPONSE.equals(status)) {
+            if (!BAD_RESPONSE.equals(status) && !INVALID_REQUEST.equals(status)) {
                 return false;
             }
         } catch (JSONException jsonException) {

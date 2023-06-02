@@ -13,13 +13,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.notification.NotificationActionService;
-import com.fsck.k9.pEp.ui.tools.Theme;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import static com.fsck.k9.activity.MessageReferenceHelper.toMessageReferenceList;
 import static com.fsck.k9.activity.MessageReferenceHelper.toMessageReferenceStringList;

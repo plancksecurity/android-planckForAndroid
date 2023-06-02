@@ -19,7 +19,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import timber.log.Timber;
 
@@ -72,10 +72,6 @@ public class AttachmentView extends ConstraintLayout {
 
         setOnClickListener(v -> onViewClick());
         downloadButton.setOnClickListener(v -> onSaveButtonClick());
-        downloadButton.setOnLongClickListener(v -> {
-            onSaveButtonLongClick();
-            return true;
-        });
 
         TextView attachmentName = findViewById(R.id.attachment_name);
         attachmentName.setText(attachment.displayName);
@@ -101,10 +97,6 @@ public class AttachmentView extends ConstraintLayout {
 
     private void onSaveButtonClick() {
         callback.onSaveAttachment(attachment);
-    }
-
-    private void onSaveButtonLongClick() {
-        callback.onSaveAttachmentToUserProvidedDirectory(attachment);
     }
 
     public void setCallback(AttachmentViewCallback callback) {

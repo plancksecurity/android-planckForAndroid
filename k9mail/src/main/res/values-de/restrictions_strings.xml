@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enable_privacy_protection_title"/>
+    <string name="enable_privacy_protection_description"/>
+    <string name="default_quoted_text_shown_description"/>
+    <string name="remote_search_enabled_description"/>
+    <string name="pep_sync_folder_description">Separaten planck Ordner für Sync-Nachrichten verwenden</string>
+    <string name="fingerprint_title">Fingerprint</string>
+    <string name="extra_keys_title"/>
+    <string name="extra_keys_description"/>
+    <string name="account_description_description"/>
+    <string name="composition_title"/>
+    <string name="composition_description"/>
+    <string name="composition_sender_name_title"/>
+    <string name="archive_folder_description"/>
+    <string name="drafts_folder_description"/>
+    <string name="sent_folder_description"/>
+    <string name="spam_folder_description"/>
+    <string name="trash_folder_description"/>
+    <string name="provisioning_url_title"/>
+    <string name="provisioning_url_description"/>
+    <string name="mail_settings_title"/>
+    <string name="mail_settings_description"/>
+    <string name="account_email_address_title"/>
+    <string name="account_email_address_description"/>
+    <string name="account_display_count_description"/>
+    <string name="account_remote_search_num_results_description"/>
+    <string name="allow_pep_sync_new_devices_title"/>
+    <string name="allow_pep_sync_new_devices_description"/>
+    <string name="account_authentication_type_plain_entry">Passwort, normal (Plain)</string>
+    <string name="account_authentication_type_cram_md5_entry">Verschlüsseltes Passwort (Cram MD5)</string>
+    <string name="account_authentication_type_external_entry">Client-Zertifikat (External)</string>
+</resources>

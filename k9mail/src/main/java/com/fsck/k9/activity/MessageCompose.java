@@ -1,6 +1,8 @@
 package com.fsck.k9.activity;
 
 
+import static com.fsck.k9.mail.Flag.X_PEP_WASNT_ENCRYPTED;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -34,13 +36,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -90,18 +95,20 @@ import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.infrastructure.ComposeView;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.Theme;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.infrastructure.ComposeView;
+import com.fsck.k9.planck.infrastructure.extensions.ThrowableKt;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.Theme;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 
+import org.jetbrains.annotations.NotNull;
 import org.openintents.openpgp.OpenPgpApiManager;
 
 import java.util.Date;
@@ -114,23 +121,22 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.message_compose.ComposeAccountRecipient;
-import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
-import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
+import security.planck.mdm.RestrictionsListener;
+import security.planck.permissions.PermissionChecker;
+import security.planck.permissions.PermissionRequester;
+import security.planck.ui.message_compose.ComposeAccountRecipient;
+import security.planck.ui.resources.ResourcesProvider;
+import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
+import security.planck.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
-
-import static com.fsck.k9.mail.Flag.X_PEP_WASNT_ENCRYPTED;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
-public class MessageCompose extends PepActivity implements OnClickListener,
+public class MessageCompose extends PlanckActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
-        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
+        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener, RestrictionsListener {
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
     private static final int DIALOG_CONFIRM_DISCARD_ON_BACK = 2;
     private static final int DIALOG_CHOOSE_IDENTITY = 3;
@@ -163,6 +169,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
     private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
+    private static final String STATE_LAST_ERROR = "lastError";
 
     private static final String FRAGMENT_WAITING_FOR_ATTACHMENT = "waitingForAttachment";
 
@@ -175,6 +182,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
+    private static final int DEBUG_STACK_TRACE_DEPTH = 1;
+    private static final String NEW_LINE_INSERT = "\n";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -189,7 +198,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
     private LinearLayout rootView;
-    private PePUIArtefactCache uiCache;
+    private PlanckUIArtefactCache uiCache;
     private boolean permissionAsked;
     private RecipientMvpView recipientMvpView;
 
@@ -223,8 +232,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      */
     private boolean relatedMessageProcessed = false;
 
-    private PEpProvider pEp;
-
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
     private boolean finishAfterDraftSaved;
@@ -256,6 +263,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private SimpleMessageFormat currentMessageFormat;
 
     private boolean isInSubActivity = false;
+    private BannerType currentBanner = BannerType.NONE;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -269,8 +277,13 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     @ComposeView
     DisplayHtml displayHtml;
+    @Inject
+    PlanckProvider planck;
 
-    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private PlanckSecurityStatusLayout planckSecurityStatusLayout;
+    private TextView userActionBanner;
+    private View userActionBannerSeparator;
+    private StringBuilder lastError;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -282,7 +295,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -290,7 +303,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
 
-        uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
+        uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
             finish();
@@ -361,7 +374,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
                 openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
-                pEp,
+                planck,
                 new ReplyToParser(), this
         );
         recipientPresenter.updateCryptoStatus();
@@ -370,6 +383,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
+
+        userActionBanner = findViewById(R.id.user_action_banner);
+        userActionBannerSeparator = findViewById(R.id.user_action_banner_separator);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -523,7 +539,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setTitle();
         Timber.e("P4A-941 builder set %d ", System.currentTimeMillis()-time);
 
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
+        recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
         Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
 
     }
@@ -549,17 +565,21 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setUpToolbar(true);
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
-            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
-            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
-            pEpSecurityStatusLayout.setOnLongClickListener( view -> {
-                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
-                        view, recipientPresenter);
-                statusMenu.show();
-                return true;
-            });
+            planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            if (K9.isUsingTrustwords()) {
+                planckSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+            }
+            if (!BuildConfig.IS_ENTERPRISE) {
+                planckSecurityStatusLayout.setOnLongClickListener(view -> {
+                    PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
+                            view, recipientPresenter);
+                    statusMenu.show();
+                    return true;
+                });
+            }
         }
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
-        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
+        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
     }
 
     @Override
@@ -661,14 +681,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     protected void onResume() {
         super.onResume();
         MessagingController.getInstance(this).addListener(messagingListener);
+        MessagingController.getInstance(this).setEchoMessageReceivedListener(recipientPresenter);
+        messageRatingIsBeingLoaded();
         recipientPresenter.onResume();
         invalidateOptionsMenu();
+        setConfigurationManagerListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        hideUserActionBanner();
         MessagingController.getInstance(this).removeListener(messagingListener);
+        MessagingController.getInstance(this).setEchoMessageReceivedListener(null);
 
         boolean isPausingOnConfigurationChange = (getChangingConfigurations() & ActivityInfo.CONFIG_ORIENTATION)
                 == ActivityInfo.CONFIG_ORIENTATION;
@@ -679,7 +704,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         checkToSaveDraftImplicitly();
-        recipientPresenter.onPause();
     }
 
     /**
@@ -702,8 +726,16 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putString(STATE_REFERENCES, referencedMessageIds);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
+        outState.putString(STATE_LAST_ERROR, lastError == null ? null : lastError.toString());
         // TODO: trigger pep?
 
+    }
+
+    @Override
+    public void updatedRestrictions() {
+        recipientPresenter.updateCryptoStatus();
+        recipientPresenter.refreshRecipients();
+        recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
     }
 
     public static class MessageComposeNonConfigInstance implements NonConfigurationInstance {
@@ -764,6 +796,11 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         updateMessageFormat();
         restoreMessageComposeConfigurationInstance();
+        String errorText = savedInstanceState.getString(STATE_LAST_ERROR);
+        if (errorText != null) {
+            lastError = new StringBuilder(errorText);
+            showError(errorText);
+        }
     }
 
     private void setTitle() {
@@ -812,7 +849,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
                 .setForcedUnencrypted(recipientPresenter.isForceUnencrypted())
-                .setAlwaysSecure(recipientPresenter.isAlwaysSecure());
+                .setAlwaysSecure(recipientPresenter.isAlwaysSecure())
+                .setPlanckRating(recipientMvpView.getPlanckRating());
 
         quotedMessagePresenter.builderSetProperties(builder);
 
@@ -831,13 +869,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         if (attachmentPresenter.checkOkForSendingOrDraftSaving()) {
-            return;
-        }
-
-        if (isForwardedpEpMessage()
-                && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageRating)) {
-            if (K9.ispEpForwardWarningEnabled()) showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
-            else performSendAfterChecks();
             return;
         }
 
@@ -900,9 +931,22 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     public void showContactPicker(int requestCode) {
+        requestContactsPermissionIfNeeded();
+        if (permissionChecker.hasContactsPermission()) {
+            showContactPickerWithPermission(requestCode);
+        }
+    }
+
+    private void showContactPickerWithPermission(int requestCode) {
         requestCode |= REQUEST_MASK_RECIPIENT_PRESENTER;
         isInSubActivity = true;
         startActivityForResult(contacts.contactPickerIntent(), requestCode);
+    }
+
+    private void requestContactsPermissionIfNeeded() {
+        if (permissionChecker.doesntHaveContactsPermission()) {
+            permissionRequester.requestContactsPermission(rootView);
+        }
     }
 
     @Override
@@ -988,7 +1032,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private void updateAccount(Account account) {
         if (uiCache == null) {
-            uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
+            uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
         }
         this.account = account;
         uiCache.setComposingAccount(account);
@@ -1086,9 +1130,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 if (isMessageRatingBeingLoaded) {
                     FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 } else if (!isProcessingSendClick) {
-                    if (isMessageRatingNotAvailable()) {
-                        messageRatingIsBeingLoaded();
-                    }
                     checkToSendMessage();
                 }
                 break;
@@ -1125,21 +1166,15 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isMessageRatingNotAvailable() {
-        return !recipientPresenter.isForceUnencrypted()
-                && account.ispEpPrivacyProtected();
-    }
-
-
-    private void handlePEpState(boolean... withToast) {
-        recipientPresenter.handlepEpState(withToast);
+    private void handlePEpState() {
+        recipientPresenter.handlepEpState();
     }
 
     private void onPEpPrivacyStatus(boolean force) {
         recipientMvpView.refreshRecipients();
         if (force || recipientMvpView.isPepStatusClickable()) {
             recipientMvpView.setMessageReference(relatedMessageReference);
-            handlePEpState(false);
+            handlePEpState();
             recipientPresenter.onPEpPrivacyStatus();
         }
     }
@@ -1181,7 +1216,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         // grab our icon and set it to the wanted color.
         //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
         //  TODO> Review after rebase
-        handlePEpState(false);       // fire once to get everything set up.
+        handlePEpState();       // fire once to get everything set up.
 
         return true;
     }
@@ -1544,11 +1579,11 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private void showNotEncryptedMessageSnackBar(Message message) {
         if (message.isSet(X_PEP_WASNT_ENCRYPTED)) {
-            FeedbackTools.showIndefiniteFeedback(
+            FeedbackTools.createIndefiniteFeedback(
                     rootView,
                     getString(R.string.message_failed_to_encrypt),
                     getString(R.string.pep_force_unprotected),
-                    v -> recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE));
+                    v -> recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.MESSAGE));
         }
     }
 
@@ -1559,7 +1594,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         final Message message;
         final Long draftId;
         final MessageReference messageReference;
-        private final PEpProvider.CompletedCallback completedCallback;
+        private final PlanckProvider.CompletedCallback completedCallback;
 
         @Override
         protected void onPostExecute(Void aVoid) {
@@ -1568,7 +1603,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         public SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                               Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
+                               Long draftId, MessageReference messageReference, PlanckProvider.CompletedCallback completedCallback) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
@@ -1685,7 +1720,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             message.setFlag(Flag.SEEN, true);
             message.setFlag(
                     Flag.X_PEP_SHOWN_ENCRYPTED,
-                    PEpUtils.isMessageToEncrypt(account, recipientMvpView.getpEpRating(), recipientPresenter.isForceUnencrypted())
+                    PlanckUtils.isMessageToEncrypt(account, recipientMvpView.getPlanckRating(), recipientPresenter.isForceUnencrypted())
             );
         } catch (MessagingException e) {
             //shall never happen at this point as the message is just build
@@ -1711,7 +1746,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         } else {
             currentMessageBuilder = null;
             new SendMessageTask(getApplicationContext(), account, contacts, message,
-                    draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference, new PEpProvider.CompletedCallback() {
+                    draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference, new PlanckProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
                     sendFinished();
@@ -1971,6 +2006,16 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         public void showMissingAttachmentsPartialMessageWarning() {
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_compose_attachments_skipped_toast));
         }
+
+        @Override
+        public void showAttachmentsTooBigFeedback() {
+            Toast.makeText(
+                    getBaseContext(),
+                    getString(R.string.compose_message_attachments_too_big,
+                            AttachmentPresenter.ATTACHMENTS_MAX_ALLOWED_MB),
+                    Toast.LENGTH_LONG)
+                    .show();
+        }
     };
 
 
@@ -2006,14 +2051,104 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         toolBarCustomizer.setToolbarColor(color);
     }
 
-    public void setStatusBarPepColor(@ColorInt int color) {
-        toolBarCustomizer.setStatusBarPepColor(color);
+    public void setStatusBarPlanckColor(@ColorInt int color) {
+        toolBarCustomizer.setStatusBarPlanckColor(color);
     }
 
-    public void setToolbarRating(Rating rating) {
-        boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setEncrypt(encrypt);
-        pEpSecurityStatusLayout.setRating(rating);
+    public void setToolbarRating(Rating rating, boolean forceHide) {
+        boolean pEpEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.isPlanckPrivacyProtected());
+        planckSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
+        planckSecurityStatusLayout.setRating(rating, forceHide);
+    }
+
+    public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
+            userActionBanner.setTextColor(ContextCompat.getColor(
+                    this, R.color.compose_unsecure_delivery_warning));
+            userActionBanner.setText(getResources().getQuantityString(
+                    R.plurals.compose_unsecure_delivery_warning,
+                    unsecureRecipientsCount,
+                    unsecureRecipientsCount
+            ));
+            userActionBanner.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
+            showUserActionBanner();
+        }
+    }
+
+    private void showUserActionBanner() {
+        userActionBanner.setVisibility(View.VISIBLE);
+        userActionBannerSeparator.setVisibility(View.VISIBLE);
+    }
+
+    public void hideUnsecureDeliveryWarning() {
+        hideUserActionBanner(BannerType.UNSECURE_DELIVERY);
+    }
+
+    private void hideUserActionBanner() {
+        hideUserActionBanner(BannerType.ERROR);
+    }
+
+    private void hideUserActionBanner(BannerType bannerType) {
+        if (currentBanner == bannerType) {
+            currentBanner = null;
+            userActionBanner.setVisibility(View.GONE);
+            userActionBannerSeparator.setVisibility(View.GONE);
+        }
+    }
+
+    public void showSingleRecipientHandshakeBanner() {
+        if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
+            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.planck_green));
+            userActionBanner.setText(R.string.compose_single_recipient_handshake_banner);
+            userActionBanner.setOnClickListener(
+                    v -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference)
+            );
+            showUserActionBanner();
+        }
+    }
+
+    public void hideSingleRecipientHandshakeBanner() {
+        hideUserActionBanner(BannerType.HANDSHAKE);
+    }
+
+    public void setAndShowError(@NotNull Throwable throwable) {
+        userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.compose_unsecure_delivery_warning));
+        String errorText = getErrorText(throwable);
+        if (shouldInitializeError()) {
+            lastError = new StringBuilder(errorText);
+        } else {
+            addNewDebugErrorText(errorText);
+        }
+        showError(lastError.toString());
+    }
+
+    private boolean shouldInitializeError() {
+        return !BuildConfig.DEBUG || lastError == null;
+    }
+
+    private void addNewDebugErrorText(String newErrorText) {
+        lastError.append(NEW_LINE_INSERT);
+        lastError.append(newErrorText);
+    }
+
+    private String getErrorText(@NotNull Throwable throwable) {
+        return BuildConfig.DEBUG
+                ? ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH)
+                : getString(R.string.error_happened_restart_app);
+    }
+
+    private void showError(@NotNull String error) {
+        currentBanner = BannerType.ERROR;
+        userActionBanner.setText(error);
+        userActionBanner.setOnClickListener(null);
+        showUserActionBanner();
+    }
+
+    private boolean wasAbleToChangeBanner(BannerType bannerType) {
+        if (currentBanner == null || currentBanner.priority <= bannerType.priority) {
+            currentBanner = bannerType;
+            return true;
+        } else return false;
     }
 
     private Handler internalMessageHandler = new Handler() {
@@ -2058,6 +2193,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         @StringRes
         public int getTitleResource() {
             return titleResource;
+        }
+    }
+
+    private enum BannerType {
+        NONE(0),
+        HANDSHAKE(1),
+        UNSECURE_DELIVERY(2),
+        ERROR(Integer.MAX_VALUE);
+
+        final int priority;
+
+        BannerType(int priority) {
+            this.priority = priority;
         }
     }
 }

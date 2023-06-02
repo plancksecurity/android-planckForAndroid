@@ -19,7 +19,6 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-
 public class Preferences {
 
     private static Preferences preferences;

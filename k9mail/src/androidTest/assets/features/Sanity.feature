@@ -52,13 +52,13 @@ Feature: Sanity
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter subject in the messageSubject field
     And I enter longText in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody from attachment with longText
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -103,11 +103,11 @@ Feature: Sanity
     And I send 1 message to bot1 with subject subject and body body
     And I click the last message received
     Then I compare messageBody from attachment with body
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     When I click reply message
     And I enter extraText in the messageSubject field
     And I enter bodyText in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I click the send message button
     When I go back to the Inbox
     And I wait for the new message
@@ -117,7 +117,7 @@ Feature: Sanity
   Scenario: SER-299 Ensure mails are encrypted when pEp says so
     When I click the last message received
     And I click reply message
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I press back
     And I wait for the message and click it
@@ -135,13 +135,13 @@ Feature: Sanity
     When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter empty in the messageTo field
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I compare messageBody with TestCase1.2.4
 
   @TM-11
@@ -154,17 +154,17 @@ Feature: Sanity
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.5 and body TestCase1.2.5
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I press back
     And I click compose message
     And I send 1 message to bot2 with subject TestCase1.2.5 and body TestCase1.2.5
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I press back
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter TestCase1.2.5 in the messageSubject field
     And I enter TestCase1.2.5 in the messageBody field
     And I enter empty in the messageTo field
@@ -172,12 +172,12 @@ Feature: Sanity
     When I enter bot2 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I compare messageBody with empty
     And I go back to the Inbox
 
@@ -195,22 +195,22 @@ Feature: Sanity
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter bot5 in the messageTo field
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I enter TestCase1.2.6 in the messageSubject field
     And I enter TestCase1.2.6 in the messageBody field
     And I enter empty in the messageTo field
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter bot5 in the messageTo field
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     And I compare messageBody with TestCase1.2.6
 
   @TM-13
@@ -223,10 +223,10 @@ Feature: Sanity
     And I select from message menu pep_force_unprotected
     And I enter TestCase1.2.7 in the messageSubject field
     And I enter TestCase1.2.7 in the messageBody field
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     Then I remove account

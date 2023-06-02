@@ -84,7 +84,7 @@ class AutocryptKeyTransferPresenter internal constructor(
         view.setLoadingStateSending()
         view.sceneGeneratingAndSending()
 
-        val transport = transportProvider.getTransport(context, account, K9.oAuth2TokenStore)
+        val transport = transportProvider.getTransport(context, account)
         viewModel.autocryptSetupTransferLiveEvent.sendMessageAsync(transport, setupMsg)
     }
 

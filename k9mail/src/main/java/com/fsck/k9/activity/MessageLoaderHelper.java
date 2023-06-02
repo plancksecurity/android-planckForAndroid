@@ -1,6 +1,9 @@
 package com.fsck.k9.activity;
 
 
+import static com.fsck.k9.planck.PlanckProvider.KEY_COULD_NOT_DECRYPT_MESSAGE;
+import static com.fsck.k9.planck.PlanckProvider.KEY_MISSING_ERROR_MESSAGE;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -8,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -15,9 +19,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
-import timber.log.Timber;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
@@ -34,8 +38,7 @@ import com.fsck.k9.mailstore.MessageViewInfoExtractor;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
@@ -44,7 +47,7 @@ import com.fsck.k9.ui.message.LocalMessageLoader;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 
-import static com.fsck.k9.pEp.PEpProvider.KEY_MIOSSING_ERORR_MESSAGE;
+import timber.log.Timber;
 
 
 /** This class is responsible for loading a message start to finish, and
@@ -95,7 +98,7 @@ public class MessageLoaderHelper {
     @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
     private MessageLoaderDecryptCallbacks decryptCallback;
 
-    private PEpProvider pEpProvider;
+    private PlanckProvider planckProvider;
 
     // transient state
     private MessageReference messageReference;
@@ -119,7 +122,7 @@ public class MessageLoaderHelper {
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
-        this.pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+        this.planckProvider = ((K9) context.getApplicationContext()).planckProvider;
         this.messageViewInfoExtractor = new MessageViewInfoExtractor(context,
                 AttachmentInfoExtractor.getInstance(), displayHtml);
     }
@@ -505,9 +508,9 @@ public class MessageLoaderHelper {
     // decrypt message
 
     private void decryptMessage(LocalMessage message) {
-        pEpProvider.decryptMessage(message, account, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
+        planckProvider.decryptMessage(message, account, new PlanckProvider.ResultCallback<PlanckProvider.DecryptResult>() {
             @Override
-            public void onLoaded(PEpProvider.DecryptResult decryptResult) {
+            public void onLoaded(PlanckProvider.DecryptResult decryptResult) {
                 try {
                     MimeMessage decryptedMessage = decryptResult.msg;
                     // sync UID so we know our mail...
@@ -525,8 +528,10 @@ public class MessageLoaderHelper {
 
             @Override
             public void onError(Throwable throwable) {
-                if (decryptCallback != null && throwable.getMessage().equals(KEY_MIOSSING_ERORR_MESSAGE)) {
-                    decryptCallback.onMessageDataDecryptFailed(KEY_MIOSSING_ERORR_MESSAGE);
+                if (decryptCallback != null && throwable.getMessage().equals(KEY_MISSING_ERROR_MESSAGE)) {
+                    decryptCallback.onMessageDataDecryptFailed(KEY_MISSING_ERROR_MESSAGE);
+                } else if (decryptCallback != null) {
+                    decryptCallback.onMessageDataDecryptFailed(KEY_COULD_NOT_DECRYPT_MESSAGE);
                 }
             }
         });

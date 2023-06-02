@@ -12,12 +12,11 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
 import com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.imap.ImapStore;
 import com.fsck.k9.mail.store.pop3.Pop3Store;
-import com.fsck.k9.mail.store.webdav.WebDavHttpClient;
-import com.fsck.k9.mail.store.webdav.WebDavStore;
 
 
 public abstract class RemoteStore extends Store {
@@ -30,18 +29,27 @@ public abstract class RemoteStore extends Store {
     /**
      * Remote stores indexed by Uri.
      */
-    private static Map<String, Store> sStores = new HashMap<String, Store>();
+    private static final Map<String, Store> sStores = new HashMap<>();
 
 
-    public RemoteStore(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory) {
+    public RemoteStore(
+            StoreConfig storeConfig,
+            TrustedSocketFactory trustedSocketFactory,
+            OAuth2TokenProvider oauthTokenProvider
+    ) {
         mStoreConfig = storeConfig;
         mTrustedSocketFactory = trustedSocketFactory;
+        this.oauthTokenProvider = oauthTokenProvider;
     }
 
     /**
      * Get an instance of a remote mail store.
      */
-    public static synchronized RemoteStore getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
+    public static synchronized RemoteStore getInstance(
+            Context context,
+            StoreConfig storeConfig,
+            OAuthTokenProviderFactory oAuthTokenProviderFactory
+    ) throws MessagingException {
         String uri = storeConfig.getStoreUri();
 
         if (uri.startsWith("local")) {
@@ -56,11 +64,13 @@ public abstract class RemoteStore extends Store {
                         storeConfig,
                         new DefaultTrustedSocketFactory(context),
                         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
-                        oAuth2TokenProvider);
+                        oAuthTokenProviderFactory.create(storeConfig));
             } else if (uri.startsWith("pop3")) {
-                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context));
-            } else if (uri.startsWith("webdav")) {
-                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory());
+                store = new Pop3Store(
+                        storeConfig,
+                        new DefaultTrustedSocketFactory(context),
+                        oAuthTokenProviderFactory.create(storeConfig)
+                );
             }
 
             if (store != null) {
@@ -107,9 +117,7 @@ public abstract class RemoteStore extends Store {
             return ImapStore.decodeUri(uri);
         } else if (uri.startsWith("pop3")) {
             return Pop3Store.decodeUri(uri);
-        } else if (uri.startsWith("webdav")) {
-            return WebDavStore.decodeUri(uri);
-        } else {
+        }else {
             throw new IllegalArgumentException("Not a valid store URI");
         }
     }
@@ -131,12 +139,14 @@ public abstract class RemoteStore extends Store {
             return ImapStore.createUri(server);
         } else if (Type.POP3 == server.type) {
             return Pop3Store.createUri(server);
-        } else if (Type.WebDAV == server.type) {
-            return WebDavStore.createUri(server);
         } else {
             throw new IllegalArgumentException("Not a valid store URI");
         }
     }
 
     public abstract String getPathDelimiter();
+
+    public OAuth2TokenProvider getOauthTokenProvider() {
+        return oauthTokenProvider;
+    }
 }

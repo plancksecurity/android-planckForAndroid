@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enable_privacy_protection_title">planck privacy protection</string>
+    <string name="enable_privacy_protection_description">Enable or disable planck privacy protection for account</string>
+    <string name="default_quoted_text_shown_description">Include original message in reply</string>
+    <string name="remote_search_enabled_description">Allow to search messages on the server in addition to those on the device</string>
+    <string name="pep_sync_folder_description">Use a dedicate planck folder for planck sync messages</string>
+    <string name="fingerprint_title">Fingerprint</string>
+    <string name="extra_keys_title">Extra keys</string>
+    <string name="media_keys_title">Media keys</string>
+    <string name="media_key_title">Media key</string>
+    <string name="extra_keys_description">Set extra keys</string>
+    <string name="media_keys_description">Set media keys</string>
+    <string name="media_key_address_pattern_title">Address pattern</string>
+    <string name="media_key_material_title">Media key</string>
+    <string name="extra_key_material_title">Extra key</string>
+    <string name="enable_echo_protocol_title">Enable echo protocol</string>
+    <string name="account_description_description">Name displayed for account in the app.</string>
+    <string name="composition_title">Composition settings for account</string>
+    <string name="composition_description">Set sender name, signature, signature position</string>
+    <string name="composition_sender_name_title">Sender name</string>
+    <string name="archive_folder_description">Set folder to be used as Archive folder</string>
+    <string name="drafts_folder_description">Set folder to be used as Drafts folder</string>
+    <string name="sent_folder_description">Set folder to be used as Sent folder</string>
+    <string name="spam_folder_description">Set folder to be used as Spam folder</string>
+    <string name="trash_folder_description">Set folder to be used as Trash folder</string>
+    <string name="provisioning_url_title">Provisioning URL</string>
+    <string name="provisioning_url_description">URL to provision planck for Android</string>
+    <string name="mail_settings_title">Mail settings</string>
+    <string name="mail_settings_description">Configure email address as well as server port, host, security, user name for incoming and outgoing mail servers. This is required for provisioning.</string>
+    <string name="account_email_address_title">Email address</string>
+    <string name="account_email_address_description">Email address for this account. It needs to be provisioned from MDM. Change it to change the sender name in emails.</string>
+    <string name="account_display_count_description">Number of mails displayed in message list screen by default</string>
+    <string name="account_remote_search_num_results_description">Number of remote search results displayed by default</string>
+    <string name="allow_pep_sync_new_devices_title">Allow to add new devices to sync group</string>
+    <string name="allow_pep_sync_new_devices_description">Allow to use planck sync to add new devices to sync group.</string>
+
+    <string-array name="mail_settings_security_type_entries">
+        <item>@string/account_setup_incoming_security_none_label</item>
+        <item>@string/account_setup_incoming_security_ssl_label</item>
+        <item>@string/account_setup_incoming_security_tls_label</item>
+    </string-array>
+
+    <string-array name="mail_settings_security_type_values" translatable="false">
+        <item>NONE</item>
+        <item>SSL/TLS</item>
+        <item>STARTTLS</item>
+    </string-array>
+
+    <string name="account_oauth_provider_title">OAuth Provider</string>
+    <string name="account_oauth_provider_description">OAuth provider when using login via OAuth. Default is Google. Only used when incoming or outgoing mail settings auth type is OAuth.</string>
+    <string name="google" translatable="false">Google</string>
+    <string name="microsoft" translatable="false">Microsoft</string>
+    <string-array name="account_oauth_provider_entries">
+        <item>@string/microsoft</item>
+        <item>@string/google</item>
+    </string-array>
+
+    <string-array name="account_oauth_provider_values" translatable="false" >
+        <item>MICROSOFT</item>
+        <item>GOOGLE</item>
+    </string-array>
+
+    <string name="account_authentication_type_title">Authentication type</string>
+    <string name="account_authentication_type_plain_entry">Normal password (Plain)</string>
+    <string name="account_authentication_type_cram_md5_entry">Encrypted password (Cram MD5)</string>
+    <string name="account_authentication_type_external_entry">Client certificate (External)</string>
+    <string name="account_authentication_type_oauth_entry">OAuth 2.0 (OAuth)</string>
+
+    <string-array name="account_authentication_type_entries">
+        <item>@string/account_authentication_type_plain_entry</item>
+        <item>@string/account_authentication_type_cram_md5_entry</item>
+        <item>@string/account_authentication_type_external_entry</item>
+        <item>@string/account_authentication_type_oauth_entry</item>
+    </string-array>
+
+    <string-array name="account_authentication_type_values" translatable="false">
+        <item>PLAIN</item>
+        <item>CRAM_MD5</item>
+        <item>EXTERNAL</item>
+        <item>XOAUTH2</item>
+    </string-array>
+</resources>

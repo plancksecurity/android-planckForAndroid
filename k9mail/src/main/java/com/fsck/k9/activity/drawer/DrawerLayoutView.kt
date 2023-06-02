@@ -12,30 +12,33 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.renderers.AccountRenderer
-import com.fsck.k9.pEp.ui.renderers.FolderRenderer
+import com.fsck.k9.planck.models.FolderModel
+import com.fsck.k9.planck.ui.renderers.AccountRenderer
+import com.fsck.k9.planck.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
-import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
-import security.pEp.foldable.folders.displayers.LevelItemActionListener
-import security.pEp.foldable.folders.model.LevelListItem
-import security.pEp.foldable.folders.util.LevelListBuilder
-import security.pEp.ui.PEpUIUtils
-import security.pEp.ui.nav_view.NavFolderAccountButton
+import security.planck.foldable.folders.adapters.BaseLevelListRVRendererAdapter
+import security.planck.foldable.folders.displayers.LevelItemActionListener
+import security.planck.foldable.folders.model.LevelListItem
+import security.planck.foldable.folders.util.LevelListBuilder
+import security.planck.ui.PlanckUIUtils
+import security.planck.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -176,7 +179,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun setUpMainAccountView(account: Account) {
-        mainAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+        mainAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
         mainAccountName.text = account.name
         mainAccountEmail.text = account.email
     }
@@ -206,12 +209,12 @@ class DrawerLayoutView @Inject constructor(
         val firstAccount = accounts[accounts.size - 1]
         firstAccountLayout.visibility = View.VISIBLE
         secondAccountLayout.visibility = View.GONE
-        firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
+        firstAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
         firstAccountLayout.setOnClickListener {
             if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
-                mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
-                firstAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                mainAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
+                firstAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
                 mainAccountEmail.text = firstAccount.email
                 mainAccountName.text = firstAccount.name
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
@@ -224,26 +227,26 @@ class DrawerLayoutView @Inject constructor(
         val lastAccount = accounts[accounts.size - 2]
         firstAccountLayout.visibility = View.VISIBLE
         secondAccountLayout.visibility = View.VISIBLE
-        firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
-        secondAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
+        firstAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
+        secondAccountText.text = PlanckUIUtils.accountNameSummary(lastAccount.name)
         firstAccountLayout.setOnClickListener {
             if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
-                mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
+                mainAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
                 mainAccountEmail.text = firstAccount.email
                 mainAccountName.text = firstAccount.name
-                firstAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
-                secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                firstAccountText.text = PlanckUIUtils.accountNameSummary(lastAccount.name)
+                secondAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
             }
         }
         secondAccountLayout.setOnClickListener {
             if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
-                mainAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
+                mainAccountText.text = PlanckUIUtils.accountNameSummary(lastAccount.name)
                 mainAccountEmail.text = lastAccount.email
                 mainAccountName.text = lastAccount.name
-                secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                secondAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
                 changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount)
             }
         }
@@ -281,7 +284,13 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean) {
-        (context as Activity).runOnUiThread {
+        if (!::folderAdapter.isInitialized) {
+            if(BuildConfig.DEBUG) {
+                throw IllegalStateException("folderAdapter is not initialized in populateFolders!!")
+            }
+            drawerLayoutPresenter.setFoldersAdapter()
+        }
+        if((context as LifecycleOwner).lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders)
             drawerFolderPopulator.populateFoldersIfNeeded(
                 folderAdapter,
@@ -374,7 +383,7 @@ class DrawerLayoutView @Inject constructor(
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
 
         navigationAccounts.layoutManager = getDrawerLayoutManager()
-        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection)
+        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection as List<Account>)
         navigationAccounts.adapter = accountAdapter
     }
 
@@ -396,9 +405,14 @@ class DrawerLayoutView @Inject constructor(
             drawerLayout.closeDrawers()
             messageListView.editAccount()
         }
-        addAccountContainer.setOnClickListener {
-            drawerLayout.closeDrawers()
-            AccountSetupBasics.actionNewAccount(context)
+
+        if (BuildConfig.IS_ENTERPRISE) {
+            addAccountContainer.visibility = View.GONE
+        } else {
+            addAccountContainer.setOnClickListener {
+                drawerLayout.closeDrawers()
+                AccountSetupBasics.actionNewAccount(context)
+            }
         }
     }
 

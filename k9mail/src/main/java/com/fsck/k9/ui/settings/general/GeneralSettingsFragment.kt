@@ -3,57 +3,60 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.preference.*
-import com.fsck.k9.BuildConfig
+import androidx.preference.CheckBoxPreference
+import androidx.preference.Preference
+import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
-import com.fsck.k9.helper.FileBrowserHelper
-import com.fsck.k9.notification.NotificationController
-import com.fsck.k9.pEp.PEpProviderFactory
-import com.fsck.k9.pEp.filepicker.Utils
-import com.fsck.k9.pEp.ui.keys.PepExtraKeys
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.Theme
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
+import com.fsck.k9.planck.ui.tools.FeedbackTools
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
-import com.fsck.k9.ui.settings.remove
-import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.preference_loading_widget.*
-import kotlinx.coroutines.*
+import kotlinx.android.synthetic.main.preference_loading_widget.loading
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import security.pEp.ui.passphrase.PassphraseActivity
-import security.pEp.ui.passphrase.PassphraseRequirementType
-import java.io.File
+import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
+import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
+import security.planck.ui.passphrase.requestPassphraseForNewKeys
+import security.planck.ui.support.export.ExportpEpSupportDataActivity
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
-    private val fileBrowserHelper: FileBrowserHelper by inject()
-
-    private lateinit var attachmentDefaultPathPreference: Preference
 
     private var syncSwitchDialog: AlertDialog? = null
+    private var rootkey:String? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
+        this.rootkey = rootKey
 
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
-        initializeAttachmentDefaultPathPreference()
-        initializeConfirmActions()
-        initializeLockScreenNotificationVisibility()
-        initializeNotificationQuickDelete()
+        initializePreferences()
+    }
+
+    fun refreshPreferences() {
+        setPreferencesFromResource(R.xml.general_settings, rootkey)
+        initializePreferences()
+    }
+
+    private fun initializePreferences() {
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
+        initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
-        initializeTheme()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -62,74 +65,29 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         dataStore.activity = activity
     }
 
-    private fun initializeTheme() {
-        (findPreference(PREFERENCE_THEME) as? ListPreference)?.apply {
-            if (Build.VERSION.SDK_INT < 28) {
-                setEntries(R.array.theme_entries_legacy)
-                setEntryValues(R.array.theme_values_legacy)
-            }
-        }
-    }
-
     private fun initializeNewKeysPassphrase() {
-        findPreference<Preference>(NEW_KEYS_PASSPHRASE)?.onClick {
-            context?.let {
-                PassphraseActivity.notifyRequest(it, PassphraseRequirementType.NEW_KEYS_PASSPHRASE)
-            }
-        }
-    }
-
-    private fun initializeAttachmentDefaultPathPreference() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.remove()
-        } else {
-            findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
-                attachmentDefaultPathPreference = this
-
-                summary = attachmentDefaultPath()
-                onClick {
-                    fileBrowserHelper.showFileBrowserActivity(this@GeneralSettingsFragment,
-                        File(attachmentDefaultPath()), REQUEST_PICK_DIRECTORY,
-                        object : FileBrowserHelper.FileBrowserFailOverCallback {
-                            override fun onPathEntered(path: String) {
-                                setAttachmentDefaultPath(path)
-                            }
-
-                            override fun onCancel() = Unit
-                        }
-                    )
+        findPreference<SwitchPreferenceCompat>(PEP_USE_PASSPHRASE_FOR_NEW_KEYS)?.apply {
+            this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    processNewKeysSwitchClick(preference, newValue)
                 }
+        }
+    }
+
+    private fun processNewKeysSwitchClick(preference: Preference, newValue: Any): Boolean {
+        if (preference is SwitchPreferenceCompat && newValue is Boolean) {
+            if (!newValue) {
+                preference.isChecked = false
+            } else {
+                requestPassphraseForNewKeys()
             }
         }
-    }
-
-    private fun initializeConfirmActions() {
-        val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
-        if (!notificationActionsSupported) {
-            (findPreference(PREFERENCE_CONFIRM_ACTIONS) as? MultiSelectListPreference)?.apply {
-                removeEntry(CONFIRM_ACTION_DELETE_FROM_NOTIFICATION)
-            }
-        }
-    }
-
-    private fun initializeLockScreenNotificationVisibility() {
-        val lockScreenNotificationsSupported = NotificationController.platformSupportsLockScreenNotifications()
-        if (!lockScreenNotificationsSupported) {
-            findPreference<Preference>(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY)?.apply { remove() }
-        }
-    }
-
-    private fun initializeNotificationQuickDelete() {
-        val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
-        if (!notificationActionsSupported) {
-            findPreference<Preference>(PREFERENCE_NOTIFICATION_QUICK_DELETE)?.apply { remove() }
-        }
+        return false
     }
 
     private fun initializeExtraKeysManagement() {
         findPreference<Preference>(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
-                PepExtraKeys.actionStart(context)
+                PlanckExtraKeys.actionStart(context)
                 true
             }
         }
@@ -156,14 +114,19 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalpEpSync() {
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
-        } else {
-            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+
+        (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
+            this.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { preference, newValue ->
                     processKeySyncSwitchClick(preference, newValue)
                 }
-            }
+        }
+
+    }
+
+    private fun initializeExportPEpSupportDataPreference() {
+        findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.onClick {
+            ExportpEpSupportDataActivity.showExportPEpSupportDataDialog(requireActivity())
         }
     }
 
@@ -226,53 +189,31 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.onPreferenceClickListener = null
     }
 
-    private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
-        val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
-        pEpProvider.apply {
-            keyResetAllOwnKeys()
-            close()
-        }
+    private suspend fun ownKeyReset() = withContext(PlanckDispatcher) {
+        val pEpProvider = (requireContext().applicationContext as K9).planckProvider
+        pEpProvider.keyResetAllOwnKeys()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
-        if (requestCode == REQUEST_PICK_DIRECTORY && resultCode == Activity.RESULT_OK && result != null) {
-            result.data?.path?.let {
-                setAttachmentDefaultPath(it)
+        if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
+            result?.let { intent ->
+                val isChecked = intent.getBooleanExtra(PASSPHRASE_RESULT_KEY, false)
+                (findPreference(PEP_USE_PASSPHRASE_FOR_NEW_KEYS) as SwitchPreferenceCompat?)?.isChecked = isChecked
             }
         }
-        //TODO: merge
-        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
-            val files = Utils.getSelectedFilesFromResult(result!!)
-            for (uri in files) {
-                val file = Utils.getFileForUri(uri)
-                setAttachmentDefaultPath(file.path)
-            }
-        }
-    }
-
-    private fun attachmentDefaultPath() = dataStore.getString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, "")
-
-    private fun setAttachmentDefaultPath(path: String) {
-        attachmentDefaultPathPreference.summary = path
-        dataStore.putString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, path)
     }
 
     companion object {
-        private const val REQUEST_PICK_DIRECTORY = 1
-        const val FILE_CODE = 2
-        private const val PREFERENCE_ATTACHMENT_DEFAULT_PATH = "attachment_default_path"
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
-        private const val PREFERENCE_CONFIRM_ACTIONS = "confirm_actions"
-        private const val PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility"
-        private const val PREFERENCE_NOTIFICATION_QUICK_DELETE = "notification_quick_delete"
-        private const val CONFIRM_ACTION_DELETE_FROM_NOTIFICATION = "delete_notif"
         private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
+        private const val PREFERENCE_PEP_SYNC_FOLDER = "pep_sync_folder"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
-        private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
+        private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
+        private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

@@ -1,5 +1,7 @@
 package com.fsck.k9.provider;
 
+import static com.fsck.k9.helper.PendingIntentCompat.FLAG_MUTABLE;
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -20,7 +22,7 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.UnreadWidgetConfiguration;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
-import com.fsck.k9.pEp.ui.activities.SplashActivity;
+import com.fsck.k9.planck.ui.activities.SplashActivity;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 
@@ -164,12 +166,13 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
     }
 
     private static PendingIntent viewUnreadInboxPendingIntent(Context context, int appWidgetId, Intent clickIntent) {
-        return  PendingIntent.getActivity(context, appWidgetId, clickIntent, 0);
+        return  PendingIntent.getActivity(context, appWidgetId, clickIntent, FLAG_MUTABLE);
     }
 
     private static PendingIntent noAccountPendingIntent(Context context) {
         Intent intent = new Intent(context, SplashActivity.class);
-        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_MUTABLE);
     }
 
     /**

@@ -15,7 +15,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFirstFragment"
+            tools:context="com.fsck.k9.security.planck.ui.intro.IntroFirstFragment"
             android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
 
@@ -42,7 +42,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/headerText" />
 
-            <com.fsck.k9.pEp.ui.PEpContactBadge
+            <com.fsck.k9.planck.ui.PlanckContactBadge
                 android:id="@+id/contactBadge"
                 android:layout_width="@dimen/intro_contact_badge_width_height"
                 android:layout_height="@dimen/intro_contact_badge_width_height"

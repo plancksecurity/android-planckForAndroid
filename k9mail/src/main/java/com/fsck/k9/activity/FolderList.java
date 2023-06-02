@@ -4,12 +4,10 @@ package com.fsck.k9.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -23,7 +21,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -42,6 +39,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Account.FolderMode;
 import com.fsck.k9.AccountStats;
 import com.fsck.k9.BaseAccount;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -58,8 +56,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
@@ -71,9 +68,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import security.pEp.ui.PEpUIUtils;
-import security.pEp.ui.resources.PEpResourcesProvider;
-import security.pEp.ui.resources.ResourcesProvider;
+import security.planck.ui.PlanckUIUtils;
+import security.planck.ui.resources.PlanckResourcesProvider;
+import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
 import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
@@ -111,8 +108,6 @@ public class FolderList extends K9ListActivity {
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
-    private View searchLayout;
-    private EditText searchInput;
     private View clearSearchIcon;
 
     private ResourcesProvider resourcesProvider;
@@ -270,7 +265,7 @@ public class FolderList extends K9ListActivity {
             return;
         }
 
-        resourcesProvider = new PEpResourcesProvider(this);
+        resourcesProvider = new PlanckResourcesProvider(this);
         actionBarProgressView = getActionBarProgressView();
         setContentView(R.layout.folder_list);
         initializeActionBar();
@@ -284,7 +279,9 @@ public class FolderList extends K9ListActivity {
                 onOpenFolder(((FolderInfoHolder)mAdapter.getItem(position)).name);
             }
         });
-        registerForContextMenu(mListView);
+        if (!BuildConfig.IS_ENTERPRISE) {
+            registerForContextMenu(mListView);
+        }
 
         mListView.setSaveEnabled(true);
 
@@ -315,7 +312,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void initializeSearchBar() {
-        searchLayout = findViewById(R.id.toolbar_search_container);
+        toolbarSearchContainer = findViewById(R.id.toolbar_search_container);
         searchInput = (EditText) findViewById(R.id.search_input);
         clearSearchIcon = findViewById(R.id.search_clear);
 
@@ -363,7 +360,8 @@ public class FolderList extends K9ListActivity {
         });
     }
 
-    private void search(String query) {
+    @Override
+    public void search(String query) {
         if (mAccount != null && query != null) {
             final Bundle appData = new Bundle();
             appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
@@ -371,39 +369,9 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-    public void showSearchView() {
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
-            onSearchRequested();
-        } else {
-            if (searchLayout != null) {
-                getToolbar().setVisibility(View.GONE);
-                searchLayout.setVisibility(View.VISIBLE);
-                searchInput.setEnabled(true);
-                setFocusOnKeyboard();
-                searchInput.setError(null);
-            }
-        }
-    }
-
-    public void hideSearchView() {
-        if (searchLayout != null) {
-            searchLayout.setVisibility(View.GONE);
-            getToolbar().setVisibility(View.VISIBLE);
-            searchInput.setEnabled(false);
-            searchInput.setText(null);
-            KeyboardUtils.hideKeyboard(searchInput);
-        }
-    }
-
-    private void setFocusOnKeyboard() {
-        searchInput.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
-    }
-
     @Override
     public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         setIntent(intent); // onNewIntent doesn't autoset our "internal" intent
 
         mUnreadMessageCount = 0;
@@ -421,7 +389,7 @@ public class FolderList extends K9ListActivity {
         }
 
         if (intent.getBooleanExtra(EXTRA_FROM_SHORTCUT, false) &&
-                   !K9.FOLDER_NONE.equals(mAccount.getAutoExpandFolderName())) {
+                !K9.FOLDER_NONE.equals(mAccount.getAutoExpandFolderName())) {
             onOpenFolder(mAccount.getAutoExpandFolderName());
         } else {
             initializeActivityView();
@@ -857,7 +825,7 @@ public class FolderList extends K9ListActivity {
                     Collections.sort(newFolders);
                     Collections.sort(topFolders);
                     topFolders.addAll(newFolders);
-                    topFolders = PEpUIUtils.orderFolderInfoLists(mAccount, topFolders);
+                    topFolders = PlanckUIUtils.orderFolderInfoLists(mAccount, topFolders);
                     mHandler.newFolders(topFolders);
                 }
                 super.listFolders(account, folders);
@@ -1313,7 +1281,7 @@ public class FolderList extends K9ListActivity {
 
     @Override
     public void onBackPressed() {
-        if(searchLayout != null && searchLayout.getVisibility() == View.VISIBLE) {
+        if(toolbarSearchContainer != null && toolbarSearchContainer.getVisibility() == View.VISIBLE) {
             hideSearchView();
         }
         else {

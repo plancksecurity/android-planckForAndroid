@@ -1,5 +1,5 @@
 package com.fsck.k9.ui
-
+/*
 import android.Manifest
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -9,12 +9,14 @@ import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@Ignore("Only to be run via ./gradlew generateScreenshots")
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @get:Rule
@@ -68,7 +70,7 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         sleep(2000)
 
         getScreenShotCurrentActivity("import account step 3")
-        addTextTo(R.id.incoming_server_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        addTextTo(R.id.incoming_server_password, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD)
         getScreenShotCurrentActivity("import account step 3 filled")
     }
 
@@ -126,8 +128,8 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     private fun addFirstAccountAutomatic() {
         getScreenShotCurrentActivity("without values")
-        addTextTo(R.id.account_email, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
-        addTextTo(R.id.account_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        addTextTo(R.id.account_email, BuildConfig.PLANCK_TEST_EMAIL_ADDRESS)
+        addTextTo(R.id.account_password, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD)
         closeKeyboardWithDelay()
         getScreenShotCurrentActivity("with values")
         sleep(2000)
@@ -146,8 +148,8 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     private fun addFirstAccountManual() {
         // email password
         getScreenShotAccountSetup("without values")
-        addTextTo(R.id.account_email, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
-        addTextTo(R.id.account_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        addTextTo(R.id.account_email, BuildConfig.PLANCK_TEST_EMAIL_ADDRESS)
+        addTextTo(R.id.account_password, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD)
         closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
         click(R.id.manual_setup)
@@ -155,7 +157,7 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
         // setup income
         getScreenShotAccountSetup("without values")
-        setTextTo(R.id.account_server, BuildConfig.PEP_TEST_EMAIL_SERVER)
+        setTextTo(R.id.account_server, BuildConfig.PLANCK_TEST_EMAIL_SERVER)
         closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
         click(R.id.next)
@@ -163,7 +165,7 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
         // setup outcome
         getScreenShotAccountSetup("without values")
-        setTextTo(R.id.account_server, BuildConfig.PEP_TEST_EMAIL_SERVER)
+        setTextTo(R.id.account_server, BuildConfig.PLANCK_TEST_EMAIL_SERVER)
         closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
         click(R.id.next)
@@ -181,4 +183,4 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
 
-}
+}*/

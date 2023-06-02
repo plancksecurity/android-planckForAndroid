@@ -11,9 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.fragments.PlanckFragment;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
-import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -41,7 +41,6 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -81,10 +80,10 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
-import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -115,8 +114,8 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
-import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.resources.ResourcesProvider;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -136,7 +135,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_ROOT_COLUMN;
 import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 
-public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
+public class MessageListFragment extends PlanckFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
     private static final long CLICK_THRESHOLD_MILLIS = 300;
     private FloatingActionButton fab;
@@ -151,6 +150,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         args.putBoolean(ARG_THREADED_LIST, threadedList);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void showComposeFab(boolean show) {
+        if(isAdded() && fab != null) {
+            if(show) {
+                fab.show();
+            } else {
+                fab.hide();
+            }
+        }
     }
 
     public void showLoadingMessages() {
@@ -170,7 +179,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             }
         } else {
             listView.setVisibility(View.VISIBLE);
-            fab.show();
+            if(!shouldHideComposeFab()) {
+                fab.show();
+            }
         }
         loadingView.setVisibility(View.GONE);
     }
@@ -551,14 +562,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
-    }
-
-    private void destroyLoaders() {
-        LoaderManager manager = LoaderManager.getInstance(this);
-        for (int i = 0, len = accountUuids.length; i < len; i++) {
-            manager.destroyLoader(i);
-        }
+        getPlanckComponent().inject(this);
     }
 
     private boolean anyAccountWasDeleted() {
@@ -748,7 +752,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                     accountUuids[0].equals(SearchSpecification.ALL_ACCOUNTS)) {
                 allAccounts = true;
 
-                List<Account> accounts = preferences.getAccounts();
+                List<Account> accounts = new ArrayList<>(preferences.getAvailableAccounts());
 
                 this.accountUuids = new String[accounts.size()];
                 for (int i = 0, len = accounts.size(); i < len; i++) {
@@ -794,7 +798,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void getFolderInfoHolder(String folderName, Account account) {
-        if(!preferences.getAccounts().contains(account)) {
+        if(!preferences.getAvailableAccounts().contains(account)) {
             Timber.e("Account is null in Preferences because we just deleted it, " +
                     "this should only happen coming from FragmentManager.popBackStack from MessageList.onNewIntent");
             return;
@@ -823,7 +827,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
-        destroyLoaders();
     }
 
     /**
@@ -860,7 +863,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (account != null) {
             accountsWithNotification = Collections.singletonList(account);
         } else {
-            accountsWithNotification = preferences.getAccounts();
+            accountsWithNotification = new ArrayList<>(preferences.getAvailableAccounts());
         }
 
         for (Account accountWithNotification : accountsWithNotification) {
@@ -875,13 +878,18 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         MessageList activity = (MessageList) getActivity();
         if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
             toolBarCustomizer.setToolbarColor(worstThreadRating);
-            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPlanckColor(worstThreadRating);
         }
-        if (isThreadDisplay || isManualSearch()) {
+        if (shouldHideComposeFab()) {
             fab.hide();
         } else {
             fab.show();
         }
+    }
+
+    private boolean shouldHideComposeFab() {
+        return isThreadDisplay || isManualSearch()
+                || ((MessageList) requireActivity()).isShowingSearchView();
     }
 
     private void startGlobalLayoutListener() {
@@ -913,9 +921,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void initializePullToRefresh() {
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
-                getResources().getColor(R.color.pep_yellow),
-                getResources().getColor(R.color.pep_red));
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.planck_green),
+                getResources().getColor(R.color.planck_yellow),
+                getResources().getColor(R.color.planck_red));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -970,8 +978,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void onMessageLongClicked(int position) {
-        toggleMessageSelectWithAdapterPosition(position);
-        if (actionMode == null) {
+        boolean isSelected =  toggleMessageSelectWithAdapterPosition(position);
+
+        if (actionMode == null && !isSelected) {
             getActivity().startActionMode(new android.view.ActionMode.Callback() {
                 @Override
                 public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
@@ -994,16 +1003,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                             break;
                         }
                         case R.id.reply: {
-                            onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                            onReply(getMessageAtPosition(position), PlanckUtils.extractRating(getLocalMessageAtPosition(position)));
                             break;
                         }
                         case R.id.reply_all: {
-                            onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                            onReplyAll(getMessageAtPosition(position), PlanckUtils.extractRating(getLocalMessageAtPosition(position)));
                             break;
                         }
                         case R.id.forward: {
                             //TODO: Check how to avoid to retrive the whole message
-                            onForward(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                            onForward(getMessageAtPosition(position), PlanckUtils.extractRating(getLocalMessageAtPosition(position)));
                             break;
                         }
                         case R.id.send_again: {
@@ -1613,6 +1622,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         return AdapterView.INVALID_POSITION;
     }
 
+    public void refreshAccount() {
+        decodeArguments();
+        adapter.notifyDataSetChanged();
+    }
+
     class MessageListActivityListener extends ActivityListener {
         @Override
         public void remoteSearchFailed(String folder, final String err) {
@@ -1825,8 +1839,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 actionMode = null;
             }
         }
-
-        adapter.notifyDataSetChanged();
+        if (adapter != null && !adapter.isClosed()) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void toggleMessageSelect(int listViewPosition) {
@@ -1845,7 +1860,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         setFlag(adapterPosition,Flag.FLAGGED, !flagged);
     }
 
-    void toggleMessageSelectWithAdapterPosition(int adapterPosition) {
+    boolean toggleMessageSelectWithAdapterPosition(int adapterPosition) {
         Cursor cursor = (Cursor) adapter.getItem(adapterPosition);
         long uniqueId = cursor.getLong(uniqueIdColumn);
 
@@ -1874,7 +1889,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             if (selectedCount <= 0 && selected) {
                 actionMode.finish();
                 actionMode = null;
-                return;
+                return selected;
             }
         } else {
             startAndPrepareActionMode();
@@ -1886,6 +1901,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         computeSelectAllVisibility();
 
         adapter.notifyDataSetChanged();
+
+        return selected;
     }
 
     private void updateActionModeTitle() {
@@ -2999,7 +3016,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (isThreadDisplay && data.getCount() == 0) {
+        if (isThreadDisplay && data.getCount() == 0
+                && activeMessage == null) {
             handler.goBack();
             return;
         }
@@ -3059,7 +3077,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     private void updateToolbarColorToOriginal() {
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
     }
 
     boolean isMessageSelected(Cursor cursor) {
@@ -3071,7 +3089,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         int worstRatingValue = Rating.pEpRatingFullyAnonymous.value;
         worstThreadRating = Rating.pEpRatingFullyAnonymous;
         for (int i = 0; i < cursor.getCount(); i++) {
-            Rating messageRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            Rating messageRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
             int messageRatingValue = messageRating.value;
             if (messageRatingValue <= worstRatingValue) {
                 worstRatingValue = messageRatingValue;
@@ -3081,7 +3099,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
         if (!((MessageList) getActivity()).isMessageViewVisible()) {
             toolBarCustomizer.setToolbarColor(worstThreadRating);
-            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPlanckColor(worstThreadRating);
         }
     }
 

@@ -1,6 +1,8 @@
 
 package com.fsck.k9.service;
 
+import static com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -84,7 +86,7 @@ public class BootReceiverLegacy extends CoreReceiver {
         i.putExtra(ALARMED_INTENT, alarmedIntent);
         Uri uri = Uri.parse("action://" + alarmedAction);
         i.setData(uri);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, FLAG_IMMUTABLE);
         return pi;
     }
 
@@ -122,7 +124,7 @@ public class BootReceiverLegacy extends CoreReceiver {
                 // we want to match all intents
                 return true;
             }
-        }, 0));
+        }, FLAG_IMMUTABLE));
     }
 
 }

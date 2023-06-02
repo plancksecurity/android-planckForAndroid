@@ -21,11 +21,11 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.ui.ActionRecipientSelectView;
+import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.activity.compose.RecipientSelectView.TokenListener;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.List;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.ui.message_compose.ComposeAccountRecipient;
+import security.planck.ui.message_compose.ComposeAccountRecipient;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -70,9 +70,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final Account mAccount;
 
     // pEp stuff
-    private Rating pEpRating = Rating.pEpRatingUndefined;
+    private Rating planckRating = Rating.pEpRatingUndefined;
 
-    PePUIArtefactCache pEpUiCache;
+    PlanckUIArtefactCache pEpUiCache;
     private RecipientPresenter presenter;
     private MessageReference messageReference;
 
@@ -103,14 +103,14 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         View recipientExpander = activity.findViewById(R.id.recipient_expander);
         recipientExpander.setOnClickListener(this);
 
-        View toLabel = activity.findViewById(R.id.to_label);
-        View ccLabel = activity.findViewById(R.id.cc_label);
-        View bccLabel = activity.findViewById(R.id.bcc_label);
-        toLabel.setOnClickListener(this);
-        ccLabel.setOnClickListener(this);
-        bccLabel.setOnClickListener(this);
+        activity.findViewById(R.id.to_label).setOnClickListener(this);
+        activity.findViewById(R.id.cc_label).setOnClickListener(this);
+        activity.findViewById(R.id.bcc_label).setOnClickListener(this);
+        activity.findViewById(R.id.to_wrapper).setOnClickListener(this);
+        ccWrapper.setOnClickListener(this);
+        bccWrapper.setOnClickListener(this);
 
-        pEpUiCache = PePUIArtefactCache.getInstance(activity.getApplicationContext());
+        pEpUiCache = PlanckUIArtefactCache.getInstance(activity.getApplicationContext());
     }
 
     private void setOnCutCopyPasteListenerToView(ActionRecipientSelectView view) {
@@ -122,7 +122,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onCopy() {
-                copyFromView(PEpUtils.addressesToString(RecipientMvpView.this.toView.getAddresses()));
+                copyFromView(PlanckUtils.addressesToString(RecipientMvpView.this.toView.getAddresses()));
             }
         });
     }
@@ -132,7 +132,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     private void cutFromView(ActionRecipientSelectView view) {
-        copyFromView(PEpUtils.addressesToString(view.getAddresses()));
+        copyFromView(PlanckUtils.addressesToString(view.getAddresses()));
         view.emptyAddresses();
     }
 
@@ -167,6 +167,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onToTokenChanged();
             }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
+            }
         });
 
         ccView.setTokenListener(new TokenListener<Recipient>() {
@@ -184,6 +194,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onCcTokenChanged();
             }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
+            }
         });
 
         bccView.setTokenListener(new TokenListener<Recipient>() {
@@ -200,6 +220,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onBccTokenChanged();
+            }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
             }
         });
     }
@@ -304,6 +334,24 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return bccView.getObjects();
     }
 
+    public int getToUnsecureRecipientCount() {
+        return toView.getUnsecureRecipientCount();
+    }
+
+    public int getCcUnsecureRecipientCount() {
+        return ccView.getUnsecureRecipientCount();
+    }
+
+    public int getBccUnsecureRecipientCount() {
+        return bccView.getUnsecureRecipientCount();
+    }
+
+    public void clearUnsecureRecipients() {
+        toView.clearUnsecureRecipients();
+        ccView.clearUnsecureRecipients();
+        bccView.clearUnsecureRecipients();
+    }
+
     public boolean recipientToHasUncompletedText() {
         return toView.hasUncompletedText();
     }
@@ -350,7 +398,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public boolean isPepStatusClickable() {
-        return PEpUtils.isPepStatusClickable(pEpUiCache.getRecipients(), pEpRating);
+        return PlanckUtils.isPepStatusClickable(pEpUiCache.getRecipients(), planckRating);
     }
 
     public void showCryptoStatus(CryptoStatusDisplayType cryptoStatusDisplayType) {
@@ -429,14 +477,17 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.to_wrapper:
             case R.id.to_label: {
                 presenter.onClickToLabel();
                 break;
             }
+            case R.id.cc_wrapper:
             case R.id.cc_label: {
                 presenter.onClickCcLabel();
                 break;
             }
+            case R.id.bcc_wrapper:
             case R.id.bcc_label: {
                 presenter.onClickBccLabel();
                 break;
@@ -487,33 +538,49 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         bccView.setOnFocusChangeListener(pEpChangeTracker);
     }
 
-    public void setpEpRating(Rating pEpRating) {
-        this.pEpRating = pEpRating;
+    public void setPlanckRating(Rating planckRating) {
+        this.planckRating = planckRating;
     }
 
-    public Rating getpEpRating() {
-        return pEpRating;
+    public Rating getPlanckRating() {
+        return planckRating;
     }
 
-    void handlepEpState(boolean... withToast) {
-        if (mAccount.ispEpPrivacyProtected()) {
-            boolean reallyWithToast = true;
-            if (withToast.length > 0) reallyWithToast = withToast[0];
-            activity.setToolbarRating(pEpRating);
+    void handlepEpState(boolean forceHide) {
+        if (mAccount.isPlanckPrivacyProtected()) {
+            activity.setToolbarRating(planckRating, forceHide);
+        } else {
+            activity.setToolbarRating(Rating.pEpRatingUnencrypted, forceHide);
         }
+    }
+
+    public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        activity.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    public void hideUnsecureDeliveryWarning() {
+        activity.hideUnsecureDeliveryWarning();
+    }
+
+    public void showSingleRecipientHandshakeBanner() {
+        activity.showSingleRecipientHandshakeBanner();
+    }
+
+    public void hideSingleRecipientHandshakeBanner() {
+        activity.hideSingleRecipientHandshakeBanner();
     }
 
     public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
-        recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
-        recipients.addAll(PEpUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));
-        recipients.addAll(PEpUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
+        recipients.addAll(PlanckUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
+        recipients.addAll(PlanckUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));
+        recipients.addAll(PlanckUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
         pEpUiCache.setRecipients(mAccount, recipients);
     }
 
         void onPEpPrivacyStatus() {
-            PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
-            launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
+            PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, planckRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+            launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
 
         //FIXME P4A-934: "Caused by: android.os.TransactionTooLargeException: data parcel size 1064328 bytes", not always reproducible.
     }
@@ -534,35 +601,38 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.messageRatingLoaded();
     }
 
-    public void notifyAddressesChanged(List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {
-        ccView.notifyDatasetChanged();
-        bccView.notifyDatasetChanged();
-
-        for (Address toAdress : toAdresses) {
-            toView.removeObject(new Recipient(toAdress));
+    public void notifyRecipientsChanged(
+            List<Recipient> toRecipients,
+            List<Recipient> ccRecipients,
+            List<Recipient> bccRecipients
+    ) {
+        View currentFocus = activity.getCurrentFocus();
+        notifyRecipientsChanged(toView, toRecipients);
+        notifyRecipientsChanged(ccView, ccRecipients);
+        notifyRecipientsChanged(bccView, bccRecipients);
+        if (currentFocus != null) {
+            bccView.post(currentFocus::requestFocus);
         }
+    }
 
-        for (Address ccAdress : ccAdresses) {
-            ccView.removeObject(new Recipient(ccAdress));
+    private void notifyRecipientsChanged(
+            ActionRecipientSelectView view,
+            List<Recipient> recipients
+    ) {
+        for (Recipient recipient : recipients) {
+            view.removeObject(recipient);
+            view.addRecipients(recipient);
         }
+        view.restoreFirstRecipientTruncation();
+    }
 
-        for (Address bccAdress : bccAdresses) {
-            bccView.removeObject(new Recipient(bccAdress));
-        }
-        toView.notifyDatasetChanged();
+    public void updateRecipientsFromEcho(String echoSender) {
+        toView.updateRecipientsFromEcho(echoSender);
+        ccView.updateRecipientsFromEcho(echoSender);
+    }
 
-        for (Address toAdress : toAdresses) {
-            addRecipients(RecipientType.TO, new Recipient(toAdress));
-        }
-        toView.notifyDatasetChanged();
-
-        for (Address ccAdress : ccAdresses) {
-            addRecipients(RecipientType.CC, new Recipient(ccAdress));
-        }
-
-        for (Address bccAdress : bccAdresses) {
-            addRecipients(RecipientType.BCC, new Recipient(bccAdress));
-        }
+    public void showError(Throwable throwable) {
+        activity.setAndShowError(throwable);
     }
 
     public enum CryptoStatusDisplayType {

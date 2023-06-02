@@ -1,14 +1,24 @@
 package com.fsck.k9.message;
 
 
-import android.app.Application;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
+import android.app.Application;
 import android.os.Looper;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
-import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
@@ -23,11 +33,11 @@ import com.fsck.k9.message.quote.InsertableHtmlContent;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import java.io.ByteArrayOutputStream;
@@ -40,18 +50,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class MessageBuilderTest {
+@LooperMode(LEGACY)
+public class MessageBuilderTest extends RobolectricTest {
     private static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";
     private static final String TEST_ATTACHMENT_TEXT = "text data in attachment";
     private static final String TEST_SUBJECT = "test_subject";
@@ -92,7 +93,8 @@ public class MessageBuilderTest {
             "text =E2=98=AD";
 
     private static final String MESSAGE_CONTENT_WITH_ATTACH = "" +
-            "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
+            "Content-Type: multipart/mixed;\r\n" +
+            " boundary=" + BOUNDARY_1 + "\r\n" +
             "Content-Transfer-Encoding: 7bit\r\n" +
             "\r\n" +
             "--" + BOUNDARY_1 + "\r\n" +
@@ -115,7 +117,8 @@ public class MessageBuilderTest {
             "--" + BOUNDARY_1 + "--\r\n";
 
     private static final String MESSAGE_CONTENT_WITH_LONG_FILE_NAME =
-            "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
+            "Content-Type: multipart/mixed;\r\n" +
+                    " boundary=" + BOUNDARY_1 + "\r\n" +
                     "Content-Transfer-Encoding: 7bit\r\n" +
                     "\r\n" +
                     "--" + BOUNDARY_1 + "\r\n" +
@@ -141,7 +144,8 @@ public class MessageBuilderTest {
 
     private static final String ATTACHMENT_FILENAME_NON_ASCII = "テスト文書.txt";
     private static final String MESSAGE_CONTENT_WITH_ATTACH_NON_ASCII_FILENAME = "" +
-            "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
+            "Content-Type: multipart/mixed;\r\n" +
+            " boundary=" + BOUNDARY_1 + "\r\n" +
             "Content-Transfer-Encoding: 7bit\r\n" +
             "\r\n" +
             "--" + BOUNDARY_1 + "\r\n" +
@@ -164,7 +168,8 @@ public class MessageBuilderTest {
             "--" + BOUNDARY_1 + "--\r\n";
 
     private static final String MESSAGE_CONTENT_WITH_MESSAGE_ATTACH = "" +
-            "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
+            "Content-Type: multipart/mixed;\r\n" +
+            " boundary=" + BOUNDARY_1 + "\r\n" +
             "Content-Transfer-Encoding: 7bit\r\n" +
             "\r\n" +
             "--" + BOUNDARY_1 + "\r\n" +

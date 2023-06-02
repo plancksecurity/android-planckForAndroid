@@ -1,13 +1,20 @@
 package com.fsck.k9.notification;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.R;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
@@ -17,17 +24,10 @@ import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-
-@RunWith(K9RobolectricTestRunner.class)
-public class NotificationContentCreatorTest {
+public class NotificationContentCreatorTest extends RobolectricTest {
     private static final String ACCOUNT_UUID = "1-2-3";
     private static final String FOLDER_NAME = "INBOX";
     private static final String UID = "42";

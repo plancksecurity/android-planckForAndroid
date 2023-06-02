@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        tools:context="com.fsck.k9.security.pEp.ui.about.AboutActivity">
+        tools:context="com.fsck.k9.security.planck.ui.about.AboutActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -41,27 +41,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/icon"
                 tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
 
-            <TextView
-                android:id="@+id/contact_label"
-                style="@style/GrayScaleColorText1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/about_contact"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
-
-            <TextView
-                android:id="@+id/contact_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginStart="4dp"
-                android:text="@string/support_email"
-                android:textColor="?attr/colorPrimary"
-                app:layout_constraintStart_toEndOf="@+id/contact_label"
-                app:layout_constraintTop_toTopOf="@+id/contact_label" />
-
 
             <TextView
                 android:id="@+id/documentation_label"
@@ -72,7 +51,7 @@
                 android:layout_marginStart="16dp"
                 android:text="@string/about_documentation"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contact_button" />
+                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
 
             <TextView
                 android:id="@+id/documentation_button"
@@ -98,29 +77,17 @@
                 tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
 
             <TextView
-                android:id="@+id/license_label"
-                style="@style/GrayScaleColorText1"
-                android:layout_width="0dp"
+                android:id="@+id/terms_and_conditions"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:layout_marginStart="16dp"
-                android:text="@string/pep_app_license"
-                app:layout_constraintBottom_toBottomOf="@+id/license_button"
-                app:layout_constraintEnd_toStartOf="@+id/license_button"
+                tools:text="Terms and Conditions"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/librariesText" />
 
-            <Button
-                android:id="@+id/license_button"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginBottom="16dp"
-                android:padding="0dp"
-                android:text="@string/license"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/librariesText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

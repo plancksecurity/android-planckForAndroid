@@ -3,22 +3,21 @@ package com.fsck.k9.ui.settings.account
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.preference.ListPreference
 import androidx.preference.Preference
+import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.*
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.pEp.PEpProviderFactory
-import com.fsck.k9.pEp.PEpUtils
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.ui.tools.FeedbackTools
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
@@ -32,7 +31,7 @@ import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
-import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
@@ -41,6 +40,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val storageManager: StorageManager by inject()
     private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })
 
+    private var rootkey:String? = null
+    private var mdmDialog: AlertDialog? = null
+    private lateinit var account:Account
     private val accountUuid: String by lazy {
         checkNotNull(arguments?.getString(ARG_ACCOUNT_UUID)) { "$ARG_ACCOUNT_UUID == null" }
     }
@@ -48,13 +50,18 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
-        val account = getAccount()
+        account = getAccount()
         val dataStore = dataStoreFactory.create(account)
 
         preferenceManager.preferenceDataStore = dataStore
+        this.rootkey = rootKey
         setPreferencesFromResource(R.xml.account_settings, rootKey)
         title = preferenceScreen.title
 
+        initializePreferences()
+    }
+
+    private fun initializePreferences(){
         initializeIncomingServer()
         initializeComposition()
         initializeManageIdentities()
@@ -71,6 +78,12 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeAccountpEpSync(account)
         initializePgpImportKey()
         initializeNotifications()
+        initializePepPrivacyProtection()
+    }
+
+    fun refreshPreferences() {
+        setPreferencesFromResource(R.xml.account_settings, rootkey)
+        initializePreferences()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -186,6 +199,30 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializePepPrivacyProtection() {
+        if (account.getPlanckPrivacyProtected().locked) {
+                (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as SwitchPreferenceCompat?)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+                    showMDMDialog(this.title)
+                }
+            }
+        }
+    }
+
+    private fun showMDMDialog(title: CharSequence): Boolean {
+        if (mdmDialog == null) {
+            mdmDialog = AlertDialog.Builder(view?.context,
+                    ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
+                    .setTitle(title)
+                    .setMessage(R.string.mdm_controlled_dialog_explanation)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.ok) { _, _ -> }
+                    .create()
+        }
+        mdmDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
+        return false
+    }
+
     private fun onKeyImportClicked() {
         showImportKeyDialog(activity, accountUuid)
     }
@@ -195,38 +232,30 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAccountpEpSync(account: Account) {
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            hideKeySyncOptions()
-        } else {
 
-            val app: K9 = context?.applicationContext as K9
-            val preference: Preference? = findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)
+        val app: K9 = context?.applicationContext as K9
+        val preference: Preference? = findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)
 
-            //It is only possible to enable/disable sync if the device is not part of device group
-            // and is not the only/latest account enabled
-            //if grouped sync per Account only can be disabled on setup
-            preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
+        //It is only possible to enable/disable sync if the device is not part of device group
+        // and is not the only/latest account enabled
+        //if grouped sync per Account only can be disabled on setup
+        preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
 
-        }
     }
 
     private fun canSyncAccountBeModified(account: Account): Boolean {
         // if the account is disabled it can be always enabled
 
         val accounts = Preferences.getPreferences(context).accounts
-        val enabledSyncAccount = accounts.sumBy { if (it.isPepSyncEnabled) 1 else 0 }
+        val enabledSyncAccount = accounts.sumBy { if (it.isPlanckSyncEnabled) 1 else 0 }
 
-        return !account.isPepSyncEnabled || enabledSyncAccount != 1
+        return !account.isPlanckSyncEnabled || enabledSyncAccount != 1
     }
 
     private fun initializeNotifications() {
-        findPreference<Preference>(PREFERENCE_OPEN_NOTIFICATION_SETTINGS)?.let { preference ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                PRE_SDK26_NOTIFICATION_PREFERENCES
-                        .forEach { preferenceName -> findPreference<Preference>(preferenceName)?.remove() }
-            } else {
-                preference.remove()
-            }
+        findPreference<Preference>(PREFERENCE_OPEN_NOTIFICATION_SETTINGS)?.let {
+            PRE_SDK26_NOTIFICATION_PREFERENCES
+                    .forEach { preferenceName -> findPreference<Preference>(preferenceName)?.remove() }
         }
     }
 
@@ -259,18 +288,16 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private suspend fun keyReset(account: Account): Boolean = withContext(Dispatchers.Default) {
-        val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
+        val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         try {
             val address = Address(account.email, account.name)
-            var id = PEpUtils.createIdentity(address, context)
+            var id = PlanckUtils.createIdentity(address, context)
             id = pEpProvider.updateIdentity(id)
             pEpProvider.keyResetIdentity(id, null)
             true
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", "pEpEngine", "Failed to reset identity")
             false
-        } finally {
-            pEpProvider.close()
         }
     }
 
@@ -360,6 +387,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_LOCAL_STORAGE_PROVIDER = "local_storage_provider"
         private const val PREFERENCE_FOLDERS = "folders"
         private const val PREFERENCE_AUTO_EXPAND_FOLDER = "account_setup_auto_expand_folder"
+        private const val PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
         private const val PREFERENCE_ARCHIVE_FOLDER = "archive_folder"
         private const val PREFERENCE_DRAFTS_FOLDER = "drafts_folder"
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
