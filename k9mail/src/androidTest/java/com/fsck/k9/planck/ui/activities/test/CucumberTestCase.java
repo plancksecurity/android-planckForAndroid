@@ -23,26 +23,10 @@ import io.cucumber.junit.CucumberOptions;
  * 3- Tag your scenarios in the feature files with new specific tags for each flavor and include them in the flavor's version of this file
  *      i.e. Add tag @flavor-one to a test scenario and modify the flavor's CucumberTestCase.java with tags={"~@manual", "@flavor-one"}
  */
-@CucumberOptions(features = {BuildConfig.IS_ENTERPRISE ? "features/AATestEnterprise.feature" : "features/AATest.feature"}, // Test scenarios
-        glue = {"com.fsck.k9.planck.ui.activities.cucumber.steps"} // Steps definitions
-        /*, format = {"pretty", // Cucumber report formats and location to store them in phone/emulator
-                 "html:/data/data/security.pEp/files/cucumber-html-report",
-                 "json:/data/data/security.pEp/files/cucumber.json",
-                 "junit:/data/data/security.pEp/files/cucumber.xml"
-                 // Note: if you don't have write access to /mnt/sdcard/ on the phone use instead
-                 // the following path here and in the build.gradle: /data/data/com.neoranga55.cleanguitestarchitecture/cucumber-reports/
-         }*/
-        //,plugin = {"json:target/cucumber.json"}
-        //,plugin = {"pretty", "json:/storage/emulated/" + BuildConfig.USER + "/Download/cucumber-reports/cucumber.json"}
-        //, "html:/data/data/security.pEp.debug/cucumber-reports/"
-        //, "de.monochromata.cucumber.report.PrettyReports:/data/data/security.pEp.debug/cucumber-reports/pretty-cucumber"  //IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!: Change the cucumber.json name file to create save_report.apk file
-        //,plugin = {"pretty", "json:/mnt/sdcard/files/cucumber.json"
-
-        //,monochrome = true
+@CucumberOptions(features = {BuildConfig.IS_ENTERPRISE ? "features/AATestEnterprise.feature" : "features/AATest.feature"},
+        glue = {"com.fsck.k9.planck.ui.activities.cucumber.steps"}
          ,tags={"~@ignore"}
 )
-// This class must be in a different package than the glue code
-// (this class is in '...cucumber.test' and glue is in '...cucumber.steps')
 @Ignore("Only to be run in Cucumber")
 public class CucumberTestCase extends CucumberAndroidJUnitRunner {
         private static final String ARG_USE_CUCUMBER = "useCucumber";
