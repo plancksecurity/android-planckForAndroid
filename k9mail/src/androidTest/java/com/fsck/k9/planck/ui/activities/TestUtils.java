@@ -2334,13 +2334,16 @@ public class TestUtils {
     public void assertSecurityStatusText(Rating status) {
         String firstLineText = getTextFromView(onView(withId(R.id.securityStatusText)));
         ViewInteraction secondLine = onView(withId(R.id.securityStatusSecondLine));
-
+        String emptySpace = "";
         String secondLineText = exists(secondLine)
                 ? getTextFromView(onView(withId(R.id.securityStatusSecondLine)))
                 : "";
+        if (!secondLineText.equals("")) {
+            emptySpace = " ";
+        }
         assertEquals(
                 getResourceString(R.array.pep_title, status.value),
-                firstLineText + secondLineText
+                firstLineText + emptySpace + secondLineText
         );
     }
 
