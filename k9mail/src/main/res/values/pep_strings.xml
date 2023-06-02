@@ -346,6 +346,7 @@
     <string name="calendar_invite_show_all_invitees_desc">Show all invitees</string>
     <string name="organizer_tag">Organizer</string>
     <string name="compose_message_attachments_too_big">The files you are trying to send exceed the %1$d MB limit.</string>
+    <string name="compose_message_too_many_attachments">Cannot add more than %1$d attachments.</string>
 
     <plurals name="compose_unsecure_delivery_warning">
         <item quantity="one">%1$d unsecure recipient. Tap here to remove it.</item>
