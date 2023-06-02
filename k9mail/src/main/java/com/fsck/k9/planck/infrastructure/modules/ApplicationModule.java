@@ -21,10 +21,12 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.migration.DisableInstallInCheck;
 import security.planck.permissions.PermissionChecker;
 import security.planck.ui.permissions.PlanckPermissionChecker;
 
 @Module
+@DisableInstallInCheck
 public class ApplicationModule {
 
     @Provides

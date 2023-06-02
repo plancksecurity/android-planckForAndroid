@@ -6,11 +6,13 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.migration.DisableInstallInCheck
 import security.planck.mdm.PlanckRestrictions
 import security.planck.mdm.RestrictionsProvider
 
 @Suppress("unused")
 @Module
+@DisableInstallInCheck
 interface RestrictionsProviderModule {
 
     @Binds

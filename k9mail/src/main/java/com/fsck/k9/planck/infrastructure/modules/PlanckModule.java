@@ -12,8 +12,10 @@ import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.android.qualifiers.ActivityContext;
+import dagger.hilt.migration.DisableInstallInCheck;
 
 @Module
+@DisableInstallInCheck
 public class PlanckModule {
     @Provides
     public SimpleMessageLoaderHelper providesSimpleMessageLoaderHelper(

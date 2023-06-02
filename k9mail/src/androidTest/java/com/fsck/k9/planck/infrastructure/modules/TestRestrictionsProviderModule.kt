@@ -6,12 +6,14 @@ import com.fsck.k9.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.migration.DisableInstallInCheck
 import security.planck.mdm.FakeRestrictionsManager
 import security.planck.mdm.PlanckRestrictions
 import security.planck.mdm.RestrictionsProvider
 
 @Suppress("unused")
 @Module
+@DisableInstallInCheck
 class TestRestrictionsProviderModule {
 
     @Provides
