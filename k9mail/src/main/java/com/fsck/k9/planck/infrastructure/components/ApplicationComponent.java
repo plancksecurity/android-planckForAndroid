@@ -1,28 +1,20 @@
 package com.fsck.k9.planck.infrastructure.components;
 
-import android.content.Context;
-
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.compose.RecipientSelectView;
-import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.planck.infrastructure.modules.RestrictionsProviderModule;
 import com.fsck.k9.planck.infrastructure.modules.SubComponentsModule;
-import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
-import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningActivity;
 import com.fsck.k9.planck.ui.fragments.PlanckFragment;
-import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
-import com.fsck.k9.planck.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.view.MessageHeader;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
@@ -45,16 +37,8 @@ public interface ApplicationComponent {
 
     void inject(PlanckFragment planckFragment);
 
-    ThreadExecutor getThreadExecutor();
     void inject(PlanckActivity activity);
     PlanckComponent.Factory planckComponentFactory();
-
-    PostExecutionThread getPostExecutionThread();
-
-    PlanckSettingsChecker settingsChecker();
-    AccountSetupNavigator accountSetupNavigator();
-
-    DispatcherProvider dispatcherProvider();
 
     ProvisioningManager provisioningManager();
 
@@ -71,9 +55,6 @@ public interface ApplicationComponent {
     interface Factory {
         ApplicationComponent create(@BindsInstance K9 application);
     }
-
-    @Named("AppContext")
-    Context getContext();
 
     K9 getK9();
 
