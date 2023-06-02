@@ -50,8 +50,6 @@ public class AuthTypeHolder {
             case EXTERNAL:
                 return R.string.account_setup_auth_type_tls_client_certificate;
 
-            case AUTOMATIC:
-            case LOGIN:
             default:
                 return 0;
         }
