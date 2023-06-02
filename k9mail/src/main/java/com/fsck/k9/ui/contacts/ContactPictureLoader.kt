@@ -1,7 +1,12 @@
 package com.fsck.k9.ui.contacts
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.BitmapShader
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Shader
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -16,16 +21,16 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.request.FutureTarget
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
+import dagger.hilt.android.qualifiers.ApplicationContext
 import security.planck.permissions.PermissionChecker
 import security.planck.ui.PlanckUIUtils.isValidGlideContext
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.max
 
 
 class ContactPictureLoader @Inject constructor(
-        @Named("AppContext") private val context: Context,
+        @ApplicationContext private val context: Context,
         private val contactLetterBitmapCreator: ContactLetterBitmapCreator,
         private val permissionChecker: PermissionChecker
 ) {

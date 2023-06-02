@@ -9,16 +9,15 @@ import androidx.loader.app.LoaderManager;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper;
 
-import javax.inject.Named;
-
 import dagger.Module;
 import dagger.Provides;
+import dagger.hilt.android.qualifiers.ActivityContext;
 
 @Module
 public class PlanckModule {
     @Provides
     public SimpleMessageLoaderHelper providesSimpleMessageLoaderHelper(
-            @Named("ActivityContext") Context context,
+            @ActivityContext Context context,
             LoaderManager loaderManager,
             FragmentManager fragmentManager
     ) {
@@ -26,7 +25,7 @@ public class PlanckModule {
     }
 
     @Provides
-    public MessagingController provideMessagingController(@Named("ActivityContext") Context context) {
+    public MessagingController provideMessagingController(@ActivityContext Context context) {
         return MessagingController.getInstance(context);
     }
 }

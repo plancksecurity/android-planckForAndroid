@@ -31,10 +31,9 @@ import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.ui.messageview.MessageContainerView;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
-import javax.inject.Named;
-
 import dagger.BindsInstance;
 import dagger.Subcomponent;
+import dagger.hilt.android.qualifiers.ActivityContext;
 import security.planck.group.GroupTestScreen;
 import security.planck.ui.about.AboutActivity;
 import security.planck.ui.calendar.CalendarInviteLayout;
@@ -56,7 +55,7 @@ public interface PlanckComponent {
     interface Factory {
         PlanckComponent create(
                 @BindsInstance Activity activity,
-                @BindsInstance @Named("ActivityContext") Context context,
+                @BindsInstance @ActivityContext Context context,
                 @BindsInstance LoaderManager loaderManager,
                 @BindsInstance FragmentManager fragmentManager
         );

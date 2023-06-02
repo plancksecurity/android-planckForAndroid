@@ -16,11 +16,11 @@ import com.fsck.k9.planck.infrastructure.threading.UIThread;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsCheck;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import security.planck.permissions.PermissionChecker;
 import security.planck.ui.permissions.PlanckPermissionChecker;
 
@@ -50,12 +50,12 @@ public class ApplicationModule {
 
     //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule
     @Provides
-    public PermissionChecker providepEpPermissionChecker(@Named("AppContext") Context context) {
+    public PermissionChecker providepEpPermissionChecker(@ApplicationContext Context context) {
         return new PlanckPermissionChecker(context);
     }
 
     @Provides
-    public Preferences providePreferences(@Named("AppContext") Context application) {
+    public Preferences providePreferences(@ApplicationContext Context application) {
         return Preferences.getPreferences(application);
     }
 
@@ -74,7 +74,7 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Named("AppContext")
+    @ApplicationContext
     Context provideAppContext(K9 k9) {
         return k9.getApplicationContext();
     }
