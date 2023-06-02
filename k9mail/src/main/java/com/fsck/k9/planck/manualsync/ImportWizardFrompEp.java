@@ -290,12 +290,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
-    public void disableSync() {
-        this.getK9().persistentShutDown();
-        finish();
-    }
-
-    @Override
     public void leaveDeviceGroup() {
         this.getK9().setPlanckSyncEnabled(false);
         finish();
