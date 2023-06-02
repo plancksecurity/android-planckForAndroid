@@ -19,8 +19,6 @@ interface ImportWizardFromPGPView {
 
     void showSomethingWentWrong();
 
-    void disableSync();
-
     void leaveDeviceGroup();
 
     void showLongTrustwordsIndicator();
@@ -32,4 +30,6 @@ interface ImportWizardFromPGPView {
     void prepareGroupJoiningLoading();
 
     void setFingerPrintTexts(String myselfFprText, String partnerFprText);
+
+    void finish();
 }

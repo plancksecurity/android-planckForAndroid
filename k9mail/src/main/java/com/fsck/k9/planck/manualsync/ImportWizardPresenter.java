@@ -206,6 +206,6 @@ public class ImportWizardPresenter {
 
     public void rejectHandshake() {
         planck.rejectSync();
-        view.disableSync();
+        view.finish();
     }
 }
