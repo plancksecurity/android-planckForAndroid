@@ -35,7 +35,6 @@ import com.fsck.k9.ui.messageview.MessageViewFragment;
 import javax.inject.Named;
 
 import dagger.BindsInstance;
-import dagger.Module;
 import dagger.Subcomponent;
 import security.planck.group.GroupTestScreen;
 import security.planck.ui.about.AboutActivity;
@@ -130,7 +129,4 @@ public interface PlanckComponent {
     void inject(GroupTestScreen activity);
 
     void inject(MessageContainerView messageContainerView);
-
-    @Module(subcomponents = {PlanckComponent.class})
-    interface InstallerModule {}
 }

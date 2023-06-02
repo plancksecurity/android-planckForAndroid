@@ -13,6 +13,7 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.planck.infrastructure.modules.RestrictionsProviderModule;
+import com.fsck.k9.planck.infrastructure.modules.SubComponentsModule;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningActivity;
@@ -35,7 +36,7 @@ import security.planck.provisioning.ProvisioningSettings;
 @Singleton
 @Component(modules = {
         ApplicationModule.class,
-        PlanckComponent.InstallerModule.class,
+        SubComponentsModule.class,
         RestrictionsProviderModule.class
 })
 public interface ApplicationComponent {
