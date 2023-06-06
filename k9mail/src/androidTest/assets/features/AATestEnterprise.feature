@@ -3,6 +3,16 @@ Feature: Test
     Given I created an account
 
 
+  Scenario: Cucumber Move to folder
+    And I send 1 message to bot1 with subject moveThisMessage and body ThisMessageWillMoveToAnotherFolder
+    And I click the last message received
+    And I move the message to the folder spam
+    And I go back to the Inbox
+    And I go to spam folder from navigation menu
+    And I click the first message
+    And I compare messageBody from json file with ThisMessageWillMoveToAnotherFolder
+
+
   Scenario: Cucumber max characters in Subject
     And I click compose message
     And I enter bot1 in the messageTo field
