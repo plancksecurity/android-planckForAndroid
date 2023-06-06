@@ -293,6 +293,18 @@ public class CucumberTestSteps {
         testUtils.assertTextInView(text,viewID);
     }
 
+    @When("^I enter max characters in the (\\S+) field")
+    public void I_enter_max_text_in_field(String field) {
+        int i = 0;
+        try {
+            for (; i < 1000000; i++) {
+                I_enter_text_in_field("ABCDEFGH" + i + " ", field);
+            }
+        } catch (Exception ex) {
+            testUtils.fail("Only " + i + " loops in the field " + field);
+        }
+    }
+
         @When("^I enter (\\S+) in the (\\S+) field")
         public void I_enter_text_in_field(String text, String field) {
         waitForIdle();
@@ -489,20 +501,15 @@ public class CucumberTestSteps {
                 testUtils.scrollUpToSubject();
                 while (!(containstText(onView(withId(viewId)), text))) {
                     try {
-                        Thread.sleep(2000);
                         waitForIdle();
                         onView(withId(viewId)).perform(closeSoftKeyboard());
                         waitForIdle();
-                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(click());
                         waitForIdle();
-                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(closeSoftKeyboard());
                         waitForIdle();
-                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(typeTextIntoFocusedView(text), closeSoftKeyboard());
                         waitForIdle();
-                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(closeSoftKeyboard());
                         waitForIdle();
                     } catch (Exception ex) {
