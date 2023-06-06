@@ -3,22 +3,32 @@ Feature: Test
     Given I created an account
 
 
-  Scenario: Cucumber Copy email with attachment to folder
-    And I click compose message
+  Scenario: Cucumber Copy email to a folder
+    When I send 1 message to bot1 with subject copyThisMessage and body ThisMessageWillCopiedToAnotherFolder
+    And I click the last message received
+    And I copy the message to the folder spam
+    Then I compare messageBody from json file with ThisMessageWillCopiedToAnotherFolder
+    When I go back to the Inbox
+    And I go to spam folder from navigation menu
+    And I click the first message
+    Then I compare messageBody from json file with ThisMessageWillCopiedToAnotherFolder
+
+
+  Scenario: Cucumber Copy email with attachment to a folder
+    When I click compose message
     And I enter bot1 in the messageTo field
-    And I enter SecondMessage in the messageSubject field
+    And I enter copyThisMessageWithAttachments in the messageSubject field
     And I enter ThisMessageWithAttachmentWillBeCopiedToAnotherFolder in the messageBody field
     And I attach PDF
     And I attach MSoffice
     And I attach picture
     When I click the send message button
-    And I wait for the new message
-    And I click the last message received
+    And I wait for the message and click it
     And I copy the message to the folder spam
     Then I check the privacy status is secure
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
     And I open 3 attached files
-    And I go back to the Inbox
+    When I go back to the Inbox
     And I go to spam folder from navigation menu
     And I click the first message
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
@@ -26,25 +36,33 @@ Feature: Test
     And I open 3 attached files
 
 
-  Scenario: Cucumber Copy email to folder
-    And I send 1 message to bot1 with subject copyThisMessage and body ThisMessageWillCopiedToAnotherFolder
-    And I click the last message received
-    And I copy the message to the folder spam
-    And I compare messageBody from json file with ThisMessageWillCopiedToAnotherFolder
-    And I go back to the Inbox
-    And I go to spam folder from navigation menu
-    And I click the first message
-    And I compare messageBody from json file with ThisMessageWillCopiedToAnotherFolder
-
-
-  Scenario: Cucumber Move email to folder
-    And I send 1 message to bot1 with subject moveThisMessage and body ThisMessageWillMovedToAnotherFolder
+  Scenario: Cucumber Move email to a folder
+    When I send 1 message to bot1 with subject moveThisMessage and body ThisMessageWillMovedToAnotherFolder
     And I click the last message received
     And I move the message to the folder spam
     And I go back to the Inbox
     And I go to spam folder from navigation menu
     And I click the first message
-    And I compare messageBody from json file with ThisMessageWillMovedToAnotherFolder
+    Then I compare messageBody from json file with ThisMessageWillMovedToAnotherFolder
+
+
+  Scenario: Cucumber Move email with attachments to a folder
+    When I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter moveThisMessageWithAttachments in the messageSubject field
+    And I enter ThisMessageWithAttachmentWillBeMovedToAnotherFolder in the messageBody field
+    And I attach PDF
+    And I attach MSoffice
+    And I attach picture
+    When I click the send message button
+    And I wait for the message and click it
+    And I move the message to the folder spam
+    And I go back to the Inbox
+    And I go to spam folder from navigation menu
+    And I click the first message
+    Then I compare messageBody from json file with ThisMessageWithAttachmentWillBeMovedToAnotherFolder
+    And I check the privacy status is secure
+    And I open 3 attached files
 
 
   Scenario: Cucumber max characters in Subject
