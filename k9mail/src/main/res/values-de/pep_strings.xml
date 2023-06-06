@@ -43,21 +43,6 @@
     <string name="basic_options">Einfache Optionen</string>
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
-    <string-array name="pep_title">
-        <item><!--pEpRatingUndefined--></item>
-        <item>Entschlüsselung ist nicht möglich<!--pEpRatingCannotDecrypt--></item>
-        <item>Entschlüsselung ist nicht möglich<!--pEpRatingHaveNoKey--></item>
-        <item>Nicht sicher<!--pEpRatingUnencrypted--></item>
-        <item>Nicht sicher<!--pEpRatingUnreliable--></item>
-        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
-        <item>Sicher<!--pEpRatingReliable--></item>
-        <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrusted--></item>
-        <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>Sicher &amp; vertrauenswürdig<!--pEpRatingFullyAnonymous--></item>
-        <item>Unvertrauenswürdig<!--pEpRatingMissTrust--></item>
-        <item>Ooops: Internes Problem<!--pEpRatingB0rken--></item>
-        <item>Manipuliert<!--pEpRatingUnderAttack--></item>
-    </string-array>
     <string-array name="pep_explanation">
         <item>Über diese Nachricht liegen nicht genügend Informationen vor, um überprüfen zu können, ob sie sicher übertragen wurde..<!--pEpRatingUndefined--></item>
         <item>Diese Nachricht kann nicht entschlüsselt werden.<!--pEpRatingCannotDecrypt--></item>
@@ -188,9 +173,12 @@
     <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
     <string name="action_tutorial">Anleitung</string>
     <string name="pep_rating_forced_unencrypt">Deaktiviert</string>
-    <string name="pep_rating_mistrusted">Nicht vertrauenswürdig</string>
-    <string name="pep_rating_secure">Sicher</string>
-    <string name="pep_rating_secure_trusted">Sicher &amp; Verifiziert</string>
+    <string name="pep_rating_trusted">Vertrauenswürdig</string>
+    <string name="pep_rating_encrypted">Verschlüsselt</string>
+    <string name="pep_rating_dangerous">Gefährlich</string>
+    <string name="pep_rating_not_encrypted">Nicht verschlüsselt</string>
+    <string name="pep_rating_weakly_encrypted">Schwach verschlüsselt</string>
+    <string name="pep_rating_cannot_decrypt">Entschlüsselung ist nicht möglich</string>
     <string name="intro_frag_fourth_text_3">In diesem Fall ist der Datenschutzstatus der Nachricht \"Sicher\", da es sich dabei um den kleinsten gemeinsamen Nenner der beiden Kommunikationspartner handelt.</string>
     <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>

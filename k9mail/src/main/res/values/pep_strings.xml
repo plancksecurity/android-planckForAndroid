@@ -121,18 +121,18 @@
     <string name="permissions_needed_message">Not granting required permissions might cause unexpected behavior. Press OK to grant the permissions.</string>
     <string-array name="pep_title">
         <item><!--pEpRatingUndefined--></item>
-        <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
-        <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
-        <item>Not encrypted<!--pEpRatingUnencrypted--></item>
-        <item>Weakly Encrypted<!--pEpRatingUnreliable--></item>
-        <item>Encrypted<!--pEpRatingMediaKeyProtected--></item>
-        <item>Encrypted<!--pEpRatingReliable--></item>
-        <item>Trusted<!--pEpRatingTrusted--></item>
-        <item>Trusted<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>Trusted<!--pEpRatingFullyAnonymous--></item>
-        <item>Dangerous<!--pEpRatingMissTrust--></item>
-        <item>Dangerous<!--pEpRatingB0rken--></item>
-        <item>Dangerous<!--pEpRatingUnderAttack--></item>
+        <item>@string/pep_rating_cannot_decrypt<!--pEpRatingCannotDecrypt--></item>
+        <item>@string/pep_rating_cannot_decrypt<!--pEpRatingHaveNoKey--></item>
+        <item>@string/pep_rating_not_encrypted<!--pEpRatingUnencrypted--></item>
+        <item>@string/pep_rating_weakly_encrypted<!--pEpRatingUnreliable--></item>
+        <item>@string/pep_rating_encrypted<!--pEpRatingMediaKeyProtected--></item>
+        <item>@string/pep_rating_encrypted<!--pEpRatingReliable--></item>
+        <item>@string/pep_rating_trusted<!--pEpRatingTrusted--></item>
+        <item>@string/pep_rating_trusted<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>@string/pep_rating_trusted<!--pEpRatingFullyAnonymous--></item>
+        <item>@string/pep_rating_dangerous<!--pEpRatingMissTrust--></item>
+        <item>@string/pep_rating_dangerous<!--pEpRatingB0rken--></item>
+        <item>@string/pep_rating_dangerous<!--pEpRatingUnderAttack--></item>
     </string-array>
     <string-array name="pep_explanation">
         <item>This message does not contain enough information to determine if it is secure.<!--pEpRatingUndefined--></item>
