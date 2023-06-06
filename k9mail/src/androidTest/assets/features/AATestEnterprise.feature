@@ -3,6 +3,12 @@ Feature: Test
     Given I created an account
 
 
+  Scenario: Cucumber max characters in Subject
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter max characters in the messageSubject field
+
+
   Scenario: Cucumber Send big attachment and cut Internet Connection
     When I send 1 messages to bot1 with subject FirstMessage and body AttachmentsTest
     And I click compose message
