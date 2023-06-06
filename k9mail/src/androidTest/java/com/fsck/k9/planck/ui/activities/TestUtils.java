@@ -2927,30 +2927,11 @@ public class TestUtils {
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().equals(resources.getString(resource))) {
-                        try {
-                            while (object.getText().equals(resources.getString(resource))) {
-                                waitForIdle();
-                                Espresso.onIdle();
-                                object.longClick();
-                                waitForIdle();
-                                Espresso.onIdle();
-                                boolean exists = false;
-                                for (UiObject2 object2 : device.findObjects(selector)) {
-                                    if (object.getText().equals(resources.getString(resource))) {
-                                        exists = true;
-                                    }
-                                }
-                                if (exists) {
-                                    waitForIdle();
-                                    return;
-                                }
-                            }
-                            return;
-                        } catch (Exception ex1) {
+                    if (object.getText().contains(resources.getString(resource))) {
+                            waitForIdle();
+                            object.longClick();
                             waitForIdle();
                             return;
-                        }
                     }
                 } catch (Exception ex) {
                     Timber.i("Cannot find text on screen: " + ex);
