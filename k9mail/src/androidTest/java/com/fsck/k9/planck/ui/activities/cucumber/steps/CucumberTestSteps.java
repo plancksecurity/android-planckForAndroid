@@ -2268,10 +2268,42 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I select Inbox from Hamburger menu$")
-    public void I_inbox_from_hamburger() {
+    @When("^I go to (\\S+) folder from navigation menu")
+    public void I_go_to_folder_from_navigation_menu(String folder) {
+        int folderID = 0;
+        switch (folder){
+            case "inbox":
+            case "Inbox":
+                folderID = R.string.special_mailbox_name_inbox;
+                break;
+            case "drafts":
+            case "Drafts":
+                folderID = R.string.special_mailbox_name_drafts;
+                break;
+            case "sent":
+            case "Sent":
+                folderID = R.string.special_mailbox_name_sent;
+                break;
+            case "outbox":
+            case "Outbox":
+                folderID = R.string.special_mailbox_name_outbox;
+                break;
+            case "spam":
+            case "Spam":
+                folderID = R.string.special_mailbox_name_spam;
+                break;
+            case "trash":
+            case "Trash":
+                folderID = R.string.special_mailbox_name_trash;
+                break;
+            case "archive":
+            case "Archive":
+                folderID = R.string.special_mailbox_name_archive;
+                break;
+
+        }
         testUtils.openHamburgerMenu();
-        testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+        testUtils.selectFromScreen(folderID);
     }
 
 
