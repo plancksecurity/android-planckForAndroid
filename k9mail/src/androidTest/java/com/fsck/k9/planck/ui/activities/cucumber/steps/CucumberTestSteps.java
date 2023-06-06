@@ -1865,6 +1865,40 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
+    @And("^I (\\S+) the message to the folder (\\S+)")
+    public void I_refile_a_message(String action, String folder) {
+        switch (action){
+            case "move":
+                action = "move_action";
+                break;
+            case "copy":
+                action = "copy_action";
+                break;
+            default:
+                testUtils.fail("Cannot do the action: " + action);
+        }
+        switch (folder){
+            case "spam":
+                folder = "special_mailbox_name_spam";
+                break;
+            case "archive":
+                folder = "special_mailbox_name_archive";
+                break;
+            case "trash":
+                folder = "special_mailbox_name_trash";
+                break;
+            default:
+                testUtils.fail("Cannot find the folder: " + folder);
+        }
+        waitForIdle();
+        testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
+        waitForIdle();
+        testUtils.selectFromMenu(testUtils.stringToID(action));
+        waitForIdle();
+        testUtils.selectFromScreen(testUtils.stringToID(folder));
+        waitForIdle();
+    }
+
     @And("^I disable protection from privacy status menu$")
     public void I_disable_protection_from_privacy_status_menu() {
         timeRequiredForThisMethod(15);
