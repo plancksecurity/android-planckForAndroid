@@ -2492,7 +2492,8 @@ public class TestUtils {
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
-                int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
+                int x = (object.getVisibleBounds().right - object.getVisibleBounds().left)/4 + object.getVisibleBounds().left;
+                int iconColor = getPixelColor(x, object.getVisibleCenter().y);
                 expectedColor = ContextCompat.getColor(context, expectedColor);
                 if (iconColor != expectedColor) {
                         fail("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
@@ -4978,6 +4979,9 @@ public class TestUtils {
                 try {
                     while (json == null) {
                         String js = readJsonFile("results.json");
+                        if (js.equals("no json file")) {
+                            return;
+                        }
                         json = new JSONObject(js);
                     }
                     json = json.getJSONObject("attributes");
@@ -5003,27 +5007,29 @@ public class TestUtils {
     private static String readJsonFile(String fileName) {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/" + fileName);
-        while (!newFile.exists()) {
-            swipeUpScreen();
-            downloadAttachedFile(fileName);
-            waitUntilIdle();
-            waitForIdle();
+        swipeUpScreen();
+        downloadAttachedFile(fileName);
+        waitUntilIdle();
+        waitForIdle();
+        if(!newFile.exists())
+        {
+            return "no json file";
         }
         StringBuilder jsonText = new StringBuilder();
-            try {
-                FileInputStream fin = new FileInputStream(newFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString;
-                while ((receiveString = bufferedReader.readLine()) != null) {
-                    jsonText.append(receiveString);
-                }
-                fin.close();
-            } catch (Exception e) {
-                Timber.i("Error reading config file, trying again");
-            } finally {
-                newFile.delete();
+        try {
+            FileInputStream fin = new FileInputStream(newFile);
+            InputStreamReader inputStreamReader = new InputStreamReader(fin);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                jsonText.append(receiveString);
             }
+            fin.close();
+        } catch (Exception e) {
+            Timber.i("Error reading config file, trying again");
+        } finally {
+            newFile.delete();
+        }
         return jsonText.toString();
     }
 
