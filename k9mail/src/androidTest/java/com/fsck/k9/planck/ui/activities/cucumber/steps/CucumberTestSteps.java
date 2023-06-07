@@ -88,6 +88,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.planck.ui.activities.TestUtils.fail;
+import static com.fsck.k9.planck.ui.activities.TestUtils.json;
 import static com.fsck.k9.planck.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.exists;
@@ -612,7 +613,7 @@ public class CucumberTestSteps {
     }
 
     @When("^I compare (\\S+) from json file with (\\S+)")
-    public void I_compare_jsonfile_with_string(String name, String stringToCompare) {
+    public void I_compare_json_file_with_string(String name, String stringToCompare) {
         timeRequiredForThisMethod(10);
         TestUtils.getJSONObject(name);
         switch (name) {
@@ -624,7 +625,16 @@ public class CucumberTestSteps {
                 if (stringToCompare.contains("longText")) {
                     stringToCompare = testUtils.longText();
                 }
-                assertTextInJSON(TestUtils.json, stringToCompare);
+                if (json == null) {
+                    BySelector selector = By.clazz("android.widget.MessageWebView");
+                    for (UiObject2 object : device.findObjects(selector)) {
+                        if (!object.getText().contains(stringToCompare)) {
+                            fail("Message Body is not containing: " + stringToCompare);
+                        }
+                    }
+                } else {
+                    assertTextInJSON(TestUtils.json, stringToCompare);
+                }
                 break;
             default:
                 assertTextInJSONArray(name, TestUtils.jsonArray, stringToCompare);
