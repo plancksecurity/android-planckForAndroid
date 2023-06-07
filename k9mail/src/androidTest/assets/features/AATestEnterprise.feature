@@ -16,7 +16,7 @@ Feature: Test
 
   Scenario: Cucumber Copy email with attachment to a folder
     When I click compose message
-    And I enter bot1 in the messageTo field
+    And I enter myself in the messageTo field
     And I enter copyThisMessageWithAttachments in the messageSubject field
     And I enter ThisMessageWithAttachmentWillBeCopiedToAnotherFolder in the messageBody field
     And I attach PDF
@@ -25,14 +25,14 @@ Feature: Test
     When I click the send message button
     And I wait for the message and click it
     And I copy the message to the folder spam
-    Then I check the privacy status is secure
+    Then I check the privacy status is secure&trusted
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
     And I open 3 attached files
     When I go back to the Inbox
     And I go to spam folder from navigation menu
     And I click the first message
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
-    Then I check the privacy status is secure
+    Then I check the privacy status is secure&trusted
     And I open 3 attached files
 
 
