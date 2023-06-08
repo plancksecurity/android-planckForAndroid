@@ -214,7 +214,6 @@ android {
 
         buildConfigField "String", "PLANCK_DRAGON_USERNAME", "${planckDragonUsername}"
 
-        buildConfigField "boolean", "USE_CUCUMBER", "${project.property("useCucumber")}"
         buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.property("useFakeManager")}"
         buildConfigField "int", "USER", "0"
         testBuildType project.property("testBuildType")
