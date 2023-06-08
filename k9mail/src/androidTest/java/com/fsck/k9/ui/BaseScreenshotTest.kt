@@ -1,5 +1,5 @@
 package com.fsck.k9.ui
-/*
+
 import android.app.Activity
 import android.view.View
 import androidx.fragment.app.FragmentManager
@@ -44,14 +44,13 @@ open class BaseScreenshotTest : BaseTest() {
 
     fun openFirstScreen() {
         getScreenShotCurrentActivity("splash")
-        sleep(2000)
         runBlocking { waitForIdle() }
     }
 
     private fun getScreenShot(className: String, action: String) {
         sleep(500) // Wait for screen to change
         val index = testSet + "%2d".format(count++)
-        val destinationFolder = File(context.getExternalFilesDir(null), PEP_SCREENSHOTS_DIR)
+        val destinationFolder = File(context.getExternalFilesDir(null), PLANCK_SCREENSHOTS_DIR)
         if(!destinationFolder.exists()) destinationFolder.mkdirs()
         val destinationFile = File(destinationFolder, "${File.separator}$index $className ${action}.png")
         device.takeScreenshot(destinationFile, 0.5f, 25)
@@ -159,7 +158,7 @@ open class BaseScreenshotTest : BaseTest() {
     }
 
     companion object {
-        const val PEP_SCREENSHOTS_DIR = "PEpScreenshots"
+        const val PLANCK_SCREENSHOTS_DIR = "PlanckScreenshots"
         const val SWIPE_LEFT_ACTION = "SWIPE_LEFT_ACTION"
         const val SWIPE_RIGHT_ACTION = "SWIPE_RIGHT_ACTION"
         private var count = 0
@@ -185,4 +184,3 @@ open class BaseScreenshotTest : BaseTest() {
         }
 }
 
-*/

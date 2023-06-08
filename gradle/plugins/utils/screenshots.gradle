@@ -1,108 +1,15 @@
-
-task removeIgnore(type: Exec) {
-    dependsOn uninstallAll
-    def command = [
-            'sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'enable',
-            'src/androidTest/java/com/fsck/k9/ui/*',
-    ]
-    commandLine command
-}
-
-task installApk(type: Exec) {
-    dependsOn removeIgnore
-    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
-    commandLine command
-}
-
-task installTest(type: Exec) {
-    dependsOn installApk
-    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
-    commandLine command
-}
-
-task clearDataImportAccount(type: Exec) {
-    dependsOn installTest
-    def clearDataCommand = ['adb', 'shell', 'pm', 'clear', 'security.pEp.debug']
-    commandLine clearDataCommand
-}
-
-task importAccount(type: Exec) {
-    dependsOn clearDataImportAccount
-    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
-                            'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#importAccountSetup',
-                            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
-    commandLine autoLoginCommand
-}
-
-task clearDataAuto(type: Exec) {
-    dependsOn importAccount
-    def clearDataCommand = ['adb', 'shell', 'pm', 'clear', 'security.pEp.debug']
-    commandLine clearDataCommand
-}
-
-task autoLogin(type: Exec) {
-    dependsOn clearDataAuto
-    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
-                            'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#automaticAccountSetup',
-                            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
-    commandLine autoLoginCommand
-}
-
-task clearDataManual(type: Exec) {
-    dependsOn autoLogin
-
-    def clearDataCommand = ['adb', 'shell', 'pm', 'clear', 'security.pEp.debug']
-    commandLine clearDataCommand
-}
-
-task manualLogin(type: Exec) {
-    dependsOn clearDataManual
-
-    def manualLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
-                              'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#manualAccountSetup',
-                              'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
-    commandLine manualLoginCommand
-}
-
-task addMessagesToAccount(type: Exec) {
-    dependsOn manualLogin
-
-    def addMessagesToAccountCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
-                                       'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#addMessagesToAccount',
-                                       'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
-    commandLine addMessagesToAccountCommand
-}
-
-task mainTest(type: Exec) {
-    dependsOn addMessagesToAccount
-
-    def mainTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
-                           'class', 'com.fsck.k9.ui.ScreenshotTestSuite',
-                           'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
-    commandLine mainTestCommand
-}
-
-task syncTest(type: Exec) {
-    dependsOn mainTest
-    def syncTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
-                           'class', 'com.fsck.k9.ui.SyncScreenshotTest#syncTest',
-                           'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
-
-    commandLine syncTestCommand
-    doFirst {
-        println "Waiting for a second device with same account and sync enabled"
+task generateScreenshots() {
+    doLast {
+        def command = "adb shell am instrument -w -e testType screenshot com.fsck.k9.planck.ui.activities.test/com.fsck.k9.planck.ui.activities.test.CucumberTestCase"
+        exec {
+            commandLine command.split(' ')
+        }
     }
 }
 
-task addIgnore(type: Exec) {
-    dependsOn syncTest
-    def command = [
-            'sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'disable',
-            'src/androidTest/java/com/fsck/k9/ui/*',
-    ]
-    commandLine command
-}
-
-task generateScreenshots() {
-    dependsOn addIgnore
-}
+task installDebugApp(dependsOn: 'installEnterprisePlayStoreDebug')
+task installTestDebugApp(dependsOn: 'installEnterprisePlayStoreDebugAndroidTest')
+task uninstallTestDebugApp(dependsOn: 'uninstallEnterprisePlayStoreDebugAndroidTest')
+generateScreenshots.dependsOn(installTestDebugApp)
+installTestDebugApp.dependsOn(installDebugApp)
+installDebugApp.dependsOn(uninstallTestDebugApp)

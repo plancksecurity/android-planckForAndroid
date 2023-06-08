@@ -1,5 +1,5 @@
 package com.fsck.k9.ui
-/*
+
 import android.Manifest
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
+import com.fsck.k9.planck.ui.activities.UtilsPackage
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.junit.Rule
@@ -16,33 +17,38 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-@Ignore("Only to be run via ./gradlew generateScreenshots")
-class AccountSetupScreenshotTest : BaseScreenshotTest() {
+class ST1AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @get:Rule
-    var permissionRule: GrantPermissionRule =
-            GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+    var permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.POST_NOTIFICATIONS,
+        Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+    )
 
 
     companion object {
-        const val BOT_1_NAME = "bot1"
-        const val BOT_2_NAME = "bot2"
-        const val BOT_3_NAME = "bot3"
+        private val millis = System.currentTimeMillis()
+        private val BOT_1_NAME = millis.toString()
+        private val BOT_2_NAME = (millis + 1).toString()
+        private val BOT_3_NAME = (millis + 2).toString()
     }
 
     @Test
-    fun automaticAccountSetup() {
+    @Ignore("normally we can see all screens just by using the manual setup")
+    fun step1_automaticAccountSetup() {
         setTestSet("A")
         accountSetup(true)
     }
 
     @Test
-    fun manualAccountSetup() {
+    fun step2_manualAccountSetup() {
         setTestSet("B")
         accountSetup(false)
     }
 
     @Test
+    @Ignore
     fun importAccountSetup() {
         setTestSet("L")
         openFirstScreen()
@@ -75,7 +81,7 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     @Test
-    fun addMessagesToAccount() {
+    fun step3_addMessagesToAccount() {
         openFirstScreen()
         waitListView()
         getMessageListSize()
@@ -100,16 +106,19 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun permissions() {
-        getScreenShotCurrentActivity("permissions")
-        sleep(1000)
-        click(R.id.action_continue)
-        allowPermissions()
+        if (UtilsPackage.viewIsDisplayed(R.id.action_continue)) {
+            getScreenShotCurrentActivity("permissions")
+            sleep(1000)
+            click(R.id.action_continue)
+            allowPermissions()
+        }
     }
 
     private fun accountSetup(automaticLogin: Boolean) {
         openFirstScreen()
-        passWelcomeScreen()
         permissions()
+        getScreenShotCurrentActivity("select auth method")
+        click(R.id.other_method_sign_in_button)
         if (automaticLogin) addFirstAccountAutomatic()
         else addFirstAccountManual()
     }
@@ -171,9 +180,9 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         click(R.id.next)
         sleep(1500)
 
-        getScreenShotAccountSetup("")
-        click(R.id.next)
-        sleep(1500)
+        //getScreenShotAccountSetup("") // only for endUser
+        //click(R.id.next)
+        //sleep(1500)
 
         getScreenShotCurrentActivity("without values")
         addTextTo(R.id.account_name, "John Smith")
@@ -183,4 +192,4 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
 
-}*/
+}

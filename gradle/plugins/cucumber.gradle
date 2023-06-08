@@ -1,13 +1,12 @@
 task cucumberTest() {
-    description = "Run ./gradlew connectedCheck only for Cucumber tests."
-
     doLast {
+        def command = "adb shell am instrument -w -e testType cucumber com.fsck.k9.planck.ui.activities.test/com.fsck.k9.planck.ui.activities.test.CucumberTestCase"
         exec {
-            String command = "../gradlew connectedCheck -PuseCucumber=true"
             commandLine command.split(' ')
         }
     }
 }
 
-task connectedCheckAll(dependsOn: ':k9mail:connectedCheck')
+task connectedCheckAll(dependsOn: 'connectedEnterprisePlayStoreDebugAndroidTest')
 connectedCheckAll.finalizedBy cucumberTest
+cucumberTest.dependsOn(installTestDebugApp)
