@@ -2,7 +2,8 @@
 
 ### Running from IDE
 
-* Run Cucumber instrumentation tests: Edit configurations -> Instrumentation Arguments -> Add boolean parameter `useCucumber` under "instrumentation extra params".
+* Run Cucumber instrumentation tests: Edit configurations -> Instrumentation Arguments -> Add String parameter `testType` with value `cucumber` under "instrumentation extra params".
+* Run screenshots tool: Edit configurations -> Instrumentation Arguments -> Add String parameter `testType` with value `screenshot` under "instrumentation extra params".
 * Run "plain" Espresso instrumentation tests : Nothing needed, just run normally.
 
 ### Running from command line
@@ -21,10 +22,10 @@
   * `-Pwork` (whether to run tests on work profile. Default `false`)
   * `-PuseFakeManager` (whether to use FakeRestrictionsManager for the tests. Default `false`)
   * `-Pdevice` (which device to run tests on, when we have several devices connected, result of `adb devices`. Default `null`)
-  * `-PuseCucumber` (whether to run Cucumber or "plain Espresso" tests. Default `false`)
+  * `-PtestType` (whether to run Cucumber, Screenshots or "plain Espresso" tests. Options are `normal`, `cucumber`, `screenshot`. Default `normal`)
   * `-Pverbose` (more verbose output. Default `false`)
 
-* Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" -PuseCucumber=true -Pverbose=true`
+* Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" -PtestType="cucumber" -Pverbose=true`
 
 
 ## generate app screenshots 
@@ -41,40 +42,9 @@ Prerequisites:
     export PLANCK_TEST_EMAIL_PASSWORD=password
     export PLANCK_TEST_EMAIL_SERVER=server.com
 
-- A k9 settings should be added to the device downloads folder with name "stubAccount.k9s"
-
-- A key file should be added to the device downloads folder with name "test_key.asc"
-
-- Change BOT_1_NAME, BOT_2_NAME & BOT_3_NAME in AccountSetupScreenshotTest.kt to your liking
-
 - Make sure that no other device has the same account instantiated and is able to start sync
 
 - At the time of sync test, the device will wait until the sync popup comes, so set the same account in other device for sync to start
 
 Command:
    ./gradlew generateScreenshots
-
-
-## AppRestrictions test 
-
-1. install and run https://pep-security.lu/gitlab/francisco/apprestrictionenforcer
-
-2. get adb users:
-    adb shell pm list users
-    - example output:
-        Users:
-            UserInfo{0:Owner:13} running
-            UserInfo{44:pEpMdmEnforcer:30} running
-            Use the pEpMdmEnforcer one, in this case, 44
-3. run command:
-    ./gradlew testRestrictions -Puser=<user_id>
-    - change <user_id> to pEpMdmEnforcer created user
-
-## Add account
-
-Cleans the app and adds ANDROID_DEV_TEST_1_ADDRESS to app
-
-This task needs the app to be installed
-
-Command:
-   ./gradlew setupAccount
