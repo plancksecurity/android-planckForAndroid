@@ -1,5 +1,5 @@
 package com.fsck.k9.ui
-/*
+
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -12,8 +12,7 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-@Ignore("Only to be run via ./gradlew generateScreenshots")
-class SyncScreenshotTest : BaseScreenshotTest() {
+class ST6SyncScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun syncTest() {
@@ -42,7 +41,7 @@ class SyncScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun selectLanguage() {
-        click("Català")
+        click("Deutsch")
         sleep(500)
         getScreenShotCurrentActivity("language changed")
     }
@@ -74,4 +73,4 @@ class SyncScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("sync done")
     }
 
-}*/
+}

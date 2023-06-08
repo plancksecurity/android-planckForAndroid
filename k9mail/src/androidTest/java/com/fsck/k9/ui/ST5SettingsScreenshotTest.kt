@@ -1,11 +1,14 @@
-/*package com.fsck.k9.ui
+package com.fsck.k9.ui
 
-import android.os.Build
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
+import com.fsck.k9.planck.ui.activities.TestUtils
+import com.fsck.k9.planck.ui.activities.UtilsPackage
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.junit.Test
@@ -13,8 +16,7 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-@Ignore("Only to be run via ./gradlew generateScreenshots")
-class SettingsScreenshotTest : BaseScreenshotTest() {
+class ST5SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun settingsTest() {
@@ -23,24 +25,25 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         openSettings()
         mainSettingsTest()
         globalSettingsTest()
-        accountSettingsTest()
+        //accountSettingsTest()
         Espresso.pressBack()
     }
 
     private fun mainSettingsTest() {
         setTestSet("H")
         clickMenu()
-        openAboutAndLicense()
-        Espresso.pressBack()
+        openAbout()
     }
 
     private fun globalSettingsTest() {
         setTestSet("I")
         openGlobalDisplaySettings()
-        openGlobalInteractionSettings()
-        openGlobalNotificationsSettings()
-        openGlobalPrivacySettings()
-        openGlobalAdvancedSettings()
+        expandSetting(R.string.reset)
+        getScreenShotCurrentActivity("global settings reset own keys dialog")
+        //openGlobalInteractionSettings()
+        //openGlobalNotificationsSettings()
+        //openGlobalPrivacySettings()
+        //openGlobalAdvancedSettings()
     }
 
     private fun accountSettingsTest() {
@@ -74,14 +77,12 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("main settings menu")
     }
 
-    private fun openAboutAndLicense() {
+    private fun openAbout() {
         click(getString(R.string.about_action))
         getScreenShotCurrentActivity("about")
         swipeScrollView()
         sleep(1500)
         getScreenShotCurrentActivity("about scrolled")
-        click(R.id.license_button)
-        getScreenShotCurrentActivity("license")
         Espresso.pressBack()
     }
 
@@ -93,10 +94,10 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("global display setting scrolled")
 
         clickSettingDialog(R.string.settings_language_label, "global language selection setting")
-        clickSettingDialog(R.string.font_size_settings_title, "global font selection setting")
-        clickSettingDialog(R.string.global_settings_preview_lines_label, "global preview lines setting")
-        clickSettingDialog(R.string.global_settings_messageview_visible_refile_actions_title,
-                "global visible message actions setting")
+        //clickSettingDialog(R.string.font_size_settings_title, "global font selection setting")
+        //clickSettingDialog(R.string.global_settings_preview_lines_label, "global preview lines setting")
+        //clickSettingDialog(R.string.global_settings_messageview_visible_refile_actions_title,
+        //        "global visible message actions setting")
 
         Espresso.pressBack()
     }
@@ -136,16 +137,6 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSettingDialog(R.string.passhphrase_new_keys_settings_title, "global passphrase setting")
         clickSettingDialog(R.string.blacklist_title, "global blacklist setting")
 
-        Espresso.pressBack()
-    }
-
-    private fun openGlobalAdvancedSettings() {
-        clickSetting(R.string.advanced)
-        getScreenShotCurrentActivity("global advanced setting")
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
-        }
-        clickSettingDialog(R.string.background_ops_label, "global background sync setting")
         Espresso.pressBack()
     }
 
@@ -279,4 +270,4 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import key step 2")
     }
 
-}*/
+}

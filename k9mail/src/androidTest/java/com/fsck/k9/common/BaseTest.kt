@@ -1,6 +1,43 @@
 package com.fsck.k9.common
 
-/*
+import android.app.Activity
+import android.app.UiAutomation
+import android.content.Context
+import android.content.res.Resources
+import android.view.ViewGroup
+import android.widget.ScrollView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
+import com.fsck.k9.BuildConfig
+import com.fsck.k9.R
+import com.fsck.k9.planck.ui.activities.SplashActivity
+import com.fsck.k9.planck.ui.activities.TestUtils
+import com.fsck.k9.planck.ui.activities.UtilsPackage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import org.hamcrest.CoreMatchers
+import org.hamcrest.Matchers
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import timber.log.Timber
+
+
 open class BaseTest {
 
     lateinit var device: UiDevice
@@ -47,17 +84,15 @@ open class BaseTest {
     }
 
     private fun resetFocus() = runBlocking(Dispatchers.Main) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
-            activities.firstOrNull()?.let { activity ->
-                val content = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
-                val oldDefaultFocusHighlightEnabled = content.defaultFocusHighlightEnabled
-                content.isFocusable = true
-                content.defaultFocusHighlightEnabled = false
-                content.requestFocus()
-                content.clearFocus()
-                content.defaultFocusHighlightEnabled = oldDefaultFocusHighlightEnabled
-            }
+        val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+        activities.firstOrNull()?.let { activity ->
+            val content = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
+            val oldDefaultFocusHighlightEnabled = content.defaultFocusHighlightEnabled
+            content.isFocusable = true
+            content.defaultFocusHighlightEnabled = false
+            content.requestFocus()
+            content.clearFocus()
+            content.defaultFocusHighlightEnabled = oldDefaultFocusHighlightEnabled
         }
     }
 
@@ -200,7 +235,7 @@ open class BaseTest {
     }
 
     fun sendMessageToBot(botName: String) {
-        val botEmail = "$botName@sq.pep.security"
+        val botEmail = "$botName@sq.planck.security"
         sendMessage(botEmail)
     }
 
@@ -254,7 +289,7 @@ open class BaseTest {
         do {
             allowPermissions(2)
             allowPermissions(1)
-        } while (!UtilsPackage.viewIsDisplayed(R.id.action_continue) && !UtilsPackage.viewIsDisplayed(R.id.account_email))
+        } while (!UtilsPackage.viewIsDisplayed(R.id.action_continue) && !UtilsPackage.viewIsDisplayed(R.id.other_method_sign_in_button_card))
     }
 
     private fun allowPermissions(index: Int) {
@@ -284,4 +319,3 @@ open class BaseTest {
     }
 
 }
-*/
