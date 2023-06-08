@@ -2924,11 +2924,13 @@ public class TestUtils {
 
     public void selectFromScreen(int resource) {
         waitForIdle();
+        String text = resources.getString(resource);
+        int textCharacters = text.length();
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().contains(resources.getString(resource))) {
+                    if (object.getText().substring(0, textCharacters).equals(text)) {
                             waitForIdle();
                             object.longClick();
                             waitForIdle();
