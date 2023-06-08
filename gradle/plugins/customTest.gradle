@@ -4,12 +4,12 @@ task customTest() {
             "installed apps and/or on work profiles. " +
             "Requires for the app to be already installed."
 
-    String device = project.property("device")
-    String flavor = project.property("flavor")
-    boolean work = project.property("work").toBoolean()
-    boolean useFakeManager = project.property("useFakeManager").toBoolean()
-    boolean verbose = project.property("verbose").toBoolean()
-    String testType = project.property("testType")
+    String device = project.findProperty("device")
+    String flavor = project.findProperty("flavor") ?: "enterprisePlayStore"
+    boolean work = project.findProperty("work") ?: false
+    boolean useFakeManager = project.findProperty("useFakeManager") ?: false
+    boolean verbose = project.findProperty("verbose") ?: false
+    String testType = project.findProperty("testType") ?: "normal"
     String deviceText = device == null || device == "null" ? "" : " -s $device"
 
     if (verbose) {
