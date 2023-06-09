@@ -3,6 +3,22 @@ Feature: Test
     Given I created an account
 
 
+  Scenario: Cucumber Reset Partner Key
+    And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
+    And I click the last message received
+    Then I reset partner key
+    When I press back
+    When I click compose message
+    And I enter bot2 in the messageTo field
+    And I enter ResetKey2 in the messageSubject field
+    And I enter NewMessageAfterReset in the messageBody field
+    Then I check the privacy status is unsecure
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is secure
+
+
+
   Scenario: Cucumber Copy email to a folder
     When I send 1 message to bot1 with subject copyThisMessage and body ThisMessageWillCopiedToAnotherFolder
     And I click the last message received
