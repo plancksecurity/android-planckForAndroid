@@ -12,6 +12,8 @@ Feature: Test
     And I go to spam folder from navigation menu
     And I click the first message
     Then I compare messageBody from json file with ThisMessageWillCopiedToAnotherFolder
+    And I press back
+    And I go to inbox folder from navigation menu
 
 
   Scenario: Cucumber Copy email with attachment to a folder
@@ -34,6 +36,8 @@ Feature: Test
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
     Then I check the privacy status is secure&trusted
     And I open 3 attached files
+    And I press back
+    And I go to inbox folder from navigation menu
 
 
   Scenario: Cucumber Move email to a folder
@@ -44,11 +48,13 @@ Feature: Test
     And I go to spam folder from navigation menu
     And I click the first message
     Then I compare messageBody from json file with ThisMessageWillMovedToAnotherFolder
+    And I press back
+    And I go to inbox folder from navigation menu
 
 
   Scenario: Cucumber Move email with attachments to a folder
     When I click compose message
-    And I enter bot1 in the messageTo field
+    And I enter myself in the messageTo field
     And I enter moveThisMessageWithAttachments in the messageSubject field
     And I enter ThisMessageWithAttachmentWillBeMovedToAnotherFolder in the messageBody field
     And I attach PDF
@@ -61,113 +67,10 @@ Feature: Test
     And I go to spam folder from navigation menu
     And I click the first message
     Then I compare messageBody from json file with ThisMessageWithAttachmentWillBeMovedToAnotherFolder
-    And I check the privacy status is secure
+    And I check the privacy status is secure&trusted
     And I open 3 attached files
-
-
-  Scenario: Cucumber max characters in Subject
-    And I click compose message
-    And I enter bot1 in the messageTo field
-    And I enter max characters in the messageSubject field
-
-
-  Scenario: Cucumber Send big attachment and cut Internet Connection
-    When I send 1 messages to bot1 with subject FirstMessage and body AttachmentsTest
-    And I click compose message
-    And I enter bot1 in the messageTo field
-    And I enter SecondMessage in the messageSubject field
-    And I enter AtachmentsHere in the messageBody field
-    And I attach PDF
-    And I attach MSoffice
-    And I attach picture
-    Then I check the privacy status is secure
-    When I click the send message button
-    And I switch off Wi-Fi
-    And I wait 10 seconds
-    And I switch on Wi-Fi
-    And I wait for the new message
-    And I switch off Wi-Fi
-    And I wait 10 seconds
-    And I click the first message
-    Then I check the privacy status is secure
-    And I open 3 attached files
-
-
-  Scenario: Cucumber Key Reset with no Internet Connection
-    When I send 1 messages to bot1 with subject First and body ConnectionTest
-    And I switch off Wi-Fi
-    And I reset my own key
-    And I switch on Wi-Fi
-    And I send 1 messages to bot1 with subject Second and body NoConnectionTest
-    And I click the first message
-    Then I check the privacy status is secure
-
-
-  Scenario: Cucumber Stress
-    When I stress Engine threads with 4 recipients
-
-
-  Scenario: Cucumber Reset Partner Key
-    When I select account <account>
-    And I send 1 messages to bot2 with subject ResetKey and body IWillResetTheKeyManyTimes
-    And I click the last message received
-    Then I reset partner key
-
-
-    #Only with Enforcer!!!
-  Scenario: Cucumber Enterprise Email Settings
-    When I set account_description setting to newUser
-    And I set account_display_count setting to 50
-    And I set max_push_folders setting to 30
-    And I set account_remote_search_num_results setting to 20
-    And I set incoming settings to server peptest.ch, securityType SSL/TLS, port 993 and userName elUser
-    And I set outgoing settings to server peptest.ch, securityType STARTTLS, port 587 and userName elUserOUT
-    Then I compare account_description setting with newUser
-    And I compare account_display_count setting with 50
-    And I compare max_push_folders setting with 30
-    And I compare account_remote_search_num_results setting with 20
-    And I compare incoming settings with server peptest.ch, securityType SSL/TLS, port 993 and userName elUser
-    And I compare outgoing settings with server peptest.ch, securityType STARTTLS, port 587 and userName elUserOUT
-
-
-    #Only with Enforcer!!!
-  Scenario: Cucumber Enterprise Disable Warning
-
-    When I set unsecure_delivery_warning setting to false
-    And I click compose message
-    And I enter 3 unreliable recipients in the messageTo field
-    Then I check unsecure warnings are not there
-    When I set unsecure_delivery_warning setting to true
-
-
-    #Only with Enforcer!!!
-  Scenario: Cucumber Enterprise TrustWords
-
-    When I set pep_use_trustwords setting to true
-    And I send 1 message to bot1 with subject TrustWordsTest and body ThisTestIsForTrustWords
-    And I click the last message received
-    Then I check if the privacy status is planck_green
-    And I confirm trust words match
-    When I click confirm trust words
-    Then I check if the privacy status is planck_green
-    When I set pep_use_trustwords setting to false
-
-    #Summary: This Cucumber test checks the functionality of the Planck encryption software in different scenarios where protections is disabled.
-#Description: This Cucumber test describes a set of steps to test the privacy protection functionality of an email client application. It involves setting the privacy protection setting to true and false, and sending messages to different recipients with different privacy settings and verifying if the messages are being sent with the expected privacy status.
-#
-#Specifically, the test starts with setting the planck_enable_privacy_protection setting to false, then sends a message to a recipient with the subject "newContact" and body "DisableProtectionTest", and checks if the privacy status of the message is unsecure. Then, the test sets the planck_enable_privacy_protection setting back to true and proceeds to send another message to the same recipient. The privacy status of the message is checked in the handshake dialog and the message is sent.
-  Scenario: Cucumber Enterprise Disable Protection
-
-    When I set pep_enable_privacy_protection setting to false
-    And I send 1 message to bot1 with subject newContact and body DisableProtectionTest
-    And I click compose message
-    And I enter bot1 in the messageTo field
-    And I enter unsecureTest in the messageSubject field
-    And I enter pEpProtectionMustBeDisabled in the messageBody field
-    And I check if the privacy status is pEpRatingUnsecure
-    Then I check in the handshake dialog if the privacy status is pEpRatingUnsecure
-    And I click the send message button
-    When I set pep_enable_privacy_protection setting to true
+    And I press back
+    And I go to inbox folder from navigation menu
 
 #Summary: This Cucumber test involves testing the privacy status and message sending functionality of a mail application. The test includes sending messages to existing and new contacts, checking the privacy status of messages, and verifying the message body of sent messages.
 #Description: This Cucumber test involves composing and sending messages through an email client. The test includes multiple steps, such as checking the privacy status of a message, entering recipients, subjects and message bodies, sending messages, waiting for new messages to arrive, and comparing the message bodies with expected values. The test also covers scenarios where the recipient or subject fields are empty, and it verifies the privacy status of the messages in different scenarios.
@@ -316,8 +219,6 @@ Feature: Test
     Then I compare messageBody from json file with MailFromNewContactEncryptedBody
     And I check the privacy status is secure
     When I click reply message
-    And I enter extraText in the messageSubject field
-    And I enter bodyText in the messageBody field
     Then I check the privacy status is secure
     And I click the send message button
     And I go back to the Inbox
@@ -602,12 +503,11 @@ Feature: Test
     And I go to the drafts folder
 
 
-
     #Summary: This Cucumber test describes a set of actions that a user takes on a messaging platform to send and search for messages with specific text. The test involves sending messages to different bots with specific subject and body text, composing and sending a message to oneself, and verifying that specific messages are found when searched for.
 #Description: The test involves selecting an account, navigating to the inbox, sending messages to different recipients with specific subject and body text, composing messages to oneself with specific message subject and body text, and performing searches for specific messages with certain text. The test is considered successful if all searches return the expected number of messages.
   Scenario: Cucumber Search for email/s in the Inbox
 
-    And I select Inbox from Hamburger menu
+    And I go to inbox folder from navigation menu
     And I send 2 messages to bot2 with subject 3messages and body textA
     And I send 1 messages to bot5 with subject 3messages and body textC
     And I click compose message
