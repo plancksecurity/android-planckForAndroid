@@ -22,19 +22,17 @@ class NormalTestFilter : AbstractFilter() {
 
     override fun evaluateTest(description: Description?): Boolean {
         val packageName = description?.testClass?.`package`?.name
-        Log.e("EFA-53", "PACKAGE NAME: $packageName")
         return !packageName.isNullOrBlank() && !description.className.contains("Screenshot") && !packageName.contains("cucumber")
     }
 }
 
 class ScreenshotTestFilter : AbstractFilter() {
     override fun describe(): String {
-        return "Filter out Cucumber and normal tests"
+        return "Filter Screenshot tests"
     }
 
     override fun evaluateTest(description: Description?): Boolean {
         val packageName = description?.testClass?.`package`?.name
-        Log.e("EFA-53", "PACKAGE NAME: $packageName")
         return packageName == "com.fsck.k9.ui" && description.className.contains("Screenshot") && !description.className.contains("Base")
     }
 }
