@@ -108,7 +108,7 @@
                 android:maxLines="1"
                 android:padding="0dp"
                 android:lineSpacingExtra="0dp"
-                tools:text="@string/pep_rating_secure_trusted" />
+                tools:text="@string/pep_rating_trusted" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/securityStatusSecondLine"
@@ -121,7 +121,7 @@
                 android:padding="0dp"
                 android:lineSpacingExtra="0dp"
                 android:visibility="gone"
-                tools:text="@string/pep_rating_secure_trusted"
+                tools:text="Second line"
                 tools:visibility="visible" />
 
         </LinearLayout>
