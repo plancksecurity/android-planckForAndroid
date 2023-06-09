@@ -800,12 +800,7 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.pressOKButtonInDialog();
         waitForIdle();
-        if (exists(onView(withId(R.id.rejectHandshake))) || exists(onView(withId(R.id.confirmHandshake)))) {
-
-        }
-        if (!exists(onView(withId(R.id.status_explanation_text)))) {
-
-        }
+        testUtils.pressBack();
         testUtils.pressBack();
     }
 
