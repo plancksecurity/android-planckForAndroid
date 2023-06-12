@@ -5,17 +5,24 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.K9
 import com.fsck.k9.planck.PlanckProvider
 import foundation.pEp.jniadapter.CipherSuite
+import foundation.pEp.jniadapter.CommType
 import foundation.pEp.jniadapter.Engine
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Message
 import foundation.pEp.jniadapter.Sync
-import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
 import foundation.pEp.jniadapter.SyncHandshakeSignal
+import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.runner.OrderWith
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 import security.planck.file.PlanckSystemFileLocator
 import timber.log.Timber
 import java.util.Locale
@@ -23,59 +30,72 @@ import java.util.Locale
 private const val TAG = "CORE TEST"
 
 @RunWith(AndroidJUnit4::class)
-class PlanckCoreIntegrationTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+class PlanckCoreIntegrationTestBasic {
     private lateinit var planckCore: Engine
-    private val app = ApplicationProvider.getApplicationContext<K9>()
 
     @Test
-    fun core_startup() {
+    fun `step1 myself on my own identity retrieves fpr from core`() {
         planckCore = Engine()
         configureCore()
-        planckCore.startSync()
-        runBlocking { delay(3000) }
-
-        planckCore.stopSync()
-        planckCore.close()
-        clearEngineDatabases()
-    }
-
-    @Test
-    fun startSync() {
-        //clearEngineDatabases()
-        //runBlocking { delay(3000) }
-        planckCore = Engine()
-        configureCore()
-        //planckCore.disable_all_sync_channels()
-
 
 
         var myIdentity = createIdentity("coretest01@test.ch", "coretest01")
+        myIdentity.setAsMyself()
+        assertEquals(true, myIdentity.me)
+        assertEquals(PlanckProvider.PLANCK_OWN_USER_ID, myIdentity.user_id)
         myIdentity = myself(myIdentity)
-        planckCore.enable_identity_for_sync(myIdentity)
-        //PlanckUtils.updateSyncFlag(account, pEp, myIdentity)
-        planckCore.startSync()
-        Timber.e("$TAG Sync started: sync running: ${planckCore.isSyncRunning}")
-        runBlocking { delay(5000) }
-
-        planckCore.stopSync()
-        Timber.e("$TAG Sync stopped: sync running: ${planckCore.isSyncRunning}")
         planckCore.close()
-        assertEquals(1, messagesToSendList.size)
-        assertEquals(1, notifiedHandshakeList.size)
-        val msgToSend = messagesToSendList.first()
-        assertEquals(3, msgToSend.attachments.size) // The sync attachment, a pgp signature and the public key (duplicated)
-        assertEquals(SyncHandshakeSignal.SyncNotifySole, notifiedHandshakeList.first().signal)
-        //clearEngineDatabases()
+
+
+        assertEquals(PlanckProvider.PLANCK_OWN_USER_ID, myIdentity.user_id)
+        assertEquals(true, myIdentity.me)
+        assertEquals(CommType.PEP_ct_pEp, myIdentity.comm_type)
+        assertEquals(40, myIdentity.fpr.length)
+    }
+
+    @Test
+    fun `step2 myself on another identity retrieves fpr from core so it seems being me or not has no effect`() {
+        planckCore = Engine()
+        configureCore()
+
+
+        var myIdentity = createIdentity("coretest01@test.ch", "coretest01")
+        assertEquals(false, myIdentity.me)
+        assertEquals(null, myIdentity.user_id)
+        myIdentity = myself(myIdentity)
+        planckCore.close()
+
+
+        assertEquals(PlanckProvider.PLANCK_OWN_USER_ID, myIdentity.user_id)
+        assertEquals(true, myIdentity.me)
+        assertEquals(CommType.PEP_ct_pEp, myIdentity.comm_type)
+        assertEquals(40, myIdentity.fpr.length)
     }
 
     private fun myself(identity: Identity): Identity {
         var myIdentity = identity
-        Timber.e("$TAG myIdentity before myself: $myIdentity")
-        myIdentity.user_id = PlanckProvider.PLANCK_OWN_USER_ID
-        myIdentity.me = true
+        Timber.e("$TAG myIdentity before myself: ${myIdentity.print()}")
         myIdentity = planckCore.myself(myIdentity)
-        Timber.e("$TAG myIdentity after myself: $myIdentity")
+        Timber.e("$TAG myIdentity after myself: ${myIdentity.print()}")
         return myIdentity
+    }
+
+
+    private fun configureCore() {
+        planckCore.config_passive_mode(false)
+        planckCore.config_unencrypted_subject(false)
+        planckCore.config_passphrase_for_new_keys(
+            false,
+            ""
+        )
+        planckCore.setMessageToSendCallback(testMessageToSend)
+        planckCore.setNotifyHandshakeCallback(testNotifyHandshake)
+        planckCore.setPassphraseRequiredCallback(testPassphraseRequired)
+        planckCore.config_enable_echo_protocol(false)
+        planckCore.config_cipher_suite(CipherSuite.pEpCipherSuiteRsa4k)
+
+        //engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
     }
 
     private fun createIdentity(address: String, userName: String = ""): Identity {
@@ -93,20 +113,19 @@ class PlanckCoreIntegrationTest {
         //}
     }
 
-    private fun configureCore() {
-        planckCore.config_passive_mode(false)
-        planckCore.config_unencrypted_subject(false)
-        planckCore.config_passphrase_for_new_keys(
-            false,
-            ""
-        )
-        planckCore.setMessageToSendCallback(testMessageToSend)
-        planckCore.setNotifyHandshakeCallback(testNotifyHandshake)
-        planckCore.setPassphraseRequiredCallback(testPassphraseRequired)
-        planckCore.config_enable_echo_protocol(false)
-        planckCore.config_cipher_suite(CipherSuite.pEpCipherSuiteRsa4k)
+    private fun Identity.setAsMyself() {
+        user_id = PlanckProvider.PLANCK_OWN_USER_ID
+        me = true
+    }
 
-        //engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+    private fun Identity.print(): String {
+        return "address: $address" +
+                "\nuser_id: $user_id" +
+                "\nusername: $username" +
+                "\nme: $me" +
+                "\ncommtype: $comm_type" +
+                "\nflags: $flags" +
+                "\nfpr: $fpr"
     }
 
     private data class NotifiedHandshake(
@@ -152,17 +171,33 @@ class PlanckCoreIntegrationTest {
         Timber.e("$TAG notify handshake signal: $signal")
     }
 
-    private val testPassphraseRequired = PassphraseRequiredCallback {
+    private val testPassphraseRequired = Sync.PassphraseRequiredCallback {
         Timber.e("$TAG testPassphraseRequired got passphrase required type: $it")
         ""
     }
 
-    private fun clearEngineDatabases() {
-        val couldDelete = with(PlanckSystemFileLocator(app)) {
-            pEpFolder.deleteRecursively() &&
-                    trustwordsFolder.deleteRecursively() &&
-                    keyStoreFolder.deleteRecursively()
+    companion object {
+        private val app = ApplicationProvider.getApplicationContext<K9>()
+
+        @AfterClass
+        @JvmStatic
+        fun tearDown() {
+            clearEngineDatabases()
         }
-        Timber.e("$TAG could delete databases: $couldDelete")
+
+        private fun clearEngineDatabases() {
+            val couldDelete = with(PlanckSystemFileLocator(app)) {
+                pEpFolder.deleteRecursively() &&
+                        trustwordsFolder.deleteRecursively() &&
+                        keyStoreFolder.deleteRecursively()
+            }
+            Timber.e("$TAG could delete databases: $couldDelete")
+        }
     }
 }
+
+/**
+ * TEST CASES:
+ * - myself
+ * -
+ */
