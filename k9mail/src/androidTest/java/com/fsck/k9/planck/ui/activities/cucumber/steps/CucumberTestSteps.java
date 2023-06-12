@@ -87,7 +87,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.planck.ui.activities.TestUtils.fail;
 import static com.fsck.k9.planck.ui.activities.TestUtils.json;
 import static com.fsck.k9.planck.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.containstText;
@@ -100,6 +99,7 @@ import static com.fsck.k9.planck.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
+import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
@@ -302,7 +302,7 @@ public class CucumberTestSteps {
                 I_enter_text_in_field("ABCDEFGH" + i + " ", field);
             }
         } catch (Exception ex) {
-            testUtils.fail("Only " + i + " loops in the field " + field);
+            fail("Only " + i + " loops in the field " + field);
         }
     }
 
@@ -810,7 +810,7 @@ public class CucumberTestSteps {
         TestUtils.getJSONObject("keys");
         waitForIdle();
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-            TestUtils.fail("Wrong extra key");
+            fail("Wrong extra key");
         }
     }
 
@@ -870,7 +870,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        TestUtils.fail("Wrong Trust Words");
+        fail("Wrong Trust Words");
     }
 
     private void assertTextInJSONArray(String text, JSONArray array, String textToCompare) {
@@ -883,7 +883,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        TestUtils.fail("Text is not in JSON");
+        fail("Text is not in JSON");
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
@@ -891,14 +891,14 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        TestUtils.fail("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
+        fail("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
         }
-        TestUtils.fail("Texts are different");
+        fail("Texts are different");
     }
 
     private void confirmAllTrustWords(String webViewText) {
@@ -963,7 +963,7 @@ public class CucumberTestSteps {
     private void checkWordIsInText(String[] arrayToCompare, String webViewText) {
         for (String textToCompare : arrayToCompare) {
             if (!webViewText.contains(textToCompare)) {
-                TestUtils.fail("Text not found in Trustwords");
+                fail("Text not found in Trustwords");
             }
         }
     }
@@ -1013,7 +1013,7 @@ public class CucumberTestSteps {
                 testUtils.setWifi(false);
                 break;
             default:
-                testUtils.fail("Option of Wi-Fi: " + state + "; doesn't exist");
+                fail("Option of Wi-Fi: " + state + "; doesn't exist");
                 break;
         }
         waitForIdle();
@@ -1241,7 +1241,7 @@ public class CucumberTestSteps {
                     I_send_message_to_address(1, "bot" + currentDay, "Bucle"+currentDay+"Done", "Finishing first bucle");
                     break;
                 default:
-                    TestUtils.fail("Unknown Sync Device: " + testUtils.test_number());
+                    fail("Unknown Sync Device: " + testUtils.test_number());
                     break;
             }
             try {
@@ -1316,7 +1316,7 @@ public class CucumberTestSteps {
                 testUtils.checkOwnKey(mainKeyID2, false);
                 break;
             default:
-                TestUtils.fail("Unknown Device for this test: " + testUtils.test_number());
+                fail("Unknown Device for this test: " + testUtils.test_number());
         }
 
     }
@@ -1416,7 +1416,7 @@ public class CucumberTestSteps {
                 testUtils.checkDeviceIsSync("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
-                TestUtils.fail("Unknown Sync Device to check devices are sync");
+                fail("Unknown Sync Device to check devices are sync");
                 break;
         }
     }
@@ -1435,7 +1435,7 @@ public class CucumberTestSteps {
                 testUtils.checkAccountIsNotProtected("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
-                TestUtils.fail("Unknown Account to assert is not protected");
+                fail("Unknown Account to assert is not protected");
                 break;
         }
     }
@@ -1453,7 +1453,7 @@ public class CucumberTestSteps {
                 testUtils.checkDeviceIsNotSync("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
-                TestUtils.fail("Unknown Sync Device to check devices are not sync");
+                fail("Unknown Sync Device to check devices are not sync");
                 break;
         }
     }
@@ -1625,7 +1625,7 @@ public class CucumberTestSteps {
                 if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
                     return;
                 }
-                testUtils.fail("Rating is not Undefined");
+                fail("Rating is not Undefined");
         }
     }
 
@@ -1852,7 +1852,7 @@ public class CucumberTestSteps {
             }
         }
         if (widgets != 3) {
-            TestUtils.fail("Missing a Widget");
+            fail("Missing a Widget");
         }
         if (!testUtils.textExistsOnScreen("WidTest")) {
             Timber.e("Cannot find the message on the screen");
@@ -1880,7 +1880,7 @@ public class CucumberTestSteps {
                 action = "copy_action";
                 break;
             default:
-                testUtils.fail("Cannot do the action: " + action);
+                fail("Cannot do the action: " + action);
         }
         switch (folder){
             case "spam":
@@ -1893,7 +1893,7 @@ public class CucumberTestSteps {
                 folder = "special_mailbox_name_trash";
                 break;
             default:
-                testUtils.fail("Cannot find the folder: " + folder);
+                fail("Cannot find the folder: " + folder);
         }
         waitForIdle();
         testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
@@ -2758,7 +2758,7 @@ public class CucumberTestSteps {
             }
         }
         if (messageListSize[0] - 1 != messages) {
-            TestUtils.fail("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
+            fail("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
         }
         while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
             testUtils.pressBack();
@@ -2809,7 +2809,7 @@ public class CucumberTestSteps {
                         messageTo = testUtils.getPassphraseAccount();
                         break;
                     default:
-                        TestUtils.fail("Unknown Device for this test: " + testUtils.test_number());
+                        fail("Unknown Device for this test: " + testUtils.test_number());
                 }
                 break;
             case "bot1":
@@ -3146,7 +3146,7 @@ public class CucumberTestSteps {
                 String shaCode = new BigInteger(1, hash).toString(16);
                 String jsonObject = (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted").toString();
                 if (!jsonObject.contains(shaCode)) {
-                    TestUtils.fail("couldn't find shaCode in json file");
+                    fail("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
@@ -3202,7 +3202,7 @@ public class CucumberTestSteps {
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
         masterKeyText2 = testUtils.readFile(Environment.getExternalStorageDirectory().toString(), "masterkeyfile.asc");
         if (!masterKeyText.equals(masterKeyText2)) {
-            TestUtils.fail("Wrong Master key file");
+            fail("Wrong Master key file");
         }
         testUtils.emptyFolder("Download");
         testUtils.emptyFolder("");
@@ -3457,11 +3457,11 @@ public class CucumberTestSteps {
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (scenario == null) {
                         time[0] = 0;
-                        TestUtils.fail("Timeout. Couldn't finish the test");
+                        fail("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
                         try {
                             time[0] = 0;
-                            TestUtils.fail("Timeout. Couldn't finish the test");
+                            fail("Timeout. Couldn't finish the test");
                         } catch (Exception ex) {
                             Timber.e("Couldn't close the test");
                         }

@@ -772,7 +772,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.fail("Failed checking 1st devices is not sync");
+            fail("Failed checking 1st devices is not sync");
         }
     }
 
@@ -781,7 +781,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.fail("Failed checking 2nd devices is not sync");
+            fail("Failed checking 2nd devices is not sync");
         }
         getMessageListSize();
         composeMessageButton();
@@ -888,11 +888,6 @@ public class TestUtils {
         }
     }
 
-    public static void fail(String message) {
-        //Assume.assumeTrue(message, false);
-        onView(withId(R.id.toolbar)).check(matches(forceFail(message)));
-    }
-
     public void readBotList() {
         int millis = (int) System.currentTimeMillis();
         botList = new String[9];
@@ -964,7 +959,7 @@ public class TestUtils {
                 waitForIdle();
             }*/
             if (!selectOptionDisplayed) {
-                Assert.fail("No sign in options to choose");
+                fail("No sign in options to choose");
             }
             waitForIdle();
             switch (test_number()) {
@@ -3305,7 +3300,7 @@ public class TestUtils {
         if (folderInteraction != null) {
             folderInteraction.perform(click());
         } else {
-            Assert.fail("Folder " + folder +  " not found in navigation drawer");
+            fail("Folder " + folder +  " not found in navigation drawer");
         }
     }
 
