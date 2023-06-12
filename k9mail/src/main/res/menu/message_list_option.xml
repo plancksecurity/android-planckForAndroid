@@ -17,7 +17,7 @@
         android:icon="?attr/flagUncheckedIcon"
         android:title="@string/flag_action"
         android:checkable="true"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <!-- MessageView -->
     <item
@@ -64,7 +64,7 @@
         android:id="@+id/delete"
         android:alphabeticShortcut="q"
         android:icon="?attr/iconActionDelete"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/delete_action"/>
     <!-- MessageView -->
     <item
