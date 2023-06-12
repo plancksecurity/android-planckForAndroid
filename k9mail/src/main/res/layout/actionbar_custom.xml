@@ -92,7 +92,7 @@
             android:id="@+id/securityText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
             app:layout_constraintStart_toEndOf="@id/securityStatusIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
