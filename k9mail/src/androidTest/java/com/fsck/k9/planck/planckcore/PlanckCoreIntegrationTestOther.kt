@@ -16,7 +16,6 @@ import junit.framework.TestCase.assertEquals
 import org.junit.AfterClass
 import org.junit.Assert.assertThrows
 import org.junit.FixMethodOrder
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -108,26 +107,6 @@ class PlanckCoreIntegrationTestOther {
             planckCore.encrypt_message(message, null, Message.EncFormat.PEP)
         }
         planckCore.close()
-    }
-
-    @Test
-    @Ignore
-    fun `step2 myself on another identity retrieves fpr from core so it seems being me or not has no effect`() {
-        planckCore = Engine()
-        configureCore()
-
-
-        var myIdentity = createIdentity("coretest01@test.ch", "coretest01")
-        assertEquals(false, myIdentity.me)
-        assertEquals(null, myIdentity.user_id)
-        myIdentity = myself(myIdentity)
-        planckCore.close()
-
-
-        assertEquals(PlanckProvider.PLANCK_OWN_USER_ID, myIdentity.user_id)
-        assertEquals(true, myIdentity.me)
-        assertEquals(CommType.PEP_ct_pEp, myIdentity.comm_type)
-        assertEquals(40, myIdentity.fpr.length)
     }
 
     private fun myself(identity: Identity): Identity {
