@@ -11,8 +11,10 @@ import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Message
 import foundation.pEp.jniadapter.Sync
 import foundation.pEp.jniadapter.SyncHandshakeSignal
+import foundation.pEp.jniadapter.exceptions.pEpIllegalValue
 import junit.framework.TestCase.assertEquals
 import org.junit.AfterClass
+import org.junit.Assert.assertThrows
 import org.junit.FixMethodOrder
 import org.junit.Ignore
 import org.junit.Test
@@ -50,7 +52,6 @@ class PlanckCoreIntegrationTestOther {
 
     @Test
     fun `step2 encrypt message to myself`() {
-        //Debug.waitForDebugger()
         planckCore = Engine()
         configureCore()
 
@@ -82,6 +83,31 @@ class PlanckCoreIntegrationTestOther {
             encryptedMessage.optFields.toString()
         )
         assertEquals(Message.EncFormat.PGPMIME, encryptedMessage.encFormat)
+    }
+
+    @Test
+    fun `step3 encrypting a message fails if direction is not outgoing`() {
+        planckCore = Engine()
+        configureCore()
+
+
+        var myIdentity = createIdentity("coretest01@test.ch", "coretest01")
+        myIdentity.setAsMyself()
+        assertEquals(true, myIdentity.me)
+        assertEquals(PlanckProvider.PLANCK_OWN_USER_ID, myIdentity.user_id)
+        myIdentity = myself(myIdentity)
+
+        val message = Message()
+        message.dir = Message.Direction.Incoming
+        message.from = myIdentity
+        message.to = Vector(listOf(myIdentity))
+
+        Timber.e("$TAG message before encryption: ${message.print()}")
+
+        assertThrows(pEpIllegalValue::class.java) {
+            planckCore.encrypt_message(message, null, Message.EncFormat.PEP)
+        }
+        planckCore.close()
     }
 
     @Test
