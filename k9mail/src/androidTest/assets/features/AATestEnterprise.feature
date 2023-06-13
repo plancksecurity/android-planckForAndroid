@@ -12,10 +12,10 @@ Feature: Test
     And I enter bot2 in the messageTo field
     And I enter ResetKey2 in the messageSubject field
     And I enter NewMessageAfterReset in the messageBody field
-    Then I check the privacy status is unsecure
+    Then I check the privacy status is NotEncrypted
     When I click the send message button
     And I wait for the message and click it
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
 
 
 
@@ -43,14 +43,14 @@ Feature: Test
     When I click the send message button
     And I wait for the message and click it
     And I copy the message to the folder spam
-    Then I check the privacy status is secure&trusted
+    Then I check the privacy status is Trusted
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
     And I open 3 attached files
     When I go back to the Inbox
     And I go to spam folder from navigation menu
     And I click the first message
     And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
-    Then I check the privacy status is secure&trusted
+    Then I check the privacy status is Trusted
     And I open 3 attached files
     And I press back
     And I go to inbox folder from navigation menu
@@ -83,7 +83,7 @@ Feature: Test
     And I go to spam folder from navigation menu
     And I click the first message
     Then I compare messageBody from json file with ThisMessageWithAttachmentWillBeMovedToAnotherFolder
-    And I check the privacy status is secure&trusted
+    And I check the privacy status is Trusted
     And I open 3 attached files
     And I press back
     And I go to inbox folder from navigation menu
@@ -95,19 +95,19 @@ Feature: Test
   Scenario: Cucumber Mail to new contact
 
     When I click compose message
-    And I check the privacy status is undefined
+    And I check the privacy status is Undefined
     And I enter bot1 in the messageTo field
     And I enter newContact in the messageSubject field
     And I enter bodyMailToNewContact in the messageBody field
-    Then I check the privacy status is unsecure
+    Then I check the privacy status is NotEncrypted
     When I enter empty in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check the privacy status is undefined
+    Then I check the privacy status is Undefined
     When I enter bot1 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check the privacy status is unsecure
+    Then I check the privacy status is NotEncrypted
     When I enter bodyMailToNewContact2 in the messageBody field
     And I click the send message button
     And I wait for the new message
@@ -121,7 +121,7 @@ Feature: Test
   Scenario: Cucumber Send Unencrypted email with long text
 
     When I click compose message
-    And I check the privacy status is undefined
+    And I check the privacy status is Undefined
     And I enter bot2 in the messageTo field
     And I enter TM152 in the messageSubject field
     And I enter longText in the messageBody field
@@ -134,20 +134,20 @@ Feature: Test
 
 
 #Summary: This Cucumber test involves sending an encrypted message to bot1 and verifying that the message is received with the correct privacy status and content. It also checks that the sent message is stored correctly in the sent folder.
-#Description: This Cucumber test is designed to test the messaging functionality of an email service. The test involves sending encrypted messages to a bot and verifying that the privacy status of the messages is secure. There are also tests to verify that messages can be saved as drafts, and that the privacy status of drafts and sent messages is secure. The test involves using various features of the email service, such as composing a message, sending a message, saving a draft, and navigating through different folders in the email service. The test also involves comparing message content with expected values stored in a JSON file.
+#Description: This Cucumber test is designed to test the messaging functionality of an email service. The test involves sending encrypted messages to a bot and verifying that the privacy status of the messages is Encrypted. There are also tests to verify that messages can be saved as drafts, and that the privacy status of drafts and sent messages is Encrypted. The test involves using various features of the email service, such as composing a message, sending a message, saving a draft, and navigating through different folders in the email service. The test also involves comparing message content with expected values stored in a JSON file.
   Scenario: Cucumber Send Encrypted email with long text
 
     When I click compose message
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I enter TM153 in the messageSubject field
     And I enter longText in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody from json file with longText
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -157,14 +157,14 @@ Feature: Test
 #Summary: This Cucumber test case describes a scenario in which a user saves a draft message, goes to the drafts folder to verify it, and then discards it.
 #Description: This Cucumber test involves a series of actions related to composing, sending, and saving draft messages in an email application. The test is focused on verifying the functionality related to the privacy status and content of the messages.
 #
-#The first step is selecting an email account, followed by sending a message to a specific bot with a given subject and body. The next step is to compose another message to the same bot, with a different subject and body, and check that the privacy status is secure. After sending the message, the test verifies that the sent message has the correct content and privacy status.
+#The first step is selecting an email account, followed by sending a message to a specific bot with a given subject and body. The next step is to compose another message to the same bot, with a different subject and body, and check that the privacy status is Encrypted. After sending the message, the test verifies that the sent message has the correct content and privacy status.
 #
-#In a subsequent test, the user saves a draft message with a specific subject and body, verifies that the privacy status is undefined, and then goes to the drafts folder to open the saved message. The test checks that the message content matches what was saved and that the privacy status has been updated to secure. Finally, the user discards the message and returns to the Inbox.
+#In a subsequent test, the user saves a draft message with a specific subject and body, verifies that the privacy status is Undefined, and then goes to the drafts folder to open the saved message. The test checks that the message content matches what was saved and that the privacy status has been updated to secure. Finally, the user discards the message and returns to the Inbox.
   Scenario: Cucumber Save Draft email with long text
 
     When I send 1 message to bot2 with subject saveDraft and body saveDraftBody
     When I click compose message
-    And I check the privacy status is undefined
+    And I check the privacy status is Undefined
     And I enter bot2 in the messageTo field
     And I enter TM154A in the messageSubject field
     And I enter longText in the messageBody field
@@ -172,7 +172,7 @@ Feature: Test
     And I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with longText
-    And I check the privacy status is secure
+    And I check the privacy status is Encrypted
     And I discard the message
     And I go back to the Inbox
 
@@ -186,13 +186,13 @@ Feature: Test
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I enter EFA-1976 in the messageSubject field
     And I enter longWord in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with longWord
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -207,7 +207,7 @@ Feature: Test
 
     When I send 1 message to bot2 with subject saveDraft and body saveDraftBody
     When I click compose message
-    And I check the privacy status is undefined
+    And I check the privacy status is Undefined
     And I enter bot2 in the messageTo field
     And I enter TM154A in the messageSubject field
     And I enter longWord in the messageBody field
@@ -215,7 +215,7 @@ Feature: Test
     And I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with longWord
-    And I check the privacy status is secure
+    And I check the privacy status is Encrypted
     And I discard the message
     And I go back to the Inbox
 
@@ -224,7 +224,7 @@ Feature: Test
 #Summary: This Cucumber test checks the encryption and privacy status of a message sent to a bot, verifies the message contents and then replies to it with additional text.
 #Description: This Cucumber test is a set of steps that a series of actions to test the behavior of an email client. The test focuses on the encryption and privacy features of the email client, and involves sending and receiving emails to different contacts, and checking their privacy status. The test also involves comparing the message body with pre-defined values from a JSON file.
 #
-#The test begins by selecting an account and clicking on the compose message button. The privacy status is then checked to ensure that it is undefined. The user then sends a message to bot with a specific subject and body, and the privacy status is checked again to ensure that it is secure. The user then sends another message to bot1 with a different subject and body, and the privacy status is checked again to ensure that it is still secure.
+#The test begins by selecting an account and clicking on the compose message button. The privacy status is then checked to ensure that it is undefined. The user then sends a message to bot with a specific subject and body, and the privacy status is checked again to ensure that it is Encrypted. The user then sends another message to bot1 with a different subject and body, and the privacy status is checked again to ensure that it is still secure.
 #
 #The test then involves clicking on the last message received, and checking the privacy status again, followed by replying to the message and checking the privacy status once more. The user then enters some additional text in the message subject and body fields, and clicks the send message button. Finally, the user goes back to the inbox and waits for a new message.
   Scenario: Cucumber Mail from new contact encrypted
@@ -233,22 +233,22 @@ Feature: Test
     And I send 1 message to bot1 with subject mailFromNewContactEncryptedBody and body MailFromNewContactEncryptedBody
     And I click the last message received
     Then I compare messageBody from json file with MailFromNewContactEncryptedBody
-    And I check the privacy status is secure
+    And I check the privacy status is Encrypted
     When I click reply message
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     And I click the send message button
     And I go back to the Inbox
     And I wait for the new message
  
 
 #Summary: This Cucumber test involves testing whether an email message is correctly encrypted using the Planck encryption protocol. The test involves sending a message to a bot with a specific subject and body, verifying that the message is encrypted using Planck, replying to the message and checking if the privacy status is still secure, and finally comparing the planck rating with a value from a JSON file.
-#Description: This Cucumber test is testing the email encryption functionality of an email client. The test includes several steps such as selecting the account, sending an encrypted message to a bot with a specific subject and body, clicking on the last received message, clicking on reply message, checking the privacy status, and comparing a rating string from a JSON file. The test appears to be checking whether the email encryption and decryption process is functioning correctly and whether the privacy status is secure.
+#Description: This Cucumber test is testing the email encryption functionality of an email client. The test includes several steps such as selecting the account, sending an encrypted message to a bot with a specific subject and body, clicking on the last received message, clicking on reply message, checking the privacy status, and comparing a rating string from a JSON file. The test appears to be checking whether the email encryption and decryption process is functioning correctly and whether the privacy status is Encrypted.
   Scenario: Cucumber: Ensure Mails are encrypted when Planck says so
 
     And I send 1 message to bot1 with subject mailsEncryptedWhenPlanckSaysSo and body MailsAreEncryptedWhen_Planck_saysSo
     And I click the last message received
     And I click reply message
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I click the send message button
     And I press back
     And I wait for the message and click it
@@ -266,17 +266,17 @@ Feature: Test
   Scenario: Cucumber Mail to existing contact is encrypted
 
     And I click compose message
-    Then I check the privacy status is undefined
+    Then I check the privacy status is Undefined
     When I send 1 message to bot1 with subject TM-10 and body TM-10
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I enter empty in the messageTo field
-    Then I check the privacy status is undefined
+    Then I check the privacy status is Undefined
     When I send 1 message to bot1 with subject TM-10A and body TM-10Abody
     And I go to the sent folder
     And I click the last message received
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     And I compare messageBody with TM-10Abody
 
 
@@ -285,35 +285,35 @@ Feature: Test
   Scenario: Cucumber Mail to multiple contacts encrypted
 
     And I click compose message
-    Then I check the privacy status is undefined
+    Then I check the privacy status is Undefined
     When I send 1 message to bot1 with subject TM-11 and body TM-11
     And I click the last message received
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I press back
     And I click compose message
     And I send 1 message to bot2 with subject TM-11A and body TM-11A
     And I click the last message received
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I press back
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I enter TM-11B in the messageSubject field
     And I enter TM-11B in the messageBody field
     And I enter empty in the messageTo field
-    Then I check the privacy status is undefined
+    Then I check the privacy status is Undefined
     When I enter bot2 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     And I enter TM-11C in the messageSubject field
     And I enter TM-11CBody in the messageBody field
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     And I compare messageBody with TM-11CBody
     And I go back to the Inbox
 
@@ -331,22 +331,22 @@ Feature: Test
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I enter bot5 in the messageTo field
-    Then I check the privacy status is unsecure
+    Then I check the privacy status is NotEncrypted
     When I enter TM-12B in the messageSubject field
     And I enter TM-12B in the messageBody field
     And I enter empty in the messageTo field
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I enter bot5 in the messageTo field
-    Then I check the privacy status is unsecure
+    Then I check the privacy status is NotEncrypted
      When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check the privacy status is unsecure
+    Then I check the privacy status is NotEncrypted
     And I compare messageBody with TM-12B
 
 
@@ -361,7 +361,7 @@ Feature: Test
   Scenario: Cucumber Special Characters
 
     And I click compose message
-    Then I check the privacy status is undefined
+    Then I check the privacy status is Undefined
     When I enter bot2 in the messageTo field
     And I enter Special1 in the messageSubject field
     And I enter specialCharacters in the messageBody field
@@ -444,7 +444,7 @@ Feature: Test
 
 
 #Summary: This Cucumber test involves sending an email with an attachment, verifying the privacy status, and checking the contents of the email and attachment.
-#Description: This Cucumber test involves sending an email with an attachment and verifying that the privacy status of the message is secure. The test begins with selecting an account and composing a message. The user sends a message to a bot, attaches a PDF file, and verifies the privacy status of the message. The user then sends a second message, attaches another file, and verifies the privacy status of the message. Finally, the user compares the message body of the second message with a pre-defined JSON file and opens the attached file.
+#Description: This Cucumber test involves sending an email with an attachment and verifying that the privacy status of the message is Encrypted. The test begins with selecting an account and composing a message. The user sends a message to a bot, attaches a PDF file, and verifies the privacy status of the message. The user then sends a second message, attaches another file, and verifies the privacy status of the message. Finally, the user compares the message body of the second message with a pre-defined JSON file and opens the attached file.
   Scenario: Cucumber Attachment Receive Attachments One File
 
     When I click compose message
@@ -454,10 +454,10 @@ Feature: Test
     And I enter TM-130 in the messageSubject field
     And I enter attach1File in the messageBody field
     And I attach PDF
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I click the send message button
     And I wait for the message and click it
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     And I compare messageBody from json file with attach1File
     And I open 1 attached files
 
@@ -475,19 +475,19 @@ Feature: Test
     And I attach PDF
     And I attach MSoffice
     And I attach picture
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     When I click the send message button
     And I wait for the message and click it
-    Then I check the privacy status is secure
+    Then I check the privacy status is Encrypted
     And I open 3 attached files
 
 
     #Summary: This Cucumber test describes a scenario where the user creates and saves two drafts of messages, one with an attached MS Office file and the other with an attached picture. The user then navigates to the drafts folder, selects the first draft, checks its content, attachment, and privacy status, and repeats the same for the second draft.
 #Description: This Cucumber test scenario involves a series of actions related to composing, saving, and checking drafts in an email application. The test starts with the selection of an account and the clicking of the compose message button. Then, it sends a message to bot, followed by another message to another bot. Both messages have attachments - the first has MSoffice attached, and the second has a picture attached. After attaching the files, the test saves both messages as drafts.
 #
-#The test then goes to the drafts folder and checks the body of the message against the text that was entered while drafting. Additionally, it verifies that the attachments are present in the draft and that the privacy status is secure.
+#The test then goes to the drafts folder and checks the body of the message against the text that was entered while drafting. Additionally, it verifies that the attachments are present in the draft and that the privacy status is Encrypted.
 #
-#Next, the test goes back to the drafts folder this time to check the details of the first message that was drafted. The test checks the message body against the text that was entered while drafting, verifies that MSoffice is attached in the draft, and again checks that the privacy status is secure. Finally, the test goes back to the drafts folder.
+#Next, the test goes back to the drafts folder this time to check the details of the first message that was drafted. The test checks the message body against the text that was entered while drafting, verifies that MSoffice is attached in the draft, and again checks that the privacy status is Encrypted. Finally, the test goes back to the drafts folder.
 #
 #Overall, the test scenario involves the use of various email features, including composing and sending messages, attaching files, saving drafts, and verifying that the privacy settings are secure.
   Scenario: Cucumber Save Draft
@@ -510,12 +510,12 @@ Feature: Test
     And I click message at position 1
     Then I compare messageBody with saveDraft2
     And I check picture is attached in draft
-    And I check the privacy status is secure
+    And I check the privacy status is Encrypted
     When I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with saveDraft1
     And I check MSoffice is attached in draft
-    And I check the privacy status is secure
+    And I check the privacy status is Encrypted
     And I go to the drafts folder
 
 

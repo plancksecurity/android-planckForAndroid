@@ -1567,61 +1567,34 @@ public class CucumberTestSteps {
     private void checkPrivacyStatus(String status) {
         waitForIdle();
         switch (status) {
-            case "unsecure":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
-                }
+            case "NotEncrypted":
                 testUtils.assertStatus(Rating.pEpRatingUnencrypted);
                 return;
-            case "secure":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_encrypted")));
-                }
+            case "Encrypted":
                 testUtils.assertStatus(Rating.pEpRatingReliable);
                 return;
-            case "basic_protection":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_encrypted")));
-                }
+            case "MediaKey":
                 testUtils.assertStatus(Rating.pEpRatingMediaKeyProtected);
                 return;
-            case "secure&trusted":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_trusted")));
-                }
+            case "Trusted":
                 testUtils.assertStatus(Rating.pEpRatingTrusted);
                 return;
-            case "weak_protection":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_weakly_encrypted")));
-                }
+            case "WeaklyEncrypted":
                 testUtils.assertStatus(Rating.pEpRatingUnreliable);
                 return;
-            case "mistrusted":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_dangerous")));
-                }
+            case "Dangerous":
                 testUtils.assertStatus(Rating.pEpRatingMistrust);
                 return;
-            case "cannot_decrypt":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_cannot_decrypt")));
-                }
+            case "CannotDecrypt":
                 testUtils.assertStatus(Rating.pEpRatingCannotDecrypt);
                 return;
-            case "under_attack":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_dangerous")));
-                }
+            case "UnderAttack":
                 testUtils.assertStatus(Rating.pEpRatingUnderAttack);
                 return;
-            case "broken":
-                if (pep_enable_privacy_protection) {
-                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_dangerous")));
-                }
+            case "Broken":
                 testUtils.assertStatus(Rating.pEpRatingB0rken);
                 return;
-            case "undefined":
+            case "Undefined":
                 if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
                     return;
                 }

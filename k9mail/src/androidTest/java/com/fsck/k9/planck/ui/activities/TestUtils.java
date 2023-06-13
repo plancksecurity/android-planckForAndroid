@@ -2220,25 +2220,15 @@ public class TestUtils {
         assertMessageStatus(rating, status);
     }
 
-    public void assertStatus(Rating rating){
-        int statusColor;
+    public void assertStatus(Rating rating) {
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
         }
-        statusColor = getSecurityStatusDrawableColor(rating);
-        if (statusColor == -10) {
-            if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                fail("Wrong Status, it should be empty");
-            }
-        } else {
-            int value = rating.value;
-            int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
-
-            //int color = R.color.compose_unsecure_delivery_warning;
-            assertsIconColor("securityStatusIcon", color);
-            viewIsDisplayed(R.id.securityStatusIcon);
-            assertSecurityStatusText(rating);
-        }
+        int value = rating.value;
+        int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+        assertsIconColor("securityStatusIcon", color);
+        viewIsDisplayed(R.id.securityStatusIcon);
+        assertSecurityStatusText(rating);
     }
     public void assertMessageStatus(Rating rating, String status){
         int statusColor;
@@ -2483,7 +2473,6 @@ public class TestUtils {
     public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
         waitForIdle();
-        Rating [] statusRating = new Rating[1];
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
