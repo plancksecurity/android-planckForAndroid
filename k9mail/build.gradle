@@ -30,7 +30,7 @@ apply from: '../gradle/plugins/utils/addaccount.gradle'
 apply from: '../gradle/plugins/cucumber.gradle'
 apply from: '../gradle/plugins/customTest.gradle'
 try {
-    apply from: '../gradle/plugins/mdmDemoConfig.gradle'
+    apply from: '../gradle/plugins/customConfig.gradle'
 } catch(Exception ignored) {}
 
 if (rootProject.testCoverage) {
@@ -245,9 +245,11 @@ android {
             applicationIdSuffix ".enterprise"
         }
 
-        endUser {
-            buildConfigField "boolean", "IS_ENTERPRISE", "false"
-            dimension "type"
+        if (isEndUserFlavorEnabled()) {
+            endUser {
+                buildConfigField "boolean", "IS_ENTERPRISE", "false"
+                dimension "type"
+            }
         }
 
         if (hasMdmDemoProperties()) {
@@ -286,7 +288,9 @@ android {
     buildTypes {
         release {
             if (project.hasProperty("storeFile")) {
-                productFlavors.endUser.signingConfig signingConfigs.endUserRelease
+                if (isEndUserFlavorEnabled()) {
+                    productFlavors.endUser.signingConfig signingConfigs.endUserRelease
+                }
                 if (hasMdmDemoProperties() && demoUseEndUserSigningConfig) {
                     productFlavors.mdmDemo.signingConfig signingConfigs.endUserRelease
                 }
@@ -446,9 +450,13 @@ afterEvaluate {
     }
 }
 
-boolean hasMdmDemoProperties() {
+private boolean hasMdmDemoProperties() {
     return project.hasProperty("demoAppVersionNameSuffix") &&
             project.hasProperty("demoAppIdSuffix") &&
             project.hasProperty("demoVersionCode") &&
             project.hasProperty("demoUseEndUserSigningConfig")
+}
+
+private boolean isEndUserFlavorEnabled() {
+    return project.findProperty("enableEndUser") ?: false
 }
