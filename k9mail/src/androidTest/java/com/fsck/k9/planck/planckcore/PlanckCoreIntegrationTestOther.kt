@@ -9,11 +9,14 @@ import foundation.pEp.jniadapter.CommType
 import foundation.pEp.jniadapter.Engine
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Message
+import foundation.pEp.jniadapter.Rating
 import foundation.pEp.jniadapter.Sync
 import foundation.pEp.jniadapter.SyncHandshakeSignal
 import foundation.pEp.jniadapter.exceptions.pEpIllegalValue
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.AfterClass
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -107,6 +110,54 @@ class PlanckCoreIntegrationTestOther {
             planckCore.encrypt_message(message, null, Message.EncFormat.PEP)
         }
         planckCore.close()
+    }
+
+    @Test
+    fun `step4 decrypt message from myself`() {
+        planckCore = Engine()
+        configureCore()
+
+
+        var myIdentity = createIdentity("coretest01@test.ch", "coretest01")
+        myIdentity.setAsMyself()
+        assertEquals(true, myIdentity.me)
+        assertEquals(PlanckProvider.PLANCK_OWN_USER_ID, myIdentity.user_id)
+        myIdentity = myself(myIdentity)
+
+        val message = Message()
+        message.dir = Message.Direction.Outgoing
+        message.from = myIdentity
+        message.to = Vector(listOf(myIdentity))
+
+        Timber.e("$TAG message before encryption: ${message.print()}")
+
+
+        val encryptedMessage = planckCore.encrypt_message(message, null, Message.EncFormat.PEP)
+
+        val decreturn = planckCore.decrypt_message(encryptedMessage, Vector(), 0)
+        val decryptedMessage = decreturn.dst
+        planckCore.close()
+
+
+        Timber.e("$TAG decrypted message: ${decryptedMessage.print()}")
+        assertNull(decryptedMessage.attachments)
+        assertEquals("p≡p", decryptedMessage.shortmsg)
+
+        val optfields = decryptedMessage.optFields
+        assertEquals(5, optfields.size)
+        assertEquals("X-pEp-Version", optfields[0].first)
+        assertEquals("3.3", optfields[0].second)
+        assertEquals("X-pEp-Message-Version", optfields[1].first)
+        assertEquals("3.3", optfields[1].second)
+        assertEquals("X-pEp-Sender-FPR", optfields[2].first)
+        assertTrue(optfields[2].second.isNotBlank())
+        assertEquals("X-EncStatus", optfields[3].first)
+        assertEquals("trusted_and_anonymized", optfields[3].second) // from desing this rating is supposed to be just "Trusted"
+        assertEquals("X-KeyList", optfields[4].first)
+        assertEquals(2, optfields[4].second.split(",").size)
+        assertEquals(Rating.pEpRatingTrustedAndAnonymized, decreturn.rating) // from desing this rating is supposed to be just "Trusted"
+
+        assertEquals(Message.EncFormat.None, decryptedMessage.encFormat)
     }
 
     private fun myself(identity: Identity): Identity {
