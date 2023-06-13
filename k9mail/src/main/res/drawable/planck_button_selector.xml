@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:drawable="@color/colorAccent" android:state_selected="true"></item>
-    <item android:drawable="@color/planck_no_color" android:state_enabled="false"></item>
+    <item android:drawable="@color/planck_widget_disabled_state_color" android:state_enabled="false"></item>
     <item android:drawable="@color/colorAccent" android:state_enabled="true"></item>
 
 </selector>
