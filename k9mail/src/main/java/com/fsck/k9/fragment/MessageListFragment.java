@@ -921,7 +921,7 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
     }
 
     private void initializePullToRefresh() {
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.planck_green),
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary),
                 getResources().getColor(R.color.planck_yellow),
                 getResources().getColor(R.color.planck_red));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
