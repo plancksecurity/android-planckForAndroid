@@ -25,7 +25,7 @@
 
     <color name="planck_gray">#9e9e9e</color>
     <color name="planck_no_color">@color/planck_gray</color>
-    <color name="planck_green">@color/colorPrimary</color>
+    <color name="planck_green">#4caf50</color>
     <color name="planck_yellow">#ffc107</color>
     <color name="planck_red">@color/compose_unsecure_delivery_warning</color>
     <color name="white">#FFFFFF</color>
