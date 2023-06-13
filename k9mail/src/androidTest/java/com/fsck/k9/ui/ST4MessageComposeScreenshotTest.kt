@@ -1,20 +1,18 @@
 package com.fsck.k9.ui
-/*
+
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-@Ignore("Only to be run via ./gradlew generateScreenshots")
-class MessageComposeScreenshotTest : BaseScreenshotTest() {
+class ST4MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun replyFirstInboxMessage() {
@@ -29,7 +27,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
         Espresso.closeSoftKeyboard()
         openRecipientsLayout()
         openOptionsMenu()
-        longClickStatus()
+        //longClickStatus()
     }
 
     private fun openEmptyCompose() {
@@ -84,4 +82,4 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
         Espresso.pressBack()
     }
 
-}*/
+}

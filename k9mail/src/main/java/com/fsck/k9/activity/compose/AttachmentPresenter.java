@@ -30,10 +30,11 @@ public class AttachmentPresenter {
     private static final String STATE_KEY_ATTACHMENTS = "com.fsck.k9.activity.MessageCompose.attachments";
     private static final String STATE_KEY_WAITING_FOR_ATTACHMENTS = "waitingForAttachments";
     private static final String STATE_KEY_NEXT_LOADER_ID = "nextLoaderId";
+    private static final String STATE_KEY_TOTAL_LOADERS = "totalLoaders";
 
     private static final String LOADER_ARG_ATTACHMENT = "attachment";
     private static final int LOADER_ID_MASK = 1 << 6;
-    private static final int MAX_TOTAL_LOADERS = LOADER_ID_MASK - 1;
+    public static final int MAX_TOTAL_LOADERS = LOADER_ID_MASK - 1;
     private static final int REQUEST_CODE_ATTACHMENT_URI = 1;
     public static final int ATTACHMENTS_MAX_ALLOWED_MB = 25;
     private static final int ATTACHMENTS_MAX_ALLOWED_SIZE = ATTACHMENTS_MAX_ALLOWED_MB * 1000 * 1000;
@@ -49,6 +50,8 @@ public class AttachmentPresenter {
     private LinkedHashMap<Uri, Attachment> attachments;
     private int nextLoaderId = 0;
     private WaitingAction actionToPerformAfterWaiting = WaitingAction.NONE;
+    private boolean shouldShowTooManyAttachmentsWarning;
+    private int totalLoaders;
 
 
     public AttachmentPresenter(Context context, AttachmentMvpView attachmentMvpView, LoaderManager loaderManager,
@@ -65,12 +68,14 @@ public class AttachmentPresenter {
         outState.putString(STATE_KEY_WAITING_FOR_ATTACHMENTS, actionToPerformAfterWaiting.name());
         outState.putParcelableArrayList(STATE_KEY_ATTACHMENTS, createAttachmentList());
         outState.putInt(STATE_KEY_NEXT_LOADER_ID, nextLoaderId);
+        outState.putInt(STATE_KEY_TOTAL_LOADERS, totalLoaders);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         actionToPerformAfterWaiting = WaitingAction.valueOf(
                 savedInstanceState.getString(STATE_KEY_WAITING_FOR_ATTACHMENTS));
         nextLoaderId = savedInstanceState.getInt(STATE_KEY_NEXT_LOADER_ID);
+        totalLoaders = savedInstanceState.getInt(STATE_KEY_TOTAL_LOADERS);
 
         ArrayList<Attachment> attachmentList = savedInstanceState.getParcelableArrayList(STATE_KEY_ATTACHMENTS);
         // noinspection ConstantConditions, we know this is set in onSaveInstanceState
@@ -139,6 +144,11 @@ public class AttachmentPresenter {
         }
 
         int loaderId = getNextFreeLoaderId();
+        if (loaderId < 0) {
+            showTooManyAttachmentsWarning();
+            return;
+        }
+        shouldShowTooManyAttachmentsWarning = true;
         Attachment attachment = Attachment.createAttachment(
                 attachmentViewInfo.internalUri, loaderId, attachmentViewInfo.mimeType);
         attachment = attachment.deriveWithMetadataLoaded(
@@ -153,9 +163,21 @@ public class AttachmentPresenter {
         }
 
         int loaderId = getNextFreeLoaderId();
+        if (loaderId < 0) {
+            showTooManyAttachmentsWarning();
+            return;
+        }
+        shouldShowTooManyAttachmentsWarning = true;
         Attachment attachment = Attachment.createAttachment(uri, loaderId, contentType);
 
         addAttachmentAndStartLoader(attachment);
+    }
+
+    private void showTooManyAttachmentsWarning() {
+        if (shouldShowTooManyAttachmentsWarning) {
+            shouldShowTooManyAttachmentsWarning = false;
+            attachmentMvpView.showTooManyAttachmentsFeedback();
+        }
     }
 
     public boolean loadNonInlineAttachments(MessageViewInfo messageViewInfo) {
@@ -182,6 +204,10 @@ public class AttachmentPresenter {
         if (isMissingParts) {
             attachmentMvpView.showMissingAttachmentsPartialMessageWarning();
         }
+    }
+
+    public void attachmentRemoved() {
+        totalLoaders --;
     }
 
     private void addAttachmentAndStartLoader(Attachment attachment) {
@@ -219,9 +245,10 @@ public class AttachmentPresenter {
     }
 
     private int getNextFreeLoaderId() {
-        if (nextLoaderId >= MAX_TOTAL_LOADERS) {
-            throw new AssertionError("more than " + MAX_TOTAL_LOADERS + " attachments? hum.");
+        if (totalLoaders >= MAX_TOTAL_LOADERS) {
+            return -1;
         }
+        totalLoaders ++;
         return LOADER_ID_MASK | nextLoaderId++;
     }
 
@@ -402,6 +429,7 @@ public class AttachmentPresenter {
 
         void showMissingAttachmentsPartialMessageWarning();
         void showAttachmentsTooBigFeedback();
+        void showTooManyAttachmentsFeedback();
     }
 
     public interface AttachmentsChangedListener {

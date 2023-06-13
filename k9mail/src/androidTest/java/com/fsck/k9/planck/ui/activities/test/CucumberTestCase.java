@@ -45,24 +45,30 @@ import io.cucumber.junit.CucumberOptions;
 // (this class is in '...cucumber.test' and glue is in '...cucumber.steps')
 @Ignore("Only to be run in Cucumber")
 public class CucumberTestCase extends CucumberAndroidJUnitRunner {
-        private static final String ARG_USE_CUCUMBER = "useCucumber";
+        private static final String ARG_TEST_TYPE = "testType";
         private static final String ARG_FILTER = "filter";
         @Override
         public void onCreate(Bundle bundle) {
                 Bundle args = bundle != null
                         ? bundle
                         : new Bundle();
-                boolean useCucumber = Boolean.parseBoolean(
-                        args.getString(ARG_USE_CUCUMBER, "false")
-                ) || BuildConfig.USE_CUCUMBER;
-                args.remove(ARG_USE_CUCUMBER);
+                TestType testType = TestType.valueOf(args.getString(ARG_TEST_TYPE, TestType.normal.name()));
+                args.remove(ARG_TEST_TYPE);
                 args.putString(
                         CucumberAndroidJUnitArguments.Args.USE_DEFAULT_ANDROID_RUNNER,
-                        String.valueOf(!useCucumber)
+                        String.valueOf(testType != TestType.cucumber)
                 );
-                String filterClassName = useCucumber
-                        ? CucumberTestFilter.class.getName()
-                        : NonCucumberTestFilter.class.getName();
+                String filterClassName;
+                switch (testType) {
+                        case cucumber:
+                                filterClassName = CucumberTestFilter.class.getName();
+                                break;
+                        case screenshot:
+                                filterClassName = ScreenshotTestFilter.class.getName();
+                                break;
+                        default:
+                                filterClassName = NormalTestFilter.class.getName();
+                }
                 args.putString(ARG_FILTER, filterClassName);
 
                 super.onCreate(args);
@@ -71,5 +77,11 @@ public class CucumberTestCase extends CucumberAndroidJUnitRunner {
         @Override
         public Application newApplication(ClassLoader cl, String className, Context context) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
                 return super.newApplication(cl, TestK9.class.getName(), context);
+        }
+
+        enum TestType {
+                normal,
+                cucumber,
+                screenshot
         }
 }

@@ -4,12 +4,12 @@ task customTest() {
             "installed apps and/or on work profiles. " +
             "Requires for the app to be already installed."
 
-    String device = project.property("device")
-    String flavor = project.property("flavor")
-    boolean work = project.property("work").toBoolean()
-    boolean useFakeManager = project.property("useFakeManager").toBoolean()
-    boolean verbose = project.property("verbose").toBoolean()
-    boolean useCucumber = project.property("useCucumber").toBoolean()
+    String device = project.findProperty("device")
+    String flavor = project.findProperty("flavor") ?: "enterprisePlayStore"
+    boolean work = project.findProperty("work") ?: false
+    boolean useFakeManager = project.findProperty("useFakeManager") ?: false
+    boolean verbose = project.findProperty("verbose") ?: false
+    String testType = project.findProperty("testType") ?: "normal"
     String deviceText = device == null || device == "null" ? "" : " -s $device"
 
     if (verbose) {
@@ -17,7 +17,7 @@ task customTest() {
                 "\nwork = $work" +
                 "\nflavor = $flavor" +
                 "\nbuildType = ${android.testBuildType}" +
-                "\nuseCucumber = $useCucumber" +
+                "\ntestType = $testType" +
                 "\ndevice = $device" +
                 "\nuseFakeManager = $useFakeManager"
         )
@@ -89,8 +89,8 @@ task customTest() {
         execCommand("adb$deviceText shell rm /data/local/tmp/test.apk", verbose)
         // 7. Run test
         execCommand(
-                "adb$deviceText shell am instrument --user $user -w -m -e useCucumber " +
-                        "$useCucumber -e package com -e debug false " +
+                "adb$deviceText shell am instrument --user $user -w -m -e testType " +
+                        "$testType -e package com -e debug false " +
                         "com.fsck.k9.planck.ui.activities.test/com.fsck.k9.planck.ui.activities.test.CucumberTestCase",
                 verbose
         )

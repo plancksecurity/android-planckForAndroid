@@ -728,6 +728,10 @@
         <incoming uri="imap+ssl+://peptest.ch" username="$email" />
         <outgoing uri="smtp+tls+://peptest.ch" username="$email" />
     </provider>
+    <provider id="planckdev" label="planck dev" domain="planck.dev">
+        <incoming uri="imap+ssl+://planck.dev" username="$email" />
+        <outgoing uri="smtp+tls+://planck.dev" username="$email" />
+    </provider>
     <provider id="pepSecurity" label="pEp Security" domain="pep.security">
         <incoming uri="imap+ssl+://mail.pep.security" username="$email" />
         <outgoing uri="smtp+ssl+://mail.pep.security" username="$email" />

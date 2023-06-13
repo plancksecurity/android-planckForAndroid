@@ -1990,6 +1990,7 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
             View view = attachmentViews.get(attachment.uri);
             attachmentsView.removeView(view);
             attachmentViews.remove(attachment.uri);
+            attachmentPresenter.attachmentRemoved();
         }
 
         @Override
@@ -2015,6 +2016,17 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
                             AttachmentPresenter.ATTACHMENTS_MAX_ALLOWED_MB),
                     Toast.LENGTH_LONG)
                     .show();
+        }
+
+        @Override
+        public void showTooManyAttachmentsFeedback() {
+            Toast.makeText(MessageCompose.this,
+                    getString(
+                            R.string.compose_message_too_many_attachments,
+                            AttachmentPresenter.MAX_TOTAL_LOADERS
+                    ),
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     };
 
