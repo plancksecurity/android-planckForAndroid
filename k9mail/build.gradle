@@ -264,7 +264,7 @@ android {
                 versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
                 dimension "type"
                 applicationIdSuffix ".enterprise" + demoAppIdSuffix
-                versionCode demoVersionCode
+                versionCode project.findProperty("demoVersionCode") ?: buildConfig.versionCode
             }
         }
 
@@ -456,7 +456,6 @@ afterEvaluate {
 private boolean hasDemoProperties() {
     return project.hasProperty("demoAppVersionNameSuffix") &&
             project.hasProperty("demoAppIdSuffix") &&
-            project.hasProperty("demoVersionCode") &&
             project.hasProperty("demoUseEndUserSigningConfig")
 }
 
