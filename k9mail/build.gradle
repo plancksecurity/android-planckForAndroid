@@ -252,7 +252,7 @@ android {
             }
         }
 
-        if (hasMdmDemoProperties()) {
+        if (hasDemoProperties()) {
             mdmDemo {
                 buildConfigField "boolean", "IS_ENTERPRISE", "true"
                 versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
@@ -277,7 +277,7 @@ android {
         if (names.contains('enterprise') && names.contains('fDroid')) {
             variant.setIgnore(true)
         }
-        if (hasMdmDemoProperties()) {
+        if (hasDemoProperties()) {
             def type = variant.getBuildType().name
             if (names.contains('mdmDemo') && (names.contains('fDroid') || type != 'release')) {
                 variant.setIgnore(true)
@@ -291,13 +291,13 @@ android {
                 if (isEndUserFlavorEnabled()) {
                     productFlavors.endUser.signingConfig signingConfigs.endUserRelease
                 }
-                if (hasMdmDemoProperties() && demoUseEndUserSigningConfig) {
+                if (hasDemoProperties() && demoUseEndUserSigningConfig) {
                     productFlavors.mdmDemo.signingConfig signingConfigs.endUserRelease
                 }
             }
             if (project.hasProperty("enterpriseStoreFile")) {
                 productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
-                if (hasMdmDemoProperties() && !demoUseEndUserSigningConfig) {
+                if (hasDemoProperties() && !demoUseEndUserSigningConfig) {
                     productFlavors.mdmDemo.signingConfig signingConfigs.enterpriseRelease
                 }
             }
@@ -368,7 +368,7 @@ android {
             manifest.srcFile "src/androidTest/AndroidManifest.xml"
             assets.srcDirs = ['src/androidTest/assets']
         }
-        if (hasMdmDemoProperties()) {
+        if (hasDemoProperties()) {
             mdmDemo {
                 res.srcDirs += ['src/enterprise/res']
                 java.srcDirs += ['src/enterprise/java']
@@ -441,7 +441,7 @@ androidExtensions {
 }*/
 
 afterEvaluate {
-    if (hasMdmDemoProperties()) {
+    if (hasDemoProperties()) {
         tasks.findAll { task ->
             task.name.contains("MdmDemo") && (task.name.contains("test") || task.name.contains("lint"))
         }.forEach {
@@ -450,7 +450,7 @@ afterEvaluate {
     }
 }
 
-private boolean hasMdmDemoProperties() {
+private boolean hasDemoProperties() {
     return project.hasProperty("demoAppVersionNameSuffix") &&
             project.hasProperty("demoAppIdSuffix") &&
             project.hasProperty("demoVersionCode") &&
