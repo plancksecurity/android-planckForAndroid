@@ -2,6 +2,8 @@ Feature: Test
   Background:
     Given I created an account
 
+    #Summary: This test sends a message to a bot to reset the partner key. It then composes and sends a new message to the bot and verifies the privacy status before and after encryption.
+  #Description: The test scenario involves sending a message to a bot with the purpose of resetting the partner key. It then proceeds to compose and send a new message to the bot while checking the privacy status before and after encryption. The test focuses on verifying the functionality of resetting the key and ensuring the appropriate encryption of messages.
 
   Scenario: Cucumber Reset Own Key when Trusted Partner
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
@@ -46,6 +48,8 @@ Feature: Test
     And I wait for the message and click it
     Then I check the privacy status is Encrypted
 
+#Summary: This test sends a message to a bot, copies it to the "spam" folder, and performs comparisons on the message content.
+  #Description: The test involves sending a message to a bot with a specific subject and body. It verifies and interacts with the received message, including copying it to the "spam" folder. The test also navigates between the "spam" folder and the inbox, comparing message content and performing other navigation actions.
 
   Scenario: Cucumber Reset Partner Key
     When I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
