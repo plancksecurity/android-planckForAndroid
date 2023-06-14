@@ -41,15 +41,12 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <TextView
+    <ImageView
         android:id="@+id/provisioning_pep_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:fontFamily="@font/univers_lts_sd"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="96sp"
+        android:src="@drawable/planck_logo_light"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
