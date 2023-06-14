@@ -253,7 +253,7 @@ android {
         }
 
         if (hasDemoProperties()) {
-            mdmDemo {
+            demo {
                 buildConfigField "boolean", "IS_ENTERPRISE", "true"
                 versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
                 dimension "type"
@@ -279,7 +279,7 @@ android {
         }
         if (hasDemoProperties()) {
             def type = variant.getBuildType().name
-            if (names.contains('mdmDemo') && (names.contains('fDroid') || type != 'release')) {
+            if (names.contains('demo') && (names.contains('fDroid') || type != 'release')) {
                 variant.setIgnore(true)
             }
         }
@@ -292,13 +292,13 @@ android {
                     productFlavors.endUser.signingConfig signingConfigs.endUserRelease
                 }
                 if (hasDemoProperties() && demoUseEndUserSigningConfig) {
-                    productFlavors.mdmDemo.signingConfig signingConfigs.endUserRelease
+                    productFlavors.demo.signingConfig signingConfigs.endUserRelease
                 }
             }
             if (project.hasProperty("enterpriseStoreFile")) {
                 productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
                 if (hasDemoProperties() && !demoUseEndUserSigningConfig) {
-                    productFlavors.mdmDemo.signingConfig signingConfigs.enterpriseRelease
+                    productFlavors.demo.signingConfig signingConfigs.enterpriseRelease
                 }
             }
 
@@ -369,7 +369,7 @@ android {
             assets.srcDirs = ['src/androidTest/assets']
         }
         if (hasDemoProperties()) {
-            mdmDemo {
+            demo {
                 res.srcDirs += ['src/enterprise/res']
                 java.srcDirs += ['src/enterprise/java']
             }
@@ -390,7 +390,7 @@ android {
 
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
-    if (variant.name == "mdmDemoPlayStoreRelease") {
+    if (variant.name == "demoPlayStoreRelease") {
         variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.enterprise\""
         mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.enterprise"
         mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.enterprise"
@@ -402,7 +402,7 @@ private static void defineOAuthConfigs(variant) {
     //noinspection GroovyFallthrough
     switch (variant.name) {
         case "enterprisePlayStoreRelease":
-        case "mdmDemoPlayStoreRelease":
+        case "demoPlayStoreRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-qqglr562sp36brq2eis24oh8loiqi4rf.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"9f2d4a99-ebe1-48dc-9837-a45a7f3252ba\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.enterprise/%2B3NsYzN%2Fk%2Fj11m2ClpTTuvKL2eY%3D\""
@@ -443,7 +443,7 @@ androidExtensions {
 afterEvaluate {
     if (hasDemoProperties()) {
         tasks.findAll { task ->
-            task.name.contains("MdmDemo") && (task.name.contains("test") || task.name.contains("lint"))
+            task.name.contains("Demo") && (task.name.contains("test") || task.name.contains("lint"))
         }.forEach {
             it.enabled = false
         }
