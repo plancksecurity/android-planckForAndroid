@@ -4,8 +4,6 @@ import android.os.Bundle;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.planck.infrastructure.components.DaggerPlanckComponent;
 import com.fsck.k9.planck.infrastructure.components.PlanckComponent;
@@ -14,8 +12,6 @@ import com.fsck.k9.planck.infrastructure.modules.PlanckModule;
 
 public abstract class PlanckColoredActivity extends K9Activity {
     public static final String CURRENT_RATING = "current_color";
-    PlanckUIArtefactCache uiCache;
-    private PlanckProvider planck;
     private PlanckComponent planckComponent;
 
     @Override
@@ -30,19 +26,6 @@ public abstract class PlanckColoredActivity extends K9Activity {
     @Override
     public void search(String query) {
 
-    }
-
-    protected void initPep() {
-        uiCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
-        planck = ((K9) getApplication()).getPlanckProvider();
-    }
-
-    public PlanckProvider getPlanck() {
-        return planck;
-    }
-
-    public PlanckUIArtefactCache getUiCache() {
-        return uiCache;
     }
 
     private ApplicationComponent getApplicationComponent() {

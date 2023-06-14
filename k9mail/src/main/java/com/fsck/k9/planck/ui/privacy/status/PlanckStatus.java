@@ -24,8 +24,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.models.PlanckIdentity;
 import com.fsck.k9.planck.ui.PlanckColoredActivity;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
@@ -62,10 +60,6 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
 
     @Inject
     ToolBarCustomizer toolBarCustomizer;
-
-    @Inject
-    @MessageView
-    DisplayHtml displayHtml;
 
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
@@ -120,7 +114,6 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.planck_status);
         ButterKnife.bind(PlanckStatus.this);
-        initPep();
         final Intent intent = getIntent();
         if (intent != null && intent.hasExtra(SENDER)
                 && intent.hasExtra(MESSAGE_REFERENCE)) {
@@ -130,7 +123,7 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
             boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
             boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
             boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
-            presenter.initialize(this, getUiCache(), getPlanck(),displayHtml, isMessageIncoming,
+            presenter.initialize(this, isMessageIncoming,
                     new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }

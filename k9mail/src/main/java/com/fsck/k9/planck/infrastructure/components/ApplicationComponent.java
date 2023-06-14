@@ -8,6 +8,7 @@ import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.planck.infrastructure.modules.RestrictionsProviderModule;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
@@ -60,6 +61,7 @@ public interface ApplicationComponent {
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();
     PlanckProvider pEpProvider();
+    PlanckUIArtefactCache planckUiCache();
 
     @Component.Factory
     interface Factory {
