@@ -6,6 +6,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.activity.compose.RecipientSelectView;
 import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
@@ -13,24 +14,21 @@ import com.fsck.k9.planck.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.planck.infrastructure.modules.RestrictionsProviderModule;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
-import com.fsck.k9.planck.ui.PlanckColoredActivity;
 import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningActivity;
 import com.fsck.k9.planck.ui.fragments.PlanckFragment;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
-import com.fsck.k9.view.MessageHeader;
-import com.fsck.k9.activity.compose.RecipientSelectView;
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator;
-
+import com.fsck.k9.view.MessageHeader;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import security.planck.file.PlanckSystemFileLocator;
 import security.planck.mdm.ConfigurationManager;
 import security.planck.mdm.RestrictionsProvider;
 import security.planck.provisioning.ProvisioningManager;
-import security.planck.file.PlanckSystemFileLocator;
 import security.planck.provisioning.ProvisioningSettings;
 
 @Singleton
@@ -38,8 +36,6 @@ import security.planck.provisioning.ProvisioningSettings;
 public interface ApplicationComponent {
 
     void inject(K9Activity k9Activity);
-
-    void inject(PlanckColoredActivity planckColoredActivity);
 
     void inject(PlanckFragment planckFragment);
 
