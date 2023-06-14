@@ -2,6 +2,8 @@ Feature: Test
   Background:
     Given I created an account
 
+    #Summary: This test sends a message to a bot to reset the partner key. It then composes and sends a new message to the bot and verifies the privacy status before and after encryption.
+  #Description: The test scenario involves sending a message to a bot with the purpose of resetting the partner key. It then proceeds to compose and send a new message to the bot while checking the privacy status before and after encryption. The test focuses on verifying the functionality of resetting the key and ensuring the appropriate encryption of messages.
 
   Scenario: Cucumber Reset Partner Key
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
@@ -17,7 +19,8 @@ Feature: Test
     And I wait for the message and click it
     Then I check the privacy status is Encrypted
 
-
+#Summary: This test sends a message to a bot, copies it to the "spam" folder, and performs comparisons on the message content.
+  #Description: The test involves sending a message to a bot with a specific subject and body. It verifies and interacts with the received message, including copying it to the "spam" folder. The test also navigates between the "spam" folder and the inbox, comparing message content and performing other navigation actions.
 
   Scenario: Cucumber Copy email to a folder
     When I send 1 message to bot1 with subject copyThisMessage and body ThisMessageWillCopiedToAnotherFolder
@@ -31,6 +34,8 @@ Feature: Test
     And I press back
     And I go to inbox folder from navigation menu
 
+    #Summary: This test composes and sends a message with attachments. It copies the message to the "spam" folder, verifies privacy status, compares message content and opens attachments.
+  #Description: The test involves composing a message with attachments and sending it. The test then copies the message to the "spam" folder and checks the privacy status, compares the message content with expected values from a JSON file, and opens attachments.
 
   Scenario: Cucumber Copy email with attachment to a folder
     When I click compose message
@@ -55,7 +60,8 @@ Feature: Test
     And I press back
     And I go to inbox folder from navigation menu
 
-
+    #Summary: This test involves sending a message to a bot. It verifies the received message, moves it to the "spam" folder, and compares the message body with an expected value from a JSON file.
+  #Description: The test involves sending a message to a bot. It verifies and interacts with the received message, including moving it to the "spam" folder. The test also navigates between the "spam" folder and the inbox and comparing message content.
   Scenario: Cucumber Move email to a folder
     When I send 1 message to bot1 with subject moveThisMessage and body ThisMessageWillMovedToAnotherFolder
     And I click the last message received
@@ -67,6 +73,8 @@ Feature: Test
     And I press back
     And I go to inbox folder from navigation menu
 
+    #Summary: This test composes and sends a message with attachments, moves it to another folder, and: verifies the message content, checks privacy status and opens attachments.
+  #Description: This test scenario involves composing and sending a message with attachments, moving the message to the "spam" folder, and performing various actions on the message. It includes entering the sender's own email address, subject, and message content. Attachments such as a PDF, MS Office file, and a picture are added to the message. After sending the message, the test verifies that it has been received and clicks on it. The message is then moved to the "spam" folder, and the test navigates back to the inbox. Next, the test selects the "spam" folder and clicks on the first message within it. It compares the message body with an expected value stored in a JSON file and checks the privacy status. The test proceeds to open three attached files and then returns to the previous screen. Finally, the test navigates back to the inbox folder from the navigation menu. These steps outline the overall flow of the Cucumber test scenario.
 
   Scenario: Cucumber Move email with attachments to a folder
     When I click compose message
