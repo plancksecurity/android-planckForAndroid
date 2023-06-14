@@ -34,7 +34,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_button_compose_message"
-        style="@style/PepFabButton.ComposeMessage"
+        style="@style/PlanckFabButton.ComposeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
