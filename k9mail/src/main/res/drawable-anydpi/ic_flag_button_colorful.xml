@@ -2,5 +2,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/ic_flag_colored" android:state_checked="true" />
     <item android:drawable="@drawable/ic_flag_colored" android:state_pressed="true" />
-    <item android:drawable="@drawable/ic_flag_border_colored" /> 
+    <item android:drawable="@drawable/ic_flag_border_colored" />
 </selector>

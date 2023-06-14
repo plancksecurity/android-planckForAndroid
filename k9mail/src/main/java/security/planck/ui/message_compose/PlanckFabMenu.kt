@@ -97,7 +97,7 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     override fun showInitialState() {
         openCloseButton?.post {
             setTextHintsVisibility(GONE)
-            openCloseButton.setImageResource(R.drawable.ic_reply_green)
+            openCloseButton.setImageResource(R.drawable.ic_reply_colorful)
         }
     }
 
