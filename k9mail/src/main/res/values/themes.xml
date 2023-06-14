@@ -159,7 +159,7 @@
         <item name="iconAdavancedSettings">@drawable/ic_advanced_light</item>
 
         <item name="iconFlagButton">@drawable/ic_flag_button_light</item>
-        <item name="iconFlagButtonGreen">@drawable/ic_flag_button_green</item>
+        <item name="iconFlagButtonGreen">@drawable/ic_flag_button_colorful</item>
         <item name="flagCheckedIcon">@drawable/ic_flag_light</item>
         <item name="flagUncheckedIcon">@drawable/ic_flag_border_light</item>
         <item name="iconPlanckLogo">@drawable/planck_logo_green_60</item>
@@ -309,7 +309,7 @@
         <item name="iconplanckShield">@drawable/planck_status_green_dark</item>
         <item name="iconAdavancedSettings">@drawable/ic_advanced_dark</item>
         <item name="iconFlagButton">@drawable/ic_flag_button_dark</item>
-        <item name="iconFlagButtonGreen">@drawable/ic_flag_button_green</item>
+        <item name="iconFlagButtonGreen">@drawable/ic_flag_button_colorful</item>
         <item name="flagCheckedIcon">@drawable/ic_flag_dark</item>
         <item name="flagUncheckedIcon">@drawable/ic_flag_border_dark</item>
         <item name="iconPlanckLogo">@drawable/planck_logo_green_60</item>
