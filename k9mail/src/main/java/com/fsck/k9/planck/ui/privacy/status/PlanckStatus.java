@@ -24,8 +24,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.models.PlanckIdentity;
-import com.fsck.k9.planck.ui.PlanckColoredActivity;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.pedrogomez.renderers.ListAdapteeCollection;
@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
-public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
+public class PlanckStatus extends PlanckActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String SENDER = "isComposedKey";
@@ -51,6 +51,7 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     private static final String MESSAGE_REFERENCE = "messageReference";
     private static final String MESSAGE_DIRECTION = "messageDirection";
     public static final int REQUEST_STATUS = 5; // Do not use a value below 5 because it would collide with other constants in RecipientPresenter.
+    public static final String CURRENT_RATING = "current_color";
 
     @Inject
     PlanckStatusPresenter presenter;
@@ -134,7 +135,7 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     }
 
     @Override
-    protected void inject() {
+    public void inject() {
         getPlanckComponent().inject(this);
     }
 

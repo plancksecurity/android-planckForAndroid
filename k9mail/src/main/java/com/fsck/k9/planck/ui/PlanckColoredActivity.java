@@ -11,7 +11,6 @@ import com.fsck.k9.planck.infrastructure.modules.ActivityModule;
 import com.fsck.k9.planck.infrastructure.modules.PlanckModule;
 
 public abstract class PlanckColoredActivity extends K9Activity {
-    public static final String CURRENT_RATING = "current_color";
     private PlanckComponent planckComponent;
 
     @Override
