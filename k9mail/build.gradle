@@ -391,9 +391,9 @@ android {
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
     if (variant.name == "mdmDemoPlayStoreRelease") {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.test.enterprise\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.test.enterprise"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.test.enterprise"
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.enterprise\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.enterprise"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.enterprise"
     } else {
         variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
         mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId}"
@@ -405,12 +405,12 @@ private static void defineOAuthConfigs(variant) {
         case "mdmDemoPlayStoreRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-qqglr562sp36brq2eis24oh8loiqi4rf.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"9f2d4a99-ebe1-48dc-9837-a45a7f3252ba\""
-            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.test.enterprise/%2B3NsYzN%2Fk%2Fj11m2ClpTTuvKL2eY%3D\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.enterprise/%2B3NsYzN%2Fk%2Fj11m2ClpTTuvKL2eY%3D\""
             break
         case "enterprisePlayStoreDebug":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-oqh3d5elvui5gbndsjjo8o29ctgbe4sr.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"a3b9de0c-0201-4206-88e0-5155a4794f49\""
-            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.test.enterprise.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.enterprise.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
             break
         case "endUserPlayStoreRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-298svmr5klnl9dpdi655vjsn3d13miob.apps.googleusercontent.com\""
