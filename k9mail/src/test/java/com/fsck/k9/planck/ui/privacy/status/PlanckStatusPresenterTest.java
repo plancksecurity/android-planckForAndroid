@@ -147,7 +147,6 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
         runOnHandshakeResultAndStubCallback(false, false);
 
 
-        verify(planckStatusView).setRating(Rating.pEpRatingReliable);
         verify(planckStatusView).setupBackIntent(Rating.pEpRatingReliable, false, false);
     }
 
@@ -231,7 +230,7 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
 
         presenter.setForceUnencrypted(true);
 
-        verify(planckStatusView).updateToolbarColor(Rating.pEpRatingUnencrypted);
+
         verify(planckStatusView).setupBackIntent(any(), eq(true), eq(false));
     }
 

@@ -579,7 +579,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
         void onPEpPrivacyStatus() {
-            PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, planckRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+            PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
             launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
 
         //FIXME P4A-934: "Caused by: android.os.TransactionTooLargeException: data parcel size 1064328 bytes", not always reproducible.

@@ -870,7 +870,7 @@ public class MessageViewFragment extends PlanckFragment implements ConfirmationD
         refreshRecipients(getContext());
         if (force || PlanckUtils.isPepStatusClickable(planckUIArtefactCache.getRecipients(), pEpRating)) {
             String myAddress = mAccount.getEmail();
-            PlanckStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
+            PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
     }
 

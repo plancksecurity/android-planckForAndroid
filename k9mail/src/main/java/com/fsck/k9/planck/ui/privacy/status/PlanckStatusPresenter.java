@@ -175,7 +175,6 @@ public class PlanckStatusPresenter {
         if (localMessage != null) {
             localMessage.setPlanckRating(rating);
         }
-        view.setRating(rating);
         view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure);
     }
 
@@ -307,10 +306,6 @@ public class PlanckStatusPresenter {
 
     public void setForceUnencrypted(boolean forceUnencrypted) {
         this.forceUnencrypted = forceUnencrypted;
-        view.updateToolbarColor(forceUnencrypted
-                ? Rating.getByInt(Rating.pEpRatingUnencrypted.value)
-                : currentRating
-        );
         view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure);
     }
 
