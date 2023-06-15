@@ -455,8 +455,7 @@ afterEvaluate {
 
 private boolean hasDemoProperties() {
     return project.hasProperty("demoAppVersionNameSuffix") &&
-            project.hasProperty("demoAppIdSuffix") &&
-            project.hasProperty("demoUseEndUserSigningConfig")
+            project.hasProperty("demoAppIdSuffix")
 }
 
 private boolean isEndUserFlavorEnabled() {
