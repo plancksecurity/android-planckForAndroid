@@ -1678,6 +1678,7 @@ public class CucumberTestSteps {
 
     @And("^I test widgets$")
     public void I_test_widget() {
+        String brand = "planck";
         device.pressHome();
         BySelector selector = By.clazz("android.widget.TextView");
         BySelector horizontalScroll = By.clazz("android.widget.LinearLayout");
@@ -1691,16 +1692,16 @@ public class CucumberTestSteps {
             String text = "";
             switch (widgetToDrag) {
                 case 1:
-                    text = "p≡p Unread";
+                    text = brand + " Unread";
                     break;
                 case 2:
-                    text = "p≡p Message List";
+                    text = brand + " Message List";
                     break;
                 case 3:
-                    text = "p≡p Accounts";
+                    text = brand + " Accounts";
                     break;
                 default:
-                    text = "p≡p";
+                    text = brand;
                     break;
             }
             while (!testUtils.textExistsOnScreen("Widgets")) {
@@ -1726,7 +1727,7 @@ public class CucumberTestSteps {
                 boolean openWidgetMenu = true;
                 for (scroll = 1; scroll < 30; scroll++) {
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (openWidgetMenu && textView.getText().equals("p≡p")) {
+                        if (openWidgetMenu && textView.getText().equals(brand)) {
                             textView.click();
                             openWidgetMenu = false;
                             break;
@@ -1755,7 +1756,7 @@ public class CucumberTestSteps {
                     waitForIdle();
                     int elements = 0;
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (textView.getText() != null && textView.getText().equals("p≡p")) {
+                        if (textView.getText() != null && textView.getText().equals(brand)) {
                             textView.click();
                             waitForIdle();
                             int widgetPreview = 0;
