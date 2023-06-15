@@ -16,6 +16,7 @@ import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.models.PlanckIdentity;
 import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper;
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper;
@@ -69,18 +70,27 @@ public class PlanckStatusPresenter {
     };
 
     @Inject
-    PlanckStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PlanckIdentityMapper planckIdentityMapper) {
+    PlanckStatusPresenter(
+            PlanckProvider planckProvider,
+            PlanckUIArtefactCache cache,
+            @MessageView DisplayHtml displayHtml,
+            SimpleMessageLoaderHelper simpleMessageLoaderHelper,
+            PlanckIdentityMapper planckIdentityMapper
+    ) {
+        this.planckProvider = planckProvider;
+        this.cache = cache;
+        this.displayHtml = displayHtml;
         this.simpleMessageLoaderHelper = simpleMessageLoaderHelper;
         this.planckIdentityMapper = planckIdentityMapper;
     }
 
-    void initialize(PlanckStatusView planckStatusView, PlanckUIArtefactCache uiCache, PlanckProvider planckProvider,
-                    DisplayHtml displayHtml, boolean isMessageIncoming, Address senderAddress,
-                    boolean forceUnencrypted, boolean alwaysSecure) {
+    void initialize(PlanckStatusView planckStatusView,
+                    boolean isMessageIncoming,
+                    Address senderAddress,
+                    boolean forceUnencrypted,
+                    boolean alwaysSecure
+    ) {
         this.view = planckStatusView;
-        this.cache = uiCache;
-        this.planckProvider = planckProvider;
-        this.displayHtml = displayHtml;
         this.isMessageIncoming = isMessageIncoming;
         this.senderAddress = senderAddress;
         this.forceUnencrypted = forceUnencrypted;
@@ -175,7 +185,6 @@ public class PlanckStatusPresenter {
         if (localMessage != null) {
             localMessage.setPlanckRating(rating);
         }
-        view.setRating(rating);
         view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure);
     }
 
@@ -307,10 +316,6 @@ public class PlanckStatusPresenter {
 
     public void setForceUnencrypted(boolean forceUnencrypted) {
         this.forceUnencrypted = forceUnencrypted;
-        view.updateToolbarColor(forceUnencrypted
-                ? Rating.getByInt(Rating.pEpRatingUnencrypted.value)
-                : currentRating
-        );
         view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure);
     }
 

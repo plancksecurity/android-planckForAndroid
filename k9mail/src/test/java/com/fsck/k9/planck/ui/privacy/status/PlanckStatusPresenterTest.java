@@ -60,16 +60,20 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        presenter = new PlanckStatusPresenter(simpleMessageLoaderHelper,
-                identityMapper);
+        presenter = new PlanckStatusPresenter(
+                provider,
+                uiCache,
+                displayHtml,
+                simpleMessageLoaderHelper,
+                identityMapper
+        );
     }
 
     @Test
     public void shouldStartMessageLoaderWhenLoadMessage() {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initialize(planckStatusView, uiCache, provider, displayHtml, false,
-                senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(planckStatusView, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadMessage(new MessageReference("", "", "", null));
 
@@ -102,7 +106,7 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldExtractRatingWhenOnHandshakeResult() {
-        presenter.initialize(planckStatusView, uiCache, provider, displayHtml, true,
+        presenter.initialize(planckStatusView, true,
                 senderAddress, false, false);
         Identity identity = new Identity();
 
@@ -147,7 +151,6 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
         runOnHandshakeResultAndStubCallback(false, false);
 
 
-        verify(planckStatusView).setRating(Rating.pEpRatingReliable);
         verify(planckStatusView).setupBackIntent(Rating.pEpRatingReliable, false, false);
     }
 
@@ -190,7 +193,7 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
         when(uiCache.getRecipients()).thenReturn(recipients());
         when(identityMapper.mapRecipients(anyList())).thenReturn(mappedRecipients());
 
-        presenter.initialize(planckStatusView, uiCache, provider, displayHtml, isMessageIncoming,
+        presenter.initialize(planckStatusView, isMessageIncoming,
                 senderAddress, false, false);
 
         prepareAndRunOnHandshakeResult(trust);
@@ -219,25 +222,25 @@ public class PlanckStatusPresenterTest extends RobolectricTest {
     }
 
     private void runLoadRecipients() throws Exception {
-        presenter.initialize(planckStatusView, uiCache, provider, displayHtml,false,
+        presenter.initialize(planckStatusView, false,
                 senderAddress, false, false);
         prepareAndCallLoadRecipients();
     }
 
     @Test
     public void setForceUnencryptedCallsViewMethods() {
-        presenter.initialize(planckStatusView, uiCache, provider, displayHtml, true,
+        presenter.initialize(planckStatusView, true,
                 senderAddress, false, false);
 
         presenter.setForceUnencrypted(true);
 
-        verify(planckStatusView).updateToolbarColor(Rating.pEpRatingUnencrypted);
+
         verify(planckStatusView).setupBackIntent(any(), eq(true), eq(false));
     }
 
     @Test
     public void setAlwaysSecureCallsSetupBackIntent() {
-        presenter.initialize(planckStatusView, uiCache, provider, displayHtml, true,
+        presenter.initialize(planckStatusView, true,
                 senderAddress, false, false);
 
         presenter.setAlwaysSecure(true);

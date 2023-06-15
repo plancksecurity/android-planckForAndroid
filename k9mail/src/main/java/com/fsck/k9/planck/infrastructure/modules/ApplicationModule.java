@@ -8,6 +8,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.planck.DefaultDispatcherProvider;
 import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.threading.JobExecutor;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
@@ -73,5 +74,10 @@ public class ApplicationModule {
     @Provides
     @Singleton
     public DispatcherProvider provideDispatcherProvider() { return new DefaultDispatcherProvider(); }
+
+    @Provides
+    public PlanckUIArtefactCache provideUiCache(K9 application) {
+        return PlanckUIArtefactCache.getInstance(application);
+    }
 
 }
