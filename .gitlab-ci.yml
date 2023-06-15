@@ -107,6 +107,19 @@ build:
   script:
     - pwd
     - echo ${HOME}
+    - # Write config file for demo
+      echo -e """ext {\n
+        demoAppIdSuffix = '.demo'\n
+        demoAppVersionNameSuffix = '.demo'\n
+        demoUseEndUserSigningConfig = false\n
+        enableEndUser = false\n
+        demoKeyAlias = 'demo'\n
+        demoKeyPassword = '${DEMO_KEY_PASSWORD}'\n
+        demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')\n
+        demoStorePassword = '${DEMO_STORE_PASSWORD}'\n
+      }""" > gradle/plugins/customConfig.gradle
+    - echo "=== Custom gradle config for the demo release ==="
+    - cat gradle/plugins/customConfig.gradle
     - for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
