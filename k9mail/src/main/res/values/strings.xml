@@ -142,7 +142,6 @@
     <string name="clear_local_folder_action">Clear local messages</string>
     <string name="about_action">About</string>
     <string name="prefs_title">Settings</string>
-    <string name="action_user_manual">User manual</string>
     <string name="accounts_context_menu_title">Account options</string>
     <!-- Shown in place of the subject when a message has no subject. Showing this in parentheses is customary. -->
     <string name="general_no_subject">(No subject)</string>
@@ -1068,5 +1067,4 @@ You can keep this message and use it as a backup for your secret key. If you wan
     <string name="switch_off">Off</string>
     <string name="port_is_empty">Port can\'t be empty</string>
     <string name="port_is_out_of_range">The port is out of range</string>
-    <string name="rooted_device_error">Unsupported Operating System</string>
 </resources>
