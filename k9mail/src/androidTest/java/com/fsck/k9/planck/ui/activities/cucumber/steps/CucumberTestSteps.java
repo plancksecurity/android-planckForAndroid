@@ -472,8 +472,8 @@ public class CucumberTestSteps {
 
     private void textViewEditor(String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
-        String messageText = "";
-        int endOfLongMessage = 0;
+        String messageText;
+        int endOfLongMessage;
         while (!exists(onView(withId(viewId)))) {
             waitForIdle();
             TestUtils.swipeDownScreen();
@@ -1004,7 +1004,7 @@ public class CucumberTestSteps {
     }
 
     @When("^I switch (\\S+) Wi-Fi")
-    public void I_switch_wifi(String state) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+    public void I_switch_wifi(String state) throws IOException {
         switch (state){
             case "on":
                 testUtils.setWifi(true);
@@ -3019,6 +3019,7 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
+        waitForIdle();
         onView(withText(R.string.discard_action)).perform(click());
     }
 
