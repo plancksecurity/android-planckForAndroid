@@ -366,6 +366,7 @@ Feature: Test
 #The test then waits for the message to arrive, clicks on it, and compares the message body with the original message. It also checks the ability to view sent messages and compares the message body with the original message.
 #
 #Finally, the test goes to the inbox, composes a new message with the same special characters, sends the message, waits for it to arrive, clicks on it, and compares the message body with the original message.
+
   Scenario: Cucumber Special Characters
 
     And I click compose message
@@ -376,13 +377,12 @@ Feature: Test
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with specialCharacters
-    When I compare messageBody with specialCharacters
     And I press back
-    And I go to the sent folder
+    And I go to sent folder from navigation menu
     And I click the first message
     Then I compare messageBody with specialCharacters
     When I press back
-    And I select the inbox from the menu
+    And I go to inbox folder from navigation menu
     And I click compose message
     And I enter myself in the messageTo field
     And I enter Special2 in the messageSubject field
@@ -390,7 +390,6 @@ Feature: Test
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with specialCharacters
-
 
 
 #Summary: This Cucumber test involves removing all messages, sending a message with attachments containing special characters to bot5, and waiting for a new message.
