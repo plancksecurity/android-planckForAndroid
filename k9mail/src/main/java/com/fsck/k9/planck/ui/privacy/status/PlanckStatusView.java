@@ -13,8 +13,6 @@ public interface PlanckStatusView {
 
     void updateIdentities(List<PlanckIdentity> updatedIdentities);
 
-    void setRating(Rating planckRating);
-
     void showDataLoadError();
 
     void showResetPlanckDataFeedback();
@@ -28,8 +26,6 @@ public interface PlanckStatusView {
     void showMistrustFeedback(String username);
 
     void showItsOnlyOwnMsg();
-
-    void updateToolbarColor(Rating rating);
 
     void showResetPartnerKeyErrorFeedback();
     void showResetPartnerKeySuccessFeedback();
