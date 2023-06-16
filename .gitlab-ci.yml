@@ -109,10 +109,10 @@ build:
     - echo ${HOME}
     - # Write config file for demo
       echo -e """ext {\n
-        demoAppIdSuffix = '.demo'\n
-        demoAppVersionNameSuffix = '.demo'\n
-        demoUseEndUserSigningConfig = false\n
-        enableEndUser = false\n
+        demoAppIdSuffix = '${DEMO_APP_ID_SUFFIX}'\n
+        demoAppVersionNameSuffix = '${DEMO_APP_VERSION_NAME_SUFFIX}'\n
+        enableEndUser = ${ENABLE_END_USER}\n
+        appId = '${APP_ID}'\n
         demoKeyAlias = 'demo'\n
         demoKeyPassword = '${DEMO_KEY_PASSWORD}'\n
         demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')\n
