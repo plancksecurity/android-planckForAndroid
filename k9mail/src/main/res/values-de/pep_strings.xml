@@ -247,7 +247,6 @@
     <string name="pgp_key_import_confirmation_fingerprint_label">Der Fingerprint für den ausgewählten Key ist:</string>
     <string name="pgp_key_import_confirmation_dialog_question">Sind sich sicher dass Sie diesen Schlüssel importieren und nutzen wollen\?</string>
     <string name="pgp_key_import_confirmation_confirm">Ja</string>
-    <string name="pgp_key_import_confirmation_dialog_fingerprint_format"></string>
     <string name="pgp_key_import_confirmation_reject">Nein</string>
 
     <string name="calendar_event_time_content_desc">Datum und Zeit des Events</string>
@@ -287,48 +286,5 @@
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 wird von diesem Anbieter derzeit nicht unterstützt.</string>
     <string name="account_setup_failed_dlg_browser_not_found">planck konnte keinen Browser finden, der für den Zugriff auf Ihr Konto verwendet werden kann.</string>
     <string name="rooted_device_error">Nicht unterstütztes Betriebssystem</string>
-    <string name="export_action"></string>
-    <string name="post_notifications_first_explanation"></string>
-    <string name="post_notifications_snackbar_permission_rationale"></string>
-    <string name="post_notifications_permission_rationale_title"></string>
-    <string name="trustwords_title"></string>
-    <string name="fpr_title"></string>
-    <string name="fpr_actual_title"></string>
-    <string name="fpr_new_device_title"></string>
-    <string name="reset_partner_keys_confirmation_action"></string>
-    <string name="reset_partner_keys_try_again_action"></string>
-    <string name="reset_partner_keys_close_action"></string>
-    <string name="reset_partner_keys_successful_result"></string>
-    <string name="reset_partner_keys_failure"></string>
-    <string name="reset_partner_keys_title"></string>
-    <string name="reset_partner_keys_description"></string>
-    <string name="mdm_controlled_dialog_explanation"></string>
-    <string name="extra_key"></string>
-    <string name="support_settings_title"></string>
-    <string name="export_pep_support_data_preference_title"></string>
-    <string name="export_pep_support_data_dialog_title"></string>
-    <string name="export_pep_support_data_dialog_confirmation_msg"></string>
-    <string name="export_pep_support_data_dialog_failure_msg"></string>
-    <string name="export_pep_support_data_dialog_not_enough_space_msg"></string>
-    <string name="export_pep_support_data_dialog_success_msg"></string>
-    <string name="export_pep_support_data_dialog_image_success_content_desc"></string>
-    <string name="export_pep_support_data_dialog_image_failure_content_desc"></string>
-    <string name="use_trustwords_setting_title"></string>
-    <string name="use_trustwords_setting_description"></string>
-    <string name="account_setup_choose_auth_sign_in_with_microsoft"></string>
-    <string name="account_setup_choose_auth_sign_in_with_password"></string>
-    <string name="account_setup_oauth_title_retry_login"></string>
-    <string name="account_setup_oauth_description_retry_login"></string>
-    <string name="account_setup_failed_dlg_could_not_discover_mail_settings"></string>
-    <string name="account_select_auth_welcome_to"></string>
-    <string name="account_select_auth_please_select_the_option_to_sign_in"></string>
-    <string name="error_happened_restart_app"></string>
-    <string name="needs_your_permission_to_work"></string>
-    <string name="account_setup_failed_dlg_oauth_wrong_email_address"></string>
-    <string name="compose_single_recipient_handshake_banner"></string>
-    <plurals name="attachment_count">
-        <item quantity="one"></item>
-        <item quantity="other"></item>
-    </plurals>
 
 </resources>
