@@ -109,7 +109,7 @@
 
     <style name="planckStyleButton.Grey">
         <item name="colorControlHighlight">?attr/grayScaleColorOnBackground2</item>
-        <item name="colorButtonNormal">@color/planck_no_color</item>
+        <item name="colorButtonNormal">@color/planck_gray</item>
     </style>
 
     <style name="planckThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
