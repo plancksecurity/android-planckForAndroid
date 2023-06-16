@@ -39,7 +39,7 @@
     <color name="light_gray">#B8B8B8</color>
     <color name="dark_gray">#666666</color>
 
-    <color name="message_icons_color">#424242</color>
+    <color name="message_icons_color">@color/white</color>
 
     <color name="text_for_white_background">#212121</color>
     <color name="secondary_text_color">#757575</color>
