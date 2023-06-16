@@ -95,6 +95,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_reply_colorful" />
+        app:srcCompat="@drawable/ic_reply_planck" />
 
 </security.planck.ui.message_compose.PlanckFabMenu>
