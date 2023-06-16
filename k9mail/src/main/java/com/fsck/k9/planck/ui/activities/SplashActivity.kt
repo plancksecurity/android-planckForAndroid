@@ -10,7 +10,6 @@ class SplashActivity : AppCompatActivity(), SplashScreen {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         startActivity(Intent(this, ProvisioningActivity::class.java))
-        overridePendingTransition(0, 0);
         finish()
     }
 }

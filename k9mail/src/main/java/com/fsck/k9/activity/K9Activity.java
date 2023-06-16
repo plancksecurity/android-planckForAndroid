@@ -281,7 +281,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onPause() {
         super.onPause();
-        overridePendingTransition(0, 0);
         mBase.unregisterPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
             mBase.unregisterConfigurationManager();
