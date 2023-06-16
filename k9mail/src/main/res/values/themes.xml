@@ -172,13 +172,13 @@
         <item name="screenDefaultBackgroundColor">@color/white</item>
         <item name="defaultColorOnBackground">@color/black</item>
         <item name="grayScaleColorOnBackground1">@color/light_black</item>
-        <item name="grayScaleColorOnBackground2">@color/dark_gray</item>
+        <item name="grayScaleColorOnBackground2">@color/planck_gray</item>
         <item name="grayScaleColorOnBackground3">@color/gray</item>
         <item name="grayScaleColorOnBackground4">@color/light_gray</item>
         <item name="deleteEmailContainerBackground">@color/delete_email_container_background</item>
         <item name="archiveEmailContainerBackground">@color/archive_email_container_background</item>
 
-        <item name="introTextColor">@color/dark_gray</item>
+        <item name="introTextColor">@color/planck_gray</item>
         <item name="introHeaderTextColor">@color/light_black</item>
         <item name="introPrimaryColor">@color/colorPrimary</item>
         <item name="introSeparatorColor">@color/white</item>
@@ -214,7 +214,7 @@
         <item name="dialogBodyDefaultTextColor">?android:attr/textColorSecondary</item>
         <item name="resetAllAccountsDialogStyle">@style/ResetAllAccountsDialog.Light</item>
         <item name="intenseColorOnBackground">@color/black</item>
-        <item name="negativeButtonColor">@color/dark_gray</item>
+        <item name="negativeButtonColor">@color/planck_gray</item>
         <item name="editTextStyle">@style/EditTextStyle</item>
         <item name="selectAuthKeyIconColor">@color/select_auth_key_icon_color_light</item>
     </style>
