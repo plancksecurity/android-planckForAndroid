@@ -35,4 +35,3 @@ outData/
 gradle/plugins/customConfig.gradle
 
 *.hprof
-*.apk
