@@ -1097,6 +1097,4 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="remote_control_desc">Erlaube dieser App planck fernzusteuern und zu konfigurieren.</string>
     <string name="remote_control_label">planck Fernsteuerung</string>
     <string name="unread_widget_label">planck Ungelesen</string>
-    <string name="print_action"></string>
-    <string name="setting_theme_follow_system"></string>
 </resources>
