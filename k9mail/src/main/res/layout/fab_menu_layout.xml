@@ -27,10 +27,10 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabForward"
-        style="@style/PepFabButton"
+        style="@style/PlanckFabButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="?attr/colorPrimary"
+        android:tint="@color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/fabReplyAll"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,10 +53,10 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabReplyAll"
-        style="@style/PepFabButton"
+        style="@style/PlanckFabButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="?attr/colorPrimary"
+        android:tint="@color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/fabReply"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,10 +78,10 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabReply"
-        style="@style/PepFabButton"
+        style="@style/PlanckFabButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="?attr/colorPrimary"
+        android:tint="@color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/openCloseButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,11 +90,11 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/openCloseButton"
-        style="@style/PepFabButton"
+        style="@style/PlanckFabButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_reply_green" />
+        app:srcCompat="@drawable/ic_reply_planck" />
 
 </security.planck.ui.message_compose.PlanckFabMenu>

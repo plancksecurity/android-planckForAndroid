@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -124,8 +126,13 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
         requireView().background =
             ContextCompat.getDrawable(requireContext(), R.drawable.background_startup)
-        requireActivity().window.statusBarColor =
-            ContextCompat.getColor(requireContext(), R.color.startup_gradient_start)
+        val window: Window = requireActivity().window
+        val background = ContextCompat.getDrawable(requireActivity(), R.drawable.background_startup)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+
+        window.statusBarColor = ContextCompat.getColor(requireActivity(),android.R.color.transparent)
+        window.navigationBarColor = ContextCompat.getColor(requireActivity(),android.R.color.transparent)
+        window.setBackgroundDrawable(background)
         requireActivity().findViewById<View>(R.id.toolbar).isVisible = false
     }
 

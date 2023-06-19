@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="PepFabButton">
+    <style name="PlanckFabButton">
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
@@ -13,7 +13,7 @@
         <item name="pressedTranslationZ">2dp</item>
     </style>
 
-    <style name="PepFabButton.ComposeMessage">
+    <style name="PlanckFabButton.ComposeMessage">
         <item name="backgroundTint">?attr/compose_fab_background_tint</item>
     </style>
 

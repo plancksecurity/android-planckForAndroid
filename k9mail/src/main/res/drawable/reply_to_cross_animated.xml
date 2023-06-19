@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_reply_green">
+    android:drawable="@drawable/ic_reply_planck">
     <target
         android:name="path"
         android:animation="@anim/to_cross_icon" />
