@@ -17,7 +17,6 @@ import security.planck.permissions.PermissionRequester;
 import security.planck.ui.permissions.PlanckPermissionRequester;
 import security.planck.ui.resources.PlanckResourcesProvider;
 import security.planck.ui.resources.ResourcesProvider;
-import security.planck.ui.toolbar.PlanckToolbarCustomizer;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @Module
@@ -47,8 +46,8 @@ public class ActivityModule {
     }
 
     @Provides
-    ToolBarCustomizer providepEpToolbarCustomizer() {
-        return new PlanckToolbarCustomizer(activity);
+    ToolBarCustomizer provideToolbarCustomizer() {
+        return new ToolBarCustomizer(activity);
     }
 
     @Provides

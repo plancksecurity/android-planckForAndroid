@@ -165,6 +165,7 @@
         <item name="iconPlanckLogo">@drawable/planck_logo_green_60</item>
 
         <item name="toolbarDefaultColor">@color/colorPrimary</item>
+        <item name="statusbarDefaultColor">@color/colorPrimaryDark</item>
         <item name="messageViewToolbarColor">@color/white</item>
         <item name="messageViewStatusBarColor">@color/nav_contact_background</item>
         <item name="messageViewToolbarIconsColor">@color/light_black</item>
@@ -315,6 +316,7 @@
         <item name="iconPlanckLogo">@drawable/planck_logo_green_60</item>
 
         <item name="toolbarDefaultColor">@color/colorPrimary</item>
+        <item name="statusbarDefaultColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewStatusBarColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>

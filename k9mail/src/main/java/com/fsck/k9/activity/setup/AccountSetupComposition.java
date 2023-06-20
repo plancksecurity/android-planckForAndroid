@@ -17,6 +17,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 
+import security.planck.ui.toolbar.ToolBarCustomizer;
+
 public class AccountSetupComposition extends K9Activity {
 
     private static final String EXTRA_ACCOUNT = "account";
@@ -57,7 +59,7 @@ public class AccountSetupComposition extends K9Activity {
         bindViews(R.layout.account_setup_composition);
 
         initializeToolbar(true, R.string.account_settings_composition_title);
-        getToolbar().setBackgroundColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        new ToolBarCustomizer(this).setDefaultToolbarColor();
         /*
          * If we're being reloaded we override the original account with the one
          * we saved

@@ -31,12 +31,7 @@ public abstract class PlanckFragment extends Fragment {
     protected abstract void inject();
 
     protected void setupPlanckFragmentToolbar() {
-        setupCustomPlanckFragmentToolbar(ThemeManager.ToolbarType.DEFAULT);
-    }
-
-    protected void setupCustomPlanckFragmentToolbar(ThemeManager.ToolbarType toolbarType) {
-        getToolbarCustomizer().setStatusBarPlanckColor(
-                ThemeManager.getToolbarColor(requireContext(), toolbarType));
+        getToolbarCustomizer().setDefaultStatusBarColor();
     }
 
     private ApplicationComponent getApplicationComponent() {

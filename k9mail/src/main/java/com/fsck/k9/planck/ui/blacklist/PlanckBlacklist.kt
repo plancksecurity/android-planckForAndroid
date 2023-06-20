@@ -45,9 +45,6 @@ class PlanckBlacklist : PlanckActivity(), SearchView.OnQueryTextListener {
     private lateinit var planck: PlanckProvider
     private var keys: List<KeyListItem>? = null
 
-    @Inject
-    lateinit var toolbarCustomizer: ToolBarCustomizer
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +52,6 @@ class PlanckBlacklist : PlanckActivity(), SearchView.OnQueryTextListener {
         ButterKnife.bind(this@PlanckBlacklist)
         initializeViews()
         initializeToolbar(true, R.string.pep)
-        toolbarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.DEFAULT))
         initializeSearchBar()
 
         planck = (application as K9).getPlanckProvider()

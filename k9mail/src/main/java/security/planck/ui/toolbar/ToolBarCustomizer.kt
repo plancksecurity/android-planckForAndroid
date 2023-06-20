@@ -1,65 +1,59 @@
 package security.planck.ui.toolbar
 
 import android.app.Activity
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.ColorInt
 import androidx.core.view.children
-import com.fsck.k9.planck.PlanckColorUtils
+import com.fsck.k9.R
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-interface ToolBarCustomizer {
+class ToolBarCustomizer(private val activity: Activity) {
 
-    fun setStatusBarPlanckColor(@ColorInt colorReference: Int)
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
-
-    fun setToolbarColor(@ColorInt colorReference: Int)
-
-    fun colorizeToolbarActionItemsAndNavButton(@ColorInt colorReference: Int)
-}
-
-class PlanckToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
-
-    override fun setStatusBarPlanckColor(@ColorInt colorReference: Int) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-
-        uiScope.launch {
-            val color = PlanckColorUtils.makeColorTransparent(colorReference)
-            setColor(color)
-        }
+    fun setDefaultStatusBarColor() {
+        setStatusBarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.statusbarDefaultColor))
     }
 
-    override fun setToolbarColor(@ColorInt colorReference: Int) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    fun setMessageStatusBarColor() {
+        setStatusBarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.messageViewStatusBarColor))
+    }
 
+    fun setDefaultToolbarColor() {
+        setToolbarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.toolbarDefaultColor))
+    }
+
+    fun setMessageToolbarColor() {
+        setToolbarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.messageViewToolbarColor))
+    }
+
+    private fun setToolbarColor(@ColorInt colorReference: Int) {
         uiScope.launch {
             activity.toolbar?.setBackgroundColor(colorReference)
         }
     }
 
-    override fun colorizeToolbarActionItemsAndNavButton(@ColorInt colorReference: Int) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-
+    fun colorizeToolbarActionItemsAndNavButton(@ColorInt colorReference: Int) {
         uiScope.launch {
 
             val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
 
             activity.toolbar?.children?.forEach { v ->
                 if(v is ImageButton)
-                        v.drawable.mutate().colorFilter = colorFilter
+                    v.drawable.mutate().colorFilter = colorFilter
             }
             activity.toolbar?.overflowIcon?.colorFilter = colorFilter
         }
     }
 
-    private fun setColor(color: Int) {
+    private fun setStatusBarColor(@ColorInt color: Int) {
 
         val window = activity.window
         // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -69,16 +63,6 @@ class PlanckToolbarCustomizer(private val activity: Activity) : ToolBarCustomize
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
 
         // finally change the color
-        window.statusBarColor = getDarkerColor(color)
-    }
-
-    private fun getDarkerColor(@ColorInt color: Int): Int {
-        val red = Color.red(color)
-        val green = Color.green(color)
-        val blue = Color.blue(color)
-        val hsv = FloatArray(3)
-        Color.RGBToHSV(red, green, blue, hsv)
-        hsv[2] = hsv[2] * 0.9f
-        return Color.HSVToColor(hsv)
+        window.statusBarColor = color
     }
 }

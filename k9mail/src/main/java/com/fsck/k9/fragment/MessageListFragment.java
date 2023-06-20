@@ -3069,8 +3069,8 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
     }
 
     private void updateToolbarColorToOriginal() {
-        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setDefaultToolbarColor();
+        toolBarCustomizer.setDefaultStatusBarColor();
     }
 
     boolean isMessageSelected(Cursor cursor) {
