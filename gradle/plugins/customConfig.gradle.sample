@@ -1,0 +1,11 @@
+ext {
+    demoAppIdSuffix = '.test.ig'
+    demoAppVersionNameSuffix = '.test.ig'
+    demoVersionCode = 5
+    enableEndUser = false
+    //appId = 'security.planck.test' // changes the appId for all the flavors
+    demoKeyAlias = 'demo'
+    demoKeyPassword = 'replace your password'
+    demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')
+    demoStorePassword = 'replace your password'
+}

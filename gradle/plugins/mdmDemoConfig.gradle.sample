@@ -1,6 +1,0 @@
-ext {
-    demoAppIdSuffix = '.test.ig2'
-    demoAppVersionNameSuffix = '.test.ig2'
-    demoVersionCode = 81
-    demoUseEndUserSigningConfig = false
-}
