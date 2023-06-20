@@ -5,6 +5,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.view.WindowManager
 import android.widget.ImageButton
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.core.view.children
 import com.fsck.k9.R
@@ -19,19 +20,19 @@ class ToolBarCustomizer(private val activity: Activity) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
     fun setDefaultStatusBarColor() {
-        setStatusBarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.statusbarDefaultColor))
+        setStatusBarColor(getColor(R.attr.statusbarDefaultColor))
     }
 
     fun setMessageStatusBarColor() {
-        setStatusBarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.messageViewStatusBarColor))
+        setStatusBarColor(getColor(R.attr.messageViewStatusBarColor))
     }
 
     fun setDefaultToolbarColor() {
-        setToolbarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.toolbarDefaultColor))
+        setToolbarColor(getColor(R.attr.toolbarDefaultColor))
     }
 
     fun setMessageToolbarColor() {
-        setToolbarColor(ThemeManager.getColorFromAttributeResource(activity, R.attr.messageViewToolbarColor))
+        setToolbarColor(getColor(R.attr.messageViewToolbarColor))
     }
 
     private fun setToolbarColor(@ColorInt colorReference: Int) {
@@ -65,4 +66,7 @@ class ToolBarCustomizer(private val activity: Activity) {
         // finally change the color
         window.statusBarColor = color
     }
+
+    private fun getColor(@AttrRes attr: Int): Int =
+        ThemeManager.getColorFromAttributeResource(activity, attr)
 }
