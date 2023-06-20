@@ -2059,6 +2059,22 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
         isProcessingSendClick = false;
     }
 
+    public void setDefaultToolbarColor() {
+        toolBarCustomizer.setDefaultToolbarColor();
+    }
+
+    public void setMessageToolbarColor() {
+        toolBarCustomizer.setMessageToolbarColor();
+    }
+
+    public void setDefaultStatusBarColor() {
+        toolBarCustomizer.setDefaultStatusBarColor();
+    }
+
+    public void setMessageStatusBarColor() {
+        toolBarCustomizer.setMessageStatusBarColor();
+    }
+
     public void setToolbarRating(Rating rating, boolean forceHide) {
         boolean pEpEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.isPlanckPrivacyProtected());
         planckSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
