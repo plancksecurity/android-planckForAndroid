@@ -89,6 +89,7 @@
         <attr name="openpgp_dark_grey" format="reference|color" />
         <attr name="iconPlanckLogo" format="reference|color" />
         <attr name="toolbarDefaultColor" format="reference|color" />
+        <attr name="statusbarDefaultColor" format="reference|color" />
         <attr name="messageViewToolbarColor" format="reference|color" />
         <attr name="messageViewStatusBarColor" format="reference|color"/>
         <attr name="messageViewToolbarIconsColor" format="reference|color"/>

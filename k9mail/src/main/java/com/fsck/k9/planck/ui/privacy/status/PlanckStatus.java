@@ -145,8 +145,8 @@ public class PlanckStatus extends PlanckActivity implements PlanckStatusView, Co
     }
 
     private void colorActionBar() {
-        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setDefaultToolbarColor();
+        toolBarCustomizer.setDefaultStatusBarColor();
     }
 
     @Override

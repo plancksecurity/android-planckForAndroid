@@ -53,7 +53,7 @@ class AboutActivity : PlanckActivity() {
             }
         }
 
-        toolbarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT))
+        toolbarCustomizer.setDefaultToolbarColor()
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)
         initializeToolbar(true, about)
 

@@ -578,8 +578,8 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
                 });
             }
         }
-        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
-        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
+        toolBarCustomizer.setMessageToolbarColor();
+        toolBarCustomizer.setMessageStatusBarColor();
     }
 
     @Override
@@ -2059,12 +2059,20 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
         isProcessingSendClick = false;
     }
 
-    public void setToolbarColor(@ColorInt int color) {
-        toolBarCustomizer.setToolbarColor(color);
+    public void setDefaultToolbarColor() {
+        toolBarCustomizer.setDefaultToolbarColor();
     }
 
-    public void setStatusBarPlanckColor(@ColorInt int color) {
-        toolBarCustomizer.setStatusBarPlanckColor(color);
+    public void setMessageToolbarColor() {
+        toolBarCustomizer.setMessageToolbarColor();
+    }
+
+    public void setDefaultStatusBarColor() {
+        toolBarCustomizer.setDefaultStatusBarColor();
+    }
+
+    public void setMessageStatusBarColor() {
+        toolBarCustomizer.setMessageStatusBarColor();
     }
 
     public void setToolbarRating(Rating rating, boolean forceHide) {

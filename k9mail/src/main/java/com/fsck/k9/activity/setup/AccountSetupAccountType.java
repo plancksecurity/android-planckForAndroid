@@ -63,7 +63,7 @@ public class AccountSetupAccountType extends PlanckActivity implements OnClickLi
         bindViews(R.layout.account_setup_account_type);
 
         initializeToolbar(true, R.string.account_setup_account_type_title);
-        toolBarCustomizer.setStatusBarPlanckColor(getResources().getColor(R.color.white));
+        toolBarCustomizer.setDefaultStatusBarColor();
 
         findViewById(R.id.pop).setOnClickListener(this);
         findViewById(R.id.imap).setOnClickListener(this);

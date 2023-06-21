@@ -378,10 +378,8 @@ public class MessageViewFragment extends PlanckFragment implements ConfirmationD
                 planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
             }
             planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
-            toolBarCustomizer.setToolbarColor(
-                    ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
-            toolBarCustomizer.setStatusBarPlanckColor(
-                    ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
+            toolBarCustomizer.setMessageToolbarColor();
+            toolBarCustomizer.setMessageStatusBarColor();
         }
     }
 
