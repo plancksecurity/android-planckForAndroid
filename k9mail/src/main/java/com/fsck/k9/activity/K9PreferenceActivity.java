@@ -24,7 +24,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 
-import security.planck.ui.toolbar.PlanckToolbarCustomizer;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 
@@ -51,7 +50,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         if (icicle != null) {
             currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
         }
-        toolBarCustomizer = new PlanckToolbarCustomizer(this);
+        toolBarCustomizer = new ToolBarCustomizer(this);
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(State.CREATED);
     }
@@ -131,8 +130,8 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
 
     public void setStatusBar() {
         toolbar.setTitleTextColor(ThemeManager.getColorFromAttributeResource(this, R.attr.defaultToolbarTextColor));
-        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setDefaultToolbarColor();
+        toolBarCustomizer.setDefaultStatusBarColor();
     }
 
     /**

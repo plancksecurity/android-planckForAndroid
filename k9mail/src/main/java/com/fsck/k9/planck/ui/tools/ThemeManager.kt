@@ -88,25 +88,6 @@ object ThemeManager {
     }
 
     @JvmStatic
-    fun getToolbarColor(context: Context, toolbarType: ToolbarType): Int {
-        val attr = when(toolbarType) {
-            ToolbarType.DEFAULT -> R.attr.toolbarDefaultColor
-            ToolbarType.MESSAGEVIEW -> R.attr.messageViewToolbarColor
-        }
-        return getColorFromAttributeResource(context, attr)
-    }
-
-    @JvmStatic
-    @ColorInt
-    fun getStatusBarColor(context: Context, toolbarType: ToolbarType): Int {
-        val attr = when(toolbarType) {
-            ToolbarType.DEFAULT -> R.attr.toolbarDefaultColor
-            ToolbarType.MESSAGEVIEW -> R.attr.messageViewStatusBarColor
-        }
-        return getColorFromAttributeResource(context, attr)
-    }
-
-    @JvmStatic
     fun getAttributeResource(context: Context, @AttrRes resource: Int): Int {
         val a: TypedArray = context.theme.obtainStyledAttributes(ThemeManager.appThemeResourceId, intArrayOf(resource))
         return a.getResourceId(0, 0)
@@ -148,10 +129,6 @@ object ThemeManager {
         AppTheme.DARK -> "dark"
         AppTheme.LIGHT -> "light"
         AppTheme.FOLLOW_SYSTEM -> "follow_system"
-    }
-
-    enum class ToolbarType {
-        DEFAULT, MESSAGEVIEW
     }
 }
 

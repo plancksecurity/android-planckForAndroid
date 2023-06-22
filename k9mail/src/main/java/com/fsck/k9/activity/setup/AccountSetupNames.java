@@ -81,8 +81,7 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
         bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
-        toolBarCustomizer.setStatusBarPlanckColor(
-                ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setDefaultStatusBarColor();
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);

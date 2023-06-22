@@ -1,6 +1,6 @@
 package com.fsck.k9.planck.ui.toolbar
 
-import androidx.core.content.ContextCompat
+import androidx.annotation.AttrRes
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
@@ -12,10 +12,12 @@ import androidx.test.rule.ActivityTestRule
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageCompose
 import com.fsck.k9.matchers.withBackgroundColour
-import com.fsck.k9.planck.ui.activities.UtilsPackage
 import com.fsck.k9.planck.ui.activities.UtilsPackage.waitUntilIdle
+import com.fsck.k9.planck.ui.tools.ThemeManager
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.allOf
-import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,39 +28,51 @@ class ToolBarCustomizerTest {
     var mActivityRule = ActivityTestRule(MessageCompose::class.java)
 
     @Test
-    fun check_if_status_bar_changes_color_by_color_resource() {
-        val colorRes = R.color.white
-
-        mActivityRule.activity.setStatusBarPlanckColor(colorRes)
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-
-        val beforeColour = mActivityRule.activity.window.statusBarColor
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-
-        mActivityRule.activity.setStatusBarPlanckColor(colorRes)
+    fun `status bar changes color to default`() {
+        runBlocking(Dispatchers.Main) { mActivityRule.activity.setDefaultStatusBarColor() }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
         onView(withId(android.R.id.statusBarBackground))
-                .check(matches(ViewMatchers.isDisplayed()))
+            .check(matches(ViewMatchers.isDisplayed()))
 
-        val afterColour = mActivityRule.activity.window.statusBarColor
-
-        Assert.assertEquals(beforeColour, afterColour)
+        assertEquals(
+            getColor(R.attr.statusbarDefaultColor),
+            mActivityRule.activity.window.statusBarColor
+        )
     }
 
     @Test
-    fun check_if_toolbar_changes_color_by_color_resource() {
+    fun `status bar changes color to message`() {
+        runBlocking(Dispatchers.Main) { mActivityRule.activity.setMessageStatusBarColor() }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        onView(withId(android.R.id.statusBarBackground))
+            .check(matches(ViewMatchers.isDisplayed()))
+
+        assertEquals(
+            getColor(R.attr.messageViewStatusBarColor),
+            mActivityRule.activity.window.statusBarColor
+        )
+    }
+
+    @Test
+    fun `toolbar changes color to default`() {
         waitForToolbar(50)
-
-        val colorRes = R.color.purple
-        val color = ContextCompat.getColor(mActivityRule.activity, colorRes)
-
-        mActivityRule.activity.setToolbarColor(color)
-
+        runBlocking(Dispatchers.Main) { mActivityRule.activity.setDefaultToolbarColor() }
         waitForToolbar(70)
 
-        if (isToolbarVisible())
-            onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColour(colorRes)))
+
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColour(getResource(R.attr.toolbarDefaultColor))))
+    }
+
+    @Test
+    fun `toolbar changes color to message`() {
+        waitForToolbar(50)
+        runBlocking(Dispatchers.Main) { mActivityRule.activity.setMessageToolbarColor() }
+        waitForToolbar(70)
+
+
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColour(getResource(R.attr.messageViewToolbarColor))))
     }
 
     private fun waitForToolbar(i: Int) {
@@ -70,11 +84,9 @@ class ToolBarCustomizerTest {
         }
     }
 
-    private fun isToolbarVisible(): Boolean {
-        return UtilsPackage.exists(onView(withId(R.id.toolbar)))
-                && UtilsPackage.viewIsDisplayed(R.id.toolbar)
-                && UtilsPackage.viewIsDisplayed(R.id.toolbar_container)
-    }
+    private fun getResource(@AttrRes attr: Int): Int =
+        ThemeManager.getAttributeResource(mActivityRule.activity, attr)
 
-
+    private fun getColor(@AttrRes attr: Int): Int =
+        ThemeManager.getColorFromAttributeResource(mActivityRule.activity, attr)
 }
