@@ -2,12 +2,12 @@ Feature: Test
   Background:
     Given I created an account
 
-    #Summary: This test sends a message to a bot to reset the partner key. It then composes and sends a new message to the bot and verifies the privacy status before and after encryption.
-  #Description: The test scenario involves sending a message to a bot with the purpose of resetting the partner key. It then proceeds to compose and send a new message to the bot while checking the privacy status before and after encryption. The test focuses on verifying the functionality of resetting the key and ensuring the appropriate encryption of messages.
 
-  Scenario: Cucumber Reset Partner Key
+  Scenario: Cucumber Reset Trusted Partner Key
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
     And I click the last message received
+    And I click confirm trust words
+    Then I check if the privacy status is Trusted
     Then I reset partner key
     When I press back
     When I click compose message
@@ -18,6 +18,31 @@ Feature: Test
     When I click the send message button
     And I wait for the message and click it
     Then I check the privacy status is Encrypted
+
+
+  Scenario: Cucumber Reset Partner Key
+    When I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
+    And I click the last message received
+    Then I reset partner key
+    When I press back
+    And I click compose message
+    And I enter bot2 in the messageTo field
+    And I enter ResetKey2 in the messageSubject field
+    And I enter NewMessageAfterReset in the messageBody field
+    Then I check the privacy status is NotEncrypted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is Encrypted
+    When I press back
+    And I click compose message
+    And I enter bot2 in the messageTo field
+    And I enter key_reset_partner in the messageSubject field
+    And I enter PartnerResetsCommunication in the messageBody field
+    Then I check the privacy status is Encrypted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is NotEncrypted
+
 
 #Summary: This test sends a message to a bot, copies it to the "spam" folder, and performs comparisons on the message content.
   #Description: The test involves sending a message to a bot with a specific subject and body. It verifies and interacts with the received message, including copying it to the "spam" folder. The test also navigates between the "spam" folder and the inbox, comparing message content and performing other navigation actions.
@@ -205,7 +230,7 @@ Feature: Test
     And I go to the sent folder
     And I click the first message
     Then I compare messageBody with longWord
- 
+
 
 #Summary: This Cucumber test describes a scenario where a user selects an account and performs various actions related to composing and managing messages. The test covers sending messages to bots, checking the privacy status of messages, replying to messages, saving messages as drafts, and discarding drafts.
 #Description: This Cucumber test is focused on testing various aspects of sending and receiving emails using an email client. The test covers scenarios such as selecting accounts, sending messages to bots, checking privacy status, replying to messages, saving drafts, and discarding drafts. The test also involves comparing message bodies with expected values, checking the privacy status of messages, and navigating between different folders such as Inbox, Sent, and Drafts.
@@ -227,7 +252,7 @@ Feature: Test
     And I discard the message
     And I go back to the Inbox
 
- 
+
 
 #Summary: This Cucumber test checks the encryption and privacy status of a message sent to a bot, verifies the message contents and then replies to it with additional text.
 #Description: This Cucumber test is a set of steps that a series of actions to test the behavior of an email client. The test focuses on the encryption and privacy features of the email client, and involves sending and receiving emails to different contacts, and checking their privacy status. The test also involves comparing the message body with pre-defined values from a JSON file.
@@ -247,7 +272,7 @@ Feature: Test
     And I click the send message button
     And I go back to the Inbox
     And I wait for the new message
- 
+
 
 #Summary: This Cucumber test involves testing whether an email message is correctly encrypted using the Planck encryption protocol. The test involves sending a message to a bot with a specific subject and body, verifying that the message is encrypted using Planck, replying to the message and checking if the privacy status is still secure, and finally comparing the planck rating with a value from a JSON file.
 #Description: This Cucumber test is testing the email encryption functionality of an email client. The test includes several steps such as selecting the account, sending an encrypted message to a bot with a specific subject and body, clicking on the last received message, clicking on reply message, checking the privacy status, and comparing a rating string from a JSON file. The test appears to be checking whether the email encryption and decryption process is functioning correctly and whether the privacy status is Encrypted.
