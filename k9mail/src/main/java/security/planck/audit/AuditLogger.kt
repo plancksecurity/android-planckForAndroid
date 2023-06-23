@@ -4,6 +4,7 @@ import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.infrastructure.NEW_LINE
 import foundation.pEp.jniadapter.Rating
 import java.io.File
 import java.io.IOException
@@ -26,7 +27,7 @@ class AuditLogger(
         val securityRating: String = ""
     ) {
         fun toCsv(): String =
-            "\n$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
+            "$NEW_LINE$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
     }
 
     fun addStartEventLog() {
@@ -86,12 +87,12 @@ class AuditLogger(
     }
 
     private fun String.removeOldLogs(newTime: Long): String {
-        val textWithoutHeader = substringAfter("$HEADER\n", substringAfter(HEADER))
-            .split("\n")
+        val textWithoutHeader = substringAfter("$HEADER$NEW_LINE", substringAfter(HEADER))
+            .split(NEW_LINE)
             .filter { logLine ->
                 logLine.isNotBlank() && newTime - getLogTime(logLine) < logAgeLimit
-            }.joinToString("\n")
-        val header = if (textWithoutHeader.isBlank()) HEADER else "$HEADER\n"
+            }.joinToString(NEW_LINE)
+        val header = if (textWithoutHeader.isBlank()) HEADER else "$HEADER$NEW_LINE"
         return header + textWithoutHeader
     }
 

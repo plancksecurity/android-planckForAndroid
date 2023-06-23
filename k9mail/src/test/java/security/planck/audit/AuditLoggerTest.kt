@@ -3,6 +3,7 @@ package security.planck.audit
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.infrastructure.NEW_LINE
 import foundation.pEp.jniadapter.Rating
 import io.mockk.every
 import io.mockk.mockk
@@ -121,7 +122,7 @@ class AuditLoggerTest {
     fun `addMessageAuditLog removes old logs when it adds a new one`() {
         StringBuilder(HEADER).also { sb ->
             repeat(10) {
-                sb.append("\n$OLD_WRITE_TIME;$FROM;$TELLTALE_RATING$it")
+                sb.append("$NEW_LINE$OLD_WRITE_TIME;$FROM;$TELLTALE_RATING$it")
             }
             auditLoggerFile.writeText(sb.toString())
         }
@@ -133,7 +134,7 @@ class AuditLoggerTest {
 
 
         assertEquals(
-            "$HEADER\n$EXPECTED_START_LINE\n$EXPECTED_LOG_LINE\n$EXPECTED_STOP_LINE",
+            "$HEADER$NEW_LINE$EXPECTED_START_LINE$NEW_LINE$EXPECTED_LOG_LINE$NEW_LINE$EXPECTED_STOP_LINE",
             auditLoggerFile.readText()
         )
     }
