@@ -100,6 +100,7 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.ComposeView;
+import com.fsck.k9.planck.infrastructure.ConstantsKt;
 import com.fsck.k9.planck.infrastructure.extensions.ThrowableKt;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.Theme;
@@ -183,7 +184,6 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
     private static final int DEBUG_STACK_TRACE_DEPTH = 1;
-    private static final String NEW_LINE_INSERT = "\n";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -2147,7 +2147,7 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
     }
 
     private void addNewDebugErrorText(String newErrorText) {
-        lastError.append(NEW_LINE_INSERT);
+        lastError.append(ConstantsKt.NEW_LINE);
         lastError.append(newErrorText);
     }
 
