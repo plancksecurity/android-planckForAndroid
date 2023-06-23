@@ -455,7 +455,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     DEFAULT_ALLOW_PLANCK_SYNC_NEW_DEVICES
                 ),
 
-                getMailSettingsRestrictionEntry()
+                getMailSettingsRestrictionEntry(),
+                RestrictionEntry(
+                    RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION,
+                    DEFAULT_AUDIT_LOG_DATA_TIME_RETENTION
+                )
             )
 
         private fun getFoldersRestrictionEntry(): RestrictionEntry =
