@@ -10,9 +10,9 @@ import java.io.IOException
 import java.util.Calendar
 
 class AuditLogger(
-    private val auditLoggerFile: File
+    private val auditLoggerFile: File,
+    var logAgeLimit: Long,
 ) {
-    var logAgeLimit: Long = THIRTY_DAYS
     private val currentTimeInSeconds: Long
         get() = Calendar.getInstance().timeInMillis / 1000
 
@@ -104,7 +104,6 @@ class AuditLogger(
     }
 
     companion object {
-        private const val THIRTY_DAYS = 30 * 24 * 60 * 60L
         const val auditLoggerFileRoute = "audit/messageAudit.csv"
         const val START_EVENT = "AUDIT LOGGING START"
         const val STOP_EVENT = "AUDIT LOGGING STOP"
