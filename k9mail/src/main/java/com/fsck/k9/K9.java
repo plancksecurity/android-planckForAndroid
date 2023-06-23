@@ -76,6 +76,8 @@ import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
+import security.planck.appalive.AppAliveMonitor;
+import security.planck.audit.AuditLogger;
 import security.planck.mdm.ManageableSetting;
 import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
@@ -103,6 +105,8 @@ public class K9 extends MultiDexApplication {
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
+    private AuditLogger auditLogger;
+    private AppAliveMonitor appAliveMonitor;
 
     public static K9JobManager jobManager;
 
@@ -661,7 +665,17 @@ public class K9 extends MultiDexApplication {
 
         initializeInjector();
 
+        initializeAuditLog();
+
         component.provisioningManager().startProvisioning();
+    }
+
+    private void initializeAuditLog() {
+        auditLogger = new AuditLogger(new File(getFilesDir(), AuditLogger.auditLoggerFileRoute));
+        appAliveMonitor = new AppAliveMonitor(component.preferences().getStorage());
+        auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
+        auditLogger.addStartEventLog();
+        appAliveMonitor.startAppAliveMonitor();
     }
 
     public void finalizeSetup() {
@@ -1593,6 +1607,10 @@ public class K9 extends MultiDexApplication {
 
     public static Set<MediaKey> getMediaKeys() {
         return mediaKeys;
+    }
+
+    public AuditLogger getAuditLogger() {
+        return auditLogger;
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {
