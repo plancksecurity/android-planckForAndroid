@@ -173,8 +173,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
     @VisibleForTesting
-    MessagingController(Context context, NotificationController notificationController,
-                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PlanckProvider planckProvider, AuditLogger auditLogger) {
+    MessagingController(
+            Context context,
+            NotificationController notificationController,
+            Contacts contacts,
+            TransportProvider transportProvider,
+            Preferences preferences,
+            PlanckProvider planckProvider,
+            AuditLogger auditLogger
+    ) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
