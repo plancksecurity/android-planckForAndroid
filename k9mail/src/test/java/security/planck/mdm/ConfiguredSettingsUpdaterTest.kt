@@ -1393,6 +1393,58 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         verify { account.wasNot(called) }
     }
 
+    @Test
+    fun `update() takes the value for audit logs retention time from the provided restrictions`() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
+            .returns(arrayOf("30", "90"))
+        every { k9.resources }.returns(resources)
+        val restrictions = Bundle().apply {
+            putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "90")
+        }
+        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { k9.auditLogDataTimeRetention = 90 }
+    }
+
+    @Test
+    fun `update() takes the value for audit logs retention time from the restrictions entry if not provided in restrictions`() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
+            .returns(arrayOf("30", "90"))
+        every { k9.resources }.returns(resources)
+        val restrictions = Bundle()
+        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { k9.auditLogDataTimeRetention = 30 }
+    }
+
+    @Test
+    fun `update() keeps last value for audit logs retention time if provided value is not valid`() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
+            .returns(arrayOf("30", "90"))
+        every { k9.resources }.returns(resources)
+        val restrictions = Bundle().apply {
+            putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "hello")
+        }
+        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+
+
+        updater.update(restrictions, entry)
+
+
+        verify(exactly = 0) { k9.auditLogDataTimeRetention = any() }
+    }
+
     private fun stubAccountSettersAndGetters() {
         val oAuthProviderSlot = slot<OAuthProviderType>()
         every { account.mandatoryOAuthProviderType = capture(oAuthProviderSlot) }.answers {

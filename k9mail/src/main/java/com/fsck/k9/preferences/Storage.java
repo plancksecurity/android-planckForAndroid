@@ -40,6 +40,7 @@ public class Storage {
     private Context context = null;
     private PassphraseStorage passphraseStorage;
     private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
+    private final AppAliveMonitorStorage appAliveMonitorStorage;
 
     private SQLiteDatabase openDB() {
         SQLiteDatabase mDb = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
@@ -190,6 +191,7 @@ public class Storage {
         this.context = context;
         passphraseStorage = new PassphraseStorage(context);
         ongoingDecryptMessagesStorage = new OngoingDecryptMessagesStorage(context);
+        appAliveMonitorStorage = new AppAliveMonitorStorage(context);
         loadValues();
     }
 
@@ -267,7 +269,12 @@ public class Storage {
     }
 
     public StorageEditor edit() {
-        return new StorageEditor(this, passphraseStorage, ongoingDecryptMessagesStorage);
+        return new StorageEditor(
+                this,
+                passphraseStorage,
+                ongoingDecryptMessagesStorage,
+                appAliveMonitorStorage
+        );
     }
 
     public Map<String, String> getAll() {
@@ -362,5 +369,9 @@ public class Storage {
 
     public Set<String> getOngoingDecryptMessageTempFilePaths() {
         return ongoingDecryptMessagesStorage.getTempFilePaths();
+    }
+
+    public long getLastAppAliveMonitoredTime() {
+        return appAliveMonitorStorage.getLastAppAliveMonitoredTime();
     }
 }

@@ -80,4 +80,21 @@
         <item>EXTERNAL</item>
         <item>XOAUTH2</item>
     </string-array>
+
+    <string name="audit_log_data_time_retention_title">Audit log data time retention</string>
+    <string name="audit_log_data_time_retention_description">Longest time the old audit log entries can stay in the audit log</string>
+
+    <string-array name="audit_log_data_time_retention_entries">
+        <item>30 days</item>
+        <item>90 days</item>
+        <item>180 days</item>
+        <item>365 days</item>
+    </string-array>
+
+    <string-array name="audit_log_data_time_retention_values">
+        <item>2592000</item>
+        <item>7776000</item>
+        <item>15552000</item>
+        <item>31536000</item>
+    </string-array>
 </resources>
