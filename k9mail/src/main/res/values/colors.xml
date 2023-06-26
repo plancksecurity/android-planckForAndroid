@@ -117,6 +117,8 @@
     <color name="startup_gradient_start">#FFC9BC</color>
     <color name="startup_gradient_end">#8738FF</color>
 
+    <color name="splash_activity_background">@color/colorPrimary</color>
+
     <color name="select_auth_key_icon_color_light">#5E5E5E</color>
     <color name="select_auth_key_icon_color_dark">@color/white_transparent_70</color>
 
