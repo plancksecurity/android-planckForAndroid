@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    <color name="colorAccent">@color/dark_theme_default_background</color>-->
+
     <color name="logo_primary_color">@android:color/white</color>
     <color name="startup_gradient_start">@color/dark_theme_default_background</color>
     <color name="startup_gradient_end">@color/dark_theme_default_background</color>
