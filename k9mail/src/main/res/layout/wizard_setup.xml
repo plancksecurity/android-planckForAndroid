@@ -6,7 +6,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="?android:attr/dividerHorizontal" />
+        android:background="@color/divider_color" />
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -18,20 +18,18 @@
 
         <Button
             android:id="@+id/manual_setup"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/WelcomeWizardButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/selectable_item_background"
             android:text="@string/account_setup_basics_manual_setup_action" />
 
         <Button
             android:id="@+id/next"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/WelcomeWizardButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/selectable_item_background"
             android:text="@string/next_action" />
     </LinearLayout>
 
