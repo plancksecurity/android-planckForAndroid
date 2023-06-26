@@ -28,6 +28,8 @@ class AuditLogger(
     ) {
         fun toCsv(): String =
             "$NEW_LINE$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
+
+        fun isStopEvent(): Boolean = senderId == STOP_EVENT
     }
 
     fun addStartEventLog() {
@@ -63,16 +65,19 @@ class AuditLogger(
     private fun addMessageAuditLog(messageAuditLog: MessageAuditLog) {
         try {
             val allFileText = if (auditLoggerFile.exists()) auditLoggerFile.readText() else ""
-            val textToAppend = messageAuditLog.toCsv()
 
             when {
                 allFileText.isBlank() -> {
                     addHeader()
-                    auditLoggerFile.appendText(textToAppend)
+                    appendLog(messageAuditLog)
+                }
+
+                allFileText == HEADER -> {
+                    appendLog(messageAuditLog)
                 }
 
                 else -> {
-                    writeLogRemovingOldLogs(allFileText, textToAppend, messageAuditLog.timeStamp)
+                    writeLogRemovingOldLogs(allFileText, messageAuditLog)
                 }
             }
         } catch (e: IOException) {
@@ -82,18 +87,41 @@ class AuditLogger(
         }
     }
 
-    private fun writeLogRemovingOldLogs(allFileText: String, textToAppend: String, newTime: Long) {
-        auditLoggerFile.writeText(allFileText.removeOldLogs(newTime) + textToAppend)
+    private fun appendLog(log: MessageAuditLog) {
+        auditLoggerFile.appendText(log.toCsv())
+    }
+
+    private fun writeLogRemovingOldLogs(
+        allFileText: String,
+        messageAuditLog: MessageAuditLog,
+    ) {
+        val newTime = messageAuditLog.timeStamp
+        val cleanText = allFileText.removeOldLogs(newTime)
+        val log = messageAuditLog.updateStopTimeToLateLogTime(cleanText, newTime)
+        auditLoggerFile.writeText(cleanText + log.toCsv())
+    }
+
+    private fun MessageAuditLog.updateStopTimeToLateLogTime(
+        cleanText: String,
+        newTime: Long,
+    ): MessageAuditLog {
+        var log = this
+        if (log.isStopEvent()) {
+            val lastMessageTime = getLogTime(cleanText.substringAfterLast(NEW_LINE))
+            if (lastMessageTime > newTime) {
+                log = log.copy(timeStamp = lastMessageTime)
+            }
+        }
+        return log
     }
 
     private fun String.removeOldLogs(newTime: Long): String {
-        val textWithoutHeader = substringAfter("$HEADER$NEW_LINE", substringAfter(HEADER))
+        val textWithoutHeader = substringAfter("$HEADER$NEW_LINE")
             .split(NEW_LINE)
             .filter { logLine ->
                 logLine.isNotBlank() && newTime - getLogTime(logLine) < logAgeLimit
             }.joinToString(NEW_LINE)
-        val header = if (textWithoutHeader.isBlank()) HEADER else "$HEADER$NEW_LINE"
-        return header + textWithoutHeader
+        return "$HEADER$NEW_LINE" + textWithoutHeader
     }
 
     private fun getLogTime(logLine: String): Long {

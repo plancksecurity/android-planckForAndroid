@@ -105,6 +105,24 @@ class AuditLoggerTest {
     }
 
     @Test
+    fun `if there are logs later than stop event, addStopEventLog changes stop event time to that of latest log`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+
+
+        auditLogger.addStopEventLog(WRITE_TIME)
+
+
+        val lines = auditLoggerFile.readLines()
+        assertEquals(3, lines.size)
+        assertEquals(HEADER, lines.first())
+        assertEquals(
+            EXPECTED_MODIFIED_STOP_LINE,
+            lines.last()
+        )
+    }
+
+    @Test
     fun `if the file is empty, the header is added`() {
         auditLogger.addMessageAuditLog(mimeMessage, Rating.pEpRatingUnencrypted)
 
@@ -143,11 +161,13 @@ class AuditLoggerTest {
         private const val THIRTY_DAYS = 30 * 24 * 60 * 60L
         private const val WRITE_TIME = 9999999999L
         private const val OLD_WRITE_TIME = WRITE_TIME - THIRTY_DAYS - 1
+        private const val LATE_WRITE_TIME = WRITE_TIME + 1
         private const val FROM = "testfrom@from.ch"
         private const val TELLTALE_RATING = "TELLTALE_RATING"
         private val EXPECTED_LOG_LINE =
             "$WRITE_TIME;$FROM;${PlanckUtils.ratingToString(Rating.pEpRatingUnencrypted)}"
         private const val EXPECTED_START_LINE = "$WRITE_TIME;AUDIT LOGGING START;"
         private const val EXPECTED_STOP_LINE = "$WRITE_TIME;AUDIT LOGGING STOP;"
+        private const val EXPECTED_MODIFIED_STOP_LINE = "$LATE_WRITE_TIME;AUDIT LOGGING STOP;"
     }
 }
