@@ -315,7 +315,7 @@
         <item name="flagUncheckedIcon">@drawable/ic_flag_border_dark</item>
         <item name="iconPlanckLogo">@drawable/planck_logo_green_60</item>
 
-        <item name="toolbarDefaultColor">@color/colorPrimary</item>
+        <item name="toolbarDefaultColor">@color/dark_theme_default_toolbar_background</item>
         <item name="statusbarDefaultColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewStatusBarColor">@color/dark_theme_overlay_1</item>
