@@ -21,9 +21,11 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
@@ -381,7 +383,12 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
         displayViews();
         channelUtils.updateChannels();
 
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setBackgroundColor(getColor(R.color.toolbar_color));
+        } else {
+            Toast.makeText(this, "There is no toolbar", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {

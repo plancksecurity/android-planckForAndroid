@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    <color name="colorAccent">@color/dark_theme_default_background</color>-->
     <color name="logo_primary_color">@android:color/white</color>
+    <color name="startup_gradient_start">@color/dark_theme_default_background</color>
+    <color name="startup_gradient_end">@color/dark_theme_default_background</color>
+    <color name="link_primary_color">@color/white</color>
+    <color name="login_button_color">@color/white</color>
+
+    <color name="toolbar_color">#333333</color>
+    <color name="drawer_logo">#A366FF</color>
+    <color name="drawer_background">#1F1F1F</color>
+    <color name="attachment_color">@android:color/white</color>
+
+    <color name="select_auth_key_icon_color_dark">@color/planck_gray</color>
 </resources>
