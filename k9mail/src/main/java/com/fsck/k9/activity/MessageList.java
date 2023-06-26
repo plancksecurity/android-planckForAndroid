@@ -383,12 +383,6 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
         displayViews();
         channelUtils.updateChannels();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setBackgroundColor(getColor(R.color.toolbar_color));
-        } else {
-            Toast.makeText(this, "There is no toolbar", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
