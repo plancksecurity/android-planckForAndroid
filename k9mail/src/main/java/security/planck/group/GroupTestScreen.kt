@@ -50,15 +50,7 @@ class GroupTestScreen: PlanckActivity() {
                 group.print()
                 val account = preferences.accounts.first()
                 val identity = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
-                group.group_identity = identity
-                group.manager = identity
-                group.members = Vector(listOf(Member().apply {
-                    this.ident = identity
-                    this.joined = false
-                }))
-                group.active = true
-                group.print()
-                planckProvider.createGroup(identity, identity, Vector(listOf(identity)), group)
+                group = planckProvider.createGroup(identity, identity, Vector(listOf(identity)))
                 group.print()
             }
         }
