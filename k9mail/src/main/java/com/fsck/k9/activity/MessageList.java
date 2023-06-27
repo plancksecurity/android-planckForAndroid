@@ -76,6 +76,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import security.planck.group.GroupTestScreen;
 import security.planck.mdm.RestrictionsListener;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
@@ -1090,6 +1091,10 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
         switch (itemId) {
             case android.R.id.home: {
                 onBackPressed();
+                return true;
+            }
+            case R.id.group_test: {
+                GroupTestScreen.start(this);
                 return true;
             }
             case R.id.compose: {

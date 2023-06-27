@@ -11,6 +11,11 @@
     MessageList.configureMenu() if you make any changes to this file.
     -->
 
+    <item
+        android:id="@+id/group_test"
+        android:title="Group test"
+        app:showAsAction="never" />
+
     <!-- MessageView -->
     <item
         android:id="@+id/flag"
