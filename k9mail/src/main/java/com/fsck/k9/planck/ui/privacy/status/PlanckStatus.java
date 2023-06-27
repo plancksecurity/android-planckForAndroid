@@ -332,7 +332,7 @@ public class PlanckStatus extends PlanckActivity implements PlanckStatusView, Co
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean isIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
-        if (isIncoming) return false;
+        if (isIncoming || BuildConfig.IS_ENTERPRISE) return false;
 
         getMenuInflater().inflate(R.menu.menu_pep_status, menu);
         menu.findItem(R.id.force_unencrypted).setTitle(presenter.isForceUnencrypted()
@@ -345,7 +345,7 @@ public class PlanckStatus extends PlanckActivity implements PlanckStatusView, Co
                 : R.string.is_always_secure
         );
 
-        return !BuildConfig.IS_ENTERPRISE;
+        return true;
     }
 
     @Override
