@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import foundation.pEp.jniadapter.Group;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
@@ -261,6 +262,13 @@ public interface PlanckProvider {
     void disableSyncForAllIdentites();
 
     void updateSyncAccountsConfig();
+
+    void createGroup(
+            Identity groupIdentity,
+            Identity manager,
+            Vector<Identity> members,
+            Group group
+    );
 
     class KeyDetail {
         private final Address address;
