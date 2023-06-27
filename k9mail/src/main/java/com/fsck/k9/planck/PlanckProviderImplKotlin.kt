@@ -1152,6 +1152,15 @@ class PlanckProviderImplKotlin(
         return encFormat != Message.EncFormat.None
     }
 
+    override fun createGroup(
+        groupIdentity: Identity,
+        manager: Identity,
+        members: Vector<Identity>,
+        group: Group
+    ) = runBlocking(PlanckDispatcher) {
+        engine.get().group_create(groupIdentity, manager, members, group)
+    }
+
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"
