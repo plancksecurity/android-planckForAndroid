@@ -1156,9 +1156,9 @@ class PlanckProviderImplKotlin(
         groupIdentity: Identity,
         manager: Identity,
         members: Vector<Identity>,
-        group: Group
-    ) = runBlocking(PlanckDispatcher) {
-        engine.get().group_create(groupIdentity, manager, members, group)
+    ): Group = runBlocking(PlanckDispatcher) {
+        val id = myself(groupIdentity)
+        engine.get().group_create(id, id, Vector(listOf(id)))
     }
 
     companion object {

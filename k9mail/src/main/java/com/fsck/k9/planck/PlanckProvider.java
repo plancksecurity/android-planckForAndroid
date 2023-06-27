@@ -263,11 +263,10 @@ public interface PlanckProvider {
 
     void updateSyncAccountsConfig();
 
-    void createGroup(
+    Group createGroup(
             Identity groupIdentity,
             Identity manager,
-            Vector<Identity> members,
-            Group group
+            Vector<Identity> members
     );
 
     class KeyDetail {
