@@ -199,6 +199,10 @@
             android:name=".activity.setup.OAuthFlowActivity"
             android:label="@string/account_setup_basics_title" />
 
+        <activity
+            android:name="security.planck.group.GroupTestScreen"
+            android:label="Group mail test screen" />
+
 
         <activity
             android:name=".activity.setup.FolderSettings"
