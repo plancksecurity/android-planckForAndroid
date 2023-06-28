@@ -317,7 +317,7 @@
 
         <item name="toolbarDefaultColor">@color/dark_theme_default_toolbar_background</item>
         <item name="statusbarDefaultColor">@color/dark_theme_overlay_1</item>
-        <item name="messageViewToolbarColor">@color/dark_theme_overlay_1</item>
+        <item name="messageViewToolbarColor">@color/dark_theme_default_toolbar_background</item>
         <item name="messageViewStatusBarColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
         <item name="messageListToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
