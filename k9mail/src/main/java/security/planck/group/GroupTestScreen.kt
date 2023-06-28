@@ -59,6 +59,7 @@ class GroupTestScreen: PlanckActivity() {
                 group = planckProvider.createGroup(groupIdentity, manager, Vector())
                 group.print()
             }
+            binding.emptyGroupCreationFeedback.text = "Empty group created:\n"+group.getDataString()
         }
     }
 
@@ -75,20 +76,22 @@ class GroupTestScreen: PlanckActivity() {
                 group = planckProvider.createGroup(groupIdentity, manager, memberIdentities)
                 group.print()
             }
+            binding.groupCreationFeedback.text = "Group created:\n"+group.getDataString()
         }
     }
 
     private fun Group.print() {
-        Timber.e(
-            """
-                GROUP:
-                Group identity: ${this.group_identity}
-                Group manager: ${this.manager}
-                Members: ${this.members}
-                Active: ${this.active}
-            """.trimIndent()
-        )
+        Timber.e(getDataString())
     }
+
+    private fun Group.getDataString(): String =
+        """
+            GROUP:
+            Group identity: ${this.group_identity}
+            Group manager: ${this.manager}
+            Members: ${this.members}
+            Active: ${this.active}
+        """.trimIndent()
 
 
     override fun inject() {
