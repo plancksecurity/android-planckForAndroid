@@ -12,7 +12,7 @@
     <color name="attachment_color">@android:color/black</color>
     <color name="wizard_button_background_color">@color/white</color>
     <color name="divider_color">@color/planck_gray</color>
-
+    <color name="light_button_color">@color/white</color>
     <color name="toolbar_color">@color/colorPrimary</color>
     <color name="drawer_account_image_placeholder_color">@color/colorPrimaryDark</color>
     <color name="drawer_background">@color/colorPrimary</color>

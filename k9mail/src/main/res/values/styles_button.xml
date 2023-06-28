@@ -28,7 +28,7 @@
     <style name="SelectAuthScreenButtons">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/selectable_item_background</item>
+        <item name="android:background">@drawable/selectable_light_button_background</item>
         <item name="android:textColor">@color/planck_gray</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:gravity">center_vertical|start</item>
