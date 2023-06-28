@@ -1156,7 +1156,10 @@ class PlanckProviderImplKotlin(
         groupIdentity: Identity,
         manager: Identity,
         members: Vector<Identity>,
-    ): Group = engine.get().group_create(groupIdentity, manager, members)
+    ): Group {
+        val membersUpdated = Vector(members.map { updateIdentity(it) })
+        return engine.get().group_create(groupIdentity, manager, membersUpdated)
+    }
 
     companion object {
         private const val TAG = "pEpEngine-provider"
