@@ -187,7 +187,7 @@
         <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/colorAccent</item>
-        <item name="android:background">@color/wizard_button_background_color</item>
+        <item name="android:background">@color/default_button_color</item>
     </style>
 
     <style name="SyncDisableDialog.Light.Base" parent="AlertDialogStyle.Light">
