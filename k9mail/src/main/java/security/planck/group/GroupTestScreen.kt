@@ -50,21 +50,24 @@ class GroupTestScreen: PlanckActivity() {
 
     private fun createGroup() {
         uiScope.launch {
+            binding.emptyGroupCreationFeedback.text = ""
             withContext(PlanckDispatcher) {
                 group.print()
                 val account = preferences.accounts.first()
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
                 val groupIdentity = PlanckUtils.createIdentity(Address("juanito.valderrama@rama.ch", "juanitoeh"), this@GroupTestScreen)
                 kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, Vector()) }
-                    .onFailure { displayError(it) }
-                group.print()
+            }.onFailure { displayError(it) }.onSuccess {
+                binding.emptyGroupCreationFeedback.text = "Empty group created:\n"+group.getDataString()
             }
-            binding.emptyGroupCreationFeedback.text = "Empty group created:\n"+group.getDataString()
+            group.print()
+
         }
     }
 
     private fun createGroupFromUserInput() {
         uiScope.launch {
+            binding.groupCreationFeedback.text = ""
             val groupAddress = binding.groupAddress.text.toString()
             val memberAddresses = binding.groupMemberAddresses.text.toString()
             withContext(PlanckDispatcher) {
@@ -74,10 +77,10 @@ class GroupTestScreen: PlanckActivity() {
                 val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress), this@GroupTestScreen)
                 val memberIdentities = Vector(memberAddresses.split(" ").map { PlanckUtils.createIdentity(Address(it), this@GroupTestScreen) })
                 kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
-                    .onFailure { displayError(it) }
-                group.print()
+            }.onFailure { displayError(it) }.onSuccess {
+                binding.groupCreationFeedback.text = "Group created:\n"+group.getDataString()
             }
-            binding.groupCreationFeedback.text = "Group created:\n"+group.getDataString()
+            group.print()
         }
     }
 
