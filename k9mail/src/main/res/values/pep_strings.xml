@@ -208,8 +208,8 @@
     <string name="ellipsized_text" translatable="false">%s  …</string>
 
     <!-- FPR -->
-    <string name="trustwords_title">Trustwords</string>
-    <string name="fpr_title">Fingerprints</string>
+    <string name="trustwords_title" translatable="false">Trustwords</string>
+    <string name="fpr_title" translatable="false">Fingerprints</string>
     <string name="fpr_actual_title">This device</string>
     <string name="fpr_new_device_title">New device</string>
 

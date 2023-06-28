@@ -76,6 +76,8 @@ import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
+import security.planck.appalive.AppAliveMonitor;
+import security.planck.audit.AuditLogger;
 import security.planck.mdm.ManageableSetting;
 import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
@@ -103,6 +105,10 @@ public class K9 extends MultiDexApplication {
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
+    private static Long THIRTY_DAYS_IN_SECONDS = 2592000L;
+    private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
+    private AuditLogger auditLogger;
+    private AppAliveMonitor appAliveMonitor;
 
     public static K9JobManager jobManager;
 
@@ -642,6 +648,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
+        editor.putLong("auditLogDataTimeRetention", auditLogDataTimeRetention);
 
         fontSizes.save(editor);
     }
@@ -661,7 +668,20 @@ public class K9 extends MultiDexApplication {
 
         initializeInjector();
 
+        initializeAuditLog();
+
         component.provisioningManager().startProvisioning();
+    }
+
+    private void initializeAuditLog() {
+        auditLogger = new AuditLogger(
+                new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
+                auditLogDataTimeRetention
+        );
+        appAliveMonitor = new AppAliveMonitor(component.preferences().getStorage());
+        auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
+        auditLogger.addStartEventLog();
+        appAliveMonitor.startAppAliveMonitor();
     }
 
     public void finalizeSetup() {
@@ -1073,6 +1093,7 @@ public class K9 extends MultiDexApplication {
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
+        auditLogDataTimeRetention = storage.getLong("auditLogDataTimeRetention", THIRTY_DAYS_IN_SECONDS);
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1593,6 +1614,19 @@ public class K9 extends MultiDexApplication {
 
     public static Set<MediaKey> getMediaKeys() {
         return mediaKeys;
+    }
+
+    public void setAuditLogDataTimeRetention(Long auditLogDataTimeRetention) {
+        auditLogger.setLogAgeLimit(auditLogDataTimeRetention);
+        K9.auditLogDataTimeRetention = auditLogDataTimeRetention;
+    }
+
+    public Long getAuditLogDataTimeRetention() {
+        return auditLogDataTimeRetention;
+    }
+
+    public AuditLogger getAuditLogger() {
+        return auditLogger;
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {

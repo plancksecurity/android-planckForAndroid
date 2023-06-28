@@ -1052,7 +1052,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="xoauth2_unable_to_contact_auth_server">Authentifizierungsserver kann nicht kontaktiert werden</string>
     <string name="xoauth2_auth_cancelled_by_user">Authentifizierung abgebrochen</string>
     <string name="crypto_no_provider_button">Zu den Einstellungen</string>
-    <string name="crypto_no_provider_message">Diese E-Mail wurde mit OpenPGP verschlüsselt. 
+    <string name="crypto_no_provider_message">Diese E-Mail wurde mit OpenPGP verschlüsselt.
 \nUm sie zu lesen, müssen Sie eine kompatible OpenPGP-App installieren und konfigurieren.</string>
     <string name="crypto_no_provider_title">Diese E-Mail ist verschlüsselt</string>
     <string name="no_crypto_provider_see_global">Keine OpenPGP-App konfiguriert, siehe globale Einstellungen!</string>
@@ -1097,4 +1097,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="remote_control_desc">Erlaube dieser App planck fernzusteuern und zu konfigurieren.</string>
     <string name="remote_control_label">planck Fernsteuerung</string>
     <string name="unread_widget_label">planck Ungelesen</string>
+    <string name="print_action">Drucken</string>
+    <string name="setting_theme_follow_system">Systemeinstellungen verwenden</string>
 </resources>

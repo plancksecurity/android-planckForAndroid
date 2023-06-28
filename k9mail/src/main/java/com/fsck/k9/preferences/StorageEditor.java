@@ -17,6 +17,7 @@ public class StorageEditor {
     private Storage storage;
     private PassphraseStorage passphraseStorage;
     private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
+    private final AppAliveMonitorStorage appAliveMonitorStorage;
 
     private Map<String, String> changes = new HashMap<>();
     private List<String> removals = new ArrayList<>();
@@ -26,10 +27,12 @@ public class StorageEditor {
 
     StorageEditor(Storage storage,
                   PassphraseStorage passphraseStorage,
-                  OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage) {
+                  OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage,
+                  AppAliveMonitorStorage appAliveMonitorStorage) {
         this.storage = storage;
         this.passphraseStorage = passphraseStorage;
         this.ongoingDecryptMessagesStorage = ongoingDecryptMessagesStorage;
+        this.appAliveMonitorStorage = appAliveMonitorStorage;
 
         snapshot.putAll(storage.getAll());
     }
@@ -130,5 +133,9 @@ public class StorageEditor {
 
     public void clearOngoingDecryptMessageTempFilePaths() {
         ongoingDecryptMessagesStorage.clearTempFilePaths();
+    }
+
+    public void setLastAppAliveMonitoredTime(long lastTime) {
+        appAliveMonitorStorage.setLastAppAliveMonitoredTime(lastTime);
     }
 }
