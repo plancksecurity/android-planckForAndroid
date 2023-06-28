@@ -57,7 +57,10 @@ class GroupTestScreen: PlanckActivity() {
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
                 val groupIdentity = PlanckUtils.createIdentity(Address("juanito.valderrama@rama.ch", "juanitoeh"), this@GroupTestScreen)
                 kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, Vector()) }
-            }.onFailure { displayError(it) }.onSuccess {
+            }.onFailure {
+                Timber.e(it, "error creating empty group")
+                displayError(it)
+            }.onSuccess {
                 binding.emptyGroupCreationFeedback.text = "Empty group created:\n"+group.getDataString()
             }
             group.print()
@@ -77,7 +80,10 @@ class GroupTestScreen: PlanckActivity() {
                 val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress), this@GroupTestScreen)
                 val memberIdentities = Vector(memberAddresses.split(" ").map { PlanckUtils.createIdentity(Address(it), this@GroupTestScreen) })
                 kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
-            }.onFailure { displayError(it) }.onSuccess {
+            }.onFailure {
+                Timber.e(it, "error creating group from user input")
+                displayError(it)
+            }.onSuccess {
                 binding.groupCreationFeedback.text = "Group created:\n"+group.getDataString()
             }
             group.print()
