@@ -9,7 +9,7 @@
     <color name="divider_color">@color/white</color>
 
     <color name="splash_activity_background">@color/dark_theme_default_background</color>
-    <color name="drawer_logo">#A366FF</color>
+    <color name="drawer_account_image_placeholder_color">#A366FF</color>
     <color name="drawer_background">#1F1F1F</color>
     <color name="attachment_color">@android:color/white</color>
     <color name="wizard_button_background_color">@color/dark_theme_default_background</color>

@@ -29,7 +29,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_gravity="center_vertical"
-                android:src="@color/drawer_logo" />
+                android:src="@color/drawer_account_image_placeholder_color" />
 
             <TextView
                 android:id="@+id/nav_header_contact_text"
