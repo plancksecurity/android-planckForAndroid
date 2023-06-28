@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
+import com.fsck.k9.databinding.GroupTestBinding
 import com.fsck.k9.mail.Address
 import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.PlanckProvider
@@ -22,8 +23,8 @@ import java.util.Vector
 import javax.inject.Inject
 
 class GroupTestScreen: PlanckActivity() {
+    private lateinit var binding: GroupTestBinding
 
-    private lateinit var createGroup: Button
     @Inject
     lateinit var planckProvider: PlanckProvider
 
@@ -36,10 +37,14 @@ class GroupTestScreen: PlanckActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.group_test)
+        binding = GroupTestBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         setUpToolbar(true)
-        createGroup = findViewById(R.id.create_group_button)
-        createGroup.setOnClickListener {
+        binding.createGroupButton.setOnClickListener {
+            createGroupFromUserInput()
+        }
+        binding.createGroupButton.setOnClickListener {
             createGroup()
         }
     }
@@ -49,8 +54,25 @@ class GroupTestScreen: PlanckActivity() {
             withContext(PlanckDispatcher) {
                 group.print()
                 val account = preferences.accounts.first()
-                val identity = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
-                group = planckProvider.createGroup(identity, identity, Vector(listOf(identity)))
+                val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
+                val groupIdentity = PlanckUtils.createIdentity(Address("juanito.valderrama@rama.ch", "juanitoeh"), this@GroupTestScreen)
+                group = planckProvider.createGroup(groupIdentity, manager, Vector())
+                group.print()
+            }
+        }
+    }
+
+    private fun createGroupFromUserInput() {
+        uiScope.launch {
+            val groupAddress = binding.groupAddress.text.toString()
+            val memberAddresses = binding.groupMemberAddresses.text.toString()
+            withContext(PlanckDispatcher) {
+                group.print()
+                val account = preferences.accounts.first()
+                val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
+                val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress), this@GroupTestScreen)
+                val memberIdentities = Vector(memberAddresses.split(" ").map { PlanckUtils.createIdentity(Address(it), this@GroupTestScreen) })
+                group = planckProvider.createGroup(groupIdentity, manager, memberIdentities)
                 group.print()
             }
         }
