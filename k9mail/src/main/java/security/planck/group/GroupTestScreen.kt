@@ -3,6 +3,7 @@ package security.planck.group
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import com.fsck.k9.Preferences
 import com.fsck.k9.databinding.GroupTestBinding
 import com.fsck.k9.mail.Address
@@ -100,6 +101,16 @@ class GroupTestScreen: PlanckActivity() {
 
     override fun inject() {
         planckComponent.inject(this)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {
