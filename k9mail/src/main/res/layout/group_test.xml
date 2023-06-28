@@ -3,12 +3,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <include layout="@layout/simple_toolbar_layout" />
-    <Button
-        android:id="@+id/create_group_button"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Create group"/>
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create an empty group (you are the manager)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold"/>
+            <Button
+                android:id="@+id/create_empty_group_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create empty group"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create a group (you are the manager)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Group address"
+                android:labelFor="@+id/group_address"/>
+            <EditText
+                android:id="@+id/group_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="example@example.com"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Group members addresses"
+                android:labelFor="@+id/group_member_addresses"/>
+            <EditText
+                android:id="@+id/group_member_addresses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="provide addresses separated by spaces"/>
+            <Button
+                android:id="@+id/create_group_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create group"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
