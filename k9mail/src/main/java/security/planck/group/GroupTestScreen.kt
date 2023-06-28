@@ -3,17 +3,15 @@ package security.planck.group
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import com.fsck.k9.Preferences
-import com.fsck.k9.R
 import com.fsck.k9.databinding.GroupTestBinding
 import com.fsck.k9.mail.Address
 import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.ui.tools.FeedbackTools
 import foundation.pEp.jniadapter.Group
-import foundation.pEp.jniadapter.Member
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +42,7 @@ class GroupTestScreen: PlanckActivity() {
         binding.createGroupButton.setOnClickListener {
             createGroupFromUserInput()
         }
-        binding.createGroupButton.setOnClickListener {
+        binding.createEmptyGroupButton.setOnClickListener {
             createGroup()
         }
     }
@@ -56,7 +54,8 @@ class GroupTestScreen: PlanckActivity() {
                 val account = preferences.accounts.first()
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
                 val groupIdentity = PlanckUtils.createIdentity(Address("juanito.valderrama@rama.ch", "juanitoeh"), this@GroupTestScreen)
-                group = planckProvider.createGroup(groupIdentity, manager, Vector())
+                kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, Vector()) }
+                    .onFailure { displayError(it) }
                 group.print()
             }
             binding.emptyGroupCreationFeedback.text = "Empty group created:\n"+group.getDataString()
@@ -73,11 +72,16 @@ class GroupTestScreen: PlanckActivity() {
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
                 val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress), this@GroupTestScreen)
                 val memberIdentities = Vector(memberAddresses.split(" ").map { PlanckUtils.createIdentity(Address(it), this@GroupTestScreen) })
-                group = planckProvider.createGroup(groupIdentity, manager, memberIdentities)
+                kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
+                    .onFailure { displayError(it) }
                 group.print()
             }
             binding.groupCreationFeedback.text = "Group created:\n"+group.getDataString()
         }
+    }
+
+    private fun displayError(e: Throwable) {
+        FeedbackTools.showLongFeedback(binding.root, e.message)
     }
 
     private fun Group.print() {
