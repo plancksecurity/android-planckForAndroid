@@ -59,9 +59,10 @@ class GroupTestScreen: PlanckActivity() {
                 kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, Vector()) }
             }.onFailure {
                 Timber.e(it, "error creating empty group")
+                binding.emptyGroupCreationFeedback.text = it.message
                 displayError(it)
             }.onSuccess {
-                binding.emptyGroupCreationFeedback.text = "Empty group created:\n"+group.getDataString()
+                binding.emptyGroupCreationFeedback.text = "Empty group created\n"+group.getDataString()
             }
             group.print()
 
@@ -82,9 +83,10 @@ class GroupTestScreen: PlanckActivity() {
                 kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
             }.onFailure {
                 Timber.e(it, "error creating group from user input")
+                binding.groupCreationFeedback.text = it.message
                 displayError(it)
             }.onSuccess {
-                binding.groupCreationFeedback.text = "Group created:\n"+group.getDataString()
+                binding.groupCreationFeedback.text = "Group created\n"+group.getDataString()
             }
             group.print()
         }
@@ -101,9 +103,15 @@ class GroupTestScreen: PlanckActivity() {
     private fun Group.getDataString(): String =
         """
             GROUP:
-            Group identity: ${this.group_identity}
-            Group manager: ${this.manager}
-            Members: ${this.members}
+            Group identity: 
+                ${this.group_identity}
+                
+            Group manager: 
+                ${this.manager}
+                
+            Members: 
+                ${this.members?.joinToString("\n") { "identity: ${it.ident}, joined: ${it.joined}" }}
+                
             Active: ${this.active}
         """.trimIndent()
 

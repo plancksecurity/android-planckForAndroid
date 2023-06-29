@@ -63,7 +63,8 @@
             <TextView
                 android:id="@+id/group_creation_feedback"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true" />
 
         </LinearLayout>
 
