@@ -378,10 +378,8 @@ public class MessageViewFragment extends PlanckFragment implements ConfirmationD
                 planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
             }
             planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
-            toolBarCustomizer.setToolbarColor(
-                    ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
-            toolBarCustomizer.setStatusBarPlanckColor(
-                    ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
+            toolBarCustomizer.setMessageToolbarColor();
+            toolBarCustomizer.setMessageStatusBarColor();
         }
     }
 
@@ -870,7 +868,7 @@ public class MessageViewFragment extends PlanckFragment implements ConfirmationD
         refreshRecipients(getContext());
         if (force || PlanckUtils.isPepStatusClickable(planckUIArtefactCache.getRecipients(), pEpRating)) {
             String myAddress = mAccount.getEmail();
-            PlanckStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
+            PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
     }
 

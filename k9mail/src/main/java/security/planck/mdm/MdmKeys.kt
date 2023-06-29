@@ -17,6 +17,7 @@ const val RESTRICTION_PLANCK_SYNC_FOLDER = "planck_sync_folder"
 const val RESTRICTION_PLANCK_DEBUG_LOG = "debug_logging"
 const val RESTRICTION_ALLOW_PLANCK_SYNC_NEW_DEVICES = "allow_planck_sync_new_devices"
 const val RESTRICTION_ENABLE_ECHO_PROTOCOL = "planck_enable_echo_protocol"
+const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION = "audit_log_data_time_retention"
 
 const val RESTRICTION_ACCOUNT_DESCRIPTION = "account_description"
 const val RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE = "account_display_count"

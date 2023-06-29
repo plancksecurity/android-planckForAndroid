@@ -336,4 +336,13 @@
         </restriction>
     </restriction>
 
+    <restriction
+        android:defaultValue="@string/default_audit_log_data_time_retention"
+        android:description="@string/audit_log_data_time_retention_description"
+        android:key="audit_log_data_time_retention"
+        android:restrictionType="choice"
+        android:entries="@array/audit_log_data_time_retention_entries"
+        android:entryValues="@array/audit_log_data_time_retention_values"
+        android:title="@string/audit_log_data_time_retention_title"/>
+
 </restrictions>

@@ -1,6 +1,9 @@
 package com.fsck.k9.activity.compose;
 
 
+import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.CURRENT_RATING;
+import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.REQUEST_STATUS;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -54,9 +57,6 @@ import java.util.List;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
-
-import static com.fsck.k9.planck.ui.PlanckColoredActivity.CURRENT_RATING;
-import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.REQUEST_STATUS;
 
 
 public class RecipientPresenter implements EchoMessageReceivedListener {

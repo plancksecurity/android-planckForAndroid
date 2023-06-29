@@ -71,6 +71,7 @@ import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -489,7 +490,7 @@ public class TestUtils {
                     } else if (line[1].equals("false")) {
                         testConfig.setTrusted_server(false, 0);
                     } else {
-                        assertFailWithMessage("Trusted_server must be true or false");
+                        fail("Trusted_server must be true or false");
                     }
                     break;
                 case "imap_server":
@@ -513,7 +514,7 @@ public class TestUtils {
                 case "password2":
                     testConfig.setPassword(line[1], 1);
                     if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
-                        assertFailWithMessage("Password is empty");
+                        fail("Password is empty");
                     }
                     break;
                 case "username2":
@@ -525,7 +526,7 @@ public class TestUtils {
                     } else if (line[1].equals("false")) {
                         testConfig.setTrusted_server(false, 1);
                     } else {
-                        assertFailWithMessage("Trusted_server must be true or false");
+                        fail("Trusted_server must be true or false");
                     }
                     break;
                 case "imap_server2":
@@ -549,7 +550,7 @@ public class TestUtils {
                 case "password3":
                     testConfig.setPassword(line[1], 2);
                     if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
-                        assertFailWithMessage("Password is empty");
+                        fail("Password is empty");
                     }
                     break;
                 case "username3":
@@ -561,7 +562,7 @@ public class TestUtils {
                     } else if (line[1].equals("false")) {
                         testConfig.setTrusted_server(false, 2);
                     } else {
-                        assertFailWithMessage("Trusted_server must be true or false");
+                        fail("Trusted_server must be true or false");
                     }
                     break;
                 case "imap_server3":
@@ -662,7 +663,7 @@ public class TestUtils {
             waitForIdle();
         }
         if (!viewIsDisplayed(R.id.afirmativeActionButton)) {
-            assertFailWithMessage("Cannot sync devices");
+            fail("Cannot sync devices");
         } else {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
             waitForIdle();
@@ -771,7 +772,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.assertFailWithMessage("Failed checking 1st devices is not sync");
+            fail("Failed checking 1st devices is not sync");
         }
     }
 
@@ -780,7 +781,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.assertFailWithMessage("Failed checking 2nd devices is not sync");
+            fail("Failed checking 2nd devices is not sync");
         }
         getMessageListSize();
         composeMessageButton();
@@ -885,11 +886,6 @@ public class TestUtils {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void assertFailWithMessage(String message) {
-        //Assume.assumeTrue(message, false);
-        onView(withId(R.id.toolbar)).check(matches(forceFail(message)));
     }
 
     public void readBotList() {
@@ -1162,7 +1158,7 @@ public class TestUtils {
                 }
             } catch (Exception ex) {
                 if (!(accountToSelect < getAvailableAccounts())) {
-                    assertFailWithMessage("Cannot find account " + accountToSelect);
+                    fail("Cannot find account " + accountToSelect);
                 }
                 Timber.i("Cannot click account " + accountToSelect + ": " + ex.getMessage());
                 while (!exists(onView(withId(R.id.accounts_list)))) {
@@ -1210,7 +1206,7 @@ public class TestUtils {
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
         if (!(accountToSelect < getAvailableAccounts())) {
-            assertFailWithMessage("Cannot find account " + accountToSelect);
+            fail("Cannot find account " + accountToSelect);
         }
         goToFolder(folder, accountToSelect);
         if (exists(onView(withId(R.id.message_list)))) {
@@ -1308,7 +1304,7 @@ public class TestUtils {
         try {
             waitForIdle();
             if (!getTextFromView(onView(withId(view))).contains(text)) {
-                assertFailWithMessage("View doesn't contain text: " + text);
+                fail("View doesn't contain text: " + text);
             }
         } catch (Exception ex) {
             Timber.i("Cannot find view: " + ex.getMessage());
@@ -1609,7 +1605,7 @@ public class TestUtils {
     public void checkOwnKeyInJSON(String mainKeyID, boolean isTheSame) {
         try {
             if ((json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr").equals(mainKeyID)) != isTheSame) {
-                assertFailWithMessage("Own Key: " + mainKeyID + " // Key JSON file: " + json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr"));
+                fail("Own Key: " + mainKeyID + " // Key JSON file: " + json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr"));
             }
         } catch (JSONException e) {
             Timber.e("Cannot read the Key from the JSON file");
@@ -1619,7 +1615,7 @@ public class TestUtils {
     public void checkOwnKeyInDB(String mainKeyID, boolean isTheSame) {
         String newMainKeyID = getOwnKeyFromDB("management.db", "identity", "user_id");
         if ((mainKeyID.equals(newMainKeyID)) != isTheSame) {
-            assertFailWithMessage("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
+            fail("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
         }
     }
 
@@ -1627,7 +1623,7 @@ public class TestUtils {
         getJSONObject("keys");
         waitForIdle();
         if (!jsonArray.toString().contains(key)) {
-            assertFailWithMessage("The key " + key + " is not in the JSON file");
+            fail("The key " + key + " is not in the JSON file");
         }
     }
 
@@ -1654,7 +1650,7 @@ public class TestUtils {
             }
         } catch (Exception e) {
             removeDBFolder();
-            assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column);
+            fail("Failed to read DB when trying to find: " + table + "/" + column);
         }
         return null;
     }
@@ -1682,11 +1678,11 @@ public class TestUtils {
             }
         } catch (Exception e) {
             removeDBFolder();
-            assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column + "/" + value);
+            fail("Failed to read DB when trying to find: " + table + "/" + column + "/" + value);
         }
         removeDBFolder();
         if (!rightValue) {
-            assertFailWithMessage("Column " + column + " is " + valueInDB + " and it should be " + value);
+            fail("Column " + column + " is " + valueInDB + " and it should be " + value);
         }
     }
 
@@ -1724,7 +1720,7 @@ public class TestUtils {
             }
         }
         if (directory.exists()) {
-            assertFailWithMessage("Cannot remove the old DB");
+            fail("Cannot remove the old DB");
         }
     }
 
@@ -1732,7 +1728,7 @@ public class TestUtils {
         File directory= getExportFolder();
         String[] directoryPath = directory.list();
         if (directoryPath.length > 1) {
-            assertFailWithMessage("There are more than 1 DB");
+            fail("There are more than 1 DB");
         }
         FileWriter dbFile = null;
         try {
@@ -2224,25 +2220,15 @@ public class TestUtils {
         assertMessageStatus(rating, status);
     }
 
-    public void assertStatus(Rating rating){
-        int statusColor;
+    public void assertStatus(Rating rating) {
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
         }
-        statusColor = getSecurityStatusDrawableColor(rating);
-        if (statusColor == -10) {
-            if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                assertFailWithMessage("Wrong Status, it should be empty");
-            }
-        } else {
-            int value = rating.value;
-            int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
-
-            //int color = R.color.compose_unsecure_delivery_warning;
-            assertsIconColor("securityStatusIcon", color);
-            viewIsDisplayed(R.id.securityStatusIcon);
-            assertSecurityStatusText(rating);
-        }
+        int value = rating.value;
+        int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+        assertsIconColor("securityStatusIcon", color);
+        viewIsDisplayed(R.id.securityStatusIcon);
+        assertSecurityStatusText(rating);
     }
     public void assertMessageStatus(Rating rating, String status){
         int statusColor;
@@ -2258,7 +2244,7 @@ public class TestUtils {
         statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                assertFailWithMessage("Wrong Status, it should be empty");
+                fail("Wrong Status, it should be empty");
             }
         } else {
             int value = rating.value;
@@ -2294,7 +2280,7 @@ public class TestUtils {
         statusColor = getSecurityStatusDrawableColor(status);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
-                assertFailWithMessage("Wrong Status, it should be empty");
+                fail("Wrong Status, it should be empty");
             }
         } else {
             if (R.drawable.planck_status_green != statusColor
@@ -2303,7 +2289,7 @@ public class TestUtils {
                     && BuildConfig.IS_ENTERPRISE
                     && R.drawable.enterprise_status_unsecure != statusColor
             ) {
-                assertFailWithMessage("Wrong Status color");
+                fail("Wrong Status color");
             }
             if (visible) {
                 waitUntilViewDisplayed(R.id.securityStatusText);
@@ -2333,13 +2319,16 @@ public class TestUtils {
     public void assertSecurityStatusText(Rating status) {
         String firstLineText = getTextFromView(onView(withId(R.id.securityStatusText)));
         ViewInteraction secondLine = onView(withId(R.id.securityStatusSecondLine));
-
+        String emptySpace = "";
         String secondLineText = exists(secondLine)
                 ? getTextFromView(onView(withId(R.id.securityStatusSecondLine)))
                 : "";
+        if (!secondLineText.equals("")) {
+            emptySpace = " ";
+        }
         assertEquals(
                 getResourceString(R.array.pep_title, status.value),
-                firstLineText + secondLineText
+                firstLineText + emptySpace + secondLineText
         );
     }
 
@@ -2477,27 +2466,33 @@ public class TestUtils {
             }
         }
         if (!exists) {
-            assertFailWithMessage("Cannot find " + textToCompare + " on the screen");
+            fail("Cannot find " + textToCompare + " on the screen");
         }
     }
 
     public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
         waitForIdle();
-        Rating [] statusRating = new Rating[1];
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
-                int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
+                int x = (object.getVisibleBounds().right - object.getVisibleBounds().left)/4 + object.getVisibleBounds().left;
+                int iconColor = getPixelColor(x, object.getVisibleCenter().y);
                 expectedColor = ContextCompat.getColor(context, expectedColor);
                 if (iconColor != expectedColor) {
-                        assertFailWithMessage("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
+                        fail("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
                     break;
                 }
             }
         }
     }
-
+    public void setWifi (boolean enable) throws IOException {
+        if (enable) {
+            device.executeShellCommand("svc wifi enable");
+        } else {
+            device.executeShellCommand("svc wifi disable");
+        }
+    }
     public void summonThreads () {
         clickStatus();
         pressBack();
@@ -2529,12 +2524,15 @@ public class TestUtils {
             waitForIdle();
             if (BuildConfig.IS_ENTERPRISE) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
-                    assertFailWithMessage("Status is not shown");
+                    fail("Status is not shown");
                 }
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
-                onView(withId(R.id.securityStatusText)).check(matches(withText(text)));
+                String statusText = getTextFromView(onView(withId(R.id.securityStatusText))) + " " + getTextFromView(onView(withId(R.id.securityStatusSecondLine)));
+                if (!statusText.contains(text)) {
+                    fail("Status are not the same. It is " + statusText + " and it should be " + text);
+                }
                 return;
             }
         }
@@ -2550,7 +2548,7 @@ public class TestUtils {
             waitForIdle();
             if (BuildConfig.IS_ENTERPRISE) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
-                    assertFailWithMessage("Status is not shown");
+                    fail("Status is not shown");
                 }
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
@@ -2625,7 +2623,7 @@ public class TestUtils {
                         else {
                             int pixel = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
                             if (pixel != resources.getColor(statusColor)) {
-                                assertFailWithMessage("Badge status colors are different");
+                                fail("Badge status colors are different");
                             }
                             assertedBadgeColor = true;
                             break;
@@ -2765,7 +2763,7 @@ public class TestUtils {
         int upperToolbarColor = getCurrentActivity().getWindow().getStatusBarColor();
         org.junit.Assert.assertEquals("Text", upperToolbarColor, color);
         if (upperToolbarColor != color) {
-            assertFailWithMessage("Upper toolbar color is wrong");
+            fail("Upper toolbar color is wrong");
         }
     }
 
@@ -2910,34 +2908,17 @@ public class TestUtils {
 
     public void selectFromScreen(int resource) {
         waitForIdle();
+        String text = resources.getString(resource);
+        int textCharacters = text.length();
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().equals(resources.getString(resource))) {
-                        try {
-                            while (object.getText().equals(resources.getString(resource))) {
-                                waitForIdle();
-                                Espresso.onIdle();
-                                object.longClick();
-                                waitForIdle();
-                                Espresso.onIdle();
-                                boolean exists = false;
-                                for (UiObject2 object2 : device.findObjects(selector)) {
-                                    if (object.getText().equals(resources.getString(resource))) {
-                                        exists = true;
-                                    }
-                                }
-                                if (exists) {
-                                    waitForIdle();
-                                    return;
-                                }
-                            }
-                            return;
-                        } catch (Exception ex1) {
+                    if (object.getText().substring(0, textCharacters).equals(text)) {
+                            waitForIdle();
+                            object.longClick();
                             waitForIdle();
                             return;
-                        }
                     }
                 } catch (Exception ex) {
                     Timber.i("Cannot find text on screen: " + ex);
@@ -3699,7 +3680,7 @@ public class TestUtils {
         onView(withId(R.id.message_list)).check(matches(isDisplayed()));
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
         if (messageListSize[1] != numberOfMessages) {
-            assertFailWithMessage("Wrong number of messages");
+            fail("Wrong number of messages");
         }
         getMessageListSize();
     }
@@ -3885,7 +3866,7 @@ public class TestUtils {
                 } else {
                     waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-                    assertFailWithMessage("Error: BODY TEXT=" + text[0] + " ---*****--- TEXT TO COMPARE=" + cucumberBody);
+                    fail("Error: BODY TEXT=" + text[0] + " ---*****--- TEXT TO COMPARE=" + cucumberBody);
                 }
             }
         }
@@ -3904,7 +3885,7 @@ public class TestUtils {
                 waitForIdle();
                 String messageBody = object.getText().replaceAll("\n", "");
                 if (!messageBody.contains(cucumberBody)) {
-                    assertFailWithMessage("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
+                    fail("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
                 }
                 return;
             } else {
@@ -3943,7 +3924,7 @@ public class TestUtils {
                 waitForIdle();
                 return;
             } else {
-                assertFailWithMessage("Message Body text is different");
+                fail("Message Body text is different");
             }
         }
     }
@@ -4047,7 +4028,7 @@ public class TestUtils {
                 }
             }
         }
-        assertFailWithMessage("CheckBox " +  resources.getString(resource) + " is not " + check);
+        fail("CheckBox " +  resources.getString(resource) + " is not " + check);
     }
 
     public void getScreenShot() {
@@ -4225,7 +4206,7 @@ public class TestUtils {
                 }
             }
         }
-        assertFailWithMessage("Item " + item + " of the list is not " + isSelected);
+        fail("Item " + item + " of the list is not " + isSelected);
     }
 
     public void setTimeInRadialPicker (int hour) {
@@ -4254,7 +4235,7 @@ public class TestUtils {
                 try {
                     if (time.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/time_header")) {
                         if (!time.getChildren().get(0).getText().contains((String.valueOf(hour)))){
-                            assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
+                            fail("Time is " + time.getText() + " and it should be " + hour);
                         }
                         timeAssertDone = true;
                         break;
@@ -4271,7 +4252,7 @@ public class TestUtils {
                 try {
                     if (clock.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/radial_picker")) {
                         if (!clock.getChildren().get(hour).isSelected()) {
-                            assertFailWithMessage("Wrong time selected");
+                            fail("Wrong time selected");
                         }
                         return;
                     }
@@ -4444,7 +4425,7 @@ public class TestUtils {
         if (!aboutText.contains(shortTextInAbout[0][0])
                 || !librariesText.contains(shortTextInAbout[1][0])
                 || !aboutText.contains(shortTextInAbout[2][0])) {
-            assertFailWithMessage("Wrong text in About");
+            fail("Wrong text in About");
         }
         pressBack();
     }
@@ -4793,7 +4774,7 @@ public class TestUtils {
             }
         }
         if (fail) {
-            assertFailWithMessage("Account name has not been modified");
+            fail("Account name has not been modified");
         }
         pressOKButtonInDialog();
     }
@@ -4969,7 +4950,7 @@ public class TestUtils {
                     }
                 }
                 if (!keys.contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-                    assertFailWithMessage("Wrong key");
+                    fail("Wrong key");
                 }
                 break;
             case "rating":
@@ -4984,6 +4965,9 @@ public class TestUtils {
                 try {
                     while (json == null) {
                         String js = readJsonFile("results.json");
+                        if (js.equals("no json file")) {
+                            return;
+                        }
                         json = new JSONObject(js);
                     }
                     json = json.getJSONObject("attributes");
@@ -5009,27 +4993,29 @@ public class TestUtils {
     private static String readJsonFile(String fileName) {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/" + fileName);
-        while (!newFile.exists()) {
-            swipeUpScreen();
-            downloadAttachedFile(fileName);
-            waitUntilIdle();
-            waitForIdle();
+        swipeUpScreen();
+        downloadAttachedFile(fileName);
+        waitUntilIdle();
+        waitForIdle();
+        if(!newFile.exists())
+        {
+            return "no json file";
         }
         StringBuilder jsonText = new StringBuilder();
-            try {
-                FileInputStream fin = new FileInputStream(newFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString;
-                while ((receiveString = bufferedReader.readLine()) != null) {
-                    jsonText.append(receiveString);
-                }
-                fin.close();
-            } catch (Exception e) {
-                Timber.i("Error reading config file, trying again");
-            } finally {
-                newFile.delete();
+        try {
+            FileInputStream fin = new FileInputStream(newFile);
+            InputStreamReader inputStreamReader = new InputStreamReader(fin);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                jsonText.append(receiveString);
             }
+            fin.close();
+        } catch (Exception e) {
+            Timber.i("Error reading config file, trying again");
+        } finally {
+            newFile.delete();
+        }
         return jsonText.toString();
     }
 

@@ -3,7 +3,6 @@ package com.fsck.k9.planck.ui.privacy.status;
 import static com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -25,11 +24,10 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.infrastructure.MessageView;
+import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.models.PlanckIdentity;
-import com.fsck.k9.planck.ui.PlanckColoredActivity;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 
@@ -43,16 +41,17 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import foundation.pEp.jniadapter.Rating;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
-public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
+public class PlanckStatus extends PlanckActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String SENDER = "isComposedKey";
     private static final String MYSELF = "myself";
-    private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "messageReference";
     private static final String MESSAGE_DIRECTION = "messageDirection";
     public static final int REQUEST_STATUS = 5; // Do not use a value below 5 because it would collide with other constants in RecipientPresenter.
+    public static final String CURRENT_RATING = "current_color";
 
     @Inject
     PlanckStatusPresenter presenter;
@@ -61,8 +60,7 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     PlanckStatusRendererBuilder rendererBuilder;
 
     @Inject
-    @MessageView
-    DisplayHtml displayHtml;
+    ToolBarCustomizer toolBarCustomizer;
 
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
@@ -81,20 +79,18 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     private static final String ALWAYS_SECURE = "alwaysSecure";
 
     public static PendingIntent pendingIntentShowStatus(
-            Activity context, Rating currentRating, String sender, MessageReference messageReference,
+            Activity context, String sender, MessageReference messageReference,
             Boolean isMessageIncoming, String myself, boolean forceUnencrypted, boolean alwaysSecure) {
-        Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, forceUnencrypted, alwaysSecure);
+        Intent intent = createShowStatusIntent(context, sender, messageReference, isMessageIncoming, myself, forceUnencrypted, alwaysSecure);
         return PendingIntent.getActivity(context, REQUEST_STATUS, intent, PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     @NotNull
     private static Intent createShowStatusIntent(
-            Activity context, Rating currentRating, String sender, MessageReference messageReference,
+            Activity context, String sender, MessageReference messageReference,
             Boolean isMessageIncoming, String myself, boolean forceUnencrypted, boolean alwaysSecure) {
         Intent i = new Intent(context, PlanckStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
-        String ratingName = forceUnencrypted ? Rating.pEpRatingUnencrypted.toString() : currentRating.toString();
-        i.putExtra(CURRENT_RATING, ratingName);
         i.putExtra(SENDER, sender);
         i.putExtra(MYSELF, myself);
         if (messageReference != null) {
@@ -108,19 +104,17 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
         return i;
     }
 
-    public static void actionShowStatus(Activity context, Rating currentRating, String sender,
+    public static void actionShowStatus(Activity context, String sender,
                                         MessageReference messageReference, Boolean isMessageIncoming, String myself) {
-        Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, false, false);
+        Intent intent = createShowStatusIntent(context, sender, messageReference, isMessageIncoming, myself, false, false);
         context.startActivityForResult(intent, REQUEST_STATUS);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadPepRating();
         setContentView(R.layout.planck_status);
         ButterKnife.bind(PlanckStatus.this);
-        initPep();
         final Intent intent = getIntent();
         if (intent != null && intent.hasExtra(SENDER)
                 && intent.hasExtra(MESSAGE_REFERENCE)) {
@@ -130,32 +124,29 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
             boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
             boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
             boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
-            presenter.initialize(this, getUiCache(), getPlanck(),displayHtml, isMessageIncoming,
+            presenter.initialize(this, isMessageIncoming,
                     new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }
 
-        restorePEpRating(savedInstanceState);
         presenter.restoreInstanceState(savedInstanceState);
         setUpActionBar();
         presenter.loadRecipients();
     }
 
     @Override
-    protected void inject() {
+    public void inject() {
         getPlanckComponent().inject(this);
-    }
-
-    private void restorePEpRating(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            planckRating = (Rating) savedInstanceState.getSerializable(RATING);
-            setPlanckRating(planckRating);
-        }
     }
 
     private void setUpActionBar() {
         initializeToolbar(true, R.string.pep_title_activity_privacy_status);
         colorActionBar();
+    }
+
+    private void colorActionBar() {
+        toolBarCustomizer.setDefaultToolbarColor();
+        toolBarCustomizer.setDefaultStatusBarColor();
     }
 
     @Override
@@ -279,12 +270,6 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     }
 
     @Override
-    public void setRating(Rating planckRating) {
-        setPlanckRating(planckRating);
-        colorActionBar();
-    }
-
-    @Override
     public void showDataLoadError() {
         FeedbackTools.showLongFeedback(getRootView(), getResources().getString(R.string.status_loading_error));
     }
@@ -347,7 +332,7 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean isIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
-        if (isIncoming) return false;
+        if (isIncoming || BuildConfig.IS_ENTERPRISE) return false;
 
         getMenuInflater().inflate(R.menu.menu_pep_status, menu);
         menu.findItem(R.id.force_unencrypted).setTitle(presenter.isForceUnencrypted()
@@ -360,7 +345,7 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
                 : R.string.is_always_secure
         );
 
-        return !BuildConfig.IS_ENTERPRISE;
+        return true;
     }
 
     @Override
@@ -390,27 +375,9 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
         return super.onOptionsItemSelected(item);
     }
 
-    private void showExplanationDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.pep_explanation)
-                .setMessage(getUiCache().getExplanation(getPlanckRating()))
-                .setPositiveButton(R.string.okay_action,
-                        (dialog, which) -> dialog.dismiss())
-                .create()
-                .show();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        colorActionBar();
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(RATING, planckRating);
         presenter.saveInstanceState(outState);
     }
 
@@ -418,11 +385,6 @@ public class PlanckStatus extends PlanckColoredActivity implements PlanckStatusV
     public void showItsOnlyOwnMsg() {
         recipientsView.setVisibility(View.GONE);
         itsOwnMessageTV.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void updateToolbarColor(Rating rating) {
-        colorActionBar(rating);
     }
 
     @Override

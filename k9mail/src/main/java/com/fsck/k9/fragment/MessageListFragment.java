@@ -140,7 +140,6 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
     private static final long CLICK_THRESHOLD_MILLIS = 300;
     private FloatingActionButton fab;
     private ProgressBar loadingView;
-    private Rating worstThreadRating;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -875,11 +874,6 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
         }
 
         updateTitle();
-        MessageList activity = (MessageList) getActivity();
-        if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
-            toolBarCustomizer.setToolbarColor(worstThreadRating);
-            toolBarCustomizer.setStatusBarPlanckColor(worstThreadRating);
-        }
         if (shouldHideComposeFab()) {
             fab.hide();
         } else {
@@ -3049,7 +3043,6 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
                     title = getString(R.string.general_no_subject);
                 }
                 updateTitle();
-                updateToolbarColor(cursor);
             } else {
                 //TODO: empty thread view -> return to full message list
             }
@@ -3076,31 +3069,13 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
     }
 
     private void updateToolbarColorToOriginal() {
-        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setDefaultToolbarColor();
+        toolBarCustomizer.setDefaultStatusBarColor();
     }
 
     boolean isMessageSelected(Cursor cursor) {
         long messageId = cursor.getLong(uniqueIdColumn);
         return selected.contains(messageId);
-    }
-
-    private void updateToolbarColor(Cursor cursor) {
-        int worstRatingValue = Rating.pEpRatingFullyAnonymous.value;
-        worstThreadRating = Rating.pEpRatingFullyAnonymous;
-        for (int i = 0; i < cursor.getCount(); i++) {
-            Rating messageRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
-            int messageRatingValue = messageRating.value;
-            if (messageRatingValue <= worstRatingValue) {
-                worstRatingValue = messageRatingValue;
-                worstThreadRating = messageRating;
-            }
-            cursor.moveToNext();
-        }
-        if (!((MessageList) getActivity()).isMessageViewVisible()) {
-            toolBarCustomizer.setToolbarColor(worstThreadRating);
-            toolBarCustomizer.setStatusBarPlanckColor(worstThreadRating);
-        }
     }
 
     private void updateMoreMessagesOfCurrentFolder() {

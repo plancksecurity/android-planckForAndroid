@@ -55,14 +55,14 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="open_market">Play Store öffnen</string>
     <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Autoren: <xliff:g id="app_authors">%s</xliff:g></string>
-    <string name="app_revision_fmt">Revisionsinformationen: &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"app_revision_url\"&gt;%s&lt;/xliff:g&gt;</string>
+    <string name="app_revision_fmt">Revisionsinformationen: <xliff:g id="app_revision_url">%s</xliff:g></string>
     <string name="app_libraries">Wir verwenden die folgenden Bibliotheken von Drittanbietern:</string>
     <string name="app_emoji_icons">Emoji icons: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_messages_label">E-Mails lesen</string>
     <string name="read_messages_desc">Der Anwendung erlauben, Ihre E-Mails zu lesen.</string>
     <string name="delete_messages_label">E-Mails löschen</string>
     <string name="delete_messages_desc">Der Anwendung erlauben, Ihre E-Mails zu löschen.</string>
-    <string name="about_title_fmt">Über &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"app_name\"&gt;%s&lt;/xliff:g&gt;</string>
+    <string name="about_title_fmt">Über <xliff:g id="app_name">%s</xliff:g></string>
     <string name="accounts_title">Konten</string>
     <string name="folders_title">Ordner</string>
     <string name="advanced">Erweitert</string>
@@ -142,7 +142,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="general_no_subject">(Kein Betreff)</string>
     <string name="general_no_sender">Kein Absender</string>
     <string name="status_loading">Lade</string>
-    <string name="status_loading_more">Nachrichten werden geladen\u2026</string>
+    <string name="status_loading_more">Nachrichten werden geladen…</string>
     <string name="status_network_error">Verbindungsfehler</string>
     <string name="status_invalid_id_error">Nachricht nicht gefunden</string>
     <string name="status_loading_error">Nachrichtenladefehler</string>
@@ -293,17 +293,17 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_setup_basics_password_hint">Passwort</string>
     <string name="account_setup_basics_show_password">Passwort anzeigen</string>
     <string name="account_setup_basics_manual_setup_action">Manuelle Einrichtung</string>
-    <string name="account_setup_check_settings_retr_info_msg">Kontoinformationen werden abgerufen\u2026</string>
-    <string name="account_setup_check_settings_check_incoming_msg">Einstellungen des Empfangsservers werden überprüft\u2026</string>
-    <string name="account_setup_check_settings_check_outgoing_msg">Einstellungen des Ausgangsservers werden überprüft\u2026</string>
-    <string name="account_setup_check_settings_authenticate">Authentifizierung\u2026</string>
-    <string name="account_setup_check_settings_fetch">Kontoeinstellungen werden geladen\u2026</string>
-    <string name="account_setup_check_settings_canceling_msg">Aktion wird abgebrochen\u2026</string>
+    <string name="account_setup_check_settings_retr_info_msg">Kontoinformationen werden abgerufen…</string>
+    <string name="account_setup_check_settings_check_incoming_msg">Einstellungen des Empfangsservers werden überprüft…</string>
+    <string name="account_setup_check_settings_check_outgoing_msg">Einstellungen des Ausgangsservers werden überprüft…</string>
+    <string name="account_setup_check_settings_authenticate">Authentifizierung…</string>
+    <string name="account_setup_check_settings_fetch">Kontoeinstellungen werden geladen…</string>
+    <string name="account_setup_check_settings_canceling_msg">Aktion wird abgebrochen…</string>
     <string name="account_setup_names_title">Fast fertig!</string>
     <string name="account_setup_names_account_name_label">Kontoname (optional):</string>
     <string name="account_setup_names_user_name_label">Ihr Name (Anzeige bei ausgehenden Nachrichten):</string>
     <string name="account_setup_account_type_title">Kontotyp</string>
-    <string name="account_setup_account_type_instructions">Art des Kontos?</string>
+    <string name="account_setup_account_type_instructions">Art des Kontos\?</string>
     <string name="account_setup_account_type_pop_action">POP3-Konto</string>
     <string name="account_setup_account_type_imap_action">IMAP-Konto</string>
     <string name="account_setup_account_type_webdav_action">WebDAV(Exchange)-Konto</string>
@@ -412,11 +412,13 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_setup_options_mail_display_count_all">Alle Nachrichten</string>
     <string name="move_copy_cannot_copy_unsynced_message">Nachrichten, die nicht mit dem Server synchronisiert wurden, können nicht kopiert oder verschoben werden</string>
     <string name="account_setup_failed_dlg_title">Einrichtung konnte nicht abgeschlossen werden</string>
-    <string name="account_setup_failed_dlg_auth_message_fmt">Benutzername oder Passwort ist falsch.\n(<xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_auth_message_fmt">Benutzername oder Passwort ist falsch.
+\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_certificate_message_fmt">Der Server hat ein ungültiges SSL-Zertifikat vorgelegt. Dies liegt manchmal an einer Fehlkonfiguration des Servers. Manchmal liegt es daran, dass jemand versucht, Sie oder Ihren Mailserver anzugreifen. Wenn Sie nicht sicher sind, was los ist, klicken Sie auf Ablehnen und wenden Sie sich an die Personen, die Ihren Mailserver verwalten.
 \n
 \n(<xliff:g id="error">%s</xliff:g>)</string>
-    <string name="account_setup_failed_dlg_server_message_fmt">Kann nicht mit dem Server verbinden.\n(<xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_server_message_fmt">Kann nicht mit dem Server verbinden.
+\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_edit_details_action">Details bearbeiten</string>
     <string name="account_setup_failed_dlg_continue_action">Weiter</string>
     <string name="account_settings_push_advanced_title">Erweitert</string>
@@ -649,7 +651,12 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
 \nS - Auswählen/abwählen
 \nJ oder P - Vorherige Nachricht
 \nK oder N - Nächste Nachricht</string>
-    <string name="folder_list_help_key">1 - Nur Hauptordner anzeigen\n2 - Haupt- und Nebenordner anzeigen\n3 - Alle außer Nebenordner anzeigen\n4 - Alle Ordner anzeigen\nQ - Zurück zu den Konten\nS - Kontoeinstellungen bearbeiten</string>
+    <string name="folder_list_help_key">1 - Nur Hauptordner anzeigen
+\n2 - Haupt- und Nebenordner anzeigen
+\n3 - Alle außer Nebenordner anzeigen
+\n4 - Alle Ordner anzeigen
+\nQ - Zurück zu den Konten
+\nS - Kontoeinstellungen bearbeiten</string>
     <string name="folder_list_filter_hint">Ordnername enthält</string>
     <string name="folder_list_display_mode_label">Ordner anzeigen…</string>
     <string name="folder_list_display_mode_all">Alle Ordner anzeigen</string>
@@ -709,7 +716,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="hide_special_accounts_summary">\'Gemeinsamen Posteingang\' und \'Alle Nachrichten\' verbergen</string>
     <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
     <string name="flagged_modifier">- Markiert</string>
-    <string name="unread_modifier"> - Ungelesen</string>
+    <string name="unread_modifier">- Ungelesen</string>
     <string name="search_all_messages_title">Alle Nachrichten</string>
     <string name="search_all_messages_detail">Alle Nachrichten in durchsuchbaren Ordnern</string>
     <string name="integrated_inbox_title">Gemeinsamer Posteingang</string>
@@ -757,21 +764,21 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="miscellaneous_preferences">Verschiedenes</string>
     <string name="error_activity_not_found">Keine geeignete Anwendung für diese Aktion gefunden.</string>
     <string name="send_failed_reason">Senden fehlgeschlagen: %s</string>
-    <string name="save_or_discard_draft_message_dlg_title">Entwurf speichern?</string>
-    <string name="save_or_discard_draft_message_instructions_fmt">Entwurf speichern oder verwerfen?</string>
-    <string name="confirm_discard_draft_message_title">Nachricht verwerfen?</string>
-    <string name="confirm_discard_draft_message">Sind Sie sicher, dass Sie die Nachricht verwerfen möchten?</string>
+    <string name="save_or_discard_draft_message_dlg_title">Entwurf speichern\?</string>
+    <string name="save_or_discard_draft_message_instructions_fmt">Entwurf speichern oder verwerfen\?</string>
+    <string name="confirm_discard_draft_message_title">Nachricht verwerfen\?</string>
+    <string name="confirm_discard_draft_message">Sind Sie sicher, dass Sie die Nachricht verwerfen möchten\?</string>
     <string name="select_text_now">Text auswählen, um ihn zu kopieren.</string>
     <string name="dialog_confirm_delete_title">Löschen bestätigen</string>
-    <string name="dialog_confirm_delete_message">Möchten Sie diese Nachricht löschen?</string>
+    <string name="dialog_confirm_delete_message">Möchten Sie diese Nachricht löschen\?</string>
     <plurals name="dialog_confirm_delete_messages">
-        <item quantity="one">Möchten Sie diese Nachricht wirklich löschen?</item>
-        <item quantity="other">Möchten Sie wirklich <xliff:g id="message_count">%1$d</xliff:g> Nachrichten löschen?</item>
+        <item quantity="one">Möchten Sie diese Nachricht wirklich löschen\?</item>
+        <item quantity="other">Möchten Sie wirklich <xliff:g id="message_count">%1$d</xliff:g> Nachrichten löschen\?</item>
     </plurals>
     <string name="dialog_confirm_delete_confirm_button">Löschen</string>
     <string name="dialog_confirm_delete_cancel_button">Nicht löschen</string>
     <string name="dialog_confirm_mark_all_as_read_title">Alle als gelesen markieren bestätigen</string>
-    <string name="dialog_confirm_mark_all_as_read_message">Möchten Sie alle Nachrichten als gelesen markieren?</string>
+    <string name="dialog_confirm_mark_all_as_read_message">Möchten Sie alle Nachrichten als gelesen markieren\?</string>
     <string name="dialog_confirm_mark_all_as_read_confirm_button">Ja</string>
     <string name="dialog_confirm_mark_all_as_read_cancel_button">Nein</string>
     <string name="dialog_confirm_spam_title">Als Spam markieren</string>
@@ -825,7 +832,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="activate_account_action">Aktivieren</string>
     <string name="account_unavailable">Konto \"<xliff:g id="account">%s</xliff:g>\" ist nicht verfügbar; Überprüfen Sie den Speicher</string>
     <string name="attachment_save_title">Anhang speichern</string>
-    <string name="attachment_save_desc">Es wurde kein Dateimanager gefunden. Wo soll der Anhang abgelegt werden?</string>
+    <string name="attachment_save_desc">Es wurde kein Dateimanager gefunden. Wo soll der Anhang abgelegt werden\?</string>
     <string name="manage_accounts_move_up_action">Nach oben verschieben</string>
     <string name="manage_accounts_move_down_action">Nach unten verschieben</string>
     <string name="manage_accounts_moving_message">Konto verschieben…</string>
@@ -918,7 +925,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="recipient_bcc">BCC</string>
     <string name="recipient_to">An</string>
     <string name="recipient_from">Von</string>
-    <string name="unknown_recipient"><![CDATA[<Unbekannter Empfänger>]]></string>
+    <string name="unknown_recipient">&lt;Unbekannter Empfänger&gt;</string>
     <string name="address_type_home">Privat</string>
     <string name="address_type_work">Arbeit</string>
     <string name="address_type_other">Sonstige</string>
@@ -936,7 +943,8 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="enable_sign_only">PGP Nur-Signieren aktivieren</string>
     <string name="disable_sign_only">PGP Nur-Signieren deaktivieren</string>
     <string name="openpgp_inline_title">PGP/INLINE-Modus</string>
-    <string name="openpgp_inline_text">Die E-Mail wurde im PGP/INLINE-Format gesendet.\nDies sollte nur für die Kompatibilität verwendet werden:</string>
+    <string name="openpgp_inline_text">Die E-Mail wurde im PGP/INLINE-Format gesendet.
+\nDies sollte nur für die Kompatibilität verwendet werden:</string>
     <string name="openpgp_inline_plus_compat">Manche Clients unterstützen nur dieses Format</string>
     <string name="openpgp_inline_minus_transit">Signaturen können während dem Versand kaputtgehen</string>
     <string name="openpgp_inline_minus_attach">Anhänge werden nicht unterstützt</string>
@@ -1044,7 +1052,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="xoauth2_unable_to_contact_auth_server">Authentifizierungsserver kann nicht kontaktiert werden</string>
     <string name="xoauth2_auth_cancelled_by_user">Authentifizierung abgebrochen</string>
     <string name="crypto_no_provider_button">Zu den Einstellungen</string>
-    <string name="crypto_no_provider_message">Diese E-Mail wurde mit OpenPGP verschlüsselt. 
+    <string name="crypto_no_provider_message">Diese E-Mail wurde mit OpenPGP verschlüsselt.
 \nUm sie zu lesen, müssen Sie eine kompatible OpenPGP-App installieren und konfigurieren.</string>
     <string name="crypto_no_provider_title">Diese E-Mail ist verschlüsselt</string>
     <string name="no_crypto_provider_see_global">Keine OpenPGP-App konfiguriert, siehe globale Einstellungen!</string>
@@ -1075,7 +1083,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="status_no_background">Synchronisierung deaktiviert - Keine Hintergrundaktivität</string>
     <string name="status_no_network">Synchronisierung deaktiviert - Kein Netzwerk</string>
     <string name="account_clear_dlg_instructions_fmt">Lokale Kopien von Nachrichten in <xliff:g id="account">%s</xliff:g> werden entfernt. Kontoeinstellungen bleiben erhalten.</string>
-    <string name="account_recreate_dlg_instructions_fmt">Alle lokalen Daten für \\\"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%s&lt;/xliff:g&gt;\\\" werden entfernt. Das Konto wird beibehalten.</string>
+    <string name="account_recreate_dlg_instructions_fmt">Alle lokalen Daten für \\\"<xliff:g id="account">%s</xliff:g>\\\" werden entfernt. Das Konto wird beibehalten.</string>
     <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <string name="shortcuts_title">planck Konten</string>
     <string name="port_is_out_of_range">Der Port ist ausserhalb des erlaubten Bereichs</string>
@@ -1083,11 +1091,12 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_settings_notification_open_system_notifications_summary">Einstellungen für Systembenachrichtigungen öffnen</string>
     <string name="account_settings_notification_open_system_notifications_label">Benachrichtigungseinstellungen</string>
 
-    <string name="account_delete_dlg_instructions_fmt">Das Konto \"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%s&lt;/xliff:g&gt;\" wird aus planck entfernt.</string>
+    <string name="account_delete_dlg_instructions_fmt">Das Konto \"<xliff:g id="account">%s</xliff:g>\" wird aus planck entfernt.</string>
     <string name="default_signature">"-- Gesendet mit planck für Android. "</string>
     <string name="welcome_message_title">Willkommen bei planck</string>
     <string name="remote_control_desc">Erlaube dieser App planck fernzusteuern und zu konfigurieren.</string>
     <string name="remote_control_label">planck Fernsteuerung</string>
     <string name="unread_widget_label">planck Ungelesen</string>
-    <string name="rooted_device_error">Nicht unterstütztes Betriebssystem</string>
+    <string name="print_action">Drucken</string>
+    <string name="setting_theme_follow_system">Systemeinstellungen verwenden</string>
 </resources>

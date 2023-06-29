@@ -173,6 +173,10 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                             Timber.w("Creating folder %s with existing id %d", getName(), getId());
                             create(FolderType.HOLDS_MESSAGES);
                             open(mode);
+                            Account account = getAccount();
+                            if (account != null && account.getDefaultpEpSyncFolderName().equalsIgnoreCase(mName)) {
+                                K9.jobManager.scheduleAllMailJobs();
+                            }
                         }
                     } catch (MessagingException e) {
                         throw new WrappedException(e);

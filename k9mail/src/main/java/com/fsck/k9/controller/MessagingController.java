@@ -37,6 +37,7 @@ import com.fsck.k9.controller.MessagingControllerCommands.PendingExpunge;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingMarkAllAsRead;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingMoveOrCopy;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingSetFlag;
+import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthenticationFailedException;
@@ -120,6 +121,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import security.planck.audit.AuditLogger;
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
@@ -167,17 +169,26 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
     private final Preferences preferences;
+    private final AuditLogger auditLogger;
 
 
     @VisibleForTesting
-    MessagingController(Context context, NotificationController notificationController,
-                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PlanckProvider planckProvider) {
+    MessagingController(
+            Context context,
+            NotificationController notificationController,
+            Contacts contacts,
+            TransportProvider transportProvider,
+            Preferences preferences,
+            PlanckProvider planckProvider,
+            AuditLogger auditLogger
+    ) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
         this.transportProvider = transportProvider;
         this.planckProvider = planckProvider;
         this.preferences = preferences;
+        this.auditLogger = auditLogger;
         controllerThread = new AutoCloseableEngineThread(new Runnable() {
             @Override
             public void run() {
@@ -197,7 +208,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             TransportProvider transportProvider = TransportProvider.getInstance();
             Preferences preferences = Preferences.getPreferences(appContext);
             PlanckProvider planckProvider = PlanckProviderFactory.createProvider(appContext);
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider);
+            AuditLogger auditLogger = ((K9) appContext).getAuditLogger();
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider, auditLogger);
         }
         return inst;
     }
@@ -1713,6 +1725,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                             // Store message
                                 MimeMessage decryptedMessage = result.msg;
+                            if (!PlanckUtils.isAutoConsumeMessage(decryptedMessage)) {
+                                auditLogger.addMessageAuditLog(
+                                        decryptedMessage,
+                                        result.rating
+                                );
+                            }
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
 
@@ -3207,6 +3225,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
         String[] keys = K9.getMasterKeys().toArray(new String[0]);
         List<MimeMessage> encryptedMessages = planckProvider.encryptMessage(message, keys);
         Message encryptedMessageToSave = encryptedMessages.get(PlanckProvider.ENCRYPTED_MESSAGE_POSITION); //
+        if (!PlanckUtils.isAutoConsumeMessage(message)) {
+            Rating rating = MessageKt.getRatingFromHeader(encryptedMessageToSave);
+            if (rating != null) {
+                auditLogger.addMessageAuditLog(
+                        message,
+                        rating
+                );
+            }
+        }
 
         for (Message encryptedMessage : encryptedMessages) {
             sendMessage(transport, encryptedMessage);

@@ -32,6 +32,6 @@ k9mail/src/main/res/raw/settings.k9s
 k9mail/src/main/res/raw/settingsthemelight.k9s
 k9mail/src/androidTest/assets/features/test_config/
 outData/
-gradle/plugins/mdmDemoConfig.gradle
+gradle/plugins/customConfig.gradle
 
 *.hprof

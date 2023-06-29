@@ -27,19 +27,19 @@
         <item>pEpRatingUnderAttack</item>
     </string-array>
     <array name="pep_color">
-        <item>@color/planck_no_color</item>
-        <item>@color/planck_no_color</item>
-        <item>@color/planck_no_color</item>
-        <item>@color/planck_no_color</item>
-        <item>@color/planck_no_color</item>
-        <item>@color/planck_no_color</item>
-        <item>@color/planck_yellow</item>
-        <item>@color/planck_green</item>
-        <item>@color/planck_green</item>
-        <item>@color/planck_green</item>
-        <item>@color/planck_red</item>
-        <item>@color/planck_red</item>
-        <item>@color/planck_red</item>
+        <item>@color/planck_no_color<!--pEpRatingUndefined--></item>
+        <item>@color/planck_no_color<!--pEpRatingCannotDecrypt--></item>
+        <item>@color/planck_no_color<!--pEpRatingHaveNoKey--></item>
+        <item>@color/planck_no_color<!--pEpRatingUnencrypted--></item>
+        <item>@color/planck_no_color<!--pEpRatingUnreliable--></item>
+        <item>@color/planck_no_color<!--pEpRatingMediaKeyProtected--></item>
+        <item>@color/planck_yellow<!--pEpRatingReliable--></item>
+        <item>@color/planck_green<!--pEpRatingTrusted--></item>
+        <item>@color/planck_green<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>@color/planck_green<!--pEpRatingFullyAnonymous--></item>
+        <item>@color/planck_red<!--pEpRatingMissTrust--></item>
+        <item>@color/planck_red<!--pEpRatingB0rken--></item>
+        <item>@color/planck_red<!--pEpRatingUnderAttack--></item>
     </array>
     <!-- Translatable strings -->
     <string name="pep_account_setup_generating_keys">"Setting up your Privacy by Default "</string>
@@ -208,8 +208,8 @@
     <string name="ellipsized_text" translatable="false">%s  …</string>
 
     <!-- FPR -->
-    <string name="trustwords_title">Trustwords</string>
-    <string name="fpr_title">Fingerprints</string>
+    <string name="trustwords_title" translatable="false">Trustwords</string>
+    <string name="fpr_title" translatable="false">Fingerprints</string>
     <string name="fpr_actual_title">This device</string>
     <string name="fpr_new_device_title">New device</string>
 
@@ -384,5 +384,7 @@
     <string name="needs_your_permission_to_work">NEEDS YOUR PERMISSION TO WORK</string>
     <string name="account_setup_failed_dlg_oauth_wrong_email_address">The email address %1$s used for login is not allowed by your IT admin. Please use the provided %2$s instead to use the app.</string>
     <string name="compose_single_recipient_handshake_banner">Tap here to establish trust with this sender.</string>
+    <string name="rooted_device_error">Unsupported Operating System</string>
+    <string name="action_user_manual">User manual</string>
 
 </resources>

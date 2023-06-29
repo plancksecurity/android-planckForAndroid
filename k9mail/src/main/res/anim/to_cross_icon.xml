@@ -4,7 +4,7 @@
         android:duration="200"
         android:interpolator="@android:anim/linear_interpolator"
         android:propertyName="fillColor"
-        android:valueFrom="#4caf50"
+        android:valueFrom="@color/white"
         android:valueTo="@color/message_icons_color"
         android:valueType="colorType" />
     <objectAnimator

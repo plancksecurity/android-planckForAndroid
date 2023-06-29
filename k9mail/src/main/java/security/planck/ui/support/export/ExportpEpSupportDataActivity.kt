@@ -60,7 +60,7 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     override fun showSuccess() {
         showOkAction()
         messageText.setText(R.string.export_pep_support_data_dialog_success_msg)
-        successFailureImage.setImageResource(R.drawable.ic_success_green_24dp)
+        successFailureImage.setImageResource(R.drawable.ic_success_planck_24dp)
         successFailureImage.contentDescription =
             getString(R.string.export_pep_support_data_dialog_image_success_content_desc)
     }

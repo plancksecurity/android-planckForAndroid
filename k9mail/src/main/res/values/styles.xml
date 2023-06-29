@@ -109,7 +109,7 @@
 
     <style name="planckStyleButton.Grey">
         <item name="colorControlHighlight">?attr/grayScaleColorOnBackground2</item>
-        <item name="colorButtonNormal">@color/planck_no_color</item>
+        <item name="colorButtonNormal">@color/planck_gray</item>
     </style>
 
     <style name="planckThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
@@ -236,8 +236,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">64dp</item>
         <item name="android:layout_marginTop">24dp</item>
-        <item name="srcCompat">@drawable/planck_logo_green_60</item>
-        <item name="tint">@color/white_transparent_70</item>
+        <item name="srcCompat">@drawable/planck_logo_light</item>
+        <item name="tint">@color/white</item>
     </style>
 
     <style name="PermissionsScreen">
@@ -252,7 +252,7 @@
     <style name="PermissionsScreen.planckLogo" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">64dp</item>
-        <item name="srcCompat">@drawable/planck_logo_green_60</item>
+        <item name="srcCompat">@drawable/planck_logo_purple</item>
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 

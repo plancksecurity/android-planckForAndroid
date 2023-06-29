@@ -107,11 +107,38 @@ build:
   script:
     - pwd
     - echo ${HOME}
+    - # Write config file for demo
+      echo -e """ext {\n
+        demoAppIdSuffix = '${DEMO_APP_ID_SUFFIX}'\n
+        demoAppVersionNameSuffix = '${DEMO_APP_VERSION_NAME_SUFFIX}'\n
+        enableEndUser = ${ENABLE_END_USER}\n
+        appId = '${APP_ID}'\n
+        demoKeyAlias = 'demo'\n
+        demoKeyPassword = '${DEMO_KEY_PASSWORD}'\n
+        demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')\n
+        demoStorePassword = '${DEMO_STORE_PASSWORD}'\n
+      }""" > gradle/plugins/customConfig.gradle
+    - echo "=== Custom gradle config for the demo release ==="
+    - cat gradle/plugins/customConfig.gradle
     - for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
-    - ./gradlew --build-cache assembleEnterprisePlayStoreDebug
+    - > 
+      if [[ "$BUILD_FORMAT" == "apk" ]]; then
+        if [[ "$DEBUG_BUILD" == "true" ]]; then
+          ./gradlew --build-cache assembleEnterprisePlayStoreDebug
+        else
+          ./gradlew --build-cache assembleDemoPlayStoreRelease
+        fi
+      else
+        if [[ "$DEBUG_BUILD" == "true" ]]; then
+          ./gradlew --build-cache bundleEnterprisePlayStoreDebug
+        else
+          ./gradlew --build-cache bundleDemoPlayStoreRelease
+        fi
+      fi
+    - ./gradlew --build-cache assembleDemoPlayStoreRelease
     - mkdir -p packages
     - mv k9mail/build/outputs/apk/* packages/
     - du -h packages
