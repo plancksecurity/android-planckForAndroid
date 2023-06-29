@@ -2002,6 +2002,7 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+            Log.e("TESTGROUPMAIL", "GOT SIGNAL " + signal.name() + ", value = " + signal.value);
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
 
             if (isDebug()) {
@@ -2057,6 +2058,10 @@ public class K9 extends MultiDexApplication {
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
                             PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
+                    break;
+                case DistributionNotifyGroupInvite:
+                    Log.e("TESTGROUPMAIL", "INVITATION TO GROUP " + partner + " WITH MYSELF: " + myself);
+                    //MessagingController.getInstance(K9.this).notifyPlanckGroupInvite();
                     break;
             }
 
