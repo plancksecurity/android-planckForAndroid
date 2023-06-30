@@ -17,7 +17,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
 import com.fsck.k9.NotificationSetting;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 
 import java.util.ArrayList;
@@ -29,17 +28,26 @@ class DeviceNotifications extends BaseNotifications {
     private final LockScreenNotification lockScreenNotification;
 
 
-    DeviceNotifications(NotificationController controller, NotificationActionCreator actionCreator,
-            LockScreenNotification lockScreenNotification, WearNotifications wearNotifications) {
-        super(controller, actionCreator);
+    DeviceNotifications(
+            NotificationController controller,
+            NotificationActionCreator actionCreator,
+            LockScreenNotification lockScreenNotification,
+            WearNotifications wearNotifications,
+            NotificationResourceProvider notificationResourceProvider
+    ) {
+        super(controller, actionCreator, notificationResourceProvider);
         this.wearNotifications = wearNotifications;
         this.lockScreenNotification = lockScreenNotification;
     }
 
-    public static DeviceNotifications newInstance(NotificationController controller,
-            NotificationActionCreator actionCreator, WearNotifications wearNotifications) {
+    public static DeviceNotifications newInstance(
+            NotificationController controller,
+            NotificationActionCreator actionCreator,
+            WearNotifications wearNotifications,
+            NotificationResourceProvider notificationResourceProvider
+    ) {
         LockScreenNotification lockScreenNotification = LockScreenNotification.newInstance(controller);
-        return new DeviceNotifications(controller, actionCreator, lockScreenNotification, wearNotifications);
+        return new DeviceNotifications(controller, actionCreator, lockScreenNotification, wearNotifications, notificationResourceProvider);
     }
 
     public Notification buildSummaryNotification(Account account, NotificationData notificationData,
@@ -87,9 +95,8 @@ class DeviceNotifications extends BaseNotifications {
 
     private NotificationCompat.Builder createSimpleSummaryNotification(Account account, int unreadMessageCount) {
         String accountName = controller.getAccountName(account);
-        CharSequence newMailText = context.getString(R.string.notification_new_title);
-        String unreadMessageCountText = context.getString(R.string.notification_new_one_account_fmt,
-                unreadMessageCount, accountName);
+        CharSequence newMailText = notificationResourceProvider.newMailTitle();
+        String unreadMessageCountText = notificationResourceProvider.unreadMessagesCountText(unreadMessageCount, accountName);
 
         int notificationId = NotificationIds.getNewMailSummaryNotificationId(account);
         PendingIntent contentIntent = actionCreator.createViewFolderListPendingIntent(account, notificationId);
@@ -124,12 +131,12 @@ class DeviceNotifications extends BaseNotifications {
 
         int newMessagesCount = notificationData.getNewMessagesCount();
         String accountName = controller.getAccountName(account);
-        String title = context.getResources().getQuantityString(R.plurals.notification_new_messages_title,
-                newMessagesCount, newMessagesCount);
+        String title = notificationResourceProvider.newMessagesTitle(newMessagesCount);
         String summary = (notificationData.hasSummaryOverflowMessages()) ?
-                context.getString(R.string.notification_additional_messages,
-                        notificationData.getSummaryOverflowMessagesCount(), accountName) :
-                accountName;
+                notificationResourceProvider.additionalMessages(
+                        notificationData.getSummaryOverflowMessagesCount(),
+                        accountName
+                ) : accountName;
         String groupKey = NotificationGroupKeys.getGroupKey(account);
 
         NotificationCompat.Builder builder = createAndInitializeNotificationBuilder(account)
@@ -166,7 +173,7 @@ class DeviceNotifications extends BaseNotifications {
 
     private void addMarkAsReadAction(Builder builder, NotificationContent content, int notificationId) {
         int icon = getMarkAsReadActionIcon();
-        String title = context.getString(R.string.notification_action_mark_as_read);
+        String title = notificationResourceProvider.actionMarkAsRead();
 
 
         MessageReference messageReference = content.messageReference;
@@ -177,7 +184,7 @@ class DeviceNotifications extends BaseNotifications {
 
     private void addMarkAllAsReadAction(Builder builder, NotificationData notificationData) {
         int icon = getMarkAsReadActionIcon();
-        String title = context.getString(R.string.notification_action_mark_as_read);
+        String title = notificationResourceProvider.actionMarkAllAsRead();
 
         Account account = notificationData.getAccount();
         ArrayList<MessageReference> messageReferences = notificationData.getAllMessageReferences();
@@ -194,7 +201,7 @@ class DeviceNotifications extends BaseNotifications {
         }
 
         int icon = getDeleteActionIcon();
-        String title = context.getString(R.string.notification_action_delete);
+        String title = notificationResourceProvider.actionDeleteAll();
 
         Account account = notificationData.getAccount();
         int notificationId = NotificationIds.getNewMailSummaryNotificationId(account);
@@ -210,7 +217,7 @@ class DeviceNotifications extends BaseNotifications {
         }
 
         int icon = getDeleteActionIcon();
-        String title = context.getString(R.string.notification_action_delete);
+        String title = notificationResourceProvider.actionDelete();
 
         MessageReference messageReference = content.messageReference;
         PendingIntent action = actionCreator.createDeleteMessagePendingIntent(messageReference, notificationId);
@@ -220,7 +227,7 @@ class DeviceNotifications extends BaseNotifications {
 
     private void addReplyAction(Builder builder, NotificationContent content, int notificationId) {
         int icon = getReplyActionIcon();
-        String title = context.getString(R.string.notification_action_reply);
+        String title = notificationResourceProvider.actionReply();
 
         MessageReference messageReference = content.messageReference;
         PendingIntent replyToMessagePendingIntent =
@@ -240,15 +247,15 @@ class DeviceNotifications extends BaseNotifications {
     }
 
     private int getMarkAsReadActionIcon() {
-        return R.drawable.notification_action_mark_as_read;
+         return notificationResourceProvider.getIconMarkAsRead();
     }
 
     private int getDeleteActionIcon() {
-        return R.drawable.notification_action_delete;
+        return notificationResourceProvider.getIconDelete();
     }
 
     private int getReplyActionIcon() {
-        return R.drawable.notification_action_reply;
+        return notificationResourceProvider.getIconReply();
     }
 
     protected InboxStyle createInboxStyle(Builder builder) {
