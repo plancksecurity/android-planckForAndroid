@@ -3,7 +3,6 @@ package com.fsck.k9.notification
 import android.app.Notification
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.helper.ExceptionHelper
@@ -32,14 +31,13 @@ internal class SendFailedNotificationController(
                 Flag.X_PEP_WASNT_ENCRYPTED
             )
             pendingIntent =
-                actionBuilder.createMessageComposePendingIntent(messageReference, notificationId)
+                actionBuilder.createMessageComposePendingIntent(messageReference)
         } else {
             title = resourceProvider.sendFailedTitle()
             text = ExceptionHelper.getRootCauseMessage(exception)
             pendingIntent = actionBuilder.createViewFolderPendingIntent(
                 account,
-                account.outboxFolderName,
-                notificationId
+                account.outboxFolderName
             )
         }
 
@@ -58,12 +56,12 @@ internal class SendFailedNotificationController(
             .setCategory(NotificationCompat.CATEGORY_ERROR)
             .setErrorAppearance()
 
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationHelper.notify(account, notificationId, notificationBuilder.build())
     }
 
     fun clearSendFailedNotification(account: Account) {
         val notificationId = NotificationIds.getSendFailedNotificationId(account)
-        notificationManager.cancel(notificationId)
+        notificationHelper.cancel(notificationId)
     }
 
     private fun createLockScreenNotification(account: Account): Notification {
@@ -75,7 +73,4 @@ internal class SendFailedNotificationController(
             .setContentTitle(resourceProvider.sendFailedTitle())
             .build()
     }
-
-    private val notificationManager: NotificationManagerCompat
-        get() = notificationHelper.getNotificationManager()
 }

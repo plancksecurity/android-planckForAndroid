@@ -72,16 +72,16 @@ internal class SingleMessageNotificationDataCreator {
     }
 
     private fun isDeleteActionEnabled(): Boolean {
-        return K9.notificationQuickDeleteBehaviour != K9.NotificationQuickDelete.NEVER
+        return K9.getNotificationQuickDeleteBehaviour() != K9.NotificationQuickDelete.NEVER
     }
 
     // We don't support confirming actions on Wear devices. So don't show the action when confirmation is enabled.
     private fun isDeleteActionAvailableForWear(): Boolean {
-        return isDeleteActionEnabled() && !K9.isConfirmDeleteFromNotification
+        return isDeleteActionEnabled() && !K9.confirmDeleteFromNotification()
     }
 
     // We don't support confirming actions on Wear devices. So don't show the action when confirmation is enabled.
     private fun isSpamActionAvailableForWear(account: Account): Boolean {
-        return account.hasSpamFolder() && !K9.isConfirmSpam
+        return account.hasSpamFolder() && !K9.confirmSpam()
     }
 }
