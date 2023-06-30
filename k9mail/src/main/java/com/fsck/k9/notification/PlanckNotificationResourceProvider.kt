@@ -49,6 +49,11 @@ class PlanckNotificationResourceProvider(private val context: Context) : Notific
             newMessagesCount, newMessagesCount
         )
 
+    override fun newMailTitle(): String = context.getString(R.string.notification_new_title)
+
+    override fun unreadMessagesCountText(unreadMessageCount: Int, accountName: String): String =
+        context.getString(R.string.notification_new_one_account_fmt, unreadMessageCount, accountName)
+
     override fun additionalMessages(overflowMessagesCount: Int, accountName: String): String =
         context.getString(R.string.notification_additional_messages, overflowMessagesCount, accountName)
 
