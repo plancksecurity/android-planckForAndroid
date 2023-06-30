@@ -48,12 +48,13 @@ class NewMailNotifications {
     public static NewMailNotifications newInstance(
             NotificationController controller,
             NotificationActionCreator actionCreator,
-            NotificationHelper notificationHelper
+            NotificationHelper notificationHelper,
+            NotificationResourceProvider notificationResourceProvider
     ) {
         NotificationContentCreator contentCreator = new NotificationContentCreator(controller.getContext());
-        WearNotifications wearNotifications = new WearNotifications(controller, actionCreator);
+        WearNotifications wearNotifications = new WearNotifications(controller, actionCreator, notificationResourceProvider);
         DeviceNotifications deviceNotifications = DeviceNotifications.newInstance(
-                controller, actionCreator, wearNotifications);
+                controller, actionCreator, wearNotifications, notificationResourceProvider);
         return new NewMailNotifications(contentCreator, deviceNotifications, wearNotifications, notificationHelper);
     }
 

@@ -17,12 +17,18 @@ abstract class BaseNotifications {
     protected final Context context;
     protected final NotificationController controller;
     protected final NotificationActionCreator actionCreator;
+    protected final NotificationResourceProvider notificationResourceProvider;
 
 
-    protected BaseNotifications(NotificationController controller, NotificationActionCreator actionCreator) {
+    protected BaseNotifications(
+            NotificationController controller,
+            NotificationActionCreator actionCreator,
+            NotificationResourceProvider notificationResourceProvider
+    ) {
         this.context = controller.getContext();
         this.controller = controller;
         this.actionCreator = actionCreator;
+        this.notificationResourceProvider = notificationResourceProvider;
     }
 
     protected NotificationCompat.Builder createBigTextStyleNotification(Account account, NotificationHolder holder,
@@ -69,6 +75,6 @@ abstract class BaseNotifications {
     }
 
     private int getNewMailNotificationIcon() {
-        return R.drawable.notification_icon_new_mail;
+        return notificationResourceProvider.getIconNewMail();
     }
 }
