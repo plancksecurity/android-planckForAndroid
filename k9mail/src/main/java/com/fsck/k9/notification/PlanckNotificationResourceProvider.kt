@@ -63,6 +63,10 @@ class PlanckNotificationResourceProvider(private val context: Context) : Notific
 
     override fun sendFailedTitle(): String = context.getString(R.string.send_failure_subject)
 
+    override fun sendFailedCouldNotEncryptTitle(): String = context.getString(R.string.notification_failed_to_encrypt_title)
+
+    override fun sendFailedCouldNotEncryptText(): String = context.getString(R.string.notification_failed_to_encrypt_text)
+
     override fun sendingMailTitle(): String = context.getString(R.string.notification_bg_send_title)
 
     override fun sendingMailBody(accountName: String): String =
