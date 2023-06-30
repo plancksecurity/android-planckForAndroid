@@ -4,6 +4,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 
 internal const val MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS = 8
+internal const val MAX_NUMBER_OF_GROUP_NOTIFICATIONS = 8
 
 /**
  * Stores information about new message notifications for all accounts.
