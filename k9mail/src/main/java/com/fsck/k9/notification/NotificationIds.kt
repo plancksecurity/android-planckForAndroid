@@ -11,10 +11,13 @@ internal object NotificationIds {
     private const val OFFSET_FETCHING_MAIL = 5
     private const val OFFSET_NEW_MAIL_SUMMARY = 6
     private const val OFFSET_NEW_MAIL_SINGLE = 7
-    private const val NUMBER_OF_MISC_ACCOUNT_NOTIFICATIONS = 7
+    private const val OFFSET_GROUP_SUMMARY = 8
+    private const val OFFSET_GROUP_SINGLE = 9
+    private const val NUMBER_OF_MISC_ACCOUNT_NOTIFICATIONS = 9
     private const val NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS = MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS
+    private const val NUMBER_OF_GROUP_NOTIFICATIONS = MAX_NUMBER_OF_GROUP_NOTIFICATIONS
     private const val NUMBER_OF_NOTIFICATIONS_PER_ACCOUNT =
-        NUMBER_OF_MISC_ACCOUNT_NOTIFICATIONS + NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS
+        NUMBER_OF_MISC_ACCOUNT_NOTIFICATIONS + NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS + NUMBER_OF_GROUP_NOTIFICATIONS
 
     fun getNewMailSummaryNotificationId(account: Account): Int {
         return getBaseNotificationId(account) + OFFSET_NEW_MAIL_SUMMARY
