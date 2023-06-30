@@ -51,7 +51,7 @@ public class NotificationController {
         authenticationErrorNotificationController = new AuthenticationErrorNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
         syncNotificationController = new SyncNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
         sendFailedNotificationController = new SendFailedNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
-        newMailNotifications = NewMailNotifications.newInstance(this, actionBuilder);
+        newMailNotifications = NewMailNotifications.newInstance(this, actionBuilder, notificationHelper, notificationResourceProvider);
     }
 
     public void showCertificateErrorNotification(Account account, boolean incoming) {
