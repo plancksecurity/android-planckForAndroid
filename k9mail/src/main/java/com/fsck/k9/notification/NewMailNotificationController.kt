@@ -5,6 +5,8 @@ import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mailstore.LocalMessage
 
+private const val FIRST_POSITION = 0
+
 /**
  * Handle notifications for new messages.
  */
@@ -14,6 +16,21 @@ internal class NewMailNotificationController(
     private val summaryNotificationCreator: SummaryNotificationCreator,
     private val singleMessageNotificationCreator: SingleMessageNotificationCreator
 ) {
+
+    @Synchronized
+    fun addNewMailsNotification(
+        account: Account,
+        messages: List<LocalMessage>
+    ) {
+        for (position in messages.indices) {
+            val message = messages[position]
+            addNewMailNotification(
+                account,
+                message,
+                position != FIRST_POSITION
+            )
+        }
+    }
 
     @Synchronized
     fun addNewMailNotification(account: Account, message: LocalMessage, silent: Boolean) {
@@ -36,6 +53,20 @@ internal class NewMailNotificationController(
 
         if (notificationData != null) {
             processNewMailNotificationData(notificationData)
+        }
+    }
+
+    @Synchronized
+    fun clearNewMailNotifications(account: Account, folderName: String) {
+        removeNewMailNotifications(account) {
+            it.filter { messageReference -> messageReference.folderName == folderName }
+        }
+    }
+
+    @Synchronized
+    fun removeNewMailNotification(account: Account, messageReference: MessageReference) {
+        removeNewMailNotifications(account) {
+            it.filter { reference -> reference == messageReference }
         }
     }
 
