@@ -1,5 +1,7 @@
 package com.fsck.k9.notification
 
+import com.fsck.k9.R
+
 interface NotificationResourceProvider {
     val iconWarning: Int
     val iconMarkAsRead: Int
@@ -37,6 +39,10 @@ interface NotificationResourceProvider {
     fun noSender(): String
 
     fun sendFailedTitle(): String
+
+    fun sendFailedCouldNotEncryptTitle(): String
+
+    fun sendFailedCouldNotEncryptText(): String
     fun sendingMailTitle(): String
     fun sendingMailBody(accountName: String): String
 
