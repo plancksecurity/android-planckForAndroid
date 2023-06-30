@@ -23,9 +23,6 @@ public class NotificationController {
     private static final int NOTIFICATION_LED_FAST_ON_TIME = 100;
     private static final int NOTIFICATION_LED_FAST_OFF_TIME = 100;
     static final int NOTIFICATION_LED_BLINK_SLOW = 0;
-    static final int NOTIFICATION_LED_BLINK_FAST = 1;
-    static final int NOTIFICATION_LED_FAILURE_COLOR = 0xffff0000;
-
 
     private final Context context;
     private final NotificationManagerCompat notificationManager;
