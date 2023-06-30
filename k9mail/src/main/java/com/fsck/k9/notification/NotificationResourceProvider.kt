@@ -32,6 +32,10 @@ interface NotificationResourceProvider {
     fun certificateErrorBody(): String
 
     fun newMessagesTitle(newMessagesCount: Int): String
+
+    fun newMailTitle(): String
+
+    fun unreadMessagesCountText(unreadMessageCount: Int, accountName: String): String
     fun additionalMessages(overflowMessagesCount: Int, accountName: String): String
     fun previewEncrypted(): String
     fun noSubject(): String
