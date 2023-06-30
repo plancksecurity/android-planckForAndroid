@@ -2,7 +2,6 @@ package com.fsck.k9.notification;
 
 
 import android.app.Notification;
-import androidx.core.app.NotificationManagerCompat;
 import android.util.SparseArray;
 
 import com.fsck.k9.Account;
@@ -26,29 +25,36 @@ import java.util.List;
  */
 class NewMailNotifications {
     private static final int FIRST_POSITION = 0;
-    private final NotificationController controller;
     private final NotificationContentCreator contentCreator;
     private final DeviceNotifications deviceNotifications;
     private final WearNotifications wearNotifications;
     private final SparseArray<NotificationData> notifications = new SparseArray<NotificationData>();
     private final Object lock = new Object();
+    private final NotificationHelper notificationHelper;
 
 
-    NewMailNotifications(NotificationController controller, NotificationContentCreator contentCreator,
-            DeviceNotifications deviceNotifications, WearNotifications wearNotifications) {
-        this.controller = controller;
+    NewMailNotifications(
+            NotificationContentCreator contentCreator,
+            DeviceNotifications deviceNotifications,
+            WearNotifications wearNotifications,
+            NotificationHelper notificationHelper
+    ) {
         this.deviceNotifications = deviceNotifications;
         this.wearNotifications = wearNotifications;
         this.contentCreator = contentCreator;
+        this. notificationHelper = notificationHelper;
     }
 
-    public static NewMailNotifications newInstance(NotificationController controller,
-            NotificationActionCreator actionCreator) {
+    public static NewMailNotifications newInstance(
+            NotificationController controller,
+            NotificationActionCreator actionCreator,
+            NotificationHelper notificationHelper
+    ) {
         NotificationContentCreator contentCreator = new NotificationContentCreator(controller.getContext());
         WearNotifications wearNotifications = new WearNotifications(controller, actionCreator);
         DeviceNotifications deviceNotifications = DeviceNotifications.newInstance(
                 controller, actionCreator, wearNotifications);
-        return new NewMailNotifications(controller, contentCreator, deviceNotifications, wearNotifications);
+        return new NewMailNotifications(contentCreator, deviceNotifications, wearNotifications, notificationHelper);
     }
 
     void addNewMailNotification(Account account, LocalMessage message, int unreadMessageCount) {
@@ -167,7 +173,7 @@ class NewMailNotifications {
     }
 
     private void cancelNotification(int notificationId) {
-        getNotificationManager().cancel(notificationId);
+        notificationHelper.getNotificationManager().cancel(notificationId);
     }
 
     private void updateSummaryNotification(Account account, NotificationData notificationData) {
@@ -182,7 +188,7 @@ class NewMailNotifications {
         Notification notification = deviceNotifications.buildSummaryNotification(account, notificationData, silent);
         int notificationId = NotificationIds.getNewMailSummaryNotificationId(account);
 
-        getNotificationManager().notify(notificationId, notification);
+        notificationHelper.notify(account, notificationId, notification);
     }
 
     private void createStackedNotification(Account account, NotificationHolder holder) {
@@ -193,14 +199,10 @@ class NewMailNotifications {
         Notification notification = wearNotifications.buildStackedNotification(account, holder);
         int notificationId = holder.notificationId;
 
-        getNotificationManager().notify(notificationId, notification);
+        notificationHelper.notify(account, notificationId, notification);
     }
 
     private boolean isPrivacyModeEnabled() {
         return K9.getNotificationHideSubject() != NotificationHideSubject.NEVER;
-    }
-
-    private NotificationManagerCompat getNotificationManager() {
-        return controller.getNotificationManager();
     }
 }
