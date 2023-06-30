@@ -29,10 +29,10 @@ public class NotificationController {
 
     private final Context context;
     private final NotificationManagerCompat notificationManager;
-    private final CertificateErrorNotifications certificateErrorNotifications;
-    private final AuthenticationErrorNotifications authenticationErrorNotifications;
-    private final SyncNotifications syncNotifications;
-    private final SendFailedNotifications sendFailedNotifications;
+    private final CertificateErrorNotificationController certificateErrorNotificationController;
+    private final AuthenticationErrorNotificationController authenticationErrorNotificationController;
+    private final SyncNotificationController syncNotificationController;
+    private final SendFailedNotificationController sendFailedNotificationController;
     private final NewMailNotifications newMailNotifications;
 
     private final NotificationChannelManager channelUtils;
@@ -47,53 +47,54 @@ public class NotificationController {
         this.context = context;
         this.notificationManager = notificationManager;
         this.channelUtils = new NotificationChannelManager(context, Preferences.getPreferences(context));
-
+        NotificationResourceProvider notificationResourceProvider = new PlanckNotificationResourceProvider(context);
+        NotificationHelper notificationHelper = new NotificationHelper(context, notificationManager, channelUtils, notificationResourceProvider);
         NotificationActionCreator actionBuilder = new NotificationActionCreator(context);
-        certificateErrorNotifications = new CertificateErrorNotifications(this);
-        authenticationErrorNotifications = new AuthenticationErrorNotifications(this);
-        syncNotifications = new SyncNotifications(this, actionBuilder);
-        sendFailedNotifications = new SendFailedNotifications(this, actionBuilder);
+        certificateErrorNotificationController = new CertificateErrorNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
+        authenticationErrorNotificationController = new AuthenticationErrorNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
+        syncNotificationController = new SyncNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
+        sendFailedNotificationController = new SendFailedNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
         newMailNotifications = NewMailNotifications.newInstance(this, actionBuilder);
     }
 
     public void showCertificateErrorNotification(Account account, boolean incoming) {
-        certificateErrorNotifications.showCertificateErrorNotification(account, incoming);
+        certificateErrorNotificationController.showCertificateErrorNotification(account, incoming);
     }
 
     public void clearCertificateErrorNotifications(Account account, boolean incoming) {
-        certificateErrorNotifications.clearCertificateErrorNotifications(account, incoming);
+        certificateErrorNotificationController.clearCertificateErrorNotifications(account, incoming);
     }
 
     public void showAuthenticationErrorNotification(Account account, boolean incoming) {
-        authenticationErrorNotifications.showAuthenticationErrorNotification(account, incoming);
+        authenticationErrorNotificationController.showAuthenticationErrorNotification(account, incoming);
     }
 
     public void clearAuthenticationErrorNotification(Account account, boolean incoming) {
-        authenticationErrorNotifications.clearAuthenticationErrorNotification(account, incoming);
+        authenticationErrorNotificationController.clearAuthenticationErrorNotification(account, incoming);
     }
 
     public void showSendingNotification(Account account) {
-        syncNotifications.showSendingNotification(account);
+        syncNotificationController.showSendingNotification(account);
     }
 
     public void clearSendingNotification(Account account) {
-        syncNotifications.clearSendingNotification(account);
+        syncNotificationController.clearSendingNotification(account);
     }
 
     public void showSendFailedNotification(Account account, Exception exception) {
-        sendFailedNotifications.showSendFailedNotification(account, exception);
+        sendFailedNotificationController.showSendFailedNotification(account, exception);
     }
 
     public void clearSendFailedNotification(Account account) {
-        sendFailedNotifications.clearSendFailedNotification(account);
+        sendFailedNotificationController.clearSendFailedNotification(account);
     }
 
     public void showFetchingMailNotification(Account account, Folder folder) {
-        syncNotifications.showFetchingMailNotification(account, folder);
+        syncNotificationController.showFetchingMailNotification(account, folder);
     }
 
     public void clearFetchingMailNotification(Account account) {
-        syncNotifications.clearFetchingMailNotification(account);
+        syncNotificationController.clearFetchingMailNotification(account);
     }
 
     public void addNewMailsNotification(Account account, List<LocalMessage> messages, int previousUnreadMessageCount) {
