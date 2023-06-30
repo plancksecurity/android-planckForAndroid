@@ -3,7 +3,6 @@ package com.fsck.k9.notification
 import android.app.Notification
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.Account
 
 internal open class AuthenticationErrorNotificationController(
@@ -32,12 +31,12 @@ internal open class AuthenticationErrorNotificationController(
             .setCategory(NotificationCompat.CATEGORY_ERROR)
             .setErrorAppearance()
 
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationHelper.notify(account, notificationId, notificationBuilder.build())
     }
 
     fun clearAuthenticationErrorNotification(account: Account, incoming: Boolean) {
         val notificationId = NotificationIds.getAuthenticationErrorNotificationId(account, incoming)
-        notificationManager.cancel(notificationId)
+        notificationHelper.cancel(notificationId)
     }
 
     protected open fun createContentIntent(account: Account, incoming: Boolean): PendingIntent {
@@ -53,7 +52,4 @@ internal open class AuthenticationErrorNotificationController(
             .setContentTitle(resourceProvider.authenticationErrorTitle())
             .build()
     }
-
-    private val notificationManager: NotificationManagerCompat
-        get() = notificationHelper.getNotificationManager()
 }

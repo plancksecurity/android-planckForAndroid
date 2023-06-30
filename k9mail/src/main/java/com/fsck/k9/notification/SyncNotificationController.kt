@@ -2,7 +2,6 @@ package com.fsck.k9.notification
 
 import android.app.Notification
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.Account
 import com.fsck.k9.mail.Folder
 
@@ -18,7 +17,7 @@ internal class SyncNotificationController(
 
         val notificationId = NotificationIds.getFetchingMailNotificationId(account)
         val outboxFolderName = account.outboxFolderName ?: error("Outbox folder not configured")
-        val showMessageListPendingIntent = actionBuilder.createViewFolderPendingIntent(account, outboxFolderName, notificationId)
+        val showMessageListPendingIntent = actionBuilder.createViewFolderPendingIntent(account, outboxFolderName)
 
         val notificationBuilder = notificationHelper
             .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
@@ -32,12 +31,12 @@ internal class SyncNotificationController(
             .setContentIntent(showMessageListPendingIntent)
             .setPublicVersion(createSendingLockScreenNotification(account))
 
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationHelper.notify(account, notificationId, notificationBuilder.build())
     }
 
     fun clearSendingNotification(account: Account) {
         val notificationId = NotificationIds.getFetchingMailNotificationId(account)
-        notificationManager.cancel(notificationId)
+        notificationHelper.cancel(notificationId)
     }
 
     fun showFetchingMailNotification(account: Account, folder: Folder<*>) {
@@ -50,7 +49,7 @@ internal class SyncNotificationController(
         val text = accountName + resourceProvider.checkingMailSeparator() + folderName
 
         val notificationId = NotificationIds.getFetchingMailNotificationId(account)
-        val showMessageListPendingIntent = actionBuilder.createViewFolderPendingIntent(account, folderName, notificationId)
+        val showMessageListPendingIntent = actionBuilder.createViewFolderPendingIntent(account, folderName)
 
         val notificationBuilder = notificationHelper
             .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
@@ -65,12 +64,12 @@ internal class SyncNotificationController(
             .setPublicVersion(createFetchingMailLockScreenNotification(account))
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
 
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationHelper.notify(account, notificationId, notificationBuilder.build())
     }
 
     fun clearFetchingMailNotification(account: Account) {
         val notificationId = NotificationIds.getFetchingMailNotificationId(account)
-        notificationManager.cancel(notificationId)
+        notificationHelper.cancel(notificationId)
     }
 
     private fun createSendingLockScreenNotification(account: Account): Notification {
@@ -92,7 +91,4 @@ internal class SyncNotificationController(
             .setContentTitle(resourceProvider.checkingMailTitle())
             .build()
     }
-
-    private val notificationManager: NotificationManagerCompat
-        get() = notificationHelper.getNotificationManager()
 }

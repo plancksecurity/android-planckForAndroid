@@ -50,6 +50,10 @@ class NotificationHelper(
         }
     }
 
+    fun cancel(notificationId: Int) {
+        notificationManager.cancel(notificationId)
+    }
+
     private fun showNotifyErrorNotification(account: Account) {
         val title = resourceProvider.notifyErrorTitle()
         val text = resourceProvider.notifyErrorText()
