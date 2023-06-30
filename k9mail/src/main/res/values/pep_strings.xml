@@ -386,5 +386,14 @@
     <string name="compose_single_recipient_handshake_banner">Tap here to establish trust with this sender.</string>
     <string name="rooted_device_error">Unsupported Operating System</string>
     <string name="action_user_manual">User manual</string>
+    <string name="notification_channel_messages_title">Messages</string>
+    <string name="notification_channel_messages_description">Notifications related to messages</string>
+    <string name="notification_channel_miscellaneous_title">Miscellaneous</string>
+    <string name="notification_channel_miscellaneous_description">Miscellaneous notifications like errors etc.</string>
+    <!-- Title of an error notification that is displayed when creating a notification for a new message has failed -->
+    <string name="notification_notify_error_title">Notification error</string>
+    <!-- Body of an error notification that is displayed when creating a notification for a new message has failed -->
+    <string name="notification_notify_error_text">An error has occurred while trying to create a system notification for a new message. The reason is most likely a missing notification sound.\n\nTap to open notification settings.</string>
+    <string name="notification_certificate_error_public">Certificate error</string>
 
 </resources>
