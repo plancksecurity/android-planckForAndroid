@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -99,5 +100,30 @@ internal fun NotificationCompat.Builder.setErrorAppearance(): NotificationCompat
             NotificationHelper.NOTIFICATION_LED_FAST_ON_TIME,
             NotificationHelper.NOTIFICATION_LED_FAST_OFF_TIME
         )
+    }
+}
+
+internal fun NotificationCompat.Builder.setAppearance(
+    silent: Boolean,
+    appearance: NotificationAppearance
+): NotificationCompat.Builder = apply {
+    if (silent) {
+        setSilent(true)
+    } else {
+        if (!appearance.ringtone.isNullOrEmpty()) {
+            setSound(Uri.parse(appearance.ringtone))
+        }
+
+        if (appearance.vibrationPattern != null) {
+            setVibrate(appearance.vibrationPattern)
+        }
+
+        if (appearance.ledColor != null) {
+            setLights(
+                appearance.ledColor,
+                NotificationHelper.NOTIFICATION_LED_ON_TIME,
+                NotificationHelper.NOTIFICATION_LED_OFF_TIME
+            )
+        }
     }
 }
