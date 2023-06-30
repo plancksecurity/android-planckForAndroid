@@ -3,7 +3,6 @@ package com.fsck.k9.notification
 import android.app.Notification
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.Account
 
 internal open class CertificateErrorNotificationController(
@@ -32,12 +31,12 @@ internal open class CertificateErrorNotificationController(
             .setCategory(NotificationCompat.CATEGORY_ERROR)
             .setErrorAppearance()
 
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationHelper.notify(account, notificationId, notificationBuilder.build())
     }
 
     fun clearCertificateErrorNotifications(account: Account, incoming: Boolean) {
         val notificationId = NotificationIds.getCertificateErrorNotificationId(account, incoming)
-        notificationManager.cancel(notificationId)
+        notificationHelper.cancel(notificationId)
     }
 
     protected open fun createContentIntent(account: Account, incoming: Boolean): PendingIntent {
@@ -53,7 +52,4 @@ internal open class CertificateErrorNotificationController(
             .setContentTitle(resourceProvider.certificateErrorTitle())
             .build()
     }
-
-    private val notificationManager: NotificationManagerCompat
-        get() = notificationHelper.getNotificationManager()
 }
