@@ -19,6 +19,7 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.NotificationDeleteConfirmation;
 import com.fsck.k9.activity.compose.MessageActions;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.search.LocalSearch;
 
 import java.util.List;
@@ -40,6 +41,15 @@ class NotificationActionCreator {
 
     public NotificationActionCreator(Context context) {
         this.context = context;
+    }
+
+    PendingIntent getEditServerSettingsIntent(Account account, boolean incoming) {
+        Intent editServerSettingsIntent = incoming ?
+                AccountSetupBasics.intentActionEditIncomingSettings(context, account.getUuid()) :
+                AccountSetupBasics.intentActionEditOutgoingSettings(context, account.getUuid());
+
+        return PendingIntent.getActivity(context, account.getAccountNumber(), editServerSettingsIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createMessageComposePendingIntent(MessageReference messageReference, int notificationId) {
