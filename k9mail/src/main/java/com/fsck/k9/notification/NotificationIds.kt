@@ -3,9 +3,6 @@ package com.fsck.k9.notification
 import com.fsck.k9.Account
 
 internal object NotificationIds {
-    const val PUSH_NOTIFICATION_ID = 1
-
-    private const val NUMBER_OF_GENERAL_NOTIFICATIONS = 1
     private const val OFFSET_SEND_FAILED_NOTIFICATION = 0
     private const val OFFSET_CERTIFICATE_ERROR_INCOMING = 1
     private const val OFFSET_CERTIFICATE_ERROR_OUTGOING = 2
@@ -58,7 +55,6 @@ internal object NotificationIds {
     }
 
     private fun getBaseNotificationId(account: Account): Int {
-        return 1 /* skip notification ID 0 */ + NUMBER_OF_GENERAL_NOTIFICATIONS +
-            account.accountNumber * NUMBER_OF_NOTIFICATIONS_PER_ACCOUNT
+        return account.accountNumber * NUMBER_OF_NOTIFICATIONS_PER_ACCOUNT
     }
 }
