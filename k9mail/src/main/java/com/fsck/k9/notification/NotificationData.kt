@@ -10,7 +10,7 @@ internal data class NotificationData<out Reference: NotificationReference, out C
     val activeNotifications: List<NotificationHolder<Content>>,
     val inactiveNotifications: List<InactiveNotificationHolder<Content>>
 ) {
-    val newMessagesCount: Int
+    val notificationsCount: Int
         get() = activeNotifications.size + inactiveNotifications.size
 
     val isSingleMessageNotification: Boolean
@@ -18,7 +18,7 @@ internal data class NotificationData<out Reference: NotificationReference, out C
 
     val references: List<Reference>
         get() {
-            return buildList(capacity = newMessagesCount) {
+            return buildList(capacity = notificationsCount) {
                 for (activeNotification in activeNotifications) {
                     add(activeNotification.content.reference)
                 }
