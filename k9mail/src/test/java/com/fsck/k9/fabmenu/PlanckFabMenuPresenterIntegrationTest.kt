@@ -2,9 +2,9 @@ package com.fsck.k9.fabmenu
 
 import com.fsck.k9.planck.ui.infrastructure.MessageAction
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener
-import com.nhaarman.mockito_kotlin.never
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock

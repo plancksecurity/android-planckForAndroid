@@ -65,7 +65,7 @@ buildscript {
                 'ant'                : '1.10.13',
                 'runner_rules'       : '1.4.0',
                 'mockito'            : '3.9.0',
-                'mockitoKotlin'      : '1.5.0',
+                'mockitoKotlin'      : '4.1.0',
                 'mockk'              : '1.12.4',
                 'truth'              : '1.1',
                 'espresso'           : '3.5.1',
