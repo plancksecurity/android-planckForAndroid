@@ -19,17 +19,46 @@ internal object NotificationIds {
     private const val NUMBER_OF_NOTIFICATIONS_PER_ACCOUNT =
         NUMBER_OF_MISC_ACCOUNT_NOTIFICATIONS + NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS + NUMBER_OF_GROUP_MAIL_NOTIFICATIONS
 
-    fun getNewMailSummaryNotificationId(account: Account): Int {
+    fun getSummaryGroupedNotificationId(account: Account, groupType: NotificationGroupType): Int {
+        return when(groupType) {
+            NotificationGroupType.NEW_MAIL -> getNewMailSummaryNotificationId(account)
+            NotificationGroupType.GROUP_MAIL -> getGroupMailSummaryNotificationId(account)
+        }
+    }
+
+    fun getSingleGroupedNotificationId(account: Account, index: Int, groupType: NotificationGroupType): Int {
+        return when(groupType) {
+            NotificationGroupType.NEW_MAIL -> {
+                getSingleMessageNotificationId(account, index)
+            }
+            NotificationGroupType.GROUP_MAIL -> {
+                getSingleGroupMailNotificationId(account, index)
+            }
+        }
+    }
+
+    fun getAllGroupedNotificationIds(account: Account, groupType: NotificationGroupType): List<Int> {
+        return when(groupType) {
+            NotificationGroupType.NEW_MAIL -> {
+                getAllMessageNotificationIds(account)
+            }
+            NotificationGroupType.GROUP_MAIL -> {
+                getAllGroupMailNotificationIds(account)
+            }
+        }
+    }
+
+    private fun getNewMailSummaryNotificationId(account: Account): Int {
         return getBaseNotificationId(account) + OFFSET_NEW_MAIL_SUMMARY
     }
 
-    fun getSingleMessageNotificationId(account: Account, index: Int): Int {
+    private fun getSingleMessageNotificationId(account: Account, index: Int): Int {
         require(index in 0 until NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS) { "Invalid index: $index" }
 
         return getBaseNotificationId(account) + OFFSET_NEW_MAIL_SINGLE + index
     }
 
-    fun getAllMessageNotificationIds(account: Account): List<Int> {
+    private fun getAllMessageNotificationIds(account: Account): List<Int> {
         val singleMessageNotificationIdRange = (0 until NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS).map { index ->
             getBaseNotificationId(account) + OFFSET_NEW_MAIL_SINGLE + index
         }
@@ -37,17 +66,17 @@ internal object NotificationIds {
         return singleMessageNotificationIdRange.toList() + getNewMailSummaryNotificationId(account)
     }
 
-    fun getGroupMailSummaryNotificationId(account: Account): Int {
+    private fun getGroupMailSummaryNotificationId(account: Account): Int {
         return getBaseNotificationId(account) + OFFSET_GROUP_MAIL_SUMMARY
     }
 
-    fun getSingleGroupMailNotificationId(account: Account, index: Int): Int {
+    private fun getSingleGroupMailNotificationId(account: Account, index: Int): Int {
         require(index in 0 until NUMBER_OF_GROUP_MAIL_NOTIFICATIONS) { "Invalid index: $index" }
 
         return getBaseNotificationId(account) + OFFSET_GROUP_MAIL_SINGLE + index
     }
 
-    fun getAllGroupMailNotificationIds(account: Account): List<Int> {
+    private fun getAllGroupMailNotificationIds(account: Account): List<Int> {
         val singleGroupMailNotificationIdRange = (0 until NUMBER_OF_GROUP_MAIL_NOTIFICATIONS).map { index ->
             getBaseNotificationId(account) + OFFSET_GROUP_MAIL_SINGLE + index
         }

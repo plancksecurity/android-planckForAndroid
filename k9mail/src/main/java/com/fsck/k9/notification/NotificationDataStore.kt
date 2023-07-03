@@ -14,7 +14,9 @@ internal const val MAX_NUMBER_OF_STACKED_NOTIFICATIONS = 8
  * those are called active notifications. The rest are called inactive notifications. When an active notification is
  * removed, the latest inactive notification is promoted to an active notification.
  */
-internal abstract class NotificationDataStore<Reference: NotificationReference, Content: NotificationContent<Reference>> {
+internal class NotificationDataStore<Reference: NotificationReference, Content: NotificationContent<Reference>>(
+    private val notificationGroupType: NotificationGroupType
+) {
     private val notificationDataMap = mutableMapOf<String, NotificationData<Reference, Content>>()
 
     @Synchronized
@@ -30,7 +32,7 @@ internal abstract class NotificationDataStore<Reference: NotificationReference, 
     ): NotificationData<Reference, Content> {
         require(activeNotifications.size <= MAX_NUMBER_OF_STACKED_NOTIFICATIONS)
 
-        return NotificationData(account, activeNotifications, inactiveNotifications).also { notificationData ->
+        return NotificationData(account, activeNotifications, inactiveNotifications, notificationGroupType).also { notificationData ->
             notificationDataMap[account.uuid] = notificationData
         }
     }
@@ -171,7 +173,9 @@ internal abstract class NotificationDataStore<Reference: NotificationReference, 
     }
 
     private fun getNotificationData(account: Account): NotificationData<Reference, Content> {
-        return notificationDataMap[account.uuid] ?: NotificationData.create<Reference, Content>(account).also { notificationData ->
+        return notificationDataMap[account.uuid] ?: NotificationData.create<Reference, Content>(
+            account, notificationGroupType
+        ).also { notificationData ->
             notificationDataMap[account.uuid] = notificationData
         }
     }
@@ -182,7 +186,7 @@ internal abstract class NotificationDataStore<Reference: NotificationReference, 
     private fun NotificationData<Reference, Content>.getNewNotificationId(): Int {
         val notificationIdsInUse = activeNotifications.map { it.notificationId }.toSet()
         for (index in 0 until MAX_NUMBER_OF_STACKED_NOTIFICATIONS) {
-            val notificationId = getNewNotificationId(account, index)
+            val notificationId = NotificationIds.getSingleGroupedNotificationId(account, index, notificationGroupType)
             if (notificationId !in notificationIdsInUse) {
                 return notificationId
             }
@@ -190,8 +194,6 @@ internal abstract class NotificationDataStore<Reference: NotificationReference, 
 
         throw AssertionError("getNewNotificationId() called with no free notification ID")
     }
-
-    abstract fun getNewNotificationId(account: Account, index: Int): Int
 
     private fun NotificationHolder<Content>.toInactiveNotificationHolder() = InactiveNotificationHolder(timestamp, content)
 

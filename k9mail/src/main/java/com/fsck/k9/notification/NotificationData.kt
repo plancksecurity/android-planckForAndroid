@@ -8,7 +8,8 @@ import com.fsck.k9.Account
 internal data class NotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
     val account: Account,
     val activeNotifications: List<NotificationHolder<Content>>,
-    val inactiveNotifications: List<InactiveNotificationHolder<Content>>
+    val inactiveNotifications: List<InactiveNotificationHolder<Content>>,
+    val notificationGroupType: NotificationGroupType
 ) {
     val notificationsCount: Int
         get() = activeNotifications.size + inactiveNotifications.size
@@ -31,8 +32,10 @@ internal data class NotificationData<out Reference: NotificationReference, out C
     fun isEmpty() = activeNotifications.isEmpty()
 
     companion object {
-        fun <Reference: NotificationReference, Content: NotificationContent<Reference>> create(account: Account): NotificationData<Reference, Content> {
-            return NotificationData(account, activeNotifications = emptyList(), inactiveNotifications = emptyList())
+        fun <Reference: NotificationReference, Content: NotificationContent<Reference>> create(
+            account: Account, type: NotificationGroupType
+        ): NotificationData<Reference, Content> {
+            return NotificationData(account, activeNotifications = emptyList(), inactiveNotifications = emptyList(), type)
         }
     }
 }

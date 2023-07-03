@@ -74,8 +74,8 @@ class NotificationController internal constructor(
         val groupedNotificationManager  =
             GroupedNotificationManager(
                 contentCreator = NotificationContentCreator(context, notificationResourceProvider),
-                newMailNotificationRepository = NotificationRepository(NewMailNotificationDataStore()),
-                groupMailNotificationRepository = NotificationRepository(GroupMailNotificationDataStore()),
+                newMailNotificationRepository = NotificationRepository(NotificationDataStore(NotificationGroupType.NEW_MAIL)),
+                groupMailNotificationRepository = NotificationRepository(NotificationDataStore(NotificationGroupType.GROUP_MAIL)),
                 baseNotificationDataCreator = BaseNotificationDataCreator(),
                 singleMessageNotificationDataCreator = singleMessageNotificationDataCreator,
                 summaryNotificationDataCreator = summaryNotificationDataCreator,

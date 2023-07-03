@@ -81,7 +81,7 @@ class NotificationHelper(
             .setErrorAppearance()
             .build()
 
-        val notificationId = NotificationIds.getNewMailSummaryNotificationId(account)
+        val notificationId = NotificationIds.getSummaryGroupedNotificationId(account, NotificationGroupType.NEW_MAIL)
         notificationManager.notify(notificationId, notification)
     }
 
