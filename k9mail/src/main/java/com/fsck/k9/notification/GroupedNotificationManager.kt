@@ -7,7 +7,7 @@ import com.fsck.k9.mailstore.LocalMessage
 import security.planck.notification.GroupMailInvite
 
 /**
- * Manages notifications for new messages
+ * Manages notifications for new messages and group mail events
  */
 internal class GroupedNotificationManager(
     private val contentCreator: NotificationContentCreator,
