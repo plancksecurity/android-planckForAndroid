@@ -112,10 +112,10 @@ class TestNotificationResourceProvider : NotificationResourceProvider {
 
     override fun actionMarkAsSpam(): String = "Spam"
     override fun getGroupMailInviteSubject(groupMailInvite: GroupMailInvite): String {
-        TODO("Not yet implemented")
+        return "group mail invite subject"
     }
 
     override fun getGroupMailInviteSummary(groupMailInvite: GroupMailInvite): CharSequence {
-        TODO("Not yet implemented")
+        return "group mail invite summary"
     }
 }
