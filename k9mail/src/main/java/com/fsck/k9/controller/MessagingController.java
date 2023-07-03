@@ -4422,7 +4422,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void deleteAccount(Account account) {
-        notificationController.clearNewMailNotifications(account);
+        notificationController.clearGroupedNotifications(account);
         memorizingMessagingListener.removeAccount(account);
         Address address = new Address(account.getEmail());
         planckProvider.setIdentityFlag(PlanckUtils.createIdentity(address, context), false);
@@ -4684,6 +4684,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void cancelNotificationsForAccount(Account account) {
+        notificationController.clearGroupedNotifications(account);
+    }
+
+    public void cancelNewMailNotifications(Account account) {
         notificationController.clearNewMailNotifications(account);
     }
 
