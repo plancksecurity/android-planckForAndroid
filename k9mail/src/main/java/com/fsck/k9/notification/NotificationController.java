@@ -15,12 +15,15 @@ import com.fsck.k9.mailstore.LocalMessage;
 
 import java.util.List;
 
+import security.planck.notification.GroupMailInvite;
+
 public class NotificationController {
     private final CertificateErrorNotificationController certificateErrorNotificationController;
     private final AuthenticationErrorNotificationController authenticationErrorNotificationController;
     private final SyncNotificationController syncNotificationController;
     private final SendFailedNotificationController sendFailedNotificationController;
     private final NewMailNotificationController newMailNotificationController;
+    private final GroupMailNotificationController groupMailNotificationController;
 
     private final NotificationChannelManager channelUtils;
 
@@ -46,6 +49,47 @@ public class NotificationController {
                 notificationHelper,
                 actionBuilder
         );
+        groupMailNotificationController = initializeGroupMailNotificationController(
+                context,
+                notificationResourceProvider,
+                notificationHelper,
+                actionBuilder
+        );
+    }
+
+    private GroupMailNotificationController initializeGroupMailNotificationController(
+            Context context,
+            NotificationResourceProvider notificationResourceProvider,
+            NotificationHelper notificationHelper,
+            NotificationActionCreator actionBuilder
+    ) {
+        GroupMailNotificationDataStore notificationDataStore = new GroupMailNotificationDataStore();
+        GroupMailNotificationRepository notificationRepository = new GroupMailNotificationRepository(notificationDataStore);
+        BaseGroupMailNotificationDataCreator baseNotificationDataCreator = new BaseGroupMailNotificationDataCreator();
+        SingleGroupMailNotificationDataCreator singleMessageNotificationDataCreator = new SingleGroupMailNotificationDataCreator();
+        SummaryGroupMailNotificationDataCreator summaryNotificationDataCreator = new SummaryGroupMailNotificationDataCreator(singleMessageNotificationDataCreator);
+        GroupMailNotificationManager newMailNotificationManager = new GroupMailNotificationManager(
+                notificationRepository,
+                baseNotificationDataCreator,
+                summaryNotificationDataCreator,
+                Clock.INSTANCE
+        );
+        LockScreenNotificationCreator lockScreenNotificationCreator = new LockScreenNotificationCreator(
+                notificationHelper, notificationResourceProvider
+        );
+        SingleGroupMailNotificationCreator singleMessageNotificationCreator = new SingleGroupMailNotificationCreator(
+                notificationHelper, notificationResourceProvider, lockScreenNotificationCreator
+        );
+        SummaryGroupMailNotificationCreator summaryNotificationCreator = new SummaryGroupMailNotificationCreator(
+                notificationHelper, actionBuilder, lockScreenNotificationCreator, singleMessageNotificationCreator, notificationResourceProvider
+        );
+        return new GroupMailNotificationController(
+                notificationHelper,
+                newMailNotificationManager,
+                singleMessageNotificationCreator,
+                summaryNotificationCreator
+        );
+
     }
 
     @NonNull
@@ -141,6 +185,18 @@ public class NotificationController {
 
     public void clearNewMailNotifications(Account account, String folderName) {
         newMailNotificationController.clearNewMailNotifications(account, folderName);
+    }
+
+    public void addGroupMailNotification(Account account, GroupMailInvite groupMailInvite) {
+        groupMailNotificationController.addGroupMailInviteNotification(account, groupMailInvite, false);
+    }
+
+    public void removeGroupMailNotification(Account account, GroupMailInvite groupMailInvite) {
+        groupMailNotificationController.removeGroupMailNotification(account, groupMailInvite);
+    }
+
+    public void clearGroupMailNotifications(Account account) {
+        groupMailNotificationController.clearGroupMailNotifications(account);
     }
 
     public void updateChannels() {

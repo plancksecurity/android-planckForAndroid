@@ -10,7 +10,7 @@ internal data class NewMailNotificationData(
     val summaryNotificationData: SummaryNotificationData?
 )
 
-internal data class BaseNotificationData(
+internal data class BaseNotificationData constructor(
     val account: Account,
     val accountName: String,
     val groupKey: String,
