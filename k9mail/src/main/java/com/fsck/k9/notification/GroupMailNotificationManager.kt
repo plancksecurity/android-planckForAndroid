@@ -43,7 +43,7 @@ internal class GroupMailNotificationManager(
 
         val cancelNotificationIds = when {
             result.notificationData.isEmpty() -> {
-                result.cancelNotificationIds + NotificationIds.getNewMailSummaryNotificationId(account)
+                result.cancelNotificationIds + NotificationIds.getGroupMailSummaryNotificationId(account)
             }
             else -> {
                 result.cancelNotificationIds
@@ -70,7 +70,7 @@ internal class GroupMailNotificationManager(
 
     fun clearNewMailNotifications(account: Account): List<Int> {
         notificationRepository.clearNotifications(account)
-        return NotificationIds.getAllMessageNotificationIds(account)
+        return NotificationIds.getAllGroupMailNotificationIds(account)
     }
 
     private fun createBaseNotificationData(notificationData: NotificationDataGroupMail): BaseNotificationData {

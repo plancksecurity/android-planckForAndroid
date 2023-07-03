@@ -124,6 +124,7 @@ import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.audit.AuditLogger;
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.echo.EchoMessageReceivedListener;
+import security.planck.notification.GroupMailInvite;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -4900,6 +4901,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     public PlanckProvider getPlanckProvider() {
         return planckProvider;
+    }
+
+    public void notifyPlanckGroupInvite(GroupMailInvite groupMailInvite) {
+        notificationController.addGroupMailNotification(preferences.getAccounts().get(0), groupMailInvite);
     }
 
     private interface MessageActor {

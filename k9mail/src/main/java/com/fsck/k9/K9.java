@@ -83,6 +83,7 @@ import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
+import security.planck.notification.GroupMailInvite;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.passphrase.PassphraseRequirementType;
@@ -2061,7 +2062,7 @@ public class K9 extends MultiDexApplication {
                     break;
                 case DistributionNotifyGroupInvite:
                     Log.e("TESTGROUPMAIL", "INVITATION TO GROUP " + partner + " WITH MYSELF: " + myself);
-                    //MessagingController.getInstance(K9.this).notifyPlanckGroupInvite();
+                    MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(new GroupMailInvite(myself.address, partner.address));
                     break;
             }
 

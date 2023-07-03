@@ -210,7 +210,7 @@ internal class GroupMailNotificationDataStore {
     private fun NotificationDataGroupMail.getNewNotificationId(): Int {
         val notificationIdsInUse = activeNotifications.map { it.notificationId }.toSet()
         for (index in 0 until MAX_NUMBER_OF_GROUP_NOTIFICATIONS) {
-            val notificationId = NotificationIds.getSingleMessageNotificationId(account, index)
+            val notificationId = NotificationIds.getSingleGroupMailNotificationId(account, index)
             if (notificationId !in notificationIdsInUse) {
                 return notificationId
             }
