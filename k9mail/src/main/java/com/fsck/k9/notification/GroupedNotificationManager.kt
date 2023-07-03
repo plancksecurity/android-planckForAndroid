@@ -9,7 +9,7 @@ import security.planck.notification.GroupMailInvite
 /**
  * Manages notifications for new messages
  */
-internal class NotificationGroupManager(
+internal class GroupedNotificationManager(
     private val contentCreator: NotificationContentCreator,
     private val newMailNotificationRepository: NotificationRepository<MessageReference, NewMailNotificationContent>,
     private val groupMailNotificationRepository: NotificationRepository<GroupMailInvite, GroupMailNotificationContent>,
@@ -19,10 +19,26 @@ internal class NotificationGroupManager(
     private val clock: Clock
 ) {
 
-    fun addNewMailNotification(account: Account, message: LocalMessage, silent: Boolean): GroupedNotificationData<MessageReference, NewMailNotificationContent>? {
+    fun addNewMailNotification(
+        account: Account,
+        message: LocalMessage,
+        silent: Boolean
+    ): GroupedNotificationData<MessageReference, NewMailNotificationContent>? {
         val content = contentCreator.createFromMessage(account, message)
 
         val result = newMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
+
+        return addNotification(account, result, silent)
+    }
+
+    fun addGroupMailNotification(
+        account: Account,
+        groupMailInvite: GroupMailInvite,
+        silent: Boolean
+    ): GroupedNotificationData<GroupMailInvite, GroupMailNotificationContent>? {
+        val content = contentCreator.createFromGroupMailEvent(groupMailInvite)
+
+        val result = groupMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
 
         return addNotification(account, result, silent)
     }
