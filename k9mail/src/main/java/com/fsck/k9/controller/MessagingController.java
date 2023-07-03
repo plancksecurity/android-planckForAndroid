@@ -4903,8 +4903,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return planckProvider;
     }
 
-    public void notifyPlanckGroupInvite(GroupMailInvite groupMailInvite) {
-        notificationController.addGroupMailNotification(preferences.getAccounts().get(0), groupMailInvite);
+    public void notifyPlanckGroupInvite(Account account, GroupMailInvite groupMailInvite) {
+        notificationController.addGroupMailNotification(account, groupMailInvite);
     }
 
     private interface MessageActor {
