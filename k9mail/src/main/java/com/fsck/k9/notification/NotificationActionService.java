@@ -27,7 +27,8 @@ public class NotificationActionService extends CoreService {
     private static final String ACTION_DELETE = "ACTION_DELETE";
     private static final String ACTION_ARCHIVE = "ACTION_ARCHIVE";
     private static final String ACTION_SPAM = "ACTION_SPAM";
-    private static final String ACTION_DISMISS = "ACTION_DISMISS";
+    private static final String ACTION_DISMISS_MESSAGES = "ACTION_DISMISS_MESSAGES";
+    private static final String ACTION_DISMISS_GROUP_EVENTS = "ACTION_DISMISS_GROUP_EVENTS";
 
     private static final String EXTRA_ACCOUNT_UUID = "accountUuid";
     private static final String EXTRA_MESSAGE_REFERENCE = "messageReference";
@@ -56,7 +57,7 @@ public class NotificationActionService extends CoreService {
 
     static Intent createDismissMessageIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, NotificationActionService.class);
-        intent.setAction(ACTION_DISMISS);
+        intent.setAction(ACTION_DISMISS_MESSAGES);
         intent.putExtra(EXTRA_ACCOUNT_UUID, messageReference.getAccountUuid());
         intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
 
@@ -65,15 +66,15 @@ public class NotificationActionService extends CoreService {
 
     public static Intent createDismissGroupMailNotificationIntent(Context context, GroupMailInvite groupMailInvite) {
         Intent intent = new Intent(context, NotificationActionService.class);
-        intent.setAction(ACTION_DISMISS);
-        intent.putExtra(EXTRA_GROUP_NOTIFICATION, groupMailInvite.toString());
+        intent.setAction(ACTION_DISMISS_GROUP_EVENTS);
+        intent.putExtra(EXTRA_GROUP_NOTIFICATION, groupMailInvite);
 
         return intent;
     }
 
     public static Intent createDismissAllGroupMailNotificationsIntent(Context context, Account account) {
         Intent intent = new Intent(context, NotificationActionService.class);
-        intent.setAction(ACTION_DISMISS);
+        intent.setAction(ACTION_DISMISS_GROUP_EVENTS);
         intent.putExtra(EXTRA_ACCOUNT_UUID, account.getUuid());
 
         return intent;
@@ -81,7 +82,7 @@ public class NotificationActionService extends CoreService {
 
     static Intent createDismissAllMessagesIntent(Context context, Account account) {
         Intent intent = new Intent(context, NotificationActionService.class);
-        intent.setAction(ACTION_DISMISS);
+        intent.setAction(ACTION_DISMISS_MESSAGES);
         intent.putExtra(EXTRA_ACCOUNT_UUID, account.getUuid());
 
         return intent;
@@ -163,11 +164,14 @@ public class NotificationActionService extends CoreService {
             archiveMessages(intent, account, controller);
         } else if (ACTION_SPAM.equals(action)) {
             markMessageAsSpam(intent, account, controller);
-        } else if (ACTION_DISMISS.equals(action)) {
+        } else if (ACTION_DISMISS_MESSAGES.equals(action)) {
             Timber.i("Notification dismissed");
+        } else if(ACTION_DISMISS_GROUP_EVENTS.equals(action)) {
+            Timber.i("Notification dismissed");
+            cancelGroupMailNotifications(intent, account, controller);
         }
 
-        cancelNotifications(intent, account, controller);
+        cancelMessageNotifications(intent, account, controller);
 
         return START_NOT_STICKY;
     }
@@ -230,7 +234,18 @@ public class NotificationActionService extends CoreService {
         }
     }
 
-    private void cancelNotifications(Intent intent, Account account, MessagingController controller) {
+    private void cancelGroupMailNotifications(Intent intent, Account account, MessagingController controller) {
+        if (intent.hasExtra(EXTRA_GROUP_NOTIFICATION)) {
+            GroupMailInvite groupMailInvite = intent.getParcelableExtra(EXTRA_GROUP_NOTIFICATION);
+            if (groupMailInvite != null) {
+                controller.cancelNotificationForGroupEvent(account, groupMailInvite);
+            }
+        } else {
+            controller.cancelGroupMailNotifications(account);
+        }
+    }
+
+    private void cancelMessageNotifications(Intent intent, Account account, MessagingController controller) {
         if (intent.hasExtra(EXTRA_MESSAGE_REFERENCE)) {
             String messageReferenceString = intent.getStringExtra(EXTRA_MESSAGE_REFERENCE);
             MessageReference messageReference = MessageReference.parse(messageReferenceString);
