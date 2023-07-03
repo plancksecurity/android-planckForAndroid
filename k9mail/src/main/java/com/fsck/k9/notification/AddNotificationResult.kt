@@ -1,9 +1,8 @@
 package com.fsck.k9.notification
 
-internal class AddNotificationResult private constructor(
-    val notificationData: NotificationData,
-    val notificationStoreOperations: List<NotificationStoreOperation>,
-    val notificationHolder: NotificationHolder,
+internal class AddNotificationResult<Reference: NotificationReference, Content: NotificationContent<Reference>> private constructor(
+    val notificationData: NotificationData<Reference, Content>,
+    val notificationHolder: NotificationHolder<Content>,
     val shouldCancelNotification: Boolean
 ) {
     val cancelNotificationId: Int
@@ -13,27 +12,23 @@ internal class AddNotificationResult private constructor(
         }
 
     companion object {
-        fun newNotification(
-            notificationData: NotificationData,
-            notificationStoreOperations: List<NotificationStoreOperation>,
-            notificationHolder: NotificationHolder
-        ): AddNotificationResult {
+        fun <Reference: NotificationReference, Content: NotificationContent<Reference>> newNotification(
+            notificationData: NotificationData<Reference, Content>,
+            notificationHolder: NotificationHolder<Content>
+        ): AddNotificationResult<Reference, Content> {
             return AddNotificationResult(
                 notificationData,
-                notificationStoreOperations,
                 notificationHolder,
                 shouldCancelNotification = false
             )
         }
 
-        fun replaceNotification(
-            notificationData: NotificationData,
-            notificationStoreOperations: List<NotificationStoreOperation>,
-            notificationHolder: NotificationHolder
-        ): AddNotificationResult {
+        fun <Reference: NotificationReference, Content: NotificationContent<Reference>> replaceNotification(
+            notificationData: NotificationData<Reference, Content>,
+            notificationHolder: NotificationHolder<Content>
+        ): AddNotificationResult<Reference, Content> {
             return AddNotificationResult(
                 notificationData,
-                notificationStoreOperations,
                 notificationHolder,
                 shouldCancelNotification = true
             )

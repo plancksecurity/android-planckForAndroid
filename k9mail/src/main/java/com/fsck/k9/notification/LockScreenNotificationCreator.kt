@@ -47,7 +47,7 @@ internal class LockScreenNotificationCreator(
 
     private fun createPublicNotification(baseNotificationData: BaseNotificationData): NotificationCompat.Builder {
         val account = baseNotificationData.account
-        val newMessagesCount = baseNotificationData.newMessagesCount
+        val newMessagesCount = baseNotificationData.notificationsCount
         val title = resourceProvider.newMessagesTitle(newMessagesCount)
 
         return notificationHelper.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MESSAGES)

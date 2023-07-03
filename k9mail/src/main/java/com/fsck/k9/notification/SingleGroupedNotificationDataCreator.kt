@@ -3,39 +3,44 @@ package com.fsck.k9.notification
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 
-internal class SingleMessageNotificationDataCreator {
+internal class SingleGroupedNotificationDataCreator {
 
-    fun createSingleNotificationData(
+    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSingleNotificationData(
         account: Account,
         notificationId: Int,
-        content: NotificationContent,
+        content: Content,
         timestamp: Long,
         addLockScreenNotification: Boolean
-    ): SingleNotificationData {
+    ): SingleNotificationData<Content> {
+        val needsActions = content is NewMailNotificationContent
         return SingleNotificationData(
             notificationId = notificationId,
             isSilent = true,
             timestamp = timestamp,
             content = content,
-            actions = createSingleNotificationActions(),
-            wearActions = createSingleNotificationWearActions(account),
+            actions = if (needsActions) createSingleNotificationActions() else emptyList(),
+            wearActions = if (needsActions) createSingleNotificationWearActions(account) else emptyList(),
             addLockScreenNotification = addLockScreenNotification
         )
     }
 
-    fun createSummarySingleNotificationData(
-        data: NotificationData,
+    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummarySingleNotificationData(
+        data: NotificationData<Reference, Content>,
         timestamp: Long,
         silent: Boolean
-    ): SummarySingleNotificationData {
+    ): SummarySingleNotificationData<Reference, Content> {
+        val isNewMail = data.activeNotifications.first().content is NewMailNotificationContent
+        val notificationId = if (isNewMail)
+            NotificationIds.getNewMailSummaryNotificationId(data.account)
+        else NotificationIds.getGroupMailSummaryNotificationId(data.account)
         return SummarySingleNotificationData(
             SingleNotificationData(
-                notificationId = NotificationIds.getNewMailSummaryNotificationId(data.account),
+                notificationId = notificationId,
                 isSilent = silent,
                 timestamp = timestamp,
                 content = data.activeNotifications.first().content,
-                actions = createSingleNotificationActions(),
-                wearActions = createSingleNotificationWearActions(data.account),
+                actions = if (isNewMail) createSingleNotificationActions() else emptyList(),
+                wearActions = if (isNewMail) createSingleNotificationWearActions(data.account) else emptyList(),
                 addLockScreenNotification = false,
             ),
         )

@@ -3,12 +3,14 @@ package com.fsck.k9.notification
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 
-private const val MAX_NUMBER_OF_MESSAGES_FOR_SUMMARY_NOTIFICATION = 5
+private const val MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION = 5
 
-internal class SummaryNotificationDataCreator(
-    private val singleMessageNotificationDataCreator: SingleMessageNotificationDataCreator
+internal class SummaryGroupedNotificationDataCreator(
+    private val singleMessageNotificationDataCreator: SingleGroupedNotificationDataCreator
 ) {
-    fun createSummaryNotificationData(data: NotificationData, silent: Boolean): SummaryNotificationData {
+    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummaryNotificationData(
+        data: NotificationData<Reference, Content>, silent: Boolean
+    ): SummaryNotificationData<Reference> {
         val timestamp = data.latestTimestamp
         val shouldBeSilent = silent || K9.isQuietTime()
         return if (data.isSingleMessageNotification) {
@@ -18,28 +20,29 @@ internal class SummaryNotificationDataCreator(
         }
     }
 
-    private fun createSummarySingleNotificationData(
-        data: NotificationData,
+    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummarySingleNotificationData(
+        data: NotificationData<Reference, Content>,
         timestamp: Long,
         silent: Boolean
-    ): SummaryNotificationData {
+    ): SummaryNotificationData<Reference> {
         return singleMessageNotificationDataCreator.createSummarySingleNotificationData(data, timestamp, silent)
     }
 
-    private fun createSummaryInboxNotificationData(
-        data: NotificationData,
+    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummaryInboxNotificationData(
+        data: NotificationData<Reference, Content>,
         timestamp: Long,
         silent: Boolean
-    ): SummaryNotificationData {
+    ): SummaryNotificationData<Reference> {
+        val needsActions = data.activeNotifications.first().content is NewMailNotificationContent
         return SummaryInboxNotificationData(
             notificationId = NotificationIds.getNewMailSummaryNotificationId(data.account),
             isSilent = silent,
             timestamp = timestamp,
             content = data.summaryContent,
-            additionalMessagesCount = data.additionalMessagesCount,
-            messageReferences = data.messageReferences,
-            actions = createSummaryNotificationActions(),
-            wearActions = createSummaryWearNotificationActions(data.account)
+            nonVisibleNotificationsCount = data.additionalNotificationsCount,
+            references = data.references,
+            actions = if (needsActions) createSummaryNotificationActions() else emptyList(),
+            wearActions = if (needsActions) createSummaryWearNotificationActions(data.account) else emptyList()
         )
     }
 
@@ -76,17 +79,17 @@ internal class SummaryNotificationDataCreator(
         return isDeleteActionEnabled() && !K9.confirmDeleteFromNotification()
     }
 
-    private val NotificationData.latestTimestamp: Long
+    private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.latestTimestamp: Long
         get() = activeNotifications.first().timestamp
 
-    private val NotificationData.summaryContent: List<CharSequence>
+    private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.summaryContent: List<CharSequence>
         get() {
             return activeNotifications.asSequence()
                 .map { it.content.summary }
-                .take(MAX_NUMBER_OF_MESSAGES_FOR_SUMMARY_NOTIFICATION)
+                .take(MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION)
                 .toList()
         }
 
-    private val NotificationData.additionalMessagesCount: Int
-        get() = (newMessagesCount - MAX_NUMBER_OF_MESSAGES_FOR_SUMMARY_NOTIFICATION).coerceAtLeast(0)
+    private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.additionalNotificationsCount: Int
+        get() = (newMessagesCount - MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION).coerceAtLeast(0)
 }

@@ -31,10 +31,13 @@ interface NotificationResourceProvider {
 
     fun newMessagesTitle(newMessagesCount: Int): String
 
+    fun newGroupMailEventsTitle(groupMailEventsCount: Int): String
+
     fun newMailTitle(): String
 
     fun unreadMessagesCountText(unreadMessageCount: Int, accountName: String): String
     fun additionalMessages(overflowMessagesCount: Int, accountName: String): String
+    fun additionalGroupMailEvents(overflowGroupMailEventsCount: Int, accountName: String): String
     fun previewEncrypted(): String
     fun noSubject(): String
     fun recipientDisplayName(recipientDisplayName: String): String

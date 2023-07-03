@@ -1,13 +1,12 @@
 package com.fsck.k9.notification
 
 import com.fsck.k9.Account
-import com.fsck.k9.activity.MessageReference
 
-internal data class NewMailNotificationData(
+internal data class GroupedNotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
     val cancelNotificationIds: List<Int>,
     val baseNotificationData: BaseNotificationData,
-    val singleNotificationData: List<SingleNotificationData>,
-    val summaryNotificationData: SummaryNotificationData?
+    val singleNotificationData: List<SingleNotificationData<Content>>,
+    val summaryNotificationData: SummaryNotificationData<Reference>?
 )
 
 internal data class BaseNotificationData constructor(
@@ -15,7 +14,7 @@ internal data class BaseNotificationData constructor(
     val accountName: String,
     val groupKey: String,
     val color: Int,
-    val newMessagesCount: Int,
+    val notificationsCount: Int,
     val lockScreenNotificationData: LockScreenNotificationData,
     val appearance: NotificationAppearance
 )
@@ -34,32 +33,32 @@ internal data class NotificationAppearance(
     val ledColor: Int?
 )
 
-internal data class SingleNotificationData(
+internal data class SingleNotificationData<out Content>(
     val notificationId: Int,
     val isSilent: Boolean,
     val timestamp: Long,
-    val content: NotificationContent,
+    val content: Content,
     val actions: List<NotificationAction>,
     val wearActions: List<WearNotificationAction>,
     val addLockScreenNotification: Boolean
 )
 
-internal sealed interface SummaryNotificationData
+internal sealed interface SummaryNotificationData<out Reference>
 
-internal data class SummarySingleNotificationData(
-    val singleNotificationData: SingleNotificationData
-) : SummaryNotificationData
+internal data class SummarySingleNotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
+    val singleNotificationData: SingleNotificationData<Content>
+) : SummaryNotificationData<Reference>
 
-internal data class SummaryInboxNotificationData(
+internal data class SummaryInboxNotificationData<out Reference>(
     val notificationId: Int,
     val isSilent: Boolean,
     val timestamp: Long,
     val content: List<CharSequence>,
-    val additionalMessagesCount: Int,
-    val messageReferences: List<MessageReference>,
+    val nonVisibleNotificationsCount: Int,
+    val references: List<Reference>,
     val actions: List<SummaryNotificationAction>,
     val wearActions: List<SummaryWearNotificationAction>
-) : SummaryNotificationData
+) : SummaryNotificationData<Reference>
 
 internal enum class NotificationAction {
     Reply,
