@@ -29,18 +29,16 @@ internal class SingleGroupedNotificationDataCreator {
         timestamp: Long,
         silent: Boolean
     ): SummarySingleNotificationData<Reference, Content> {
-        val isNewMail = data.activeNotifications.first().content is NewMailNotificationContent
-        val notificationId = if (isNewMail)
-            NotificationIds.getNewMailSummaryNotificationId(data.account)
-        else NotificationIds.getGroupMailSummaryNotificationId(data.account)
+        val groupType = data.notificationGroupType
+        val needsActions = groupType == NotificationGroupType.NEW_MAIL
         return SummarySingleNotificationData(
             SingleNotificationData(
-                notificationId = notificationId,
+                notificationId = NotificationIds.getSummaryGroupedNotificationId(data.account, groupType),
                 isSilent = silent,
                 timestamp = timestamp,
                 content = data.activeNotifications.first().content,
-                actions = if (isNewMail) createSingleNotificationActions() else emptyList(),
-                wearActions = if (isNewMail) createSingleNotificationWearActions(data.account) else emptyList(),
+                actions = if (needsActions) createSingleNotificationActions() else emptyList(),
+                wearActions = if (needsActions) createSingleNotificationWearActions(data.account) else emptyList(),
                 addLockScreenNotification = false,
             ),
         )
