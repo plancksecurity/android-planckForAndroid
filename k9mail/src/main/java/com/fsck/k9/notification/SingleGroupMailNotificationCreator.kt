@@ -24,9 +24,9 @@ internal class SingleGroupMailNotificationCreator(
             .setTicker(content.summary)
             .setCategory(NotificationCompat.CATEGORY_EMAIL)
             .setSmallIcon(resourceProvider.iconNewMail) // change icon!!
-            .setContentTitle("group mail notification")
-            .setContentText("you were added to the group mail ${content.reference.groupAddress}")
-            .setBigText("group mail notification")
+            .setContentTitle(content.subject)
+            .setContentText(content.summary)
+            .setBigText(content.subject)
             .setContentIntent(actionCreator.createViewFolderPendingIntent(account, account.inboxFolderName))
             .setDeleteIntent(actionCreator.createDismissGroupMailNotificationPendingIntent(content.reference))
     }
