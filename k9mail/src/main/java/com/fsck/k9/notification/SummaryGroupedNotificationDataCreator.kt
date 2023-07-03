@@ -94,5 +94,5 @@ internal class SummaryGroupedNotificationDataCreator(
         }
 
     private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.additionalNotificationsCount: Int
-        get() = (newMessagesCount - MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION).coerceAtLeast(0)
+        get() = (notificationsCount - MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION).coerceAtLeast(0)
 }
