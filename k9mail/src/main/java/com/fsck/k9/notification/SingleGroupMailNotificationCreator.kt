@@ -26,7 +26,7 @@ internal class SingleGroupMailNotificationCreator(
             .setSmallIcon(resourceProvider.iconNewMail) // change icon!!
             .setContentTitle(content.subject)
             .setContentText(content.summary)
-            .setBigText(content.subject)
+            .setBigText(content.summary)
             .setContentIntent(actionCreator.createViewFolderPendingIntent(account, account.inboxFolderName))
             .setDeleteIntent(actionCreator.createDismissGroupMailNotificationPendingIntent(content.reference))
     }
