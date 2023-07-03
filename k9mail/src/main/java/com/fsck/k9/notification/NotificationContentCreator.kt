@@ -32,8 +32,8 @@ internal class NotificationContentCreator(
     ): GroupMailNotificationContent {
         return GroupMailNotificationContent(
             sender = groupMailInvite.senderAddress,
-            subject = "group mail invitation",
-            summary = "invitation from ${groupMailInvite.senderAddress} to group ${groupMailInvite.groupAddress}",
+            subject = resourceProvider.getGroupMailInviteSubject(groupMailInvite),
+            summary = resourceProvider.getGroupMailInviteSummary(groupMailInvite),
             groupMailInvite
         )
     }

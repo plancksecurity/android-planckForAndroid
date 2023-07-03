@@ -2,6 +2,7 @@ package com.fsck.k9.notification
 
 import android.content.Context
 import com.fsck.k9.R
+import security.planck.notification.GroupMailInvite
 
 class PlanckNotificationResourceProvider(private val context: Context) : NotificationResourceProvider {
     override val iconWarning: Int = R.drawable.notification_icon_warning
@@ -109,4 +110,10 @@ class PlanckNotificationResourceProvider(private val context: Context) : Notific
     override fun actionArchiveAll(): String = context.getString(R.string.notification_action_archive_all)
 
     override fun actionMarkAsSpam(): String = context.getString(R.string.notification_action_spam)
+
+    override fun getGroupMailInviteSubject(groupMailInvite: GroupMailInvite): String =
+        context.getString(R.string.group_mail_notification_subject, groupMailInvite.senderAddress)
+
+    override fun getGroupMailInviteSummary(groupMailInvite: GroupMailInvite): CharSequence =
+        context.getString(R.string.group_mail_notification_summary, groupMailInvite.groupAddress, groupMailInvite.senderAddress)
 }
