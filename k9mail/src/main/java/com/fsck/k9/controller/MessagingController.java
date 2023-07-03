@@ -4691,8 +4691,16 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.clearNewMailNotifications(account);
     }
 
+    public void cancelGroupMailNotifications(Account account) {
+        notificationController.clearGroupMailNotifications(account);
+    }
+
     public void cancelNotificationForMessage(Account account, MessageReference messageReference) {
         notificationController.removeNewMailNotification(account, messageReference);
+    }
+
+    public void cancelNotificationForGroupEvent(Account account, GroupMailInvite groupMailInvite) {
+        notificationController.removeGroupMailNotification(account, groupMailInvite);
     }
 
     public void clearCertificateErrorNotifications(Account account, CheckDirection direction) {
