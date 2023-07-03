@@ -17,6 +17,7 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.adapter_group_create_Return;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
@@ -263,7 +264,7 @@ public interface PlanckProvider {
 
     void updateSyncAccountsConfig();
 
-    Group createGroup(
+    void createGroup(
             Identity groupIdentity,
             Identity manager,
             Vector<Identity> members
