@@ -2,6 +2,7 @@ package com.fsck.k9.notification
 
 import com.fsck.k9.Account
 import com.fsck.k9.K9
+import com.fsck.k9.activity.MessageReference
 
 private const val MAX_NUMBER_OF_SENDERS_IN_LOCK_SCREEN_NOTIFICATION = 5
 
@@ -11,9 +12,12 @@ internal class BaseNotificationDataCreator {
         notificationData: NotificationData<Reference, Content>
     ): BaseNotificationData {
         val account = notificationData.account
+        val groupKey = if (notificationData.references.first() is MessageReference)
+            NotificationGroupKeys.getNewMailGroupKey(account)
+        else NotificationGroupKeys.getGroupMailGroupKey(account)
         return BaseNotificationData(
             account = account,
-            groupKey = NotificationGroupKeys.getNewMailGroupKey(account),
+            groupKey = groupKey,
             accountName = account.name,
             color = account.chipColor,
             notificationsCount = notificationData.newMessagesCount,
