@@ -33,12 +33,10 @@ internal class SummaryGroupedNotificationDataCreator(
         timestamp: Long,
         silent: Boolean
     ): SummaryNotificationData<Reference> {
-        val isNewMail = data.activeNotifications.first().content is NewMailNotificationContent
-        val notificationId = if (isNewMail)
-            NotificationIds.getNewMailSummaryNotificationId(data.account)
-        else NotificationIds.getGroupMailSummaryNotificationId(data.account)
+        val groupType = data.notificationGroupType
+        val isNewMail = groupType == NotificationGroupType.NEW_MAIL
         return SummaryInboxNotificationData(
-            notificationId = notificationId,
+            notificationId = NotificationIds.getSummaryGroupedNotificationId(data.account, groupType),
             isSilent = silent,
             timestamp = timestamp,
             content = data.summaryContent,

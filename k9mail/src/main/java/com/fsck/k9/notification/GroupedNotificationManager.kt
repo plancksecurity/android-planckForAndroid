@@ -133,19 +133,19 @@ internal class GroupedNotificationManager(
     }
 
     private fun getNewMailSummaryNotificationId(account: Account): Int {
-        return NotificationIds.getNewMailSummaryNotificationId(account)
+        return NotificationIds.getSummaryGroupedNotificationId(account, NotificationGroupType.NEW_MAIL)
     }
 
     private fun getAllNewMailNotificationIds(account: Account): List<Int> {
-        return NotificationIds.getAllMessageNotificationIds(account)
+        return NotificationIds.getAllGroupedNotificationIds(account, NotificationGroupType.NEW_MAIL)
     }
 
     private fun getGroupMailSummaryNotificationId(account: Account): Int {
-        return NotificationIds.getGroupMailSummaryNotificationId(account)
+        return NotificationIds.getSummaryGroupedNotificationId(account, NotificationGroupType.GROUP_MAIL)
     }
 
     private fun getAllGroupMailNotificationIds(account: Account): List<Int> {
-        return NotificationIds.getAllGroupMailNotificationIds(account)
+        return NotificationIds.getAllGroupedNotificationIds(account, NotificationGroupType.GROUP_MAIL)
     }
 
     private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSingleNotificationData(
