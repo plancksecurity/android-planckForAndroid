@@ -1156,10 +1156,10 @@ class PlanckProviderImplKotlin(
         groupIdentity: Identity,
         manager: Identity,
         members: Vector<Identity>,
-    ): Group {
+    ) {
         val managerUpdated = myself(manager)
         val membersUpdated = Vector(members.map { updateIdentity(it) })
-        return engine.get().group_create(groupIdentity, managerUpdated, membersUpdated)
+        engine.get().adapter_group_create(groupIdentity, managerUpdated, membersUpdated)
     }
 
     companion object {
