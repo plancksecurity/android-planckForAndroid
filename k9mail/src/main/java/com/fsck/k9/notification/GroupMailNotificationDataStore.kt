@@ -1,9 +1,9 @@
 package com.fsck.k9.notification
 
 import com.fsck.k9.Account
-import com.fsck.k9.activity.MessageReference
+import security.planck.notification.GroupMailInvite
 
-internal const val MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS = 8
+internal const val MAX_NUMBER_OF_GROUP_NOTIFICATIONS = 8
 
 /**
  * Stores information about new message notifications for all accounts.
@@ -12,8 +12,8 @@ internal const val MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS = 8
  * those are called active notifications. The rest are called inactive notifications. When an active notification is
  * removed, the latest inactive notification is promoted to an active notification.
  */
-internal class NotificationDataStore {
-    private val notificationDataMap = mutableMapOf<String, NotificationData>()
+internal class GroupMailNotificationDataStore {
+    private val notificationDataMap = mutableMapOf<String, NotificationDataGroupMail>()
 
     @Synchronized
     fun isAccountInitialized(account: Account): Boolean {
@@ -23,26 +23,25 @@ internal class NotificationDataStore {
     @Synchronized
     fun initializeAccount(
         account: Account,
-        activeNotifications: List<NotificationHolder>,
-        inactiveNotifications: List<InactiveNotificationHolder>
-    ): NotificationData {
-        require(activeNotifications.size <= MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS)
+        activeNotifications: List<GroupMailNotificationHolder>,
+        inactiveNotifications: List<InactiveGroupMailNotificationHolder>
+    ): NotificationDataGroupMail {
+        require(activeNotifications.size <= MAX_NUMBER_OF_GROUP_NOTIFICATIONS)
 
-        return NotificationData(account, activeNotifications, inactiveNotifications).also { notificationData ->
+        return NotificationDataGroupMail(account, activeNotifications, inactiveNotifications).also { notificationData ->
             notificationDataMap[account.uuid] = notificationData
         }
     }
 
     @Synchronized
-    fun addNotification(account: Account, content: NotificationContent, timestamp: Long): AddNotificationResult? {
+    fun addNotification(account: Account, content: GroupMailInvite, timestamp: Long): AddGroupMailNotificationResult? {
         val notificationData = getNotificationData(account)
-        val messageReference = content.messageReference
 
         val activeNotification = notificationData.activeNotifications.firstOrNull { notificationHolder ->
-            notificationHolder.content.messageReference == messageReference
+            notificationHolder.content == content
         }
         val inactiveNotification = notificationData.inactiveNotifications.firstOrNull { inactiveNotificationHolder ->
-            inactiveNotificationHolder.content.messageReference == messageReference
+            inactiveNotificationHolder.content == content
         }
 
         return if (activeNotification != null) {
@@ -51,7 +50,7 @@ internal class NotificationDataStore {
                 content = content
             )
 
-            val operations = emptyList<NotificationStoreOperation>()
+            val operations = emptyList<GroupMailNotificationStoreOperation>()
 
             val newActiveNotifications = notificationData.activeNotifications
                 .replace(activeNotification, newActiveNotification)
@@ -60,7 +59,7 @@ internal class NotificationDataStore {
             )
             notificationDataMap[account.uuid] = newNotificationData
 
-            AddNotificationResult.newNotification(newNotificationData, operations, notificationHolder)
+            AddGroupMailNotificationResult.newNotification(newNotificationData, operations, notificationHolder)
         } else if (inactiveNotification != null) {
             val newInactiveNotification = inactiveNotification.copy(content = content)
             val newInactiveNotifications = notificationData.inactiveNotifications
@@ -77,11 +76,11 @@ internal class NotificationDataStore {
             val inactiveNotificationHolder = lastNotificationHolder.toInactiveNotificationHolder()
 
             val notificationId = lastNotificationHolder.notificationId
-            val notificationHolder = NotificationHolder(notificationId, timestamp, content)
+            val notificationHolder = GroupMailNotificationHolder(notificationId, timestamp, content)
 
             val operations = listOf(
-                NotificationStoreOperation.ChangeToInactive(lastNotificationHolder.content.messageReference),
-                NotificationStoreOperation.Add(messageReference, notificationId, timestamp)
+                GroupMailNotificationStoreOperation.ChangeToInactive(lastNotificationHolder.content),
+                GroupMailNotificationStoreOperation.Add(content, notificationId, timestamp)
             )
 
             val newNotificationData = notificationData.copy(
@@ -90,13 +89,13 @@ internal class NotificationDataStore {
             )
             notificationDataMap[account.uuid] = newNotificationData
 
-            AddNotificationResult.replaceNotification(newNotificationData, operations, notificationHolder)
+            AddGroupMailNotificationResult.replaceNotification(newNotificationData, operations, notificationHolder)
         } else {
             val notificationId = notificationData.getNewNotificationId()
-            val notificationHolder = NotificationHolder(notificationId, timestamp, content)
+            val notificationHolder = GroupMailNotificationHolder(notificationId, timestamp, content)
 
             val operations = listOf(
-                NotificationStoreOperation.Add(messageReference, notificationId, timestamp)
+                GroupMailNotificationStoreOperation.Add(content, notificationId, timestamp)
             )
 
             val newNotificationData = notificationData.copy(
@@ -104,49 +103,49 @@ internal class NotificationDataStore {
             )
             notificationDataMap[account.uuid] = newNotificationData
 
-            AddNotificationResult.newNotification(newNotificationData, operations, notificationHolder)
+            AddGroupMailNotificationResult.newNotification(newNotificationData, operations, notificationHolder)
         }
     }
 
     @Synchronized
     fun removeNotifications(
         account: Account,
-        selector: (List<MessageReference>) -> List<MessageReference>
-    ): RemoveNotificationsResult? {
+        selector: (List<GroupMailInvite>) -> List<GroupMailInvite>
+    ): RemoveGroupMailNotificationsResult? {
         var notificationData = getNotificationData(account)
         if (notificationData.isEmpty()) return null
 
-        val removeMessageReferences = selector.invoke(notificationData.messageReferences)
-        if (removeMessageReferences.isEmpty()) return null
+        val removeReferences = selector.invoke(notificationData.notificationReferences)
+        if (removeReferences.isEmpty()) return null
 
-        val operations = mutableListOf<NotificationStoreOperation>()
-        val newNotificationHolders = mutableListOf<NotificationHolder>()
+        val operations = mutableListOf<GroupMailNotificationStoreOperation>()
+        val newNotificationHolders = mutableListOf<GroupMailNotificationHolder>()
         val cancelNotificationIds = mutableListOf<Int>()
 
-        val activeMessageReferences = notificationData.activeNotifications.map { it.content.messageReference }.toSet()
-        val (removeActiveMessageReferences, removeInactiveMessageReferences) = removeMessageReferences
-            .partition { it in activeMessageReferences }
+        val activeReferences = notificationData.activeNotifications.map { it.content }.toSet()
+        val (removeActiveReferences, removeInactiveReferences) = removeReferences
+            .partition { it in activeReferences }
 
-        if (removeInactiveMessageReferences.isNotEmpty()) {
+        if (removeInactiveReferences.isNotEmpty()) {
             val inactiveMessageReferences = notificationData.inactiveNotifications
-                .map { it.content.messageReference }.toSet()
+                .map { it.content }.toSet()
 
-            for (messageReference in removeInactiveMessageReferences) {
+            for (messageReference in removeInactiveReferences) {
                 if (messageReference in inactiveMessageReferences) {
-                    operations.add(NotificationStoreOperation.Remove(messageReference))
+                    operations.add(GroupMailNotificationStoreOperation.Remove(messageReference))
                 }
             }
 
-            val removeMessageReferenceSet = removeInactiveMessageReferences.toSet()
+            val removeReferenceSet = removeInactiveReferences.toSet()
             notificationData = notificationData.copy(
                 inactiveNotifications = notificationData.inactiveNotifications
-                    .filter { it.content.messageReference !in removeMessageReferenceSet }
+                    .filter { it.content !in removeReferenceSet }
             )
         }
 
-        for (messageReference in removeActiveMessageReferences) {
+        for (reference in removeActiveReferences) {
             val notificationHolder = notificationData.activeNotifications.first {
-                it.content.messageReference == messageReference
+                it.content == reference
             }
 
             if (notificationData.inactiveNotifications.isNotEmpty()) {
@@ -156,10 +155,10 @@ internal class NotificationDataStore {
                 newNotificationHolders.add(newNotificationHolder)
                 cancelNotificationIds.add(notificationHolder.notificationId)
 
-                operations.add(NotificationStoreOperation.Remove(messageReference))
+                operations.add(GroupMailNotificationStoreOperation.Remove(reference))
                 operations.add(
-                    NotificationStoreOperation.ChangeToActive(
-                        newNotificationHolder.content.messageReference,
+                    GroupMailNotificationStoreOperation.ChangeToActive(
+                        newNotificationHolder.content,
                         newNotificationHolder.notificationId
                     )
                 )
@@ -172,7 +171,7 @@ internal class NotificationDataStore {
             } else {
                 cancelNotificationIds.add(notificationHolder.notificationId)
 
-                operations.add(NotificationStoreOperation.Remove(messageReference))
+                operations.add(GroupMailNotificationStoreOperation.Remove(reference))
 
                 notificationData = notificationData.copy(
                     activeNotifications = notificationData.activeNotifications - notificationHolder
@@ -185,7 +184,7 @@ internal class NotificationDataStore {
         return if (operations.isEmpty()) {
             null
         } else {
-            RemoveNotificationsResult(
+            RemoveGroupMailNotificationsResult(
                 notificationData = notificationData,
                 notificationStoreOperations = operations,
                 notificationHolders = newNotificationHolders,
@@ -199,18 +198,18 @@ internal class NotificationDataStore {
         notificationDataMap.remove(account.uuid)
     }
 
-    private fun getNotificationData(account: Account): NotificationData {
-        return notificationDataMap[account.uuid] ?: NotificationData.create(account).also { notificationData ->
+    private fun getNotificationData(account: Account): NotificationDataGroupMail {
+        return notificationDataMap[account.uuid] ?: NotificationDataGroupMail.create(account).also { notificationData ->
             notificationDataMap[account.uuid] = notificationData
         }
     }
 
-    private val NotificationData.isMaxNumberOfActiveNotificationsReached: Boolean
-        get() = activeNotifications.size == MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS
+    private val NotificationDataGroupMail.isMaxNumberOfActiveNotificationsReached: Boolean
+        get() = activeNotifications.size == MAX_NUMBER_OF_GROUP_NOTIFICATIONS
 
-    private fun NotificationData.getNewNotificationId(): Int {
+    private fun NotificationDataGroupMail.getNewNotificationId(): Int {
         val notificationIdsInUse = activeNotifications.map { it.notificationId }.toSet()
-        for (index in 0 until MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS) {
+        for (index in 0 until MAX_NUMBER_OF_GROUP_NOTIFICATIONS) {
             val notificationId = NotificationIds.getSingleMessageNotificationId(account, index)
             if (notificationId !in notificationIdsInUse) {
                 return notificationId
@@ -220,10 +219,10 @@ internal class NotificationDataStore {
         throw AssertionError("getNewNotificationId() called with no free notification ID")
     }
 
-    private fun NotificationHolder.toInactiveNotificationHolder() = InactiveNotificationHolder(timestamp, content)
+    private fun GroupMailNotificationHolder.toInactiveNotificationHolder() = InactiveGroupMailNotificationHolder(timestamp, content)
 
-    private fun InactiveNotificationHolder.toNotificationHolder(notificationId: Int): NotificationHolder {
-        return NotificationHolder(notificationId, timestamp, content)
+    private fun InactiveGroupMailNotificationHolder.toNotificationHolder(notificationId: Int): GroupMailNotificationHolder {
+        return GroupMailNotificationHolder(notificationId, timestamp, content)
     }
 
     private fun <T> List<T>.replace(old: T, new: T): List<T> {
