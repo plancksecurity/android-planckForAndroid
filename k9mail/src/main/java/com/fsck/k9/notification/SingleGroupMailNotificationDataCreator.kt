@@ -29,7 +29,7 @@ internal class SingleGroupMailNotificationDataCreator {
     ): GroupMailSummarySingleNotificationData {
         return GroupMailSummarySingleNotificationData(
             GroupMailSingleNotificationData(
-                notificationId = NotificationIds.getNewMailSummaryNotificationId(data.account),
+                notificationId = NotificationIds.getGroupMailSummaryNotificationId(data.account),
                 isSilent = silent,
                 timestamp = timestamp,
                 content = data.activeNotifications.first().content,
