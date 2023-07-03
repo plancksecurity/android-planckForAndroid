@@ -4,7 +4,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 
 internal class NotificationRepository<Reference: NotificationReference, Content: NotificationContent<Reference>>(
-    private val notificationDataStore: NotificationDataStore<Reference, Content> = NotificationDataStore()
+    private val notificationDataStore: NotificationDataStore<Reference, Content>
 ) {
     @Synchronized
     fun addNotification(account: Account, content: Content, timestamp: Long): AddNotificationResult<Reference, Content>? {
