@@ -8,7 +8,9 @@ import security.planck.notification.GroupMailInvite
 private const val FIRST_POSITION = 0
 
 /**
- * Handle notifications for new messages.
+ * Handle notifications for notification groups. Current notification groups:
+ * - new message notifications
+ * - group mail notifications
  */
 internal class GroupedNotificationController(
     private val notificationHelper: NotificationHelper,

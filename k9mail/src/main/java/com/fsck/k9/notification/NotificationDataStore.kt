@@ -5,7 +5,10 @@ import com.fsck.k9.Account
 internal const val MAX_NUMBER_OF_STACKED_NOTIFICATIONS = 8
 
 /**
- * Stores information about new message notifications for all accounts.
+ * Stores information about new notifications belonging to a certain notification group, for all accounts.
+ * Current notification groups:
+ * - new message notifications
+ * - group mail notifications
  *
  * We only use a limited number of system notifications per account (see [MAX_NUMBER_OF_STACKED_NOTIFICATIONS]);
  * those are called active notifications. The rest are called inactive notifications. When an active notification is
