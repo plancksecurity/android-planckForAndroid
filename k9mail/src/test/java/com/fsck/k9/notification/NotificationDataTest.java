@@ -114,15 +114,15 @@ public class NotificationDataTest extends RobolectricTest {
 
     @Test
     public void testNewMessagesCount() throws Exception {
-        assertEquals(0, notificationData.getNewMessagesCount());
+        assertEquals(0, notificationData.getNotificationsCount());
 
         NotificationContent contentOne = createNotificationContent("1");
         notificationData.addNotificationContent(contentOne);
-        assertEquals(1, notificationData.getNewMessagesCount());
+        assertEquals(1, notificationData.getNotificationsCount());
 
         NotificationContent contentTwo = createNotificationContent("2");
         notificationData.addNotificationContent(contentTwo);
-        assertEquals(2, notificationData.getNewMessagesCount());
+        assertEquals(2, notificationData.getNotificationsCount());
     }
 
     @Test
