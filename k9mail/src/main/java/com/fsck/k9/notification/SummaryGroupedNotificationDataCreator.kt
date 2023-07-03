@@ -33,16 +33,19 @@ internal class SummaryGroupedNotificationDataCreator(
         timestamp: Long,
         silent: Boolean
     ): SummaryNotificationData<Reference> {
-        val needsActions = data.activeNotifications.first().content is NewMailNotificationContent
+        val isNewMail = data.activeNotifications.first().content is NewMailNotificationContent
+        val notificationId = if (isNewMail)
+            NotificationIds.getNewMailSummaryNotificationId(data.account)
+        else NotificationIds.getGroupMailSummaryNotificationId(data.account)
         return SummaryInboxNotificationData(
-            notificationId = NotificationIds.getNewMailSummaryNotificationId(data.account),
+            notificationId = notificationId,
             isSilent = silent,
             timestamp = timestamp,
             content = data.summaryContent,
             nonVisibleNotificationsCount = data.additionalNotificationsCount,
             references = data.references,
-            actions = if (needsActions) createSummaryNotificationActions() else emptyList(),
-            wearActions = if (needsActions) createSummaryWearNotificationActions(data.account) else emptyList()
+            actions = if (isNewMail) createSummaryNotificationActions() else emptyList(),
+            wearActions = if (isNewMail) createSummaryWearNotificationActions(data.account) else emptyList()
         )
     }
 
