@@ -246,7 +246,7 @@ public class NotificationActionService extends CoreService {
                 controller.cancelNotificationForMessage(account, messageReference);
             }
         } else {
-            controller.cancelNotificationsForAccount(account);
+            controller.cancelNewMailNotifications(account);
         }
     }
 

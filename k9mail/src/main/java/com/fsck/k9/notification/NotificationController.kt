@@ -189,6 +189,11 @@ class NotificationController internal constructor(
         }
     }
 
+    fun clearGroupedNotifications(account: Account) {
+        groupedNotificationController.clearNewMailNotifications(account)
+        groupedNotificationController.clearGroupMailNotifications(account)
+    }
+
     fun clearNewMailNotifications(account: Account) {
         groupedNotificationController.clearNewMailNotifications(account)
     }
