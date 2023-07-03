@@ -400,5 +400,7 @@
         <item quantity="other">%d group mail events</item>
     </plurals>
     <string name="notification_additional_group_mail_events">+ %1$d more on %2$s</string>
+    <string name="group_mail_notification_subject">Group mail notification from %s</string>
+    <string name="group_mail_notification_summary">You were added to group %1$s by %2$s</string>
 
 </resources>
