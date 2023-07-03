@@ -20,13 +20,6 @@ class NotificationHelper(
     private val notificationChannelManager: NotificationChannelManager,
     private val resourceProvider: NotificationResourceProvider
 ) {
-    fun getContext(): Context {
-        return context
-    }
-
-    fun getNotificationManager(): NotificationManagerCompat {
-        return notificationManager
-    }
 
     fun createNotificationBuilder(account: Account, channelType: ChannelType): NotificationCompat.Builder {
         val notificationChannel = notificationChannelManager.getChannelIdFor(account, channelType)
