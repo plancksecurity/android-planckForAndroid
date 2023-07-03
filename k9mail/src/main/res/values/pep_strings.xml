@@ -192,6 +192,7 @@
     <string name="key_import_failure">Error occurred. No key imported.</string>
     <string name="key_import_success">Private key successfully imported.</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
+    <string name="sync">Sync</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Yes, Reset</string>
     <string name="key_reset_for_identity_context_title">Reset all planck data for this communication partner:</string>
@@ -201,6 +202,7 @@
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
     <string name="pep_key_reset_all_own_ids_summary">Reset own keys</string>
+    <string name="planck_key_sync_device_summary">Initiate sync devices</string>
     <string name="key_reset_all_own_identitities_feedback">All planck accounts have been reset.</string>
     <string name="pep_key_reset_all_own_ids_warning">Resetting your key pair generates new private and public keys for you that planck will immediately start using. Are you sure?</string>
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>

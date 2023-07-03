@@ -171,6 +171,22 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeManualSync(account: Account) {
+        findPreference<Preference>(PREFERENCE_PLANCK_MANUAL_SYNC)?.apply {
+            widgetLayoutResource = R.layout.preference_loading_widget
+            setOnPreferenceClickListener {
+                AlertDialog.Builder(view?.context)
+                    .setTitle(getString(R.string.pep_key_reset_own_id_warning_title, account.email))
+                    .setMessage(R.string.pep_key_reset_own_id_warning)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.sync) { _, _ ->
+                        //doManualSync(account)
+                    }.setNegativeButton(R.string.cancel_action, null).show()
+                true
+            }
+        }
+    }
+
     private fun initializeAccountpEpKeyReset(account: Account) {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
@@ -241,6 +257,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         //if grouped sync per Account only can be disabled on setup
         preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
 
+        //EFA-151
+        //preference?.isVisible = false
+        //OR
+        hideKeySyncOptions()
     }
 
     private fun canSyncAccountBeModified(account: Account): Boolean {
@@ -397,6 +417,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_OPEN_NOTIFICATION_SETTINGS = "open_notification_settings"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
+        private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
 
