@@ -14,13 +14,16 @@ internal class BaseNotificationDataCreator {
         return BaseNotificationData(
             account = account,
             groupKey = NotificationGroupKeys.getGroupKey(account, notificationData.notificationGroupType),
-            accountName = account.name,
+            accountName = account.displayName,
             color = account.chipColor,
             notificationsCount = notificationData.notificationsCount,
             lockScreenNotificationData = createLockScreenNotificationData(notificationData),
             appearance = createNotificationAppearance(account)
         )
     }
+
+    private val Account.displayName: String
+        get() = if (name.isNullOrBlank()) email else name
 
     private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createLockScreenNotificationData(
         data: NotificationData<Reference, Content>
