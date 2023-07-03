@@ -2,7 +2,6 @@ package com.fsck.k9.notification
 
 internal class AddGroupMailNotificationResult private constructor(
     val notificationData: NotificationDataGroupMail,
-    val notificationStoreOperations: List<GroupMailNotificationStoreOperation>,
     val notificationHolder: GroupMailNotificationHolder,
     val shouldCancelNotification: Boolean
 ) {

@@ -1,8 +1,6 @@
 package com.fsck.k9.notification
 
-import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.Account
-import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mailstore.LocalMessage
 
 private const val FIRST_POSITION = 0
@@ -10,11 +8,11 @@ private const val FIRST_POSITION = 0
 /**
  * Handle notifications for new messages.
  */
-internal class NewMailNotificationController(
-    private val notificationManager: NotificationManagerCompat,
-    private val newMailNotificationManager: NewMailNotificationManager,
-    private val summaryNotificationCreator: SummaryNotificationCreator,
-    private val singleMessageNotificationCreator: SingleMessageNotificationCreator
+internal class GroupedNotificationController(
+    private val notificationHelper: NotificationHelper,
+    private val newMailNotificationManager: NotificationGroupManager,
+    private val summaryNotificationCreator: SummaryGroupedNotificationCreator<>,
+    private val singleNotificationCreator: SingleGroupedNotificationCreator<Reference, Content>
 ) {
 
     @Synchronized
@@ -33,8 +31,8 @@ internal class NewMailNotificationController(
     }
 
     @Synchronized
-    fun addNewMailNotification(account: Account, message: LocalMessage, silent: Boolean) {
-        val notificationData = newMailNotificationManager.addNewMailNotification(account, message, silent)
+    fun addNewMailNotification(account: Account, content: Content, silent: Boolean) {
+        val notificationData = newMailNotificationManager.addNewMailNotification(account, content, silent)
 
         if (notificationData != null) {
             processNewMailNotificationData(notificationData)
@@ -44,7 +42,7 @@ internal class NewMailNotificationController(
     @Synchronized
     fun removeNewMailNotifications(
         account: Account,
-        selector: (List<MessageReference>) -> List<MessageReference>
+        selector: (List<Reference>) -> List<Reference>
     ) {
         val notificationData = newMailNotificationManager.removeNewMailNotifications(
             account,
@@ -57,27 +55,13 @@ internal class NewMailNotificationController(
     }
 
     @Synchronized
-    fun clearNewMailNotifications(account: Account, folderName: String) {
-        removeNewMailNotifications(account) {
-            it.filter { messageReference -> messageReference.folderName == folderName }
-        }
-    }
-
-    @Synchronized
-    fun removeNewMailNotification(account: Account, messageReference: MessageReference) {
-        removeNewMailNotifications(account) {
-            it.filter { reference -> reference == messageReference }
-        }
-    }
-
-    @Synchronized
     fun clearNewMailNotifications(account: Account) {
         val cancelNotificationIds = newMailNotificationManager.clearNewMailNotifications(account)
 
         cancelNotifications(cancelNotificationIds)
     }
 
-    private fun processNewMailNotificationData(notificationData: NewMailNotificationData) {
+    private fun processNewMailNotificationData(notificationData: GroupedNotificationData<Reference, Content>) {
         cancelNotifications(notificationData.cancelNotificationIds)
 
         for (singleNotificationData in notificationData.singleNotificationData) {
@@ -91,20 +75,20 @@ internal class NewMailNotificationController(
 
     private fun cancelNotifications(notificationIds: List<Int>) {
         for (notificationId in notificationIds) {
-            notificationManager.cancel(notificationId)
+            notificationHelper.cancel(notificationId)
         }
     }
 
     private fun createSingleNotification(
         baseNotificationData: BaseNotificationData,
-        singleNotificationData: SingleNotificationData
+        singleNotificationData: SingleNotificationData<Content>
     ) {
-        singleMessageNotificationCreator.createSingleNotification(baseNotificationData, singleNotificationData)
+        singleNotificationCreator.createSingleNotification(baseNotificationData, singleNotificationData)
     }
 
     private fun createSummaryNotification(
         baseNotificationData: BaseNotificationData,
-        summaryNotificationData: SummaryNotificationData
+        summaryNotificationData: SummaryNotificationData<Reference>
     ) {
         summaryNotificationCreator.createSummaryNotification(baseNotificationData, summaryNotificationData)
     }

@@ -12,7 +12,7 @@ internal class BaseGroupMailNotificationDataCreator {
             groupKey = NotificationGroupKeys.getGroupMailGroupKey(account),
             accountName = account.name,
             color = account.chipColor,
-            newMessagesCount = notificationData.notificationsCount,
+            notificationsCount = notificationData.notificationsCount,
             lockScreenNotificationData = createLockScreenNotificationData(notificationData),
             appearance = createNotificationAppearance(account)
         )

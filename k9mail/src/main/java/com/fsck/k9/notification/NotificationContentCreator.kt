@@ -9,20 +9,32 @@ import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType
+import security.planck.notification.GroupMailInvite
 
 internal class NotificationContentCreator(
     private val context: Context,
     private val resourceProvider: NotificationResourceProvider
 ) {
-    fun createFromMessage(account: Account, message: LocalMessage): NotificationContent {
+    fun createFromMessage(account: Account, message: LocalMessage): NewMailNotificationContent {
         val sender = getMessageSender(account, message)
 
-        return NotificationContent(
-            messageReference = message.makeMessageReference(),
+        return NewMailNotificationContent(
             sender = getMessageSenderForDisplay(sender),
             subject = getMessageSubject(message),
             preview = getMessagePreview(message),
-            summary = buildMessageSummary(sender, getMessageSubject(message))
+            summary = buildMessageSummary(sender, getMessageSubject(message)),
+            reference = message.makeMessageReference()
+        )
+    }
+
+    fun createFromGroupMailEvent(
+        groupMailInvite: GroupMailInvite
+    ): GroupMailNotificationContent {
+        return GroupMailNotificationContent(
+            sender = groupMailInvite.senderAddress,
+            subject = "group mail invitation",
+            summary = "invitation from ${groupMailInvite.senderAddress} to group ${groupMailInvite.groupAddress}",
+            groupMailInvite
         )
     }
 

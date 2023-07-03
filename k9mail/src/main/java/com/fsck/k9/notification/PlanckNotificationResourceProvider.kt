@@ -49,6 +49,11 @@ class PlanckNotificationResourceProvider(private val context: Context) : Notific
             newMessagesCount, newMessagesCount
         )
 
+    override fun newGroupMailEventsTitle(groupMailEventsCount: Int): String =
+        context.resources.getQuantityString(
+            R.plurals.notification_new_group_mail_events_title,
+            groupMailEventsCount, groupMailEventsCount
+        )
     override fun newMailTitle(): String = context.getString(R.string.notification_new_title)
 
     override fun unreadMessagesCountText(unreadMessageCount: Int, accountName: String): String =
@@ -56,6 +61,9 @@ class PlanckNotificationResourceProvider(private val context: Context) : Notific
 
     override fun additionalMessages(overflowMessagesCount: Int, accountName: String): String =
         context.getString(R.string.notification_additional_messages, overflowMessagesCount, accountName)
+
+    override fun additionalGroupMailEvents(overflowGroupMailEventsCount: Int, accountName: String): String =
+        context.getString(R.string.notification_additional_group_mail_events, overflowGroupMailEventsCount, accountName)
 
     override fun previewEncrypted(): String = context.getString(R.string.preview_encrypted)
 

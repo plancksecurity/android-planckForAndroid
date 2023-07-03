@@ -2062,7 +2062,13 @@ public class K9 extends MultiDexApplication {
                     break;
                 case DistributionNotifyGroupInvite:
                     Log.e("TESTGROUPMAIL", "INVITATION TO GROUP " + partner + " WITH MYSELF: " + myself);
-                    MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(new GroupMailInvite(myself.address, partner.address));
+                    MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(
+                            new GroupMailInvite(
+                                    myself.address,
+                                    partner.address,
+                                    Preferences.getPreferences(K9.this).getAccounts().get(0).getUuid()
+                            )
+                    );
                     break;
             }
 

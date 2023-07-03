@@ -1,15 +1,10 @@
 package security.planck.notification
 
 
-import foundation.pEp.jniadapter.Identity
+import com.fsck.k9.notification.NotificationReference
 
 data class GroupMailInvite(
     val groupAddress: String,
-    val senderAddress: String
-) {
-    companion object {
-        fun fromIdentities(groupIdentity: Identity, managerIdentity: Identity): GroupMailInvite {
-            return GroupMailInvite(groupIdentity.address, managerIdentity.address)
-        }
-    }
-}
+    val senderAddress: String,
+    val accountUuid: String,
+): NotificationReference
