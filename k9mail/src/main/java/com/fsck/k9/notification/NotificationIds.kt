@@ -41,7 +41,7 @@ internal object NotificationIds {
         return getBaseNotificationId(account) + OFFSET_GROUP_MAIL_SUMMARY
     }
 
-    fun getGroupMailSingleMessageNotificationId(account: Account, index: Int): Int {
+    fun getSingleGroupMailNotificationId(account: Account, index: Int): Int {
         require(index in 0 until NUMBER_OF_GROUP_MAIL_NOTIFICATIONS) { "Invalid index: $index" }
 
         return getBaseNotificationId(account) + OFFSET_GROUP_MAIL_SINGLE + index
