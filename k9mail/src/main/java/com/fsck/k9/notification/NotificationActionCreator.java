@@ -22,7 +22,12 @@ import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.search.LocalSearch;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
+
+import security.planck.notification.GroupMailInvite;
 
 
 /**
@@ -99,6 +104,21 @@ class NotificationActionCreator {
     public PendingIntent createDismissMessagePendingIntent(MessageReference messageReference) {
 
         Intent intent = NotificationActionService.createDismissMessageIntent(context, messageReference);
+
+        return PendingIntent.getService(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
+    }
+
+    public PendingIntent createDismissGroupMailNotificationPendingIntent(GroupMailInvite groupMailInvite) {
+
+        Intent intent = NotificationActionService.createDismissGroupMailNotificationIntent(context, groupMailInvite);
+
+        return PendingIntent.getService(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
+    }
+
+    public PendingIntent createDismissAllGroupMailNotificationsPendingIntent(@NotNull Account account) {
+        Intent intent = NotificationActionService.createDismissAllGroupMailNotificationsIntent(context, account);
 
         return PendingIntent.getService(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);

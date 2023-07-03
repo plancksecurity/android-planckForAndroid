@@ -395,5 +395,10 @@
     <!-- Body of an error notification that is displayed when creating a notification for a new message has failed -->
     <string name="notification_notify_error_text">An error has occurred while trying to create a system notification for a new message. The reason is most likely a missing notification sound.\n\nTap to open notification settings.</string>
     <string name="notification_certificate_error_public">Certificate error</string>
+    <plurals name="notification_new_group_mail_events_title">
+        <item quantity="one">%d new group mail event</item>
+        <item quantity="other">%d group mail events</item>
+    </plurals>
+    <string name="notification_additional_group_mail_events">+ %1$d more on %2$s</string>
 
 </resources>

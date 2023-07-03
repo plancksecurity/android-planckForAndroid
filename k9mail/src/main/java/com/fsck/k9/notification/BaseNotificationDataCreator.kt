@@ -7,20 +7,24 @@ private const val MAX_NUMBER_OF_SENDERS_IN_LOCK_SCREEN_NOTIFICATION = 5
 
 internal class BaseNotificationDataCreator {
 
-    fun createBaseNotificationData(notificationData: NotificationData): BaseNotificationData {
+    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createBaseNotificationData(
+        notificationData: NotificationData<Reference, Content>
+    ): BaseNotificationData {
         val account = notificationData.account
         return BaseNotificationData(
             account = account,
             groupKey = NotificationGroupKeys.getNewMailGroupKey(account),
             accountName = account.name,
             color = account.chipColor,
-            newMessagesCount = notificationData.newMessagesCount,
+            notificationsCount = notificationData.newMessagesCount,
             lockScreenNotificationData = createLockScreenNotificationData(notificationData),
             appearance = createNotificationAppearance(account)
         )
     }
 
-    private fun createLockScreenNotificationData(data: NotificationData): LockScreenNotificationData {
+    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createLockScreenNotificationData(
+        data: NotificationData<Reference, Content>
+    ): LockScreenNotificationData {
         return when (K9.getLockScreenNotificationVisibility()) {
             K9.LockScreenNotificationVisibility.APP_NAME -> LockScreenNotificationData.AppName
             K9.LockScreenNotificationVisibility.EVERYTHING -> LockScreenNotificationData.Public
@@ -30,7 +34,9 @@ internal class BaseNotificationDataCreator {
         }
     }
 
-    private fun getSenderNames(data: NotificationData): String {
+    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> getSenderNames(
+        data: NotificationData<Reference, Content>
+    ): String {
         return data.activeNotifications.asSequence()
             .map { it.content.sender }
             .distinct()

@@ -1,205 +1,263 @@
-package com.fsck.k9.notification;
+package com.fsck.k9.notification
 
+import android.content.Context
+import androidx.core.app.NotificationManagerCompat
+import com.fsck.k9.Account
+import com.fsck.k9.Clock
+import com.fsck.k9.Preferences
+import com.fsck.k9.activity.MessageReference
+import com.fsck.k9.mail.Folder
+import com.fsck.k9.mailstore.LocalMessage
+import security.planck.notification.GroupMailInvite
 
-import android.content.Context;
+class NotificationController internal constructor(
+    context: Context,
+    notificationManager: NotificationManagerCompat
+) {
+    private val certificateErrorNotificationController: CertificateErrorNotificationController
+    private val authenticationErrorNotificationController: AuthenticationErrorNotificationController
+    private val syncNotificationController: SyncNotificationController
+    private val sendFailedNotificationController: SendFailedNotificationController
+    private val newMailNotificationController: GroupedNotificationController<MessageReference, NewMailNotificationContent>
+    private val groupMailNotificationController: GroupedNotificationController<GroupMailInvite, GroupMailNotificationContent>
+    private val channelUtils: NotificationChannelManager
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationManagerCompat;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.Clock;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.mail.Folder;
-import com.fsck.k9.mailstore.LocalMessage;
-
-import java.util.List;
-
-import security.planck.notification.GroupMailInvite;
-
-public class NotificationController {
-    private final CertificateErrorNotificationController certificateErrorNotificationController;
-    private final AuthenticationErrorNotificationController authenticationErrorNotificationController;
-    private final SyncNotificationController syncNotificationController;
-    private final SendFailedNotificationController sendFailedNotificationController;
-    private final NewMailNotificationController newMailNotificationController;
-    private final GroupMailNotificationController groupMailNotificationController;
-
-    private final NotificationChannelManager channelUtils;
-
-    public static NotificationController newInstance(Context context) {
-        Context appContext = context.getApplicationContext();
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(appContext);
-        return new NotificationController(appContext, notificationManager);
-    }
-
-    NotificationController(Context context, NotificationManagerCompat notificationManager) {
-        this.channelUtils = new NotificationChannelManager(context, Preferences.getPreferences(context));
-        NotificationResourceProvider notificationResourceProvider = new PlanckNotificationResourceProvider(context);
-        NotificationHelper notificationHelper = new NotificationHelper(context, notificationManager, channelUtils, notificationResourceProvider);
-        NotificationActionCreator actionBuilder = new NotificationActionCreator(context);
-        certificateErrorNotificationController = new CertificateErrorNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
-        authenticationErrorNotificationController = new AuthenticationErrorNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
-        syncNotificationController = new SyncNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
-        sendFailedNotificationController = new SendFailedNotificationController(notificationHelper, actionBuilder, notificationResourceProvider);
+    init {
+        channelUtils = NotificationChannelManager(context, Preferences.getPreferences(context))
+        val notificationResourceProvider: NotificationResourceProvider =
+            PlanckNotificationResourceProvider(context)
+        val notificationHelper = NotificationHelper(
+            context,
+            notificationManager,
+            channelUtils,
+            notificationResourceProvider
+        )
+        val actionBuilder = NotificationActionCreator(context)
+        certificateErrorNotificationController = CertificateErrorNotificationController(
+            notificationHelper,
+            actionBuilder,
+            notificationResourceProvider
+        )
+        authenticationErrorNotificationController = AuthenticationErrorNotificationController(
+            notificationHelper,
+            actionBuilder,
+            notificationResourceProvider
+        )
+        syncNotificationController = SyncNotificationController(
+            notificationHelper,
+            actionBuilder,
+            notificationResourceProvider
+        )
+        sendFailedNotificationController = SendFailedNotificationController(
+            notificationHelper,
+            actionBuilder,
+            notificationResourceProvider
+        )
         newMailNotificationController = initializeNewMailNotificationController(
-                context,
-                notificationManager,
-                notificationResourceProvider,
-                notificationHelper,
-                actionBuilder
-        );
+            context,
+            notificationResourceProvider,
+            notificationHelper,
+            actionBuilder
+        )
         groupMailNotificationController = initializeGroupMailNotificationController(
-                context,
-                notificationResourceProvider,
-                notificationHelper,
-                actionBuilder
-        );
+            context,
+            notificationResourceProvider,
+            notificationHelper,
+            actionBuilder
+        )
     }
 
-    private GroupMailNotificationController initializeGroupMailNotificationController(
-            Context context,
-            NotificationResourceProvider notificationResourceProvider,
-            NotificationHelper notificationHelper,
-            NotificationActionCreator actionBuilder
-    ) {
-        GroupMailNotificationDataStore notificationDataStore = new GroupMailNotificationDataStore();
-        GroupMailNotificationRepository notificationRepository = new GroupMailNotificationRepository(notificationDataStore);
-        BaseGroupMailNotificationDataCreator baseNotificationDataCreator = new BaseGroupMailNotificationDataCreator();
-        SingleGroupMailNotificationDataCreator singleMessageNotificationDataCreator = new SingleGroupMailNotificationDataCreator();
-        SummaryGroupMailNotificationDataCreator summaryNotificationDataCreator = new SummaryGroupMailNotificationDataCreator(singleMessageNotificationDataCreator);
-        GroupMailNotificationManager newMailNotificationManager = new GroupMailNotificationManager(
-                notificationRepository,
-                baseNotificationDataCreator,
-                summaryNotificationDataCreator,
-                Clock.INSTANCE
-        );
-        LockScreenNotificationCreator lockScreenNotificationCreator = new LockScreenNotificationCreator(
-                notificationHelper, notificationResourceProvider
-        );
-        SingleGroupMailNotificationCreator singleMessageNotificationCreator = new SingleGroupMailNotificationCreator(
-                notificationHelper, notificationResourceProvider, lockScreenNotificationCreator
-        );
-        SummaryGroupMailNotificationCreator summaryNotificationCreator = new SummaryGroupMailNotificationCreator(
-                notificationHelper, actionBuilder, lockScreenNotificationCreator, singleMessageNotificationCreator, notificationResourceProvider
-        );
-        return new GroupMailNotificationController(
-                notificationHelper,
-                newMailNotificationManager,
-                singleMessageNotificationCreator,
-                summaryNotificationCreator
-        );
-
+    private fun initializeGroupMailNotificationController(
+        context: Context,
+        notificationResourceProvider: NotificationResourceProvider,
+        notificationHelper: NotificationHelper,
+        actionBuilder: NotificationActionCreator
+    ): GroupedNotificationController<GroupMailInvite, GroupMailNotificationContent> {
+        val notificationContentCreator =
+            NotificationContentCreator(context, notificationResourceProvider)
+        val notificationRepository = NotificationRepository<GroupMailInvite, GroupMailNotificationContent>()
+        val baseNotificationDataCreator = BaseNotificationDataCreator<GroupMailInvite, GroupMailNotificationContent>()
+        val singleMessageNotificationDataCreator = SingleGroupedNotificationDataCreator<GroupMailInvite, GroupMailNotificationContent>()
+        val summaryNotificationDataCreator =
+            SummaryGroupedNotificationDataCreator(singleMessageNotificationDataCreator)
+        val notificationManager = GroupMailNotificationManager(
+            notificationContentCreator,
+            notificationRepository,
+            baseNotificationDataCreator,
+            singleMessageNotificationDataCreator,
+            summaryNotificationDataCreator,
+            Clock.INSTANCE
+        )
+        val lockScreenNotificationCreator = LockScreenNotificationCreator(
+            notificationHelper, notificationResourceProvider
+        )
+        val singleNotificationCreator = SingleGroupMailNotificationCreator(
+            notificationHelper,
+            actionBuilder,
+            notificationResourceProvider,
+            lockScreenNotificationCreator
+        )
+        val summaryNotificationCreator = SummaryGroupMailNotificationCreator(
+            notificationHelper,
+            actionBuilder,
+            lockScreenNotificationCreator,
+            singleNotificationCreator,
+            notificationResourceProvider
+        )
+        return GroupedNotificationController(
+            notificationHelper,
+            notificationManager,
+            summaryNotificationCreator,
+            singleNotificationCreator
+        )
     }
 
-    @NonNull
-    private NewMailNotificationController initializeNewMailNotificationController(
-            Context context,
-            NotificationManagerCompat notificationManager,
-            NotificationResourceProvider notificationResourceProvider,
-            NotificationHelper notificationHelper,
-            NotificationActionCreator actionBuilder
-    ) {
-        NotificationContentCreator notificationContentCreator = new NotificationContentCreator(context, notificationResourceProvider);
-        NotificationDataStore notificationDataStore = new NotificationDataStore();
-        NotificationRepository notificationRepository = new NotificationRepository(notificationDataStore);
-        BaseNotificationDataCreator baseNotificationDataCreator = new BaseNotificationDataCreator();
-        SingleMessageNotificationDataCreator singleMessageNotificationDataCreator = new SingleMessageNotificationDataCreator();
-        SummaryNotificationDataCreator summaryNotificationDataCreator = new SummaryNotificationDataCreator(singleMessageNotificationDataCreator);
-        NewMailNotificationManager newMailNotificationManager = new NewMailNotificationManager(
+    private fun initializeNewMailNotificationController(
+        context: Context,
+        notificationResourceProvider: NotificationResourceProvider,
+        notificationHelper: NotificationHelper,
+        actionBuilder: NotificationActionCreator
+    ): GroupedNotificationController<MessageReference, NewMailNotificationContent> {
+        val notificationContentCreator =
+            NotificationContentCreator(context, notificationResourceProvider)
+        val notificationRepository: NotificationRepository<MessageReference, NewMailNotificationContent> =
+            NotificationRepository()
+        val baseNotificationDataCreator = BaseNotificationDataCreator<MessageReference, NewMailNotificationContent>()
+        val singleMessageNotificationDataCreator = SingleGroupedNotificationDataCreator<MessageReference, NewMailNotificationContent>()
+        val summaryNotificationDataCreator =
+            SummaryGroupedNotificationDataCreator(singleMessageNotificationDataCreator)
+        val newMailNotificationManager  =
+            NewMailNotificationManager(
                 notificationContentCreator,
                 notificationRepository,
                 baseNotificationDataCreator,
                 singleMessageNotificationDataCreator,
                 summaryNotificationDataCreator,
                 Clock.INSTANCE
-        );
-        LockScreenNotificationCreator lockScreenNotificationCreator = new LockScreenNotificationCreator(
-                notificationHelper, notificationResourceProvider
-        );
-        SingleMessageNotificationCreator singleMessageNotificationCreator = new SingleMessageNotificationCreator(
-                notificationHelper, actionBuilder, notificationResourceProvider, lockScreenNotificationCreator
-        );
-        SummaryNotificationCreator summaryNotificationCreator = new SummaryNotificationCreator(
-                notificationHelper, actionBuilder, lockScreenNotificationCreator, singleMessageNotificationCreator, notificationResourceProvider
-        );
-        return new NewMailNotificationController(
-                notificationManager,
-                newMailNotificationManager,
-                summaryNotificationCreator,
-                singleMessageNotificationCreator
-        );
+            )
+        val lockScreenNotificationCreator = LockScreenNotificationCreator(
+            notificationHelper, notificationResourceProvider
+        )
+        val singleNotificationCreator = SingleMessageNotificationCreator(
+                notificationHelper,
+                actionBuilder,
+                notificationResourceProvider,
+                lockScreenNotificationCreator
+            )
+        val summaryNotificationCreator = SummaryNewMailNotificationCreator(
+            notificationHelper,
+            actionBuilder,
+            lockScreenNotificationCreator,
+            singleNotificationCreator,
+            notificationResourceProvider
+        )
+        return GroupedNotificationController(
+            notificationHelper,
+            newMailNotificationManager,
+            summaryNotificationCreator,
+            singleNotificationCreator
+        )
     }
 
-    public void showCertificateErrorNotification(Account account, boolean incoming) {
-        certificateErrorNotificationController.showCertificateErrorNotification(account, incoming);
+    fun showCertificateErrorNotification(account: Account?, incoming: Boolean) {
+        certificateErrorNotificationController.showCertificateErrorNotification(account!!, incoming)
     }
 
-    public void clearCertificateErrorNotifications(Account account, boolean incoming) {
-        certificateErrorNotificationController.clearCertificateErrorNotifications(account, incoming);
+    fun clearCertificateErrorNotifications(account: Account?, incoming: Boolean) {
+        certificateErrorNotificationController.clearCertificateErrorNotifications(
+            account!!,
+            incoming
+        )
     }
 
-    public void showAuthenticationErrorNotification(Account account, boolean incoming) {
-        authenticationErrorNotificationController.showAuthenticationErrorNotification(account, incoming);
+    fun showAuthenticationErrorNotification(account: Account?, incoming: Boolean) {
+        authenticationErrorNotificationController.showAuthenticationErrorNotification(
+            account!!,
+            incoming
+        )
     }
 
-    public void clearAuthenticationErrorNotification(Account account, boolean incoming) {
-        authenticationErrorNotificationController.clearAuthenticationErrorNotification(account, incoming);
+    fun clearAuthenticationErrorNotification(account: Account?, incoming: Boolean) {
+        authenticationErrorNotificationController.clearAuthenticationErrorNotification(
+            account!!,
+            incoming
+        )
     }
 
-    public void showSendingNotification(Account account) {
-        syncNotificationController.showSendingNotification(account);
+    fun showSendingNotification(account: Account?) {
+        syncNotificationController.showSendingNotification(account!!)
     }
 
-    public void clearSendingNotification(Account account) {
-        syncNotificationController.clearSendingNotification(account);
+    fun clearSendingNotification(account: Account?) {
+        syncNotificationController.clearSendingNotification(account!!)
     }
 
-    public void showSendFailedNotification(Account account, Exception exception) {
-        sendFailedNotificationController.showSendFailedNotification(account, exception);
+    fun showSendFailedNotification(account: Account?, exception: Exception?) {
+        sendFailedNotificationController.showSendFailedNotification(account!!, exception!!)
     }
 
-    public void clearSendFailedNotification(Account account) {
-        sendFailedNotificationController.clearSendFailedNotification(account);
+    fun clearSendFailedNotification(account: Account?) {
+        sendFailedNotificationController.clearSendFailedNotification(account!!)
     }
 
-    public void showFetchingMailNotification(Account account, Folder folder) {
-        syncNotificationController.showFetchingMailNotification(account, folder);
+    fun showFetchingMailNotification(account: Account?, folder: Folder<*>?) {
+        syncNotificationController.showFetchingMailNotification(account!!, folder!!)
     }
 
-    public void clearFetchingMailNotification(Account account) {
-        syncNotificationController.clearFetchingMailNotification(account);
+    fun clearFetchingMailNotification(account: Account?) {
+        syncNotificationController.clearFetchingMailNotification(account!!)
     }
 
-    public void addNewMailsNotification(Account account, List<LocalMessage> messages, int previousUnreadMessageCount) {
-        newMailNotificationController.addNewMailsNotification(account, messages);
+    fun addNewMailsNotification(
+        account: Account,
+        messages: List<LocalMessage>,
+        previousUnreadMessageCount: Int
+    ) {
+        newMailNotificationController.addNewMailsNotification(account, messages)
     }
 
-    public void removeNewMailNotification(Account account, MessageReference messageReference) {
-        newMailNotificationController.removeNewMailNotification(account, messageReference);
+    fun clearNewMailNotifications(account: Account, folderName: String) {
+        newMailNotificationController.removeNewMailNotifications(account) {
+            it.filter { messageReference -> messageReference.folderName == folderName }
+        }
     }
 
-    public void clearNewMailNotifications(Account account) {
-        newMailNotificationController.clearNewMailNotifications(account);
+    fun removeNewMailNotification(account: Account, messageReference: MessageReference) {
+        newMailNotificationController.removeNewMailNotifications(account) {
+            it.filter { reference -> reference == messageReference }
+        }
     }
 
-    public void clearNewMailNotifications(Account account, String folderName) {
-        newMailNotificationController.clearNewMailNotifications(account, folderName);
+    fun clearNewMailNotifications(account: Account?) {
+        newMailNotificationController.clearNewMailNotifications(account!!)
     }
 
-    public void addGroupMailNotification(Account account, GroupMailInvite groupMailInvite) {
-        groupMailNotificationController.addGroupMailInviteNotification(account, groupMailInvite, false);
+    fun addGroupMailNotification(account: Account, groupMailInvite: GroupMailInvite) {
+        groupMailNotificationController.addNewMailNotification(
+            account,
+            groupMailInvite,
+            false
+        )
     }
 
-    public void removeGroupMailNotification(Account account, GroupMailInvite groupMailInvite) {
-        groupMailNotificationController.removeGroupMailNotification(account, groupMailInvite);
+    fun removeGroupMailNotification(account: Account?, groupMailInvite: GroupMailInvite?) {
+        groupMailNotificationController.removeGroupMailNotification(account!!, groupMailInvite!!)
     }
 
-    public void clearGroupMailNotifications(Account account) {
-        groupMailNotificationController.clearGroupMailNotifications(account);
+    fun clearGroupMailNotifications(account: Account?) {
+        groupMailNotificationController.clearGroupMailNotifications(account!!)
     }
 
-    public void updateChannels() {
-        channelUtils.updateChannels();
+    fun updateChannels() {
+        channelUtils.updateChannels()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(context: Context): NotificationController {
+            val appContext = context.applicationContext
+            val notificationManager = NotificationManagerCompat.from(appContext)
+            return NotificationController(appContext, notificationManager)
+        }
     }
 }

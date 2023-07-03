@@ -1,15 +1,14 @@
 package com.fsck.k9.notification
 
 import com.fsck.k9.Account
-import com.fsck.k9.activity.MessageReference
 
 /**
  * Holds information about active and inactive new message notifications of an account.
  */
-internal data class NotificationData(
+internal data class NotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
     val account: Account,
-    val activeNotifications: List<NotificationHolder>,
-    val inactiveNotifications: List<InactiveNotificationHolder>
+    val activeNotifications: List<NotificationHolder<Content>>,
+    val inactiveNotifications: List<InactiveNotificationHolder<Content>>
 ) {
     val newMessagesCount: Int
         get() = activeNotifications.size + inactiveNotifications.size
@@ -17,14 +16,14 @@ internal data class NotificationData(
     val isSingleMessageNotification: Boolean
         get() = activeNotifications.size == 1
 
-    val messageReferences: List<MessageReference>
+    val references: List<Reference>
         get() {
             return buildList(capacity = newMessagesCount) {
                 for (activeNotification in activeNotifications) {
-                    add(activeNotification.content.messageReference)
+                    add(activeNotification.content.reference)
                 }
                 for (inactiveNotification in inactiveNotifications) {
-                    add(inactiveNotification.content.messageReference)
+                    add(inactiveNotification.content.reference)
                 }
             }
         }
@@ -32,7 +31,7 @@ internal data class NotificationData(
     fun isEmpty() = activeNotifications.isEmpty()
 
     companion object {
-        fun create(account: Account): NotificationData {
+        fun <Reference: NotificationReference, Content: NotificationContent<Reference>> create(account: Account): NotificationData<Reference, Content> {
             return NotificationData(account, activeNotifications = emptyList(), inactiveNotifications = emptyList())
         }
     }

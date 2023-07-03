@@ -6,6 +6,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+
+import security.planck.notification.GroupMailInvite;
 import timber.log.Timber;
 
 import com.fsck.k9.Account;
@@ -29,6 +31,7 @@ public class NotificationActionService extends CoreService {
 
     private static final String EXTRA_ACCOUNT_UUID = "accountUuid";
     private static final String EXTRA_MESSAGE_REFERENCE = "messageReference";
+    private static final String EXTRA_GROUP_NOTIFICATION = "groupNotification";
     private static final String EXTRA_MESSAGE_REFERENCES = "messageReferences";
 
 
@@ -56,6 +59,22 @@ public class NotificationActionService extends CoreService {
         intent.setAction(ACTION_DISMISS);
         intent.putExtra(EXTRA_ACCOUNT_UUID, messageReference.getAccountUuid());
         intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
+
+        return intent;
+    }
+
+    public static Intent createDismissGroupMailNotificationIntent(Context context, GroupMailInvite groupMailInvite) {
+        Intent intent = new Intent(context, NotificationActionService.class);
+        intent.setAction(ACTION_DISMISS);
+        intent.putExtra(EXTRA_GROUP_NOTIFICATION, groupMailInvite.toString());
+
+        return intent;
+    }
+
+    public static Intent createDismissAllGroupMailNotificationsIntent(Context context, Account account) {
+        Intent intent = new Intent(context, NotificationActionService.class);
+        intent.setAction(ACTION_DISMISS);
+        intent.putExtra(EXTRA_ACCOUNT_UUID, account.getUuid());
 
         return intent;
     }
