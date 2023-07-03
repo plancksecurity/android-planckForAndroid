@@ -1,5 +1,5 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpJNIAdapter=test-group-mail
+pEpJNIAdapter=CORE-26
 foldableFolderList=v0.2.4-RC3
