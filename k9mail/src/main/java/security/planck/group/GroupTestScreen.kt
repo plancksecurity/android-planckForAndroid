@@ -12,7 +12,6 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.tools.FeedbackTools
-import foundation.pEp.jniadapter.Group
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,8 +28,6 @@ class GroupTestScreen: PlanckActivity() {
 
     @Inject
     lateinit var preferences: Preferences
-
-    private var group = Group()
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
@@ -52,19 +49,17 @@ class GroupTestScreen: PlanckActivity() {
         uiScope.launch {
             binding.emptyGroupCreationFeedback.text = ""
             withContext(PlanckDispatcher) {
-                group.print()
                 val account = preferences.accounts.first()
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
                 val groupIdentity = PlanckUtils.createIdentity(Address("juanito.valderrama@rama.ch", "juanitoeh"), this@GroupTestScreen)
-                kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, Vector()) }
+                kotlin.runCatching { planckProvider.createGroup(groupIdentity, manager, Vector()) }
             }.onFailure {
                 Timber.e(it, "error creating empty group")
                 binding.emptyGroupCreationFeedback.text = it.message
                 displayError(it)
             }.onSuccess {
-                binding.emptyGroupCreationFeedback.text = "Empty group created\n"+group.getDataString()
+                binding.emptyGroupCreationFeedback.text = "Empty group created successfully"
             }
-            group.print()
 
         }
     }
@@ -75,46 +70,24 @@ class GroupTestScreen: PlanckActivity() {
             val groupAddress = binding.groupAddress.text.toString()
             val memberAddresses = binding.groupMemberAddresses.text.toString()
             withContext(PlanckDispatcher) {
-                group.print()
                 val account = preferences.accounts.first()
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
                 val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress), this@GroupTestScreen)
                 val memberIdentities = Vector(memberAddresses.split(" ").map { PlanckUtils.createIdentity(Address(it), this@GroupTestScreen) })
-                kotlin.runCatching { group = planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
+                kotlin.runCatching { planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
             }.onFailure {
                 Timber.e(it, "error creating group from user input")
                 binding.groupCreationFeedback.text = it.message
                 displayError(it)
             }.onSuccess {
-                binding.groupCreationFeedback.text = "Group created\n"+group.getDataString()
+                binding.groupCreationFeedback.text = "Group created successfully"
             }
-            group.print()
         }
     }
 
     private fun displayError(e: Throwable) {
         FeedbackTools.showLongFeedback(binding.root, e.message)
     }
-
-    private fun Group.print() {
-        Timber.e(getDataString())
-    }
-
-    private fun Group.getDataString(): String =
-        """
-            GROUP:
-            Group identity: 
-                ${this.group_identity}
-                
-            Group manager: 
-                ${this.manager}
-                
-            Members: 
-                ${this.members?.joinToString("\n") { "identity: ${it.ident}, joined: ${it.joined}" }}
-                
-            Active: ${this.active}
-        """.trimIndent()
-
 
     override fun inject() {
         planckComponent.inject(this)
