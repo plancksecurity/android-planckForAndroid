@@ -31,7 +31,7 @@ internal abstract class SummaryGroupedNotificationCreator<Reference : Notificati
         }
     }
 
-    protected fun createSingleMessageNotification(
+    private fun createSingleMessageNotification(
         baseNotificationData: BaseNotificationData,
         singleNotificationData: SummarySingleNotificationData<Reference, Content>
     ) {
@@ -42,7 +42,7 @@ internal abstract class SummaryGroupedNotificationCreator<Reference : Notificati
         )
     }
 
-    protected fun createInboxStyleSummaryNotification(
+    private fun createInboxStyleSummaryNotification(
         baseNotificationData: BaseNotificationData,
         notificationData: SummaryInboxNotificationData<Reference>
     ) {
