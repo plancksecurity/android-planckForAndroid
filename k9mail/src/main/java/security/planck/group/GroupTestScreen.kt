@@ -68,13 +68,34 @@ class GroupTestScreen: PlanckActivity() {
         uiScope.launch {
             binding.groupCreationFeedback.text = ""
             val groupAddress = binding.groupAddress.text.toString()
+            val groupUserName = binding.groupUserName.text?.toString()
             val memberAddresses = binding.groupMemberAddresses.text.toString()
             withContext(PlanckDispatcher) {
                 val account = preferences.accounts.first()
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
-                val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress), this@GroupTestScreen)
-                val memberIdentities = Vector(memberAddresses.split(" ").map { PlanckUtils.createIdentity(Address(it), this@GroupTestScreen) })
-                kotlin.runCatching { planckProvider.createGroup(groupIdentity, manager, memberIdentities) }
+                val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress, groupUserName), this@GroupTestScreen)
+                val memberIdentities = Vector(memberAddresses.split(",").mapNotNull { memberText ->
+                    val parts = memberText.split(":")
+                    var memberUserName: String? = null
+                    var memberAddress: String? = null
+                    if (parts.isNotEmpty()) {
+                        if (parts.size == 2) {
+                            memberUserName = parts.last()
+                        }
+                        memberAddress = parts.first()
+                        PlanckUtils.createIdentity(Address(memberAddress, memberUserName), this@GroupTestScreen)
+                    } else {
+                        null
+                    }
+                }
+                )
+                kotlin.runCatching {
+                    if (memberIdentities.isNotEmpty()) {
+                        planckProvider.createGroup(groupIdentity, manager, memberIdentities)
+                    } else {
+                        error("group members was empty")
+                    }
+                }
             }.onFailure {
                 Timber.e(it, "error creating group from user input")
                 binding.groupCreationFeedback.text = it.message
