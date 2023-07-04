@@ -8,7 +8,7 @@ import security.planck.notification.GroupMailInvite
 internal class SummaryGroupMailNotificationCreator(
     notificationHelper: NotificationHelper,
     actionCreator: NotificationActionCreator,
-    lockScreenNotificationCreator: LockScreenNotificationCreator,
+    lockScreenNotificationCreator: LockScreenNotificationCreator<GroupMailInvite>,
     singleNotificationCreator: SingleGroupedNotificationCreator<GroupMailInvite>,
     resourceProvider: NotificationResourceProvider
 ): SummaryGroupedNotificationCreator<GroupMailInvite>(

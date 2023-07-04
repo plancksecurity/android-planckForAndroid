@@ -8,7 +8,7 @@ internal class SingleMessageNotificationCreator(
     notificationHelper: NotificationHelper,
     actionCreator: NotificationActionCreator,
     resourceProvider: NotificationResourceProvider,
-    lockScreenNotificationCreator: LockScreenNotificationCreator
+    lockScreenNotificationCreator: LockScreenNotificationCreator<MessageReference>
 ) : SingleGroupedNotificationCreator<MessageReference>(
     notificationHelper,
     actionCreator,

@@ -3,9 +3,9 @@ package com.fsck.k9.notification
 import android.app.Notification
 import androidx.core.app.NotificationCompat
 
-internal class LockScreenNotificationCreator(
-    private val notificationHelper: NotificationHelper,
-    private val resourceProvider: NotificationResourceProvider
+internal abstract class LockScreenNotificationCreator<Reference: NotificationReference>(
+    protected val notificationHelper: NotificationHelper,
+    protected val resourceProvider: NotificationResourceProvider,
 ) {
     fun configureLockScreenNotification(
         builder: NotificationCompat.Builder,
@@ -46,15 +46,14 @@ internal class LockScreenNotificationCreator(
     }
 
     private fun createPublicNotification(baseNotificationData: BaseNotificationData): NotificationCompat.Builder {
-        val account = baseNotificationData.account
-        val newMessagesCount = baseNotificationData.notificationsCount
-        val title = resourceProvider.newMessagesTitle(newMessagesCount)
+        val notificationsCount = baseNotificationData.notificationsCount
 
-        return notificationHelper.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MESSAGES)
-            .setSmallIcon(resourceProvider.iconNewMail)
+        return getNotificationBuilder(baseNotificationData)
             .setColor(baseNotificationData.color)
-            .setNumber(newMessagesCount)
-            .setContentTitle(title)
-            .setCategory(NotificationCompat.CATEGORY_EMAIL)
+            .setNumber(notificationsCount)
     }
+
+    protected abstract fun getNotificationBuilder(
+        baseNotificationData: BaseNotificationData
+    ): NotificationCompat.Builder
 }

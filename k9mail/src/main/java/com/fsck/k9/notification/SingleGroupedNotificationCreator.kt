@@ -11,7 +11,7 @@ internal abstract class SingleGroupedNotificationCreator<in Reference: Notificat
     protected val notificationHelper: NotificationHelper,
     protected val actionCreator: NotificationActionCreator,
     protected val resourceProvider: NotificationResourceProvider,
-    private val lockScreenNotificationCreator: LockScreenNotificationCreator
+    private val lockScreenNotificationCreator: LockScreenNotificationCreator<Reference>
 ) {
     fun createSingleNotification(
         baseNotificationData: BaseNotificationData,
