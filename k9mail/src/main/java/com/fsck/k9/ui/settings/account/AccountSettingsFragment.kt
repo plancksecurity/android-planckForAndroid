@@ -4,8 +4,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -13,6 +16,7 @@ import com.fsck.k9.*
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
+import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckUtils
@@ -23,6 +27,7 @@ import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
+import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.android.synthetic.main.preference_loading_widget.*
@@ -33,6 +38,7 @@ import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
+import java.time.Duration
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -75,7 +81,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
-        initializeAccountpEpSync(account)
+        initializeManualSync(account)
         initializePgpImportKey()
         initializeNotifications()
         initializePepPrivacyProtection()
@@ -175,17 +181,35 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PLANCK_MANUAL_SYNC)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                AlertDialog.Builder(view?.context)
-                    .setTitle(getString(R.string.pep_key_reset_own_id_warning_title, account.email))
-                    .setMessage(R.string.pep_key_reset_own_id_warning)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.sync) { _, _ ->
-                        //doManualSync(account)
-                    }.setNegativeButton(R.string.cancel_action, null).show()
+                view?.let {
+                    if (isDeviceOnline()) {
+                        val dialog = AlertDialog.Builder(it.context)
+                            .setTitle(getString(R.string.sync_title))
+                            .setMessage(R.string.pep_key_reset_own_id_warning)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.sync_action) { _, _ ->
+                                doManualSync(account)
+                            }.setNegativeButton(R.string.cancel_action, null).show()
+
+                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                            try {
+                                dialog.dismiss()
+                            } catch (_: Exception) {
+
+                            }
+                        }, SYNC_TIMEOUT)
+
+                    } else {
+                        Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG)
+                    }
+                }
                 true
             }
         }
     }
+
+    private fun isDeviceOnline(): Boolean =
+        kotlin.runCatching { Utility.hasConnectivity(K9.app) }.getOrDefault(false)
 
     private fun initializeAccountpEpKeyReset(account: Account) {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
@@ -201,6 +225,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun doManualSync(account: Account) {
+        TODO("Not yet implemented")
     }
 
     private fun initializePgpImportKey() {
@@ -420,6 +448,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
+        private val SYNC_TIMEOUT = Duration.ofMinutes(1L).toMillis()
 
         private val FOLDER_LIST_PREFERENCES = listOf(
                 PREFERENCE_AUTO_EXPAND_FOLDER,
