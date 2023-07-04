@@ -13,7 +13,7 @@ internal class GroupMailLockScreenNotificationCreator(
     ): NotificationCompat.Builder {
         val account = baseNotificationData.account
         return notificationHelper.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MESSAGES)
-            .setSmallIcon(resourceProvider.iconNewMail)
+            .setSmallIcon(resourceProvider.iconGroupMail)
             .setContentTitle(resourceProvider.newMessagesTitle(baseNotificationData.notificationsCount))
             .setCategory(NotificationCompat.CATEGORY_EMAIL)
     }
