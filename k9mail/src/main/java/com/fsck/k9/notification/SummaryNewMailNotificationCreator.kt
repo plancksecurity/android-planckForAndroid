@@ -8,7 +8,7 @@ import com.fsck.k9.activity.MessageReference
 internal class SummaryNewMailNotificationCreator(
     notificationHelper: NotificationHelper,
     actionCreator: NotificationActionCreator,
-    lockScreenNotificationCreator: LockScreenNotificationCreator,
+    lockScreenNotificationCreator: LockScreenNotificationCreator<MessageReference>,
     singleNotificationCreator: SingleGroupedNotificationCreator<MessageReference>,
     resourceProvider: NotificationResourceProvider
 ): SummaryGroupedNotificationCreator<MessageReference>(

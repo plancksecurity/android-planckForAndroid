@@ -19,7 +19,7 @@ class LockScreenNotificationCreatorTest : RobolectricTest() {
     private val builder = createFakeNotificationBuilder()
     private val publicBuilder = createFakeNotificationBuilder()
     private val notificationHelper = createFakeNotificationHelper(publicBuilder)
-    private var notificationCreator = LockScreenNotificationCreator(
+    private var notificationCreator = NewMailLockScreenNotificationCreator(
         notificationHelper = notificationHelper,
         resourceProvider = resourceProvider
     )
