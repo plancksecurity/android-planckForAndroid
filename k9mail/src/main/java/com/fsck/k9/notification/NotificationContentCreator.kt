@@ -6,10 +6,12 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
+import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType
-import security.planck.notification.GroupMailInvite
+import foundation.pEp.jniadapter.Identity
+import security.planck.notification.GroupMailSignal
 
 internal class NotificationContentCreator(
     private val context: Context,
@@ -28,13 +30,17 @@ internal class NotificationContentCreator(
     }
 
     fun createFromGroupMailEvent(
-        groupMailInvite: GroupMailInvite
+        groupMailSignal: GroupMailSignal
     ): GroupMailNotificationContent {
+        val sender = getMessageSenderForDisplay(
+            formatIdentityAsContact(groupMailSignal.senderIdentity)
+        )
+        val group = formatIdentityAsContact(groupMailSignal.groupIdentity).orEmpty()
         return GroupMailNotificationContent(
-            sender = groupMailInvite.senderAddress,
-            subject = resourceProvider.getGroupMailInviteSubject(groupMailInvite),
-            summary = resourceProvider.getGroupMailInviteSummary(groupMailInvite),
-            groupMailInvite
+            sender = sender,
+            subject = resourceProvider.getGroupMailInviteSubject(sender),
+            summary = resourceProvider.getGroupMailInviteSummary(group, sender),
+            groupMailSignal.toGroupInvite()
         )
     }
 
@@ -79,6 +85,12 @@ internal class NotificationContentCreator(
     private fun getMessageSubject(message: Message): String {
         val subject = message.subject.orEmpty()
         return subject.ifEmpty { resourceProvider.noSubject() }
+    }
+
+    private fun formatIdentityAsContact(identity: Identity): String? {
+        val contacts = if (K9.showContactName()) Contacts.getInstance(context) else null
+        val address = Address(identity.address, identity.username)
+        return MessageHelper.toFriendly(address, contacts)?.toString()
     }
 
     private fun getMessageSender(account: Account, message: Message): String? {

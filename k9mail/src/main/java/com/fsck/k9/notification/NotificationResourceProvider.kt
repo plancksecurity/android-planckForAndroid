@@ -1,7 +1,5 @@
 package com.fsck.k9.notification
 
-import security.planck.notification.GroupMailInvite
-
 interface NotificationResourceProvider {
     val iconWarning: Int
     val iconMarkAsRead: Int
@@ -65,6 +63,6 @@ interface NotificationResourceProvider {
     fun actionArchive(): String
     fun actionArchiveAll(): String
     fun actionMarkAsSpam(): String
-    fun getGroupMailInviteSubject(groupMailInvite: GroupMailInvite): String
-    fun getGroupMailInviteSummary(groupMailInvite: GroupMailInvite): CharSequence
+    fun getGroupMailInviteSubject(sender: String): String
+    fun getGroupMailInviteSummary(group: String, sender: String): CharSequence
 }

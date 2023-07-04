@@ -10,6 +10,7 @@ import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mail.Folder
 import com.fsck.k9.mailstore.LocalMessage
 import security.planck.notification.GroupMailInvite
+import security.planck.notification.GroupMailSignal
 
 class NotificationController internal constructor(
     context: Context,
@@ -199,10 +200,10 @@ class NotificationController internal constructor(
         groupedNotificationController.clearNewMailNotifications(account)
     }
 
-    fun addGroupMailNotification(account: Account, groupMailInvite: GroupMailInvite) {
+    fun addGroupMailNotification(account: Account, groupMailSignal: GroupMailSignal) {
         groupedNotificationController.addGroupMailNotification(
             account,
-            groupMailInvite,
+            groupMailSignal,
             false
         )
     }

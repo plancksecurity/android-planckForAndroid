@@ -5,6 +5,7 @@ import com.fsck.k9.Clock
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mailstore.LocalMessage
 import security.planck.notification.GroupMailInvite
+import security.planck.notification.GroupMailSignal
 
 /**
  * Manages notifications for new messages and group mail events
@@ -33,10 +34,10 @@ internal class GroupedNotificationManager(
 
     fun addGroupMailNotification(
         account: Account,
-        groupMailInvite: GroupMailInvite,
+        groupMailSignal: GroupMailSignal,
         silent: Boolean
     ): GroupedNotificationData<GroupMailInvite, GroupMailNotificationContent>? {
-        val content = contentCreator.createFromGroupMailEvent(groupMailInvite)
+        val content = contentCreator.createFromGroupMailEvent(groupMailSignal)
 
         val result = groupMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
 

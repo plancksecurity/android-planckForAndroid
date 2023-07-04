@@ -146,7 +146,9 @@ class NotificationContentCreatorTest : RobolectricTest() {
         assertThat(content.reference).isEqualTo(groupEvent)
         assertThat(content.sender).isEqualTo(SENDER_ADDRESS)
         assertThat(content.subject).isEqualTo(resourceProvider.getGroupMailInviteSubject(groupEvent))
-        assertThat(content.summary.toString()).isEqualTo(resourceProvider.getGroupMailInviteSummary(groupEvent))
+        assertThat(content.summary.toString()).isEqualTo(resourceProvider.getGroupMailInviteSummary(
+            groupEvent,
+        ))
     }
 
     private fun createNotificationContentCreator(): NotificationContentCreator {
