@@ -111,11 +111,11 @@ class TestNotificationResourceProvider : NotificationResourceProvider {
     override fun actionArchiveAll(): String = "Archive All"
 
     override fun actionMarkAsSpam(): String = "Spam"
-    override fun getGroupMailInviteSubject(groupMailInvite: GroupMailInvite): String {
+    override fun getGroupMailInviteSubject(sender: String): String {
         return "group mail invite subject"
     }
 
-    override fun getGroupMailInviteSummary(groupMailInvite: GroupMailInvite): CharSequence {
+    override fun getGroupMailInviteSummary(group: String, sender: String): CharSequence {
         return "group mail invite summary"
     }
 }

@@ -125,6 +125,7 @@ import security.planck.audit.AuditLogger;
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.echo.EchoMessageReceivedListener;
 import security.planck.notification.GroupMailInvite;
+import security.planck.notification.GroupMailSignal;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -4915,8 +4916,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return planckProvider;
     }
 
-    public void notifyPlanckGroupInvite(Account account, GroupMailInvite groupMailInvite) {
-        notificationController.addGroupMailNotification(account, groupMailInvite);
+    public void notifyPlanckGroupInvite(Account account, GroupMailSignal groupMailSignal) {
+        notificationController.addGroupMailNotification(account, groupMailSignal);
     }
 
     private interface MessageActor {
