@@ -9,6 +9,7 @@ class PlanckNotificationResourceProvider(private val context: Context) : Notific
     override val iconDelete: Int = R.drawable.notification_action_delete
     override val iconReply: Int = R.drawable.notification_action_reply
     override val iconNewMail: Int = R.drawable.notification_icon_new_mail
+    override val iconGroupMail: Int = R.drawable.ic_group_white
     override val iconSendingMail: Int = R.drawable.ic_notify_check_mail
     override val iconCheckingMail: Int = R.drawable.ic_notify_check_mail
     override val wearIconMarkAsRead: Int = R.drawable.ic_opened_envelope_dark
