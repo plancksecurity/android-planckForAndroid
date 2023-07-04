@@ -58,7 +58,7 @@ public class Throttle {
     /** Constructor that takes custom timeout */
     public Throttle(String name, Runnable callback, Handler handler,int minTimeout,
             int maxTimeout) {
-        this(name, callback, handler, minTimeout, maxTimeout, Clock.INSTANCE, TIMER);
+        this(name, callback, handler, minTimeout, maxTimeout, new RealClock(), TIMER);
     }
 
     /** Constructor for tests */
