@@ -34,14 +34,16 @@ internal class NotificationContentCreator(
     fun createFromGroupMailEvent(
         groupMailSignal: GroupMailSignal
     ): NotificationContent<GroupMailInvite> {
-        val sender = getMessageSenderForDisplay(
-            formatIdentityAsContact(groupMailSignal.senderIdentity)
-        )
-        val group = formatIdentityAsContact(groupMailSignal.groupIdentity).orEmpty()
+        val senderAddress = groupMailSignal.senderIdentity.address
+        val senderName = formatIdentityAsContact(groupMailSignal.senderIdentity)
+        val groupAddress = groupMailSignal.groupIdentity.address
+        val groupName = formatIdentityAsContact(groupMailSignal.groupIdentity).orEmpty()
+        val senderFormatted = formatWithAngleBrackets(senderAddress, senderName)
+        val groupFormatted = formatWithAngleBrackets(groupAddress, groupName)
         return NotificationContent(
-            sender = sender,
-            subject = resourceProvider.getGroupMailInviteSubject(sender),
-            summary = resourceProvider.getGroupMailInviteSummary(group, sender),
+            sender = getMessageSenderForDisplay(senderName),
+            subject = resourceProvider.getGroupMailInviteSubject(senderFormatted),
+            summary = resourceProvider.getGroupMailInviteSummary(groupFormatted, senderFormatted),
             reference = groupMailSignal.toGroupInvite()
         )
     }
@@ -87,6 +89,10 @@ internal class NotificationContentCreator(
     private fun getMessageSubject(message: Message): String {
         val subject = message.subject.orEmpty()
         return subject.ifEmpty { resourceProvider.noSubject() }
+    }
+
+    private fun formatWithAngleBrackets(address: String, name: String?): String {
+        return if (name.isNullOrBlank()) address else "$name <$address>"
     }
 
     private fun formatIdentityAsContact(identity: Identity): String? {
