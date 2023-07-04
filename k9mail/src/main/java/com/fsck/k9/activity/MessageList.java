@@ -1270,6 +1270,7 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
         menu.findItem(R.id.tutorial).setVisible(
                 !BuildConfig.IS_ENTERPRISE
         );
+        menu.findItem(R.id.group_test).setVisible(BuildConfig.DEBUG);
         return true;
     }
 
