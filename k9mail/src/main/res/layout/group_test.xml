@@ -47,14 +47,25 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Group members addresses"
+                android:text="Group user name"
+                android:labelFor="@+id/group_user_name"/>
+            <EditText
+                android:id="@+id/group_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="Alice Group"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Group members addresses and names"
                 android:labelFor="@+id/group_member_addresses"/>
             <EditText
                 android:id="@+id/group_member_addresses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:hint="provide addresses separated by spaces"/>
+                android:hint="provide pairs address:name separated by commas"/>
             <Button
                 android:id="@+id/create_group_button"
                 android:layout_width="match_parent"
