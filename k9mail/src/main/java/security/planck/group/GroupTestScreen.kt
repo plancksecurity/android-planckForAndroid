@@ -51,7 +51,7 @@ class GroupTestScreen: PlanckActivity() {
             withContext(PlanckDispatcher) {
                 val account = preferences.accounts.first()
                 val manager = PlanckUtils.createIdentity(Address(account.email, account.name), this@GroupTestScreen)
-                val groupIdentity = PlanckUtils.createIdentity(Address("juanito.valderrama@rama.ch", "juanitoeh"), this@GroupTestScreen)
+                val groupIdentity = PlanckUtils.createIdentity(Address("empty.test.group@testgroup.ch", "groupName"), this@GroupTestScreen)
                 kotlin.runCatching { planckProvider.createGroup(groupIdentity, manager, Vector()) }
             }.onFailure {
                 Timber.e(it, "error creating empty group")
