@@ -5,15 +5,16 @@ import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.Account
 import com.fsck.k9.Clock
 import com.fsck.k9.Preferences
+import com.fsck.k9.RealClock
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mail.Folder
 import com.fsck.k9.mailstore.LocalMessage
-import org.jetbrains.anko.coroutines.experimental.asReference
 import security.planck.notification.GroupMailInvite
 
 class NotificationController internal constructor(
     context: Context,
-    notificationManager: NotificationManagerCompat
+    notificationManager: NotificationManagerCompat,
+    private val clock: Clock = RealClock()
 ) {
     private val certificateErrorNotificationController: CertificateErrorNotificationController
     private val authenticationErrorNotificationController: AuthenticationErrorNotificationController
@@ -79,7 +80,7 @@ class NotificationController internal constructor(
                 baseNotificationDataCreator = BaseNotificationDataCreator(),
                 singleMessageNotificationDataCreator = singleMessageNotificationDataCreator,
                 summaryNotificationDataCreator = summaryNotificationDataCreator,
-                clock = Clock.INSTANCE
+                clock = clock
             )
         val lockScreenNotificationCreator = LockScreenNotificationCreator(
             notificationHelper, notificationResourceProvider
