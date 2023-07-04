@@ -5,10 +5,10 @@ import com.fsck.k9.Account
 /**
  * Holds information about active and inactive new message notifications of an account.
  */
-internal data class NotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
+internal data class NotificationData<out Reference: NotificationReference>(
     val account: Account,
-    val activeNotifications: List<NotificationHolder<Content>>,
-    val inactiveNotifications: List<InactiveNotificationHolder<Content>>,
+    val activeNotifications: List<NotificationHolder<Reference>>,
+    val inactiveNotifications: List<InactiveNotificationHolder<Reference>>,
     val notificationGroupType: NotificationGroupType
 ) {
     val notificationsCount: Int
@@ -32,9 +32,9 @@ internal data class NotificationData<out Reference: NotificationReference, out C
     fun isEmpty() = activeNotifications.isEmpty()
 
     companion object {
-        fun <Reference: NotificationReference, Content: NotificationContent<Reference>> create(
+        fun <Reference: NotificationReference> create(
             account: Account, type: NotificationGroupType
-        ): NotificationData<Reference, Content> {
+        ): NotificationData<Reference> {
             return NotificationData(account, activeNotifications = emptyList(), inactiveNotifications = emptyList(), type)
         }
     }

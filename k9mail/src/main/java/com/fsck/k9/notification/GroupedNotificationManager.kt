@@ -12,8 +12,8 @@ import security.planck.notification.GroupMailSignal
  */
 internal class GroupedNotificationManager(
     private val contentCreator: NotificationContentCreator,
-    private val newMailNotificationRepository: NotificationRepository<MessageReference, NewMailNotificationContent>,
-    private val groupMailNotificationRepository: NotificationRepository<GroupMailInvite, GroupMailNotificationContent>,
+    private val newMailNotificationRepository: NotificationRepository<MessageReference>,
+    private val groupMailNotificationRepository: NotificationRepository<GroupMailInvite>,
     private val baseNotificationDataCreator: BaseNotificationDataCreator,
     private val singleMessageNotificationDataCreator: SingleGroupedNotificationDataCreator,
     private val summaryNotificationDataCreator: SummaryGroupedNotificationDataCreator,
@@ -24,19 +24,20 @@ internal class GroupedNotificationManager(
         account: Account,
         message: LocalMessage,
         silent: Boolean
-    ): GroupedNotificationData<MessageReference, NewMailNotificationContent>? {
+    ): GroupedNotificationData<MessageReference>? {
         val content = contentCreator.createFromMessage(account, message)
 
         val result = newMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
 
         return addNotification(account, result, silent)
+
     }
 
     fun addGroupMailNotification(
         account: Account,
         groupMailSignal: GroupMailSignal,
         silent: Boolean
-    ): GroupedNotificationData<GroupMailInvite, GroupMailNotificationContent>? {
+    ): GroupedNotificationData<GroupMailInvite>? {
         val content = contentCreator.createFromGroupMailEvent(groupMailSignal)
 
         val result = groupMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
@@ -47,7 +48,7 @@ internal class GroupedNotificationManager(
     fun removeNewMailNotifications(
         account: Account,
         selector: (List<MessageReference>) -> List<MessageReference>
-    ): GroupedNotificationData<MessageReference, NewMailNotificationContent>? {
+    ): GroupedNotificationData<MessageReference>? {
         val result = newMailNotificationRepository.removeNotifications(account, selector) ?: return null
         return removeNotification(account, result) { getNewMailSummaryNotificationId(account) }
     }
@@ -55,7 +56,7 @@ internal class GroupedNotificationManager(
     fun removeGroupMailNotifications(
         account: Account,
         selector: (List<GroupMailInvite>) -> List<GroupMailInvite>
-    ): GroupedNotificationData<GroupMailInvite, GroupMailNotificationContent>? {
+    ): GroupedNotificationData<GroupMailInvite>? {
         val result = groupMailNotificationRepository.removeNotifications(account, selector) ?: return null
         return removeNotification(account, result) { getGroupMailSummaryNotificationId(account) }
     }
@@ -70,11 +71,11 @@ internal class GroupedNotificationManager(
         return getAllGroupMailNotificationIds(account)
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> addNotification(
+    private fun <Reference: NotificationReference> addNotification(
         account: Account,
-        result: AddNotificationResult<Reference, Content>,
+        result: AddNotificationResult<Reference>,
         silent: Boolean
-    ): GroupedNotificationData<Reference, Content> {
+    ): GroupedNotificationData<Reference> {
         val singleNotificationData = createSingleNotificationData(
             account = account,
             notificationId = result.notificationHolder.notificationId,
@@ -95,11 +96,11 @@ internal class GroupedNotificationManager(
         )
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> removeNotification(
+    private fun <Reference: NotificationReference> removeNotification(
         account: Account,
-        result: RemoveNotificationsResult<Reference, Content>,
+        result: RemoveNotificationsResult<Reference>,
         notificationId: () -> Int
-    ): GroupedNotificationData<Reference, Content> {
+    ): GroupedNotificationData<Reference> {
         val cancelNotificationIds = when {
             result.notificationData.isEmpty() -> {
                 result.cancelNotificationIds + notificationId()
@@ -127,8 +128,8 @@ internal class GroupedNotificationManager(
         )
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createBaseNotificationData(
-        notificationData: NotificationData<Reference, Content>
+    private fun <Reference: NotificationReference> createBaseNotificationData(
+        notificationData: NotificationData<Reference>
     ): BaseNotificationData {
         return baseNotificationDataCreator.createBaseNotificationData(notificationData)
     }
@@ -149,13 +150,13 @@ internal class GroupedNotificationManager(
         return NotificationIds.getAllGroupedNotificationIds(account, NotificationGroupType.GROUP_MAIL)
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSingleNotificationData(
+    private fun <Reference: NotificationReference> createSingleNotificationData(
         account: Account,
         notificationId: Int,
-        content: Content,
+        content: NotificationContent<Reference>,
         timestamp: Long,
         addLockScreenNotification: Boolean
-    ): SingleNotificationData<Content> {
+    ): SingleNotificationData<Reference> {
         return singleMessageNotificationDataCreator.createSingleNotificationData(
             account,
             notificationId,
@@ -165,8 +166,8 @@ internal class GroupedNotificationManager(
         )
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummaryNotificationData(
-        data: NotificationData<Reference, Content>, silent: Boolean
+    private fun <Reference: NotificationReference> createSummaryNotificationData(
+        data: NotificationData<Reference>, silent: Boolean
     ): SummaryNotificationData<Reference>? {
         return if (data.isEmpty()) {
             null

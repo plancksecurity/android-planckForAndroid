@@ -7,7 +7,7 @@ import com.fsck.k9.notification.NotificationChannelManager.ChannelType
 import timber.log.Timber
 import androidx.core.app.NotificationCompat.Builder as NotificationBuilder
 
-internal abstract class SingleGroupedNotificationCreator<out Reference: NotificationReference, in Content: NotificationContent<Reference>>(
+internal abstract class SingleGroupedNotificationCreator<in Reference: NotificationReference>(
     protected val notificationHelper: NotificationHelper,
     protected val actionCreator: NotificationActionCreator,
     protected val resourceProvider: NotificationResourceProvider,
@@ -15,7 +15,7 @@ internal abstract class SingleGroupedNotificationCreator<out Reference: Notifica
 ) {
     fun createSingleNotification(
         baseNotificationData: BaseNotificationData,
-        singleNotificationData: SingleNotificationData<Content>,
+        singleNotificationData: SingleNotificationData<Reference>,
         isGroupSummary: Boolean = false
     ) {
         val account = baseNotificationData.account
@@ -43,7 +43,7 @@ internal abstract class SingleGroupedNotificationCreator<out Reference: Notifica
 
     protected abstract fun getNotificationBuilder(
         account: Account,
-        singleNotificationData: SingleNotificationData<Content>
+        singleNotificationData: SingleNotificationData<Reference>
     ): NotificationCompat.Builder
 
     protected fun NotificationBuilder.setBigText(text: CharSequence) = apply {

@@ -3,11 +3,11 @@ package com.fsck.k9.notification
 import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 
-internal class NotificationRepository<Reference: NotificationReference, Content: NotificationContent<Reference>>(
-    private val notificationDataStore: NotificationDataStore<Reference, Content>
+internal class NotificationRepository<Reference: NotificationReference>(
+    private val notificationDataStore: NotificationDataStore<Reference>
 ) {
     @Synchronized
-    fun addNotification(account: Account, content: Content, timestamp: Long): AddNotificationResult<Reference, Content>? {
+    fun addNotification(account: Account, content: NotificationContent<Reference>, timestamp: Long): AddNotificationResult<Reference>? {
         initializeDataStoreIfNeeded(account)
         return notificationDataStore.addNotification(account, content, timestamp)
     }
@@ -16,7 +16,7 @@ internal class NotificationRepository<Reference: NotificationReference, Content:
     fun removeNotifications(
         account: Account,
         selector: (List<Reference>) -> List<Reference>
-    ): RemoveNotificationsResult<Reference, Content>? {
+    ): RemoveNotificationsResult<Reference>? {
         initializeDataStoreIfNeeded(account)
         return notificationDataStore.removeNotifications(account, selector)
     }

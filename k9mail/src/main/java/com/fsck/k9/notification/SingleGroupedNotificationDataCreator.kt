@@ -2,17 +2,18 @@ package com.fsck.k9.notification
 
 import com.fsck.k9.Account
 import com.fsck.k9.K9
+import com.fsck.k9.activity.MessageReference
 
 internal class SingleGroupedNotificationDataCreator {
 
-    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSingleNotificationData(
+    fun <Reference: NotificationReference> createSingleNotificationData(
         account: Account,
         notificationId: Int,
-        content: Content,
+        content: NotificationContent<Reference>,
         timestamp: Long,
         addLockScreenNotification: Boolean
-    ): SingleNotificationData<Content> {
-        val needsActions = content is NewMailNotificationContent
+    ): SingleNotificationData<Reference> {
+        val needsActions = content.reference is MessageReference
         return SingleNotificationData(
             notificationId = notificationId,
             isSilent = true,
@@ -24,11 +25,11 @@ internal class SingleGroupedNotificationDataCreator {
         )
     }
 
-    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummarySingleNotificationData(
-        data: NotificationData<Reference, Content>,
+    fun <Reference: NotificationReference> createSummarySingleNotificationData(
+        data: NotificationData<Reference>,
         timestamp: Long,
         silent: Boolean
-    ): SummarySingleNotificationData<Reference, Content> {
+    ): SummarySingleNotificationData<Reference> {
         val groupType = data.notificationGroupType
         val needsActions = groupType == NotificationGroupType.NEW_MAIL
         return SummarySingleNotificationData(

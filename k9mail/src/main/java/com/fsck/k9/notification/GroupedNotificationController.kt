@@ -16,10 +16,10 @@ private const val FIRST_POSITION = 0
 internal class GroupedNotificationController(
     private val notificationHelper: NotificationHelper,
     private val groupedNotificationManager: GroupedNotificationManager,
-    private val newMailSummaryNotificationCreator: SummaryGroupedNotificationCreator<MessageReference, NewMailNotificationContent>,
-    private val newMailSingleNotificationCreator: SingleGroupedNotificationCreator<MessageReference, NewMailNotificationContent>,
-    private val groupMailSummaryNotificationCreator: SummaryGroupedNotificationCreator<GroupMailInvite, GroupMailNotificationContent>,
-    private val groupMailSingleNotificationCreator: SingleGroupedNotificationCreator<GroupMailInvite, GroupMailNotificationContent>,
+    private val newMailSummaryNotificationCreator: SummaryGroupedNotificationCreator<MessageReference>,
+    private val newMailSingleNotificationCreator: SingleGroupedNotificationCreator<MessageReference>,
+    private val groupMailSummaryNotificationCreator: SummaryGroupedNotificationCreator<GroupMailInvite>,
+    private val groupMailSingleNotificationCreator: SingleGroupedNotificationCreator<GroupMailInvite>,
 ) {
 
     @Synchronized
@@ -100,7 +100,7 @@ internal class GroupedNotificationController(
     }
 
     private fun  processNewMailNotificationData(
-        notificationData: GroupedNotificationData<MessageReference, NewMailNotificationContent>
+        notificationData: GroupedNotificationData<MessageReference>
     ) {
         cancelNotifications(notificationData.cancelNotificationIds)
 
@@ -114,7 +114,7 @@ internal class GroupedNotificationController(
     }
 
     private fun  processGroupMailNotificationData(
-        notificationData: GroupedNotificationData<GroupMailInvite, GroupMailNotificationContent>
+        notificationData: GroupedNotificationData<GroupMailInvite>
     ) {
         cancelNotifications(notificationData.cancelNotificationIds)
 
@@ -135,7 +135,7 @@ internal class GroupedNotificationController(
 
     private fun createSingleNewMailNotification(
         baseNotificationData: BaseNotificationData,
-        singleNotificationData: SingleNotificationData<NewMailNotificationContent>
+        singleNotificationData: SingleNotificationData<MessageReference>
     ) {
         newMailSingleNotificationCreator.createSingleNotification(baseNotificationData, singleNotificationData)
     }
@@ -149,7 +149,7 @@ internal class GroupedNotificationController(
 
     private fun createSingleGroupMailNotification(
         baseNotificationData: BaseNotificationData,
-        singleNotificationData: SingleNotificationData<GroupMailNotificationContent>
+        singleNotificationData: SingleNotificationData<GroupMailInvite>
     ) {
         groupMailSingleNotificationCreator.createSingleNotification(baseNotificationData, singleNotificationData)
     }

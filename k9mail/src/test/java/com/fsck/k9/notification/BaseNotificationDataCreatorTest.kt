@@ -203,13 +203,13 @@ class BaseNotificationDataCreatorTest {
         K9.setLockScreenNotificationVisibility(mode)
     }
 
-    private fun createNewMailNotificationData(senders: List<String> = emptyList()): NotificationData<MessageReference, NewMailNotificationContent> {
+    private fun createNewMailNotificationData(senders: List<String> = emptyList()): NotificationData<MessageReference> {
         val activeNotifications = senders.mapIndexed { index, sender ->
             NotificationHolder(
                 notificationId = index,
                 timestamp = 0L,
-                content = NewMailNotificationContent(
-                    reference = mock(),
+                content = NotificationContent(
+                    reference = mock<MessageReference>(),
                     sender = sender,
                     preview = "irrelevant",
                     summary = "irrelevant",
