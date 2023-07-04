@@ -4,6 +4,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mailstore.LocalMessage
 import security.planck.notification.GroupMailInvite
+import security.planck.notification.GroupMailSignal
 
 private const val FIRST_POSITION = 0
 
@@ -46,8 +47,8 @@ internal class GroupedNotificationController(
     }
 
     @Synchronized
-    fun addGroupMailNotification(account: Account, groupMailInvite: GroupMailInvite, silent: Boolean) {
-        val notificationData = groupedNotificationManager.addGroupMailNotification(account, groupMailInvite, silent)
+    fun addGroupMailNotification(account: Account, groupMailSignal: GroupMailSignal, silent: Boolean) {
+        val notificationData = groupedNotificationManager.addGroupMailNotification(account, groupMailSignal, silent)
 
         if (notificationData != null) {
             processGroupMailNotificationData(notificationData)
