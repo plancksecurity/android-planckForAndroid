@@ -157,7 +157,6 @@ dependencies {
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     androidTestImplementation "org.mockito:mockito-android:${versions.mockito}"
-    androidTestImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
 
     // Cucumber
 /*    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
