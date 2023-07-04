@@ -16,7 +16,7 @@ private const val TIMESTAMP = 0L
 
 class NotificationDataStoreTest : RobolectricTest() {
     private val account = createAccount()
-    private val notificationDataStore = NotificationDataStore<MessageReference, NewMailNotificationContent>(NotificationGroupType.NEW_MAIL)
+    private val notificationDataStore = NotificationDataStore<MessageReference>(NotificationGroupType.NEW_MAIL)
 
     @Test
     fun testAddNotificationContent() {
@@ -220,13 +220,13 @@ class NotificationDataStoreTest : RobolectricTest() {
         return MessageReference(ACCOUNT_UUID, FOLDER_NAME, uid, null)
     }
 
-    private fun createNewMailNotificationContent(uid: String): NewMailNotificationContent {
+    private fun createNewMailNotificationContent(uid: String): NotificationContent<MessageReference> {
         val messageReference = createMessageReference(uid)
         return createNewMailNotificationContent(messageReference)
     }
 
-    private fun createNewMailNotificationContent(messageReference: MessageReference): NewMailNotificationContent {
-        return NewMailNotificationContent(
+    private fun createNewMailNotificationContent(messageReference: MessageReference): NotificationContent<MessageReference> {
+        return NotificationContent(
             reference = messageReference,
             sender = "irrelevant",
             subject = "irrelevant",

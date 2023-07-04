@@ -47,7 +47,7 @@ class GroupedNotificationManagerTest {
 
         assertNotNull(result)
         assertThat(result!!.singleNotificationData.first().content).isEqualTo(
-            NewMailNotificationContent(
+            NotificationContent(
                 reference = createMessageReference("msg-1"),
                 sender = "sender",
                 subject = "subject",
@@ -56,7 +56,7 @@ class GroupedNotificationManagerTest {
             )
         )
         assertThat(result.summaryNotificationData).isInstanceOf(SummarySingleNotificationData::class.java)
-        val summaryNotificationData = result.summaryNotificationData as SummarySingleNotificationData<*,*>
+        val summaryNotificationData = result.summaryNotificationData as SummarySingleNotificationData<*>
         assertThat(summaryNotificationData.singleNotificationData.isSilent).isFalse()
     }
 
@@ -84,7 +84,7 @@ class GroupedNotificationManagerTest {
 
         assertNotNull(result)
         assertThat(result!!.singleNotificationData.first().content).isEqualTo(
-            NewMailNotificationContent(
+            NotificationContent(
                 reference = createMessageReference("msg-2"),
                 sender = "Zoe",
                 subject = "Meeting",
@@ -249,7 +249,7 @@ class GroupedNotificationManagerTest {
         assertThat(singleNotificationData.notificationId).isEqualTo(result.cancelNotificationIds.first())
         assertThat(singleNotificationData.isSilent).isTrue()
         assertThat(singleNotificationData.content).isEqualTo(
-            NewMailNotificationContent(
+            NotificationContent(
                 reference = createMessageReference("msg-restore"),
                 sender = "Alice",
                 subject = "Another one",
@@ -297,7 +297,7 @@ class GroupedNotificationManagerTest {
 
         stubbing(notificationContentCreator) {
             on { createFromMessage(account, message) } doReturn
-                NewMailNotificationContent(
+                NotificationContent(
                     reference = createMessageReference(messageUid),
                     sender = sender, subject = subject, preview = preview, summary = summary
                 )
@@ -310,9 +310,9 @@ class GroupedNotificationManagerTest {
         return MessageReference(ACCOUNT_UUID, FOLDER_NAME, messageUid, null)
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createNotificationRepository(
+    private fun <Reference: NotificationReference> createNotificationRepository(
         type: NotificationGroupType
-    ): NotificationRepository<Reference, Content> {
+    ): NotificationRepository<Reference> {
 
         return NotificationRepository(
             NotificationDataStore(type)

@@ -8,8 +8,8 @@ private const val MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION = 5
 internal class SummaryGroupedNotificationDataCreator(
     private val singleMessageNotificationDataCreator: SingleGroupedNotificationDataCreator
 ) {
-    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummaryNotificationData(
-        data: NotificationData<Reference, Content>, silent: Boolean
+    fun <Reference: NotificationReference> createSummaryNotificationData(
+        data: NotificationData<Reference>, silent: Boolean
     ): SummaryNotificationData<Reference> {
         val timestamp = data.latestTimestamp
         val shouldBeSilent = silent || K9.isQuietTime()
@@ -21,15 +21,15 @@ internal class SummaryGroupedNotificationDataCreator(
     }
 
     private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummarySingleNotificationData(
-        data: NotificationData<Reference, Content>,
+        data: NotificationData<Reference>,
         timestamp: Long,
         silent: Boolean
     ): SummaryNotificationData<Reference> {
         return singleMessageNotificationDataCreator.createSummarySingleNotificationData(data, timestamp, silent)
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createSummaryInboxNotificationData(
-        data: NotificationData<Reference, Content>,
+    private fun <Reference: NotificationReference> createSummaryInboxNotificationData(
+        data: NotificationData<Reference>,
         timestamp: Long,
         silent: Boolean
     ): SummaryNotificationData<Reference> {
@@ -80,10 +80,10 @@ internal class SummaryGroupedNotificationDataCreator(
         return isDeleteActionEnabled() && !K9.confirmDeleteFromNotification()
     }
 
-    private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.latestTimestamp: Long
+    private val <Reference: NotificationReference> NotificationData<Reference>.latestTimestamp: Long
         get() = activeNotifications.first().timestamp
 
-    private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.summaryContent: List<CharSequence>
+    private val <Reference: NotificationReference> NotificationData<Reference>.summaryContent: List<CharSequence>
         get() {
             return activeNotifications.asSequence()
                 .map { it.content.summary }
@@ -91,6 +91,6 @@ internal class SummaryGroupedNotificationDataCreator(
                 .toList()
         }
 
-    private val <Reference: NotificationReference, Content: NotificationContent<Reference>> NotificationData<Reference, Content>.additionalNotificationsCount: Int
+    private val <Reference: NotificationReference> NotificationData<Reference>.additionalNotificationsCount: Int
         get() = (notificationsCount - MAX_NUMBER_OF_NOTIFICATIONS_FOR_SUMMARY_NOTIFICATION).coerceAtLeast(0)
 }

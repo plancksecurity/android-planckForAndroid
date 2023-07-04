@@ -9,12 +9,14 @@ import com.fsck.k9.mail.Message.RecipientType
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType
 import com.google.common.truth.Truth.assertThat
+import foundation.pEp.jniadapter.Identity
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stubbing
 import security.planck.notification.GroupMailInvite
+import security.planck.notification.GroupMailSignal
 
 private const val ACCOUNT_UUID = "1-2-3"
 private const val FOLDER_NAME = "FOLDER"
@@ -26,6 +28,7 @@ private const val SENDER_NAME = "Alice"
 private const val RECIPIENT_ADDRESS = "bob@example.com"
 private const val RECIPIENT_NAME = "Bob"
 private const val GROUP_ADDRESS = "group1@group.ch"
+private const val GROUP_NAME = "groupName"
 
 class NotificationContentCreatorTest : RobolectricTest() {
     private val resourceProvider = TestNotificationResourceProvider()
@@ -140,15 +143,21 @@ class NotificationContentCreatorTest : RobolectricTest() {
 
     @Test
     fun createFromGroupMailEvent() {
-        val groupEvent = GroupMailInvite(GROUP_ADDRESS, SENDER_ADDRESS, ACCOUNT_UUID)
+        val group = Identity().apply {
+            this.address = GROUP_ADDRESS
+            this.username = GROUP_NAME
+        }
+        val sender = Identity().apply {
+            this.address = SENDER_ADDRESS
+            this.username = SENDER_NAME
+        }
+        val groupEvent = GroupMailSignal(group, sender, ACCOUNT_UUID)
         val content = contentCreator.createFromGroupMailEvent(groupEvent)
 
-        assertThat(content.reference).isEqualTo(groupEvent)
-        assertThat(content.sender).isEqualTo(SENDER_ADDRESS)
-        assertThat(content.subject).isEqualTo(resourceProvider.getGroupMailInviteSubject(groupEvent))
-        assertThat(content.summary.toString()).isEqualTo(resourceProvider.getGroupMailInviteSummary(
-            groupEvent,
-        ))
+        assertThat(content.reference).isEqualTo(groupEvent.toGroupInvite())
+        assertThat(content.sender).isEqualTo(SENDER_NAME)
+        assertThat(content.subject).isEqualTo("group mail invite subject")
+        assertThat(content.summary.toString()).isEqualTo("group mail invite summary")
     }
 
     private fun createNotificationContentCreator(): NotificationContentCreator {

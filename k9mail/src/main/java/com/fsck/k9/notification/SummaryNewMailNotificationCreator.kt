@@ -9,9 +9,9 @@ internal class SummaryNewMailNotificationCreator(
     notificationHelper: NotificationHelper,
     actionCreator: NotificationActionCreator,
     lockScreenNotificationCreator: LockScreenNotificationCreator,
-    singleNotificationCreator: SingleGroupedNotificationCreator<MessageReference, NewMailNotificationContent>,
+    singleNotificationCreator: SingleGroupedNotificationCreator<MessageReference>,
     resourceProvider: NotificationResourceProvider
-): SummaryGroupedNotificationCreator<MessageReference, NewMailNotificationContent>(
+): SummaryGroupedNotificationCreator<MessageReference>(
     notificationHelper,
     actionCreator,
     lockScreenNotificationCreator,

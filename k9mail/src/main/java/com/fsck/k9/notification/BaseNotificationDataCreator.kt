@@ -7,8 +7,8 @@ private const val MAX_NUMBER_OF_SENDERS_IN_LOCK_SCREEN_NOTIFICATION = 5
 
 internal class BaseNotificationDataCreator {
 
-    fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createBaseNotificationData(
-        notificationData: NotificationData<Reference, Content>
+    fun <Reference: NotificationReference> createBaseNotificationData(
+        notificationData: NotificationData<Reference>
     ): BaseNotificationData {
         val account = notificationData.account
         return BaseNotificationData(
@@ -25,8 +25,8 @@ internal class BaseNotificationDataCreator {
     private val Account.displayName: String
         get() = if (name.isNullOrBlank()) email else name
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> createLockScreenNotificationData(
-        data: NotificationData<Reference, Content>
+    private fun <Reference: NotificationReference> createLockScreenNotificationData(
+        data: NotificationData<Reference>
     ): LockScreenNotificationData {
         return when (K9.getLockScreenNotificationVisibility()) {
             K9.LockScreenNotificationVisibility.APP_NAME -> LockScreenNotificationData.AppName
@@ -37,8 +37,8 @@ internal class BaseNotificationDataCreator {
         }
     }
 
-    private fun <Reference: NotificationReference, Content: NotificationContent<Reference>> getSenderNames(
-        data: NotificationData<Reference, Content>
+    private fun <Reference: NotificationReference> getSenderNames(
+        data: NotificationData<Reference>
     ): String {
         return data.activeNotifications.asSequence()
             .map { it.content.sender }

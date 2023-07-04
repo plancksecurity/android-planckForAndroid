@@ -282,7 +282,7 @@ class SingleGroupedNotificationDataCreatorTest {
         }
     }
 
-    private fun createNewMailNotificationContent() = NewMailNotificationContent(
+    private fun createNewMailNotificationContent() = NotificationContent(
         reference = MessageReference("irrelevant", "folder", "irrelevant", null),
         sender = "irrelevant",
         subject = "irrelevant",
@@ -290,14 +290,14 @@ class SingleGroupedNotificationDataCreatorTest {
         summary = "irrelevant"
     )
 
-    private fun createGroupMailNotificationContent() = GroupMailNotificationContent(
+    private fun createGroupMailNotificationContent() = NotificationContent(
         reference = GroupMailInvite("irrelevant", "irrelevant", "irrelevant"),
         sender = "irrelevant",
         subject = "irrelevant",
         summary = "irrelevant"
     )
 
-    private fun createNewMailNotificationData(content: NewMailNotificationContent): NotificationData<MessageReference, NewMailNotificationContent> {
+    private fun createNewMailNotificationData(content: NotificationContent<MessageReference>): NotificationData<MessageReference> {
         return NotificationData(
             account,
             activeNotifications = listOf(
@@ -312,7 +312,7 @@ class SingleGroupedNotificationDataCreatorTest {
         )
     }
 
-    private fun createGroupMailNotificationData(content: GroupMailNotificationContent): NotificationData<GroupMailInvite, GroupMailNotificationContent> {
+    private fun createGroupMailNotificationData(content: NotificationContent<GroupMailInvite>): NotificationData<GroupMailInvite> {
         return NotificationData(
             account,
             activeNotifications = listOf(

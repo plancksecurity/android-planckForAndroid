@@ -9,7 +9,7 @@ internal class SingleGroupMailNotificationCreator(
     actionCreator: NotificationActionCreator,
     resourceProvider: NotificationResourceProvider,
     lockScreenNotificationCreator: LockScreenNotificationCreator
-) : SingleGroupedNotificationCreator<GroupMailInvite, GroupMailNotificationContent>(
+) : SingleGroupedNotificationCreator<GroupMailInvite>(
     notificationHelper,
     actionCreator,
     resourceProvider,
@@ -17,7 +17,7 @@ internal class SingleGroupMailNotificationCreator(
 ) {
     override fun getNotificationBuilder(
         account: Account,
-        singleNotificationData: SingleNotificationData<GroupMailNotificationContent>
+        singleNotificationData: SingleNotificationData<GroupMailInvite>
     ): NotificationCompat.Builder {
         val content = singleNotificationData.content
         return notificationHelper.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MESSAGES)
