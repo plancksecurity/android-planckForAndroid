@@ -15,7 +15,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stubbing
-import security.planck.notification.GroupMailInvite
 import security.planck.notification.GroupMailSignal
 
 private const val ACCOUNT_UUID = "1-2-3"

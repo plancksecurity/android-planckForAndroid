@@ -1,11 +1,14 @@
 package com.fsck.k9.mail.store.pop3;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.Folder;
@@ -15,16 +18,15 @@ import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.StoreConfig;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.List;
 
 
 public class Pop3StoreTest {
@@ -92,7 +94,7 @@ public class Pop3StoreTest {
         boolean result = folder.create(FolderType.HOLDS_FOLDERS);
 
         assertFalse(result);
-        verifyZeroInteractions(mockSocket);
+        verifyNoInteractions(mockSocket);
     }
 
     @Test
@@ -102,7 +104,7 @@ public class Pop3StoreTest {
         boolean result = folder.create(FolderType.HOLDS_MESSAGES);
 
         assertFalse(result);
-        verifyZeroInteractions(mockSocket);
+        verifyNoInteractions(mockSocket);
     }
 
     @Test
