@@ -381,7 +381,6 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
         displayViews();
         channelUtils.updateChannels();
 
-
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {

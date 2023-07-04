@@ -78,7 +78,7 @@
         <item name="iconFolder">@drawable/ic_folder_light</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_light</item>
         <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
-        <item name="iconActionAddAttachment">@drawable/ic_attachment_light</item>
+        <item name="iconActionAddAttachment">@drawable/ic_attachment</item>
         <item name="iconActionAddCcBcc">@drawable/ic_group_plus_light</item>
         <item name="iconActionArchive">@drawable/ic_archive_light</item>
         <item name="iconActionCompose">@drawable/ic_edit_24dp</item>
@@ -228,7 +228,7 @@
         <item name="iconFolder">@drawable/ic_folder_dark</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_dark</item>
         <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
-        <item name="iconActionAddAttachment">@drawable/ic_attachment_dark</item>
+        <item name="iconActionAddAttachment">@drawable/ic_attachment</item>
         <item name="iconActionAddCcBcc">@drawable/ic_group_plus_dark</item>
         <item name="iconActionArchive">@drawable/ic_archive_dark</item>
         <item name="iconActionCompose">@drawable/ic_edit_24dp</item>
@@ -315,9 +315,9 @@
         <item name="flagUncheckedIcon">@drawable/ic_flag_border_dark</item>
         <item name="iconPlanckLogo">@drawable/planck_logo_green_60</item>
 
-        <item name="toolbarDefaultColor">@color/colorPrimary</item>
+        <item name="toolbarDefaultColor">@color/dark_theme_default_toolbar_background</item>
         <item name="statusbarDefaultColor">@color/dark_theme_overlay_1</item>
-        <item name="messageViewToolbarColor">@color/dark_theme_overlay_1</item>
+        <item name="messageViewToolbarColor">@color/dark_theme_default_toolbar_background</item>
         <item name="messageViewStatusBarColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
         <item name="messageListToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
