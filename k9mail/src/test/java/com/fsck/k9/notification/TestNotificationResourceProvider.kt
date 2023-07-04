@@ -1,13 +1,12 @@
 package com.fsck.k9.notification
 
-import security.planck.notification.GroupMailInvite
-
 class TestNotificationResourceProvider : NotificationResourceProvider {
     override val iconWarning: Int = 1
     override val iconMarkAsRead: Int = 2
     override val iconDelete: Int = 3
     override val iconReply: Int = 4
     override val iconNewMail: Int = 5
+    override val iconGroupMail: Int = 13
     override val iconSendingMail: Int = 6
     override val iconCheckingMail: Int = 7
     override val wearIconMarkAsRead: Int = 8

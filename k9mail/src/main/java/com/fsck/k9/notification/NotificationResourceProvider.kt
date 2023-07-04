@@ -6,6 +6,7 @@ interface NotificationResourceProvider {
     val iconDelete: Int
     val iconReply: Int
     val iconNewMail: Int
+    val iconGroupMail: Int
     val iconSendingMail: Int
     val iconCheckingMail: Int
     val wearIconMarkAsRead: Int

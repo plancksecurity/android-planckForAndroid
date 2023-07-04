@@ -28,7 +28,7 @@ internal class SummaryGroupMailNotificationCreator(
         val title = resourceProvider.newGroupMailEventsTitle(baseNotificationData.notificationsCount)
         return notificationHelper.createNotificationBuilder(account, ChannelType.MESSAGES)
             .setCategory(NotificationCompat.CATEGORY_EMAIL)
-            .setSmallIcon(resourceProvider.iconNewMail) // => new icon???
+            .setSmallIcon(resourceProvider.iconGroupMail)
             .setContentTitle(title)
             .setInboxStyle(title, summary, notificationData.content)
             .setContentIntent(actionCreator.createViewFolderPendingIntent(account, account.inboxFolderName))

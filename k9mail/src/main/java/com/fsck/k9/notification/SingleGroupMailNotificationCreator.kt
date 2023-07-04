@@ -23,7 +23,7 @@ internal class SingleGroupMailNotificationCreator(
         return notificationHelper.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MESSAGES)
             .setTicker(content.summary)
             .setCategory(NotificationCompat.CATEGORY_EMAIL)
-            .setSmallIcon(resourceProvider.iconNewMail) // change icon!!
+            .setSmallIcon(resourceProvider.iconGroupMail)
             .setContentTitle(content.subject)
             .setContentText(content.summary)
             .setBigText(content.summary)
