@@ -5,14 +5,13 @@ import com.fsck.k9.Account
 import timber.log.Timber
 import androidx.core.app.NotificationCompat.Builder as NotificationBuilder
 
-internal abstract class SummaryGroupedNotificationCreator<Reference : NotificationReference, in Content : NotificationContent<Reference>>(
+internal abstract class SummaryGroupedNotificationCreator<in Reference : NotificationReference>(
     protected val notificationHelper: NotificationHelper,
     protected val actionCreator: NotificationActionCreator,
     private val lockScreenNotificationCreator: LockScreenNotificationCreator,
-    private val singleNotificationCreator: SingleGroupedNotificationCreator<Reference, Content>,
+    private val singleNotificationCreator: SingleGroupedNotificationCreator<Reference>,
     protected val resourceProvider: NotificationResourceProvider
 ) {
-    @Suppress("unchecked_cast")
     fun createSummaryNotification(
         baseNotificationData: BaseNotificationData,
         summaryNotificationData: SummaryNotificationData<Reference>
@@ -22,10 +21,10 @@ internal abstract class SummaryGroupedNotificationCreator<Reference : Notificati
                 createInboxStyleSummaryNotification(baseNotificationData, summaryNotificationData)
             }
 
-            is SummarySingleNotificationData<*, *> -> {
+            is SummarySingleNotificationData<Reference> -> {
                 createSingleMessageNotification(
                     baseNotificationData,
-                    summaryNotificationData as SummarySingleNotificationData<Reference, Content>
+                    summaryNotificationData
                 )
             }
         }
@@ -33,7 +32,7 @@ internal abstract class SummaryGroupedNotificationCreator<Reference : Notificati
 
     private fun createSingleMessageNotification(
         baseNotificationData: BaseNotificationData,
-        singleNotificationData: SummarySingleNotificationData<Reference, Content>
+        singleNotificationData: SummarySingleNotificationData<Reference>
     ) {
         singleNotificationCreator.createSingleNotification(
             baseNotificationData,

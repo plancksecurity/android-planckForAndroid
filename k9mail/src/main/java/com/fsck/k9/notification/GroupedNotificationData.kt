@@ -2,10 +2,10 @@ package com.fsck.k9.notification
 
 import com.fsck.k9.Account
 
-internal data class GroupedNotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
+internal data class GroupedNotificationData<out Reference: NotificationReference>(
     val cancelNotificationIds: List<Int>,
     val baseNotificationData: BaseNotificationData,
-    val singleNotificationData: List<SingleNotificationData<Content>>,
+    val singleNotificationData: List<SingleNotificationData<Reference>>,
     val summaryNotificationData: SummaryNotificationData<Reference>?
 )
 
@@ -33,11 +33,11 @@ internal data class NotificationAppearance(
     val ledColor: Int?
 )
 
-internal data class SingleNotificationData<out Content>(
+internal data class SingleNotificationData<out Reference: NotificationReference>(
     val notificationId: Int,
     val isSilent: Boolean,
     val timestamp: Long,
-    val content: Content,
+    val content: NotificationContent<Reference>,
     val actions: List<NotificationAction>,
     val wearActions: List<WearNotificationAction>,
     val addLockScreenNotification: Boolean
@@ -45,8 +45,8 @@ internal data class SingleNotificationData<out Content>(
 
 internal sealed interface SummaryNotificationData<out Reference>
 
-internal data class SummarySingleNotificationData<out Reference: NotificationReference, out Content: NotificationContent<Reference>>(
-    val singleNotificationData: SingleNotificationData<Content>
+internal data class SummarySingleNotificationData<out Reference: NotificationReference>(
+    val singleNotificationData: SingleNotificationData<Reference>
 ) : SummaryNotificationData<Reference>
 
 internal data class SummaryInboxNotificationData<out Reference>(

@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.SpannableStringBuilder
 import com.fsck.k9.Account
 import com.fsck.k9.K9
+import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.mail.Address
@@ -11,16 +12,17 @@ import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType
 import foundation.pEp.jniadapter.Identity
+import security.planck.notification.GroupMailInvite
 import security.planck.notification.GroupMailSignal
 
 internal class NotificationContentCreator(
     private val context: Context,
     private val resourceProvider: NotificationResourceProvider
 ) {
-    fun createFromMessage(account: Account, message: LocalMessage): NewMailNotificationContent {
+    fun createFromMessage(account: Account, message: LocalMessage): NotificationContent<MessageReference> {
         val sender = getMessageSender(account, message)
 
-        return NewMailNotificationContent(
+        return NotificationContent(
             sender = getMessageSenderForDisplay(sender),
             subject = getMessageSubject(message),
             preview = getMessagePreview(message),
@@ -31,16 +33,16 @@ internal class NotificationContentCreator(
 
     fun createFromGroupMailEvent(
         groupMailSignal: GroupMailSignal
-    ): GroupMailNotificationContent {
+    ): NotificationContent<GroupMailInvite> {
         val sender = getMessageSenderForDisplay(
             formatIdentityAsContact(groupMailSignal.senderIdentity)
         )
         val group = formatIdentityAsContact(groupMailSignal.groupIdentity).orEmpty()
-        return GroupMailNotificationContent(
+        return NotificationContent(
             sender = sender,
             subject = resourceProvider.getGroupMailInviteSubject(sender),
             summary = resourceProvider.getGroupMailInviteSummary(group, sender),
-            groupMailSignal.toGroupInvite()
+            reference = groupMailSignal.toGroupInvite()
         )
     }
 

@@ -22,7 +22,6 @@ class NotificationController internal constructor(
     private val syncNotificationController: SyncNotificationController
     private val sendFailedNotificationController: SendFailedNotificationController
     private val groupedNotificationController: GroupedNotificationController
-    //private val groupMailNotificationController: GroupedNotificationController<GroupMailInvite, GroupMailNotificationContent>
     private val channelUtils: NotificationChannelManager
 
     init {

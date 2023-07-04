@@ -41,7 +41,7 @@ class SummaryGroupedNotificationDataCreatorTest {
             silent = false
         )
 
-        val summaryNotificationData = result as SummarySingleNotificationData<*,*>
+        val summaryNotificationData = result as SummarySingleNotificationData<*>
         assertThat(summaryNotificationData.singleNotificationData.isSilent).isTrue()
     }
 
@@ -55,7 +55,7 @@ class SummaryGroupedNotificationDataCreatorTest {
             silent = false
         )
 
-        val summaryNotificationData = result as SummarySingleNotificationData<*,*>
+        val summaryNotificationData = result as SummarySingleNotificationData<*>
         assertThat(summaryNotificationData.singleNotificationData.isSilent).isFalse()
     }
 
@@ -247,7 +247,7 @@ class SummaryGroupedNotificationDataCreatorTest {
         }
     }
 
-    private fun createNewMailNotificationContent() = NewMailNotificationContent(
+    private fun createNewMailNotificationContent() = NotificationContent(
         reference = MessageReference("irrelevant", "folder", "irrelevant", null),
         sender = "irrelevant",
         subject = "irrelevant",
@@ -256,8 +256,8 @@ class SummaryGroupedNotificationDataCreatorTest {
     )
 
     private fun createNewMailNotificationData(
-        contentList: List<NewMailNotificationContent> = listOf(createNewMailNotificationContent())
-    ): NotificationData<MessageReference, NewMailNotificationContent> {
+        contentList: List<NotificationContent<MessageReference>> = listOf(createNewMailNotificationContent())
+    ): NotificationData<MessageReference> {
         val activeNotifications = contentList.mapIndexed { index, content ->
             NotificationHolder(notificationId = index, TIMESTAMP, content)
         }
@@ -270,7 +270,7 @@ class SummaryGroupedNotificationDataCreatorTest {
         )
     }
 
-    private fun createNotificationDataWithMultipleMessages(times: Int = 2): NotificationData<MessageReference, NewMailNotificationContent> {
+    private fun createNotificationDataWithMultipleMessages(times: Int = 2): NotificationData<MessageReference> {
         val contentList = buildList {
             repeat(times) {
                 add(createNewMailNotificationContent())
@@ -279,7 +279,7 @@ class SummaryGroupedNotificationDataCreatorTest {
         return createNewMailNotificationData(contentList)
     }
 
-    private fun createNotificationDataWithMultipleGroupMailEvents(times: Int = 2): NotificationData<GroupMailInvite, GroupMailNotificationContent> {
+    private fun createNotificationDataWithMultipleGroupMailEvents(times: Int = 2): NotificationData<GroupMailInvite> {
         val contentList = buildList {
             repeat(times) {
                 add(createGroupMailNotificationContent())
@@ -288,7 +288,7 @@ class SummaryGroupedNotificationDataCreatorTest {
         return createGroupMailNotificationData(contentList)
     }
 
-    private fun createGroupMailNotificationContent() = GroupMailNotificationContent(
+    private fun createGroupMailNotificationContent() = NotificationContent(
         reference = GroupMailInvite("irrelevant", "irrelevant", "irrelevant"),
         sender = "irrelevant",
         subject = "irrelevant",
@@ -296,8 +296,8 @@ class SummaryGroupedNotificationDataCreatorTest {
     )
 
     private fun createGroupMailNotificationData(
-        contentList: List<GroupMailNotificationContent> = listOf(createGroupMailNotificationContent())
-    ): NotificationData<GroupMailInvite, GroupMailNotificationContent> {
+        contentList: List<NotificationContent<GroupMailInvite>> = listOf(createGroupMailNotificationContent())
+    ): NotificationData<GroupMailInvite> {
         val activeNotifications = contentList.mapIndexed { index, content ->
             NotificationHolder(notificationId = index, TIMESTAMP, content)
         }
