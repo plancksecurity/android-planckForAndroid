@@ -82,32 +82,35 @@ class NotificationController internal constructor(
                 summaryNotificationDataCreator = summaryNotificationDataCreator,
                 clock = clock
             )
-        val lockScreenNotificationCreator = LockScreenNotificationCreator(
+        val newMailScreenNotificationCreator = NewMailLockScreenNotificationCreator(
+            notificationHelper, notificationResourceProvider
+        )
+        val groupMailScreenNotificationCreator = GroupMailLockScreenNotificationCreator(
             notificationHelper, notificationResourceProvider
         )
         val singleNewMailNotificationCreator = SingleMessageNotificationCreator(
                 notificationHelper,
                 actionBuilder,
                 notificationResourceProvider,
-                lockScreenNotificationCreator
+                newMailScreenNotificationCreator
             )
         val singleGroupMailNotificationCreator = SingleGroupMailNotificationCreator(
             notificationHelper,
             actionBuilder,
             notificationResourceProvider,
-            lockScreenNotificationCreator
+            groupMailScreenNotificationCreator
         )
         val summaryNewMailNotificationCreator = SummaryNewMailNotificationCreator(
             notificationHelper,
             actionBuilder,
-            lockScreenNotificationCreator,
+            newMailScreenNotificationCreator,
             singleNewMailNotificationCreator,
             notificationResourceProvider
         )
         val summaryGroupMailNotificationCreator = SummaryGroupMailNotificationCreator(
             notificationHelper,
             actionBuilder,
-            lockScreenNotificationCreator,
+            groupMailScreenNotificationCreator,
             singleGroupMailNotificationCreator,
             notificationResourceProvider
         )

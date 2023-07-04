@@ -8,7 +8,7 @@ import androidx.core.app.NotificationCompat.Builder as NotificationBuilder
 internal abstract class SummaryGroupedNotificationCreator<in Reference : NotificationReference>(
     protected val notificationHelper: NotificationHelper,
     protected val actionCreator: NotificationActionCreator,
-    private val lockScreenNotificationCreator: LockScreenNotificationCreator,
+    private val lockScreenNotificationCreator: LockScreenNotificationCreator<Reference>,
     private val singleNotificationCreator: SingleGroupedNotificationCreator<Reference>,
     protected val resourceProvider: NotificationResourceProvider
 ) {

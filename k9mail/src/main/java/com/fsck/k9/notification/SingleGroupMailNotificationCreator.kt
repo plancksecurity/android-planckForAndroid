@@ -8,7 +8,7 @@ internal class SingleGroupMailNotificationCreator(
     notificationHelper: NotificationHelper,
     actionCreator: NotificationActionCreator,
     resourceProvider: NotificationResourceProvider,
-    lockScreenNotificationCreator: LockScreenNotificationCreator
+    lockScreenNotificationCreator: LockScreenNotificationCreator<GroupMailInvite>
 ) : SingleGroupedNotificationCreator<GroupMailInvite>(
     notificationHelper,
     actionCreator,
