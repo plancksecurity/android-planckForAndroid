@@ -3046,6 +3046,14 @@ public class CucumberTestSteps {
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
         waitForIdle();
+        while (!testUtils.textExistsOnScreen(resources.getString(R.string.discard_action))) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            waitForIdle();
+        }
         onView(withText(R.string.discard_action)).perform(click());
     }
 
