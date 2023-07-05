@@ -27,7 +27,9 @@ internal class GroupedNotificationManager(
     ): GroupedNotificationData<MessageReference>? {
         val content = contentCreator.createFromMessage(account, message)
 
-        val result = newMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
+        val result =
+            newMailNotificationRepository.addNotification(account, content, timestamp = now())
+                ?: return null
 
         return addNotification(account, result, silent)
 
@@ -40,7 +42,9 @@ internal class GroupedNotificationManager(
     ): GroupedNotificationData<GroupMailInvite>? {
         val content = contentCreator.createFromGroupMailEvent(groupMailSignal)
 
-        val result = groupMailNotificationRepository.addNotification(account, content, timestamp = now()) ?: return null
+        val result =
+            groupMailNotificationRepository.addNotification(account, content, timestamp = now())
+                ?: return null
 
         return addNotification(account, result, silent)
     }
@@ -49,7 +53,8 @@ internal class GroupedNotificationManager(
         account: Account,
         selector: (List<MessageReference>) -> List<MessageReference>
     ): GroupedNotificationData<MessageReference>? {
-        val result = newMailNotificationRepository.removeNotifications(account, selector) ?: return null
+        val result =
+            newMailNotificationRepository.removeNotifications(account, selector) ?: return null
         return removeNotification(account, result) { getNewMailSummaryNotificationId(account) }
     }
 
@@ -57,7 +62,8 @@ internal class GroupedNotificationManager(
         account: Account,
         selector: (List<GroupMailInvite>) -> List<GroupMailInvite>
     ): GroupedNotificationData<GroupMailInvite>? {
-        val result = groupMailNotificationRepository.removeNotifications(account, selector) ?: return null
+        val result =
+            groupMailNotificationRepository.removeNotifications(account, selector) ?: return null
         return removeNotification(account, result) { getGroupMailSummaryNotificationId(account) }
     }
 
@@ -71,7 +77,7 @@ internal class GroupedNotificationManager(
         return getAllGroupMailNotificationIds(account)
     }
 
-    private fun <Reference: NotificationReference> addNotification(
+    private fun <Reference : NotificationReference> addNotification(
         account: Account,
         result: AddNotificationResult<Reference>,
         silent: Boolean
@@ -96,7 +102,7 @@ internal class GroupedNotificationManager(
         )
     }
 
-    private fun <Reference: NotificationReference> removeNotification(
+    private fun <Reference : NotificationReference> removeNotification(
         account: Account,
         result: RemoveNotificationsResult<Reference>,
         notificationId: () -> Int
@@ -105,6 +111,7 @@ internal class GroupedNotificationManager(
             result.notificationData.isEmpty() -> {
                 result.cancelNotificationIds + notificationId()
             }
+
             else -> {
                 result.cancelNotificationIds
             }
@@ -124,18 +131,24 @@ internal class GroupedNotificationManager(
             cancelNotificationIds = cancelNotificationIds,
             baseNotificationData = createBaseNotificationData(result.notificationData),
             singleNotificationData = singleNotificationData,
-            summaryNotificationData = createSummaryNotificationData(result.notificationData, silent = true)
+            summaryNotificationData = createSummaryNotificationData(
+                result.notificationData,
+                silent = true
+            )
         )
     }
 
-    private fun <Reference: NotificationReference> createBaseNotificationData(
+    private fun <Reference : NotificationReference> createBaseNotificationData(
         notificationData: NotificationData<Reference>
     ): BaseNotificationData {
         return baseNotificationDataCreator.createBaseNotificationData(notificationData)
     }
 
     private fun getNewMailSummaryNotificationId(account: Account): Int {
-        return NotificationIds.getSummaryGroupedNotificationId(account, NotificationGroupType.NEW_MAIL)
+        return NotificationIds.getSummaryGroupedNotificationId(
+            account,
+            NotificationGroupType.NEW_MAIL
+        )
     }
 
     private fun getAllNewMailNotificationIds(account: Account): List<Int> {
@@ -143,14 +156,20 @@ internal class GroupedNotificationManager(
     }
 
     private fun getGroupMailSummaryNotificationId(account: Account): Int {
-        return NotificationIds.getSummaryGroupedNotificationId(account, NotificationGroupType.GROUP_MAIL)
+        return NotificationIds.getSummaryGroupedNotificationId(
+            account,
+            NotificationGroupType.GROUP_MAIL
+        )
     }
 
     private fun getAllGroupMailNotificationIds(account: Account): List<Int> {
-        return NotificationIds.getAllGroupedNotificationIds(account, NotificationGroupType.GROUP_MAIL)
+        return NotificationIds.getAllGroupedNotificationIds(
+            account,
+            NotificationGroupType.GROUP_MAIL
+        )
     }
 
-    private fun <Reference: NotificationReference> createSingleNotificationData(
+    private fun <Reference : NotificationReference> createSingleNotificationData(
         account: Account,
         notificationId: Int,
         content: NotificationContent<Reference>,
@@ -166,7 +185,7 @@ internal class GroupedNotificationManager(
         )
     }
 
-    private fun <Reference: NotificationReference> createSummaryNotificationData(
+    private fun <Reference : NotificationReference> createSummaryNotificationData(
         data: NotificationData<Reference>, silent: Boolean
     ): SummaryNotificationData<Reference>? {
         return if (data.isEmpty()) {
