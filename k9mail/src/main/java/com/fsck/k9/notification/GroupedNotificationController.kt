@@ -38,19 +38,15 @@ internal class GroupedNotificationController(
 
     @Synchronized
     fun addNewMailNotification(account: Account, message: LocalMessage, silent: Boolean) {
-        val notificationData = groupedNotificationManager.addNewMailNotification(account, message, silent)
-
-        if (notificationData != null) {
-            processNewMailNotificationData(notificationData)
+        groupedNotificationManager.addNewMailNotification(account, message, silent)?.let {
+            processNewMailNotificationData(it)
         }
     }
 
     @Synchronized
     fun addGroupMailNotification(account: Account, groupMailSignal: GroupMailSignal, silent: Boolean) {
-        val notificationData = groupedNotificationManager.addGroupMailNotification(account, groupMailSignal, silent)
-
-        if (notificationData != null) {
-            processGroupMailNotificationData(notificationData)
+        groupedNotificationManager.addGroupMailNotification(account, groupMailSignal, silent)?.let {
+            processGroupMailNotificationData(it)
         }
     }
 
