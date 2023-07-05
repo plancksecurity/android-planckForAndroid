@@ -1262,8 +1262,22 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I reset my own key$")
+    @When("^I reset own key$")
     public void I_reset_own_key() {
+        testUtils.selectFromMenu(R.string.action_settings);
+        testUtils.selectFromScreen(testUtils.stringToID("reset"));
+        testUtils.pressOKButtonInDialog();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        testUtils.pressBack();
+        waitForIdle();
+
+    }
+    @When("^I reset my own key$")
+    public void I_reset_my_own_key() {
         switch (testUtils.test_number()) {
             case "0":
             case "1":
