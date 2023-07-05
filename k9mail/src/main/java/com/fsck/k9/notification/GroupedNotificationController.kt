@@ -44,7 +44,11 @@ internal class GroupedNotificationController(
     }
 
     @Synchronized
-    fun addGroupMailNotification(account: Account, groupMailSignal: GroupMailSignal, silent: Boolean) {
+    fun addGroupMailNotification(
+        account: Account,
+        groupMailSignal: GroupMailSignal,
+        silent: Boolean
+    ) {
         groupedNotificationManager.addGroupMailNotification(account, groupMailSignal, silent)?.let {
             processGroupMailNotificationData(it)
         }
@@ -94,31 +98,43 @@ internal class GroupedNotificationController(
         cancelNotifications(cancelNotificationIds)
     }
 
-    private fun  processNewMailNotificationData(
+    private fun processNewMailNotificationData(
         notificationData: GroupedNotificationData<MessageReference>
     ) {
         cancelNotifications(notificationData.cancelNotificationIds)
 
         for (singleNotificationData in notificationData.singleNotificationData) {
-            createSingleNewMailNotification(notificationData.baseNotificationData, singleNotificationData)
+            createSingleNewMailNotification(
+                notificationData.baseNotificationData,
+                singleNotificationData
+            )
         }
 
         notificationData.summaryNotificationData?.let { summaryNotificationData ->
-            createNewMailSummaryNotification(notificationData.baseNotificationData, summaryNotificationData)
+            createNewMailSummaryNotification(
+                notificationData.baseNotificationData,
+                summaryNotificationData
+            )
         }
     }
 
-    private fun  processGroupMailNotificationData(
+    private fun processGroupMailNotificationData(
         notificationData: GroupedNotificationData<GroupMailInvite>
     ) {
         cancelNotifications(notificationData.cancelNotificationIds)
 
         for (singleNotificationData in notificationData.singleNotificationData) {
-            createSingleGroupMailNotification(notificationData.baseNotificationData, singleNotificationData)
+            createSingleGroupMailNotification(
+                notificationData.baseNotificationData,
+                singleNotificationData
+            )
         }
 
         notificationData.summaryNotificationData?.let { summaryNotificationData ->
-            createGroupMailSummaryNotification(notificationData.baseNotificationData, summaryNotificationData)
+            createGroupMailSummaryNotification(
+                notificationData.baseNotificationData,
+                summaryNotificationData
+            )
         }
     }
 
@@ -132,27 +148,39 @@ internal class GroupedNotificationController(
         baseNotificationData: BaseNotificationData,
         singleNotificationData: SingleNotificationData<MessageReference>
     ) {
-        newMailSingleNotificationCreator.createSingleNotification(baseNotificationData, singleNotificationData)
+        newMailSingleNotificationCreator.createSingleNotification(
+            baseNotificationData,
+            singleNotificationData
+        )
     }
 
     private fun createNewMailSummaryNotification(
         baseNotificationData: BaseNotificationData,
         summaryNotificationData: SummaryNotificationData<MessageReference>
     ) {
-        newMailSummaryNotificationCreator.createSummaryNotification(baseNotificationData, summaryNotificationData)
+        newMailSummaryNotificationCreator.createSummaryNotification(
+            baseNotificationData,
+            summaryNotificationData
+        )
     }
 
     private fun createSingleGroupMailNotification(
         baseNotificationData: BaseNotificationData,
         singleNotificationData: SingleNotificationData<GroupMailInvite>
     ) {
-        groupMailSingleNotificationCreator.createSingleNotification(baseNotificationData, singleNotificationData)
+        groupMailSingleNotificationCreator.createSingleNotification(
+            baseNotificationData,
+            singleNotificationData
+        )
     }
 
     private fun createGroupMailSummaryNotification(
         baseNotificationData: BaseNotificationData,
         summaryNotificationData: SummaryNotificationData<GroupMailInvite>
     ) {
-        groupMailSummaryNotificationCreator.createSummaryNotification(baseNotificationData, summaryNotificationData)
+        groupMailSummaryNotificationCreator.createSummaryNotification(
+            baseNotificationData,
+            summaryNotificationData
+        )
     }
 }
