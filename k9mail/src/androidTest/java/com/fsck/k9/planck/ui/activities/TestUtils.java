@@ -181,7 +181,7 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
     private String emailForDevice;
-    private static final String HOST = "@sq.pep.security";
+    private static final String HOST = "@sq.planck.security";
     private Connection connection;
 
 
@@ -2223,6 +2223,11 @@ public class TestUtils {
     public void assertStatus(Rating rating) {
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         int value = rating.value;
         int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
@@ -2472,7 +2477,9 @@ public class TestUtils {
 
     public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
-        waitForIdle();
+        for (int i = 0; i < 500; i ++) {
+            waitForIdle();
+        }
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
