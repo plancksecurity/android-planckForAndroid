@@ -3,6 +3,33 @@ Feature: Test
     Given I created an account
 
 
+  Scenario: Cucumber Reset Own Key when Trusted Partner
+    And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
+    And I click the last message received
+    And I click confirm trust words
+    Then I check if the privacy status is Trusted
+    And I go back to the Inbox
+    And I reset own key
+    When I click compose message
+    And I enter bot2 in the messageTo field
+    And I enter ResetKey2 in the messageSubject field
+    And I enter NewMessageAfterReset in the messageBody field
+    Then I check the privacy status is Trusted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is Trusted
+    When I go back to the Inbox
+    When I click compose message
+    And I enter bot2 in the messageTo field
+    And I enter key_reset_bot in the messageSubject field
+    And I enter BotWillResetOwnKey in the messageBody field
+    Then I check the privacy status is Trusted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is Encrypted
+
+
+
   Scenario: Cucumber Reset Trusted Partner Key
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
     And I click the last message received
