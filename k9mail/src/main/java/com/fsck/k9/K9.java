@@ -153,6 +153,7 @@ public class K9 extends MultiDexApplication {
     public static final int DEFAULT_CONTACT_NAME_COLOR = 0xff00008f;
 
     public static String password = null;
+    private static long PASSPHRASE_DELAY = 4000;
 
 
     /**
@@ -2058,7 +2059,7 @@ public class K9 extends MultiDexApplication {
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
-                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
+                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
                     break;
                 case DistributionNotifyGroupInvite:
                     Account account = component.preferences().getDefaultAccount();
