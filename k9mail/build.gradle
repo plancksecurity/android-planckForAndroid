@@ -393,15 +393,15 @@ android {
 
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
-    if (variant.name == "demoPlayStoreRelease") {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.enterprise\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.enterprise"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.enterprise"
-    } else {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId}"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "${variant.applicationId}"
+    def oauthAppId = ""
+    if (variant.applicationId.contains("security.planck") && variant.applicationId.contains("enterprise.debug")) {
+        oauthAppId = "security.planck.enterprise.debug"
+    } else if (variant.applicationId.contains("security.planck") && variant.applicationId.contains("enterprise")) {
+        oauthAppId = "security.planck.enterprise"
     }
+    variant.buildConfigField "String", "OAUTH_APP_ID", "\"$oauthAppId\""
+    mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = oauthAppId
+    mergedFlavor.manifestPlaceholders["oAuthAppId"] = oauthAppId
     //noinspection GroovyFallthrough
     switch (variant.name) {
         case "enterprisePlayStoreRelease":
