@@ -3,7 +3,7 @@ package com.fsck.k9.notification
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 
-private const val MAX_NUMBER_OF_SENDERS_IN_LOCK_SCREEN_NOTIFICATION = 5
+private const val MAX_SENDERS_IN_LOCK_SCREEN_NOTIFICATION = 5
 
 internal class BaseNotificationDataCreator {
 
@@ -43,7 +43,7 @@ internal class BaseNotificationDataCreator {
         return data.activeNotifications.asSequence()
             .map { it.content.sender }
             .distinct()
-            .take(MAX_NUMBER_OF_SENDERS_IN_LOCK_SCREEN_NOTIFICATION)
+            .take(MAX_SENDERS_IN_LOCK_SCREEN_NOTIFICATION)
             .joinToString()
     }
 
