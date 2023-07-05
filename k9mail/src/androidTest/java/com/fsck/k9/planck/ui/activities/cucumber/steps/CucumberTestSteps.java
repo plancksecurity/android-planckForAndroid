@@ -1041,8 +1041,18 @@ public class CucumberTestSteps {
             waitUntilIdle();
         }
         onView(withId(R.id.confirmHandshake)).check(matches(isCompletelyDisplayed()));
-        onView(withId(R.id.confirmHandshake)).perform(click());
-        waitForIdle();
+        while (exists(onView(withId(R.id.confirmHandshake)))) {
+            onView(withId(R.id.confirmHandshake)).perform(click());
+            waitForIdle();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 100; i++) {
+            waitForIdle();
+        }
         testUtils.pressBack();
     }
 
