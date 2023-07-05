@@ -3,10 +3,9 @@ package com.fsck.k9.notification
 import com.fsck.k9.Account
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mailstore.LocalMessage
+import com.fsck.k9.planck.infrastructure.FIRST_POSITION
 import security.planck.notification.GroupMailInvite
 import security.planck.notification.GroupMailSignal
-
-private const val FIRST_POSITION = 0
 
 /**
  * Handle notifications for notification groups. Current notification groups:
