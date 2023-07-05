@@ -37,7 +37,7 @@ internal class SummaryNewMailNotificationCreator(
             .setWearActions(account, notificationData)
     }
 
-    private fun createViewIntent(account: Account, references: List<MessageReference>): PendingIntent {
+    private fun createViewIntent(account: Account, references: List<MessageReference>): PendingIntent? {
         return actionCreator.createViewMessagesPendingIntent(account, references)
     }
 

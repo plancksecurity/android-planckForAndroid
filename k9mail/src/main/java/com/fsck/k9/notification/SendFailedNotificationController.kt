@@ -20,7 +20,7 @@ internal class SendFailedNotificationController(
 
         val notificationId = NotificationIds.getSendFailedNotificationId(account)
 
-        val pendingIntent: PendingIntent
+        val pendingIntent: PendingIntent?
         if (exception is AppDidntEncryptMessageException) {
             title = resourceProvider.sendFailedCouldNotEncryptTitle()
             text = resourceProvider.sendFailedCouldNotEncryptText()
