@@ -34,7 +34,10 @@ import security.planck.notification.GroupMailInvite
  * In the past we've used the notification ID as `requestCode` argument when creating a `PendingIntent`. But since we're
  * reusing notification IDs, it's safer to make sure the `Intent` itself is unique.
  */
-internal open class NotificationActionCreator(private val context: Context) {
+internal open class NotificationActionCreator(
+    private val context: Context,
+    private val dataCreator: NotificationIntentDataCreator = NotificationIntentDataCreator()
+) {
     fun getEditServerSettingsIntent(account: Account, incoming: Boolean): PendingIntent {
         val editServerSettingsIntent =
             if (incoming) AccountSetupBasics.intentActionEditIncomingSettings(
@@ -85,7 +88,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createDismissAllMessagesIntent(
             context, account
         ).apply {
-            data = Uri.parse("data:,dismissAll/${account.uuid}/${System.currentTimeMillis()}")
+            data = dataCreator.getDismissAllMessagesData(account)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -97,7 +100,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createDismissMessageIntent(
             context, messageReference
         ).apply {
-            data = Uri.parse("data:,dismiss/${messageReference.toIdentityString()}")
+            data = dataCreator.getDismissMessageData(messageReference)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -109,7 +112,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createDismissGroupMailNotificationIntent(
             context, groupMailInvite
         ).apply {
-            data = Uri.parse("data:,dismiss/${groupMailInvite}")
+            data = dataCreator.getDismissGroupMailData(groupMailInvite)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -121,7 +124,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createDismissAllGroupMailNotificationsIntent(
             context, account
         ).apply {
-            data = Uri.parse("data:,dismissAll/${account.uuid}/${System.currentTimeMillis()}")
+            data = dataCreator.getDismissAllGroupMailData(account)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -131,7 +134,7 @@ internal open class NotificationActionCreator(private val context: Context) {
 
     fun createReplyPendingIntent(messageReference: MessageReference): PendingIntent {
         val intent = MessageActions.getActionReplyIntent(context, messageReference).apply {
-            data = Uri.parse("data:,reply/${messageReference.toIdentityString()}")
+            data = dataCreator.getReplyMessageData(messageReference)
         }
         return PendingIntent.getActivity(
             context, 0, intent,
@@ -143,7 +146,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createMarkMessageAsReadIntent(
             context, messageReference
         ).apply {
-            data = Uri.parse("data:,markAsRead/${messageReference.toIdentityString()}")
+            data = dataCreator.getMarkMessageAsReadData(messageReference)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -155,9 +158,8 @@ internal open class NotificationActionCreator(private val context: Context) {
         account: Account,
         messageReferences: List<MessageReference>
     ): PendingIntent {
-        val accountUuid = account.uuid
-        val intent = NotificationActionService.createMarkAllAsReadIntent(context, accountUuid, messageReferences).apply {
-            data = Uri.parse("data:,markAllAsRead/$accountUuid/${System.currentTimeMillis()}")
+        val intent = NotificationActionService.createMarkAllAsReadIntent(context, account.uuid, messageReferences).apply {
+            data = dataCreator.getMarkAllMessagesAsReadData(account)
         }
         return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE)
     }
@@ -174,7 +176,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createDeleteMessageIntent(
             context, messageReference
         ).apply {
-            data = Uri.parse("data:,delete/${messageReference.toIdentityString()}")
+            data = dataCreator.getDeleteMessageData(messageReference)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -184,7 +186,7 @@ internal open class NotificationActionCreator(private val context: Context) {
 
     private fun createDeleteConfirmationPendingIntent(messageReference: MessageReference): PendingIntent {
         val intent = NotificationDeleteConfirmation.getIntent(context, messageReference).apply {
-            data = Uri.parse("data:,deleteConfirmation/${messageReference.toIdentityString()}")
+            data = dataCreator.getDeleteMessageConfirmationData(messageReference)
         }
         return PendingIntent.getActivity(
             context, 0, intent,
@@ -214,20 +216,20 @@ internal open class NotificationActionCreator(private val context: Context) {
         flags: Int
     ): PendingIntent {
         val intent = NotificationDeleteConfirmation.getIntent(context, messageReferences).apply {
-            data = Uri.parse("data:,deleteAllConfirmation/${System.currentTimeMillis()}")
+            data = dataCreator.getDeleteAllMessageConfirmationData()
         }
         return PendingIntent.getActivity(context, 0, intent, flags)
     }
 
     private fun getDeleteAllServicePendingIntent(
-        account: Account, messageReferences: List<MessageReference>,
+        account: Account,
+        messageReferences: List<MessageReference>,
         flags: Int
     ): PendingIntent {
-        val accountUuid = account.uuid
         val intent = NotificationActionService.createDeleteAllMessagesIntent(
-            context, accountUuid, messageReferences
+            context, account.uuid, messageReferences
         ).apply {
-            data = Uri.parse("data:,deleteAll/$accountUuid/${System.currentTimeMillis()}")
+            data = dataCreator.getDeleteAllMessagesData(account)
         }
         return PendingIntent.getService(context, 0, intent, flags)
     }
@@ -236,7 +238,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createArchiveMessageIntent(
             context, messageReference
         ).apply {
-            data = Uri.parse("data:,archive/${messageReference.toIdentityString()}")
+            data = dataCreator.getArchiveMessageData(messageReference)
         }
         return PendingIntent.getService(
             context, 0, intent,
@@ -251,7 +253,7 @@ internal open class NotificationActionCreator(private val context: Context) {
         val intent = NotificationActionService.createArchiveAllIntent(
             context, account, messageReferences
         ).apply {
-            data = Uri.parse("data:,archiveAll/${account.uuid}/${System.currentTimeMillis()}")
+            data = dataCreator.getArchiveAllMessagesData(account)
         }
         return PendingIntent.getService(
             context, 0, intent,
