@@ -10,16 +10,15 @@ import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
-import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.manualsync.ImportWizardFrompEp
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
-import com.fsck.k9.ui.settings.account.AccountSettingsFragment
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
@@ -36,12 +35,12 @@ import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportpEpSupportDataActivity
-import timber.log.Timber
 import java.time.Duration
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
 private const val PREFERENCE_PLANCK_SHOW_AUTOMATIC_SYNC = false
 private val SYNC_TIMEOUT = Duration.ofMinutes(1L).toMillis()
+
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
 
@@ -121,10 +120,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun allowManualSync() {
 
+        K9.getSyncSharedPreferences().edit()
+            .putBoolean(ImportWizardFrompEp.MANUAL_SYNC_ENABLED_KEY, true).apply()
     }
 
     private fun disableManualSync() {
 
+        K9.getSyncSharedPreferences().edit()
+            .putBoolean(ImportWizardFrompEp.MANUAL_SYNC_ENABLED_KEY, false).apply()
     }
 
     private fun isDeviceOnline(): Boolean =

@@ -1,6 +1,8 @@
 package com.fsck.k9;
 
 
+import static com.fsck.k9.planck.manualsync.ImportWizardFrompEp.MANUAL_SYNC_ENABLED_KEY;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
@@ -152,6 +154,8 @@ public class K9 extends MultiDexApplication {
 
     public static String password = null;
 
+    public static String SYNC_SHARED_PREFERENCES = "sync_shared_preferences";
+
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -253,6 +257,9 @@ public class K9 extends MultiDexApplication {
      * @see #setDatabasesUpToDate(boolean)
      */
     private static SharedPreferences sDatabaseVersionCache;
+
+    private static SharedPreferences syncSharedPreferences= K9.app.getSharedPreferences(
+            SYNC_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
     private static boolean mAnimations = true;
 
@@ -459,6 +466,10 @@ public class K9 extends MultiDexApplication {
         setServicesEnabled(appContext, enable);
 
         //updateDeviceIdleReceiver(appContext, enable);
+    }
+
+    public static SharedPreferences getSyncSharedPreferences() {
+        return syncSharedPreferences;
     }
 
     private static void updateDeviceIdleReceiver(Context context, boolean enable) {
@@ -2017,11 +2028,15 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    if (allowpEpSyncNewDevices) {
+
+                    if (K9.getSyncSharedPreferences().getBoolean(MANUAL_SYNC_ENABLED_KEY, false)) {
+
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                         needsFastPoll = true;
                     } else {
-                        planckProvider.cancelSync();
+
+                        //EFA-151 test should we need to cancel sync if the user initiated manual sync later on
+                        //planckProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyInitFormGroup:
