@@ -258,8 +258,7 @@ public class K9 extends MultiDexApplication {
      */
     private static SharedPreferences sDatabaseVersionCache;
 
-    private static SharedPreferences syncSharedPreferences= K9.app.getSharedPreferences(
-            SYNC_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+    private static SharedPreferences syncSharedPreferences;
 
     private static boolean mAnimations = true;
 
@@ -469,7 +468,8 @@ public class K9 extends MultiDexApplication {
     }
 
     public static SharedPreferences getSyncSharedPreferences() {
-        return syncSharedPreferences;
+
+        return K9.app.getSharedPreferences(SYNC_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     private static void updateDeviceIdleReceiver(Context context, boolean enable) {
