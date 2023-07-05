@@ -2004,7 +2004,6 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-            Log.e("TESTGROUPMAIL", "GOT SIGNAL " + signal.name() + ", value = " + signal.value);
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
 
             if (isDebug()) {
@@ -2062,7 +2061,6 @@ public class K9 extends MultiDexApplication {
                             PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
                     break;
                 case DistributionNotifyGroupInvite:
-                    Log.e("TESTGROUPMAIL", "INVITATION TO GROUP " + partner + " WITH MYSELF: " + myself);
                     Account account = component.preferences().getDefaultAccount();
                     if (account != null) {
                         MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(
