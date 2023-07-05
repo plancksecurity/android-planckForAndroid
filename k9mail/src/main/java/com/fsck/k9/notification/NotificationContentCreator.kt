@@ -57,10 +57,9 @@ internal class NotificationContentCreator(
         return SpannableStringBuilder().apply {
             val displaySubject = getMessageSubject(message)
             append(displaySubject)
-
-            if (snippet != null) {
+            snippet?.let {
                 append('\n')
-                append(snippet)
+                append(it)
             }
         }
     }
