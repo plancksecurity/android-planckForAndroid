@@ -1575,7 +1575,9 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
-        waitForIdle();
+        for (int i = 0; i < 500; i ++) {
+            waitForIdle();
+        }
         switch (status) {
             case "NotEncrypted":
                 testUtils.assertStatus(Rating.pEpRatingUnencrypted);
