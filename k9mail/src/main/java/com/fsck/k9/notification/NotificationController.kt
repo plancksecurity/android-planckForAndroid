@@ -124,53 +124,53 @@ class NotificationController internal constructor(
         )
     }
 
-    fun showCertificateErrorNotification(account: Account?, incoming: Boolean) {
-        certificateErrorNotificationController.showCertificateErrorNotification(account!!, incoming)
+    fun showCertificateErrorNotification(account: Account, incoming: Boolean) {
+        certificateErrorNotificationController.showCertificateErrorNotification(account, incoming)
     }
 
-    fun clearCertificateErrorNotifications(account: Account?, incoming: Boolean) {
+    fun clearCertificateErrorNotifications(account: Account, incoming: Boolean) {
         certificateErrorNotificationController.clearCertificateErrorNotifications(
-            account!!,
+            account,
             incoming
         )
     }
 
-    fun showAuthenticationErrorNotification(account: Account?, incoming: Boolean) {
+    fun showAuthenticationErrorNotification(account: Account, incoming: Boolean) {
         authenticationErrorNotificationController.showAuthenticationErrorNotification(
-            account!!,
+            account,
             incoming
         )
     }
 
-    fun clearAuthenticationErrorNotification(account: Account?, incoming: Boolean) {
+    fun clearAuthenticationErrorNotification(account: Account, incoming: Boolean) {
         authenticationErrorNotificationController.clearAuthenticationErrorNotification(
-            account!!,
+            account,
             incoming
         )
     }
 
-    fun showSendingNotification(account: Account?) {
-        syncNotificationController.showSendingNotification(account!!)
+    fun showSendingNotification(account: Account) {
+        syncNotificationController.showSendingNotification(account)
     }
 
-    fun clearSendingNotification(account: Account?) {
-        syncNotificationController.clearSendingNotification(account!!)
+    fun clearSendingNotification(account: Account) {
+        syncNotificationController.clearSendingNotification(account)
     }
 
-    fun showSendFailedNotification(account: Account?, exception: Exception?) {
-        sendFailedNotificationController.showSendFailedNotification(account!!, exception!!)
+    fun showSendFailedNotification(account: Account, exception: Exception?) {
+        sendFailedNotificationController.showSendFailedNotification(account, exception!!)
     }
 
-    fun clearSendFailedNotification(account: Account?) {
-        sendFailedNotificationController.clearSendFailedNotification(account!!)
+    fun clearSendFailedNotification(account: Account) {
+        sendFailedNotificationController.clearSendFailedNotification(account)
     }
 
-    fun showFetchingMailNotification(account: Account?, folder: Folder<*>?) {
-        syncNotificationController.showFetchingMailNotification(account!!, folder!!)
+    fun showFetchingMailNotification(account: Account, folder: Folder<*>?) {
+        syncNotificationController.showFetchingMailNotification(account, folder!!)
     }
 
-    fun clearFetchingMailNotification(account: Account?) {
-        syncNotificationController.clearFetchingMailNotification(account!!)
+    fun clearFetchingMailNotification(account: Account) {
+        syncNotificationController.clearFetchingMailNotification(account)
     }
 
     fun addNewMailsNotification(
