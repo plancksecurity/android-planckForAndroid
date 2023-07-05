@@ -4,8 +4,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
@@ -101,13 +99,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             .setCancelable(true)
                             .setPositiveButton(R.string.sync_action) { _, _ ->
 
-                                allowManualSync()
+                                allowManualSyncForMoment()
                             }.setNegativeButton(R.string.cancel_action, null).show()
-
-                        Handler(Looper.getMainLooper()).postDelayed(kotlinx.coroutines.Runnable {
-
-                            disableManualSync()
-                        }, SYNC_TIMEOUT)
                     } else {
 
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
@@ -118,16 +111,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun allowManualSync() {
+    private fun allowManualSyncForMoment() {
 
         K9.getSyncSharedPreferences().edit()
-            .putBoolean(ImportWizardFrompEp.MANUAL_SYNC_ENABLED_KEY, true).apply()
-    }
-
-    private fun disableManualSync() {
-
-        K9.getSyncSharedPreferences().edit()
-            .putBoolean(ImportWizardFrompEp.MANUAL_SYNC_ENABLED_KEY, false).apply()
+            .putLong(ImportWizardFrompEp.MANUAL_SYNC_ALLOWED_UNTIL_KEY, System.currentTimeMillis() + SYNC_TIMEOUT).apply()
     }
 
     private fun isDeviceOnline(): Boolean =

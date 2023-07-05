@@ -42,7 +42,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public static final String IS_FORMING_GROUP = "isFormingGroup";
     public static final String SYNC_SIGNAL_KEY = "syncSignal";
 
-    public static final String MANUAL_SYNC_ENABLED_KEY = "manualSyncEnabled";
+    public static final String MANUAL_SYNC_ALLOWED_UNTIL_KEY = "manualSyncEnabled";
     public static final String MYSELF_KEY = "myself";
     public static final String PARTNER_KEY = "partner";
     private static final String PEP_SYNC_SIGNAL_ACTION = "PEP_SYNC_SIGNAL";

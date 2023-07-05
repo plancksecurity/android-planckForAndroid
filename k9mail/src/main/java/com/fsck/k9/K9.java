@@ -1,7 +1,7 @@
 package com.fsck.k9;
 
 
-import static com.fsck.k9.planck.manualsync.ImportWizardFrompEp.MANUAL_SYNC_ENABLED_KEY;
+import static com.fsck.k9.planck.manualsync.ImportWizardFrompEp.MANUAL_SYNC_ALLOWED_UNTIL_KEY;
 
 import android.app.Activity;
 import android.app.Application;
@@ -2029,7 +2029,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
 
-                    if (K9.getSyncSharedPreferences().getBoolean(MANUAL_SYNC_ENABLED_KEY, false)) {
+                    if (K9.getSyncSharedPreferences().getLong(MANUAL_SYNC_ALLOWED_UNTIL_KEY, 0L) > System.currentTimeMillis()) {
 
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                         needsFastPoll = true;
