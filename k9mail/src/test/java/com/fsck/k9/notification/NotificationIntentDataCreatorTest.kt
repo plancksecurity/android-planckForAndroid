@@ -20,7 +20,7 @@ private const val UID2 = "UID2"
 private const val SENDER = "sender"
 private const val GROUP1 = "GROUP1"
 private const val GROUP2 = "GROUP2"
-private const val STEP = 10L
+private const val STEP = 1L
 
 class NotificationIntentDataCreatorTest: RobolectricTest() {
     private val dataCreator = NotificationIntentDataCreator()
@@ -83,6 +83,7 @@ class NotificationIntentDataCreatorTest: RobolectricTest() {
     @Test
     fun `getMarkAllMessagesAsReadData is unique each time`() {
         val uri1 = dataCreator.getMarkAllMessagesAsReadData(account)
+        runBlocking { delay(STEP) }
         val uri2 = dataCreator.getMarkAllMessagesAsReadData(account)
 
         assertNotEquals(uri1, uri2)
