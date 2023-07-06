@@ -20,6 +20,7 @@ private const val UID2 = "UID2"
 private const val SENDER = "sender"
 private const val GROUP1 = "GROUP1"
 private const val GROUP2 = "GROUP2"
+private const val STEP = 10L
 
 class NotificationIntentDataCreatorTest: RobolectricTest() {
     private val dataCreator = NotificationIntentDataCreator()
@@ -40,7 +41,7 @@ class NotificationIntentDataCreatorTest: RobolectricTest() {
     @Test
     fun `getDismissAllMessagesData is unique each time`() {
         val uri1 = dataCreator.getDismissAllMessagesData(account)
-        runBlocking { delay(1) }
+        runBlocking { delay(STEP) }
         val uri2 = dataCreator.getDismissAllMessagesData(account)
 
         assertNotEquals(uri1, uri2)
@@ -57,7 +58,7 @@ class NotificationIntentDataCreatorTest: RobolectricTest() {
     @Test
     fun `getDismissAllGroupMailData is unique each time`() {
         val uri1 = dataCreator.getDismissAllGroupMailData(account)
-        runBlocking { delay(1) }
+        runBlocking { delay(STEP) }
         val uri2 = dataCreator.getDismissAllGroupMailData(account)
 
         assertNotEquals(uri1, uri2)
@@ -106,7 +107,7 @@ class NotificationIntentDataCreatorTest: RobolectricTest() {
     @Test
     fun `getDeleteAllMessagesData is unique each time`() {
         val uri1 = dataCreator.getDeleteAllMessagesData(account)
-        runBlocking { delay(1) }
+        runBlocking { delay(STEP) }
         val uri2 = dataCreator.getDeleteAllMessagesData(account)
 
         assertNotEquals(uri1, uri2)
@@ -115,7 +116,7 @@ class NotificationIntentDataCreatorTest: RobolectricTest() {
     @Test
     fun `getDeleteAllMessageConfirmationData is unique each time`() {
         val uri1 = dataCreator.getDeleteAllMessageConfirmationData()
-        runBlocking { delay(1) }
+        runBlocking { delay(STEP) }
         val uri2 = dataCreator.getDeleteAllMessageConfirmationData()
 
         assertNotEquals(uri1, uri2)
@@ -132,7 +133,7 @@ class NotificationIntentDataCreatorTest: RobolectricTest() {
     @Test
     fun `getArchiveAllMessagesData is unique each time`() {
         val uri1 = dataCreator.getArchiveAllMessagesData(account)
-        runBlocking { delay(1) }
+        runBlocking { delay(STEP) }
         val uri2 = dataCreator.getArchiveAllMessagesData(account)
 
         assertNotEquals(uri1, uri2)
