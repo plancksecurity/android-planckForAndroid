@@ -12,6 +12,8 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
+import com.fsck.k9.planck.PlanckProviderFactory
+import com.fsck.k9.planck.PlanckProviderImplKotlin
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.manualsync.ImportWizardFrompEp
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
@@ -113,12 +115,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun allowManualSyncForMoment() {
 
-        //resetsync
-        //fast polling mode
-        K9.app.enhanceDeviceSync()
-
         K9.getSyncSharedPreferences().edit()
-            .putLong(ImportWizardFrompEp.MANUAL_SYNC_ALLOWED_UNTIL_KEY, System.currentTimeMillis() + SYNC_TIMEOUT).apply()
+            .putLong(ImportWizardFrompEp.DEVICE_SYNC_ALLOWED_UNTIL_KEY, System.currentTimeMillis() + SYNC_TIMEOUT).apply()
+        (PlanckProviderFactory.createProvider(context) as PlanckProviderImplKotlin).sync_reset()
+        ((K9.app) as K9).enhanceDeviceSync()
     }
 
     private fun isDeviceOnline(): Boolean =

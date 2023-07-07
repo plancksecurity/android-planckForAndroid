@@ -449,6 +449,10 @@ class PlanckProviderImplKotlin(
         engine.get().deliverHandshakeResult(syncResult, Vector())
     }
 
+    public fun sync_reset() {
+        engine.get().sync_reinit()
+    }
+
     override fun canEncrypt(address: String): Boolean {
 
         val msg = Message()
