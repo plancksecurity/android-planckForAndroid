@@ -2,6 +2,7 @@ package com.fsck.k9;
 
 
 import static com.fsck.k9.planck.manualsync.ImportWizardFrompEp.MANUAL_SYNC_ALLOWED_UNTIL_KEY;
+import static com.fsck.k9.ui.settings.general.GeneralSettingsFragmentKt.PREFERENCE_PLANCK_SHOW_AUTOMATIC_SYNC;
 
 import android.app.Activity;
 import android.app.Application;
@@ -173,7 +174,7 @@ public class K9 extends MultiDexApplication {
         void initializeComponent(Application application);
     }
 
-    public static Application app = null;
+    public static K9 app = null;
     public static File tempDirectory;
     public static final String LOG_TAG = "k9pEp";
 
@@ -833,6 +834,11 @@ public class K9 extends MultiDexApplication {
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
+    public void enhanceDeviceSync() {
+
+        setupFastPoller();
+    }
+
     private void clearBodyCacheIfAppUpgrade() {
         AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
         appUpdater.clearBodyCacheIfAppUpgrade();
@@ -1051,7 +1057,7 @@ public class K9 extends MultiDexApplication {
         planckSubjectProtection = getValuePlanckSubjectProtection(storage);
         planckForwardWarningEnabled = storage.getBoolean(
                 "pEpForwardWarningEnabled", BuildConfig.IS_ENTERPRISE);
-        planckSyncEnabled = storage.getBoolean("pEpEnableSync", true);
+        planckSyncEnabled = PREFERENCE_PLANCK_SHOW_AUTOMATIC_SYNC ? storage.getBoolean("pEpEnableSync", true) : true;
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", planckSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", false);

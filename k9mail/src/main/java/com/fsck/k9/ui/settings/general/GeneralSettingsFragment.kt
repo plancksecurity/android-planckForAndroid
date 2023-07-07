@@ -36,7 +36,7 @@ import security.planck.ui.support.export.ExportpEpSupportDataActivity
 import java.time.Duration
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
-private const val PREFERENCE_PLANCK_SHOW_AUTOMATIC_SYNC = false
+public const val PREFERENCE_PLANCK_SHOW_AUTOMATIC_SYNC = false
 private val SYNC_TIMEOUT = Duration.ofMinutes(1L).toMillis()
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
@@ -112,6 +112,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun allowManualSyncForMoment() {
+
+        //resetsync
+        //fast polling mode
+        K9.app.enhanceDeviceSync()
 
         K9.getSyncSharedPreferences().edit()
             .putLong(ImportWizardFrompEp.MANUAL_SYNC_ALLOWED_UNTIL_KEY, System.currentTimeMillis() + SYNC_TIMEOUT).apply()
