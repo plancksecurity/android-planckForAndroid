@@ -88,23 +88,18 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeManualSync() {
 
         findPreference<Preference>(PREFERENCE_PLANCK_MANUAL_SYNC)?.apply {
-
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 view?.let {
-
                     if (isDeviceOnline()) {
-
                         AlertDialog.Builder(it.context)
                             .setTitle(getString(R.string.sync_title))
                             .setMessage(R.string.planck_key_sync_warning)
                             .setCancelable(true)
                             .setPositiveButton(R.string.sync_action) { _, _ ->
-
                                 allowManualSyncForMoment()
                             }.setNegativeButton(R.string.cancel_action, null).show()
                     } else {
-
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
                     }
                 }
@@ -115,10 +110,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun allowManualSyncForMoment() {
 
-        K9.getSyncSharedPreferences().edit()
-            .putLong(ImportWizardFrompEp.DEVICE_SYNC_ALLOWED_UNTIL_KEY, System.currentTimeMillis() + SYNC_TIMEOUT).apply()
-        (PlanckProviderFactory.createProvider(context) as PlanckProviderImplKotlin).sync_reset()
+        K9.getSyncSharedPreferences()
+            .edit()
+            .putLong(
+                ImportWizardFrompEp.DEVICE_SYNC_ALLOWED_UNTIL_KEY,
+                System.currentTimeMillis() + SYNC_TIMEOUT
+            )
+            .apply()
+
+        CoroutineScope(PlanckDispatcher).launch {
+            doSyncReset()
+        }
         ((K9.app) as K9).enhanceDeviceSync()
+    }
+
+    private fun doSyncReset() {
+        (PlanckProviderFactory.createProvider(context) as PlanckProviderImplKotlin).syncReset()
     }
 
     private fun isDeviceOnline(): Boolean =

@@ -449,7 +449,7 @@ class PlanckProviderImplKotlin(
         engine.get().deliverHandshakeResult(syncResult, Vector())
     }
 
-    public fun sync_reset() {
+    fun syncReset() {
         engine.get().sync_reinit()
     }
 
