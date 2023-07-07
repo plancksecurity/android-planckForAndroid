@@ -214,6 +214,28 @@ Feature: Test
     Then I compare messageBody with longText
 
 
+
+  Scenario: Cucumber Send Encrypted email with long subject
+
+    When I click compose message
+    And I send 1 message to bot1 with subject firstEmail and body ThisIsTheBody
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    Then I check the privacy status is Encrypted
+    When I enter longSubject in the messageSubject field
+    And I enter AnyText in the messageBody field
+    And I click the send message button
+    And I wait for the message and click it
+    Then I compare messageSubject from json file with longSubject
+    Then I compare messageBody from json file with AnyText
+    Then I check the privacy status is Encrypted
+    When I go back to the Inbox
+    And I go to the sent folder
+    And I click the first message
+    Then I compare messageSubject from json file with longSubject
+    Then I compare messageBody from json file with AnyText
+
+
 #Summary: This Cucumber test case describes a scenario in which a user saves a draft message, goes to the drafts folder to verify it, and then discards it.
 #Description: This Cucumber test involves a series of actions related to composing, sending, and saving draft messages in an email application. The test is focused on verifying the functionality related to the privacy status and content of the messages.
 #
