@@ -2088,9 +2088,14 @@ public class K9 extends MultiDexApplication {
                 case DistributionNotifyGroupInvite:
                     Account account = component.preferences().getDefaultAccount();
                     if (account != null) {
+                        GroupMailSignal groupMailSignal = GroupMailSignal.fromSignal(myself, partner, account);
+                        MessagingController.getInstance(K9.this).joinGroup(
+                                account,
+                                groupMailSignal
+                        );
                         MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(
                                 account,
-                                GroupMailSignal.fromSignal(myself, partner, account)
+                                groupMailSignal
                         );
                     }
                     break;

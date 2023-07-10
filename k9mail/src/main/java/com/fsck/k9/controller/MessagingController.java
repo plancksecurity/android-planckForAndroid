@@ -4920,6 +4920,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.addGroupMailNotification(account, groupMailSignal);
     }
 
+    public void joinGroup(Account account, GroupMailSignal groupMailSignal) {
+        Address myAddress = new Address(account.getEmail(), account.getName());
+        foundation.pEp.jniadapter.Identity myIdentity = PlanckUtils.createIdentity(myAddress, context);
+        planckProvider.joinGroupMail(groupMailSignal.getGroupIdentity(), myIdentity);
+    }
+
     private interface MessageActor {
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
     }
