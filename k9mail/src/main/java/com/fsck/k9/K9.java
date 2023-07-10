@@ -902,12 +902,6 @@ public class K9 extends MultiDexApplication {
         }
     }
 
-    public void startSync() {
-
-        initSync();
-    }
-
-    //could be reused for EFA-151
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
         Timber.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
