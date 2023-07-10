@@ -1167,6 +1167,25 @@ class PlanckProviderImplKotlin(
         engine.get().adapter_group_create(groupIdentity, managerUpdated, membersUpdated)
     }
 
+    @WorkerThread
+    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(group)
+
+    @WorkerThread
+    override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
+        engine.get().retrieve_full_group_membership(group)?.map { it.ident }?.let { Vector(it) }
+
+    @WorkerThread
+    override fun joinGroupMail(group: Identity, member: Identity) =
+        engine.get().adapter_group_join(group, myself(member))
+
+    @WorkerThread
+    override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
+        return ResultCompat.of {
+            val updatedGroup = myself(group)!!
+            queryGroupMailMembers(updatedGroup)?.apply { add(queryGroupMailManager(updatedGroup)) } ?: Vector(listOf(queryGroupMailManager(updatedGroup)))
+        }
+    }
+
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"
