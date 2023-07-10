@@ -497,6 +497,8 @@ public class CucumberTestSteps {
             case "specialCharacters":
                 testUtils.insertTextNTimes(testUtils.specialCharacters(), 1);
                 break;
+            case "longSubject":
+                text = testUtils.longText();
             default:
                 timeRequiredForThisMethod(10);
                 testUtils.scrollUpToSubject();
@@ -621,6 +623,10 @@ public class CucumberTestSteps {
             case "rating_string":
                 assertText(stringToCompare, TestUtils.rating);
                 break;
+            case "messageSubject":
+                if (stringToCompare.contains("longSubject")) {
+                    stringToCompare = testUtils.longText();
+                }
             case "messageBody":
                 if (stringToCompare.contains("longText")) {
                     stringToCompare = testUtils.longText();
@@ -629,7 +635,7 @@ public class CucumberTestSteps {
                     BySelector selector = By.clazz("android.widget.MessageWebView");
                     for (UiObject2 object : device.findObjects(selector)) {
                         if (!object.getText().contains(stringToCompare)) {
-                            fail("Message Body is not containing: " + stringToCompare);
+                            fail("Message is not containing: " + stringToCompare);
                         }
                     }
                 } else {
@@ -1038,7 +1044,6 @@ public class CucumberTestSteps {
         }
         while (!exists(onView(withId(R.id.confirmHandshake)))) {
             waitForIdle();
-            waitUntilIdle();
         }
         onView(withId(R.id.confirmHandshake)).check(matches(isCompletelyDisplayed()));
         while (exists(onView(withId(R.id.confirmHandshake)))) {
@@ -1052,6 +1057,11 @@ public class CucumberTestSteps {
         }
         for (int i = 0; i < 100; i++) {
             waitForIdle();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         testUtils.pressBack();
     }
@@ -1589,8 +1599,15 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
-        for (int i = 0; i < 500; i ++) {
-            waitForIdle();
+        if (!status.equals("Undefined")) {
+            while (!viewIsDisplayed(R.id.securityStatusIcon)) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                waitForIdle();
+            }
         }
         switch (status) {
             case "NotEncrypted":
@@ -3107,7 +3124,6 @@ public class CucumberTestSteps {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            waitForIdle();
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
