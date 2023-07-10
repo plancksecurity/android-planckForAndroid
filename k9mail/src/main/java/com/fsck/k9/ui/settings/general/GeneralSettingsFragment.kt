@@ -121,7 +121,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         CoroutineScope(PlanckDispatcher).launch {
             doSyncReset()
         }
-        ((K9.app) as K9).initiateFastPolling()
+        ((K9.app) as K9).enableFastPolling()
     }
 
     private fun doSyncReset() {

@@ -833,11 +833,6 @@ public class K9 extends MultiDexApplication {
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
-    public void initiateFastPolling() {
-
-        setupFastPoller();
-    }
-
     private void clearBodyCacheIfAppUpgrade() {
         AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
         appUpdater.clearBodyCacheIfAppUpgrade();
