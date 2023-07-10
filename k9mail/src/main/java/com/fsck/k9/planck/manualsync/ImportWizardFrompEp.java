@@ -41,8 +41,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     public static final String IS_FORMING_GROUP = "isFormingGroup";
     public static final String SYNC_SIGNAL_KEY = "syncSignal";
-
     public static final String DEVICE_SYNC_ALLOWED_UNTIL_KEY = "deviceSyncEnabledUntil";
+
     public static final String MYSELF_KEY = "myself";
     public static final String PARTNER_KEY = "partner";
     private static final String PEP_SYNC_SIGNAL_ACTION = "PEP_SYNC_SIGNAL";
@@ -79,6 +79,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     View vFprContainer;
     @Bind(R.id.main_container)
     View vMainContainer;
+
 
     private SyncDialogReceiver receiver;
 
@@ -216,20 +217,20 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void showHandshake(String trustwords) {
+        //TODO: Show handshake
+        invalidateOptionsMenu();
+        showLangIcon();
 
-            //TODO: Show handshake
-            invalidateOptionsMenu();
-            showLangIcon();
+        description.setText(getText(R.string.keysync_wizard_handshake_message));
+        action.setText(R.string.key_import_accept);
+        action.setOnClickListener(v -> presenter.acceptHandshake());
+        vFprContainer.setVisibility(View.VISIBLE);
+        trustwordsContainer.setVisibility(View.VISIBLE);
+        tvTrustwords.setText(trustwords);
+        currentState.setVisibility(View.GONE);
+        reject.setVisibility(View.VISIBLE);
+        reject.setOnClickListener(v -> presenter.rejectHandshake());
 
-            description.setText(getText(R.string.keysync_wizard_handshake_message));
-            action.setText(R.string.key_import_accept);
-            action.setOnClickListener(v -> presenter.acceptHandshake());
-            vFprContainer.setVisibility(View.VISIBLE);
-            trustwordsContainer.setVisibility(View.VISIBLE);
-            tvTrustwords.setText(trustwords);
-            currentState.setVisibility(View.GONE);
-            reject.setVisibility(View.VISIBLE);
-            reject.setOnClickListener(v -> presenter.rejectHandshake());
     }
 
     private void showLangIcon() {
