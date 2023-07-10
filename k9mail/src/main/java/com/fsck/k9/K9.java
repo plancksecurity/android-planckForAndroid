@@ -1,7 +1,6 @@
 package com.fsck.k9;
 
 
-import static com.fsck.k9.planck.manualsync.ImportWizardFrompEp.DEVICE_SYNC_ALLOWED_UNTIL_KEY;
 import static com.fsck.k9.ui.settings.general.GeneralSettingsFragmentKt.PREFERENCE_PLANCK_SHOW_AUTOMATIC_SYNC;
 
 import android.app.Activity;
@@ -834,7 +833,7 @@ public class K9 extends MultiDexApplication {
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
-    public void enhanceDeviceSync() {
+    public void initiateFastPolling() {
 
         setupFastPoller();
     }
