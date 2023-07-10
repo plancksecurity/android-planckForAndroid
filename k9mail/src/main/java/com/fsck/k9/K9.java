@@ -2040,15 +2040,9 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
 
-                    if (K9.getSyncSharedPreferences().getLong(DEVICE_SYNC_ALLOWED_UNTIL_KEY, 0L) > System.currentTimeMillis()) {
+                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                    needsFastPoll = true;
 
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
-                        needsFastPoll = true;
-                    } else {
-
-                        //EFA-151 test should we need to cancel sync if the user initiated manual sync later on
-                        //planckProvider.cancelSync();
-                    }
                     break;
                 case SyncNotifyInitFormGroup:
                     if (allowpEpSyncNewDevices) {
