@@ -75,6 +75,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
+        initializeAccountpEpSync(account)
         initializePgpImportKey()
         initializeNotifications()
         initializePepPrivacyProtection()
@@ -239,9 +240,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         // and is not the only/latest account enabled
         //if grouped sync per Account only can be disabled on setup
         preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
-
-        //For the manual setup purpose we are gonna hide automatic sync option
-        hideKeySyncOptions()
     }
 
     private fun canSyncAccountBeModified(account: Account): Boolean {
