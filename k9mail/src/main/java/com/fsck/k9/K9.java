@@ -883,9 +883,9 @@ public class K9 extends MultiDexApplication {
     private void initSync() {
 
         planckProvider.updateSyncAccountsConfig();
-        if (!planckProvider.isSyncRunning()) {
-            planckProvider.startSync();
-        }
+        //if (!planckProvider.isSyncRunning()) {
+        //    planckProvider.startSync();
+        //}
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
