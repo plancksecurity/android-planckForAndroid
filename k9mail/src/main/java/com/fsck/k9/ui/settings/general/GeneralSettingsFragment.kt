@@ -11,12 +11,14 @@ import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
+import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.withArguments
+import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.loading
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,7 @@ import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportpEpSupportDataActivity
 
+private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
 
@@ -57,6 +60,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeGlobalpEpSync()
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
+        initializeManualSync()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -72,6 +76,40 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 }
         }
     }
+
+    private fun initializeManualSync() {
+        findPreference<Preference>(PREFERENCE_PLANCK_MANUAL_SYNC)?.apply {
+            widgetLayoutResource = R.layout.preference_loading_widget
+            setOnPreferenceClickListener {
+                view?.let {
+                    if (isDeviceOnline()) {
+                        AlertDialog.Builder(it.context)
+                            .setTitle(getString(R.string.sync_title))
+                            .setMessage(R.string.planck_key_sync_warning)
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.sync_action) { _, _ ->
+                                allowManualSync()
+                            }.setNegativeButton(R.string.cancel_action, null).show()
+                    } else {
+                        Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+                true
+            }
+        }
+    }
+
+    private fun allowManualSync() {
+
+    }
+
+    private fun disableManualSync() {
+
+    }
+
+    private fun isDeviceOnline(): Boolean =
+        kotlin.runCatching { Utility.hasConnectivity(K9.app) }.getOrDefault(false)
+
 
     private fun processNewKeysSwitchClick(preference: Preference, newValue: Any): Boolean {
         if (preference is SwitchPreferenceCompat && newValue is Boolean) {
