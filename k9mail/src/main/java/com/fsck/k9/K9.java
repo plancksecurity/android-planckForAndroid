@@ -1993,11 +1993,6 @@ public class K9 extends MultiDexApplication {
     }
 
     public void startOrResetManualSyncCountDownTimer() {
-        cancelManualSyncCountDown();
-        allowpEpSyncNewDevices = true;
-        if (!planckProvider.isSyncRunning()) {
-            planckProvider.startSync();
-        }
         if (manualSyncCountDownTimer == null) {
             manualSyncCountDownTimer = new ManualSyncCountDownTimer(this, planckProvider);
         }
