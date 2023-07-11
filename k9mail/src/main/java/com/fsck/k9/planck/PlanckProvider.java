@@ -262,6 +262,8 @@ public interface PlanckProvider {
 
     void disableSyncForAllIdentites();
 
+    void syncReset();
+
     void updateSyncAccountsConfig();
 
     void createGroup(
