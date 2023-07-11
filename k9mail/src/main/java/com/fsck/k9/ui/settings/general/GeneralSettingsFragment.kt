@@ -104,7 +104,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             .setMessage(R.string.planck_key_sync_warning)
                             .setCancelable(true)
                             .setPositiveButton(R.string.sync_action) { _, _ ->
-                                allowManualSync()
+                                k9.allowManualSync()
                             }.setNegativeButton(R.string.cancel_action, null).show()
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
@@ -117,12 +117,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun shouldDisplayManualSyncButton(): Boolean =
         preferences.availableAccounts.any { it.isPlanckSyncEnabled }
-
-    private fun allowManualSync() {
-        k9.enableFastPolling()
-        k9.startOrResetManualSyncCountDownTimer()
-        planckProvider.syncReset()
-    }
 
     private fun isDeviceOnline(): Boolean =
         kotlin.runCatching { Utility.hasConnectivity(K9.app) }.getOrDefault(false)

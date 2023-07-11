@@ -1999,6 +1999,11 @@ public class K9 extends MultiDexApplication {
         manualSyncCountDownTimer.startOrReset();
     }
 
+    public void allowManualSync() {
+        enableFastPolling();
+        startOrResetManualSyncCountDownTimer();
+    }
+
     public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
         this.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
     }
