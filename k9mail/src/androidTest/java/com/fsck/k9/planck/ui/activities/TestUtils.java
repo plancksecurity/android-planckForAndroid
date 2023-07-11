@@ -2221,7 +2221,8 @@ public class TestUtils {
     }
 
     public void assertStatus(Rating rating) {
-        while (!viewIsDisplayed(R.id.toolbar)) {
+        waitForIdle();
+        while (!viewIsDisplayed(R.id.securityStatusIcon)) {
             waitForIdle();
             try {
                 Thread.sleep(500);
@@ -2232,7 +2233,6 @@ public class TestUtils {
         int value = rating.value;
         int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
         assertsIconColor("securityStatusIcon", color);
-        viewIsDisplayed(R.id.securityStatusIcon);
         assertSecurityStatusText(rating);
     }
     public void assertMessageStatus(Rating rating, String status){
@@ -3773,6 +3773,7 @@ public class TestUtils {
                         waitForIdle();
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                         waitForIdle();
+                        readAttachedJSONFile();
                     }
             } catch (Exception ex){
                 Timber.i("Cannot find list: " + ex);
@@ -3904,12 +3905,13 @@ public class TestUtils {
     }
 
     private void compareTextWithWebViewText(String textToCompare) {
+        boolean bodyRead = false;
         UiObject2 wb;
         String[] webViewText = new String[1];
         waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
-        while (true) {
+        while (!bodyRead) {
             try {
                 waitForIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
@@ -3923,16 +3925,14 @@ public class TestUtils {
                     } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
                         webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
                     }
+                    bodyRead = true;
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
-            if (webViewText[0].contains(textToCompare)) {
-                waitForIdle();
-                return;
-            } else {
-                fail("Message Body text is different");
-            }
+        }
+        if (!webViewText[0].contains(textToCompare)) {
+            fail("Message Body text is different");
         }
     }
 
@@ -4968,6 +4968,7 @@ public class TestUtils {
                     e.printStackTrace();
                 }
                 break;
+            case "messageSubject":
             case "messageBody":
                 try {
                     while (json == null) {
