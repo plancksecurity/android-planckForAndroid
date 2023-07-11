@@ -12,6 +12,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -107,10 +108,14 @@ public class K9 extends MultiDexApplication {
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
-    private static Long THIRTY_DAYS_IN_SECONDS = 2592000L;
+    private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
+    private static final Long ONE_MINUTE_IN_MILLIS = 60000L;
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
+    private static final long MANUAL_SYNC_TIME_LIMIT = ONE_MINUTE_IN_MILLIS;
+    private static final long MANUAL_SYNC_CHECK_INTERVAL = 200;
     private AuditLogger auditLogger;
     private AppAliveMonitor appAliveMonitor;
+    private CountDownTimer manualSyncCountDownTimer;
 
     public static K9JobManager jobManager;
 
@@ -1991,6 +1996,51 @@ public class K9 extends MultiDexApplication {
         this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
+    public void startManualSyncCountDownTimer() {
+        cancelManualSyncCountDown();
+        allowpEpSyncNewDevices = true;
+        if (!planckProvider.isSyncRunning()) {
+            planckProvider.startSync();
+        }
+        manualSyncCountDownTimer = new CountDownTimer(
+                MANUAL_SYNC_TIME_LIMIT,
+                MANUAL_SYNC_CHECK_INTERVAL
+        ) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                disallowSync();
+            }
+        };
+        manualSyncCountDownTimer.start();
+    }
+
+    private void disallowSync() {
+        allowpEpSyncNewDevices = false;
+        manualSyncCountDownTimer = null;
+        needsFastPoll = false;
+    }
+
+    public void cancelSync() {
+        cancelManualSyncCountDown();
+        disallowSync();
+    }
+
+    private void cancelManualSyncCountDown() {
+        if (manualSyncCountDownTimer != null) {
+            manualSyncCountDownTimer.cancel();
+        }
+    }
+
+    private void resetManualSyncCountDownTimer() {
+        cancelManualSyncCountDown();
+        startManualSyncCountDownTimer();
+    }
+
     Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
 
         @Override
@@ -2009,12 +2059,16 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
-                    needsFastPoll = true;
+                    if (allowpEpSyncNewDevices) {
+                        cancelManualSyncCountDown();
+                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                    }
                     break;
                 case SyncNotifyInitFormGroup:
-                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
-                    needsFastPoll = true;
+                    if (allowpEpSyncNewDevices) {
+                        cancelManualSyncCountDown();
+                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
+                    }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
@@ -2026,8 +2080,8 @@ public class K9 extends MultiDexApplication {
                     needsFastPoll = false;
                     break;
                 case SyncNotifySole:
-                    needsFastPoll = false;
                     grouped = false;
+                    resetManualSyncCountDownTimer();
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:

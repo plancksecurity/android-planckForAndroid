@@ -8,11 +8,13 @@ import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
+import com.fsck.k9.Globals
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
@@ -40,6 +42,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
+
+    private val k9: K9 = Globals.getContext() as K9
+    private val planckProvider : PlanckProvider = k9.planckProvider
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -114,11 +119,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         preferences.availableAccounts.any { it.isPlanckSyncEnabled }
 
     private fun allowManualSync() {
-
-    }
-
-    private fun disableManualSync() {
-
+        k9.enableFastPolling()
+        k9.startManualSyncCountDownTimer()
+        planckProvider.syncReset()
     }
 
     private fun isDeviceOnline(): Boolean =

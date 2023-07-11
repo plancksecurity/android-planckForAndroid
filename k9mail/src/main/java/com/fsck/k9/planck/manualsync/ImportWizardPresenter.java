@@ -24,10 +24,15 @@ public class ImportWizardPresenter {
     private String trustwordsLanguage = K9.getK9CurrentLanguage();
     private String trustWords = "";
     private boolean showingShort = true;
+    private K9 k9;
 
     @Inject
-    public ImportWizardPresenter(PlanckProvider planck) {
+    public ImportWizardPresenter(
+            K9 k9,
+            PlanckProvider planck
+    ) {
         this.planck = planck;
+        this.k9 = k9;
     }
 
 
@@ -41,6 +46,7 @@ public class ImportWizardPresenter {
 
     public void cancel() {
         planck.cancelSync();
+        k9.cancelSync();
         state.finish();
         view.cancel();
         trustWords = "";
