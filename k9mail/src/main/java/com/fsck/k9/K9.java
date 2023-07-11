@@ -103,7 +103,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
+    private boolean allowpEpSyncNewDevices;
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
@@ -647,7 +647,6 @@ public class K9 extends MultiDexApplication {
                 "pEpUseTrustwords",
                 ManageableSettingKt.encodeBooleanToString(planckUseTrustwords)
         );
-        editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -1092,7 +1091,6 @@ public class K9 extends MultiDexApplication {
                         )
                 )
         );
-        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !((K9) app).isRunningOnWorkProfile());
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1595,14 +1593,6 @@ public class K9 extends MultiDexApplication {
         planckUseTrustwords.setValue(useTrustwords);
     }
 
-    public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
-        K9.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
-    }
-
-    public static boolean isAllowpEpSyncNewDevices() {
-        return allowpEpSyncNewDevices;
-    }
-
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {
         K9.enableEchoProtocol = enableEchoProtocol;
     }
@@ -2019,20 +2009,12 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    if (allowpEpSyncNewDevices) {
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
-                        needsFastPoll = true;
-                    } else {
-                        planckProvider.cancelSync();
-                    }
+                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                    needsFastPoll = true;
                     break;
                 case SyncNotifyInitFormGroup:
-                    if (allowpEpSyncNewDevices) {
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
-                        needsFastPoll = true;
-                    } else {
-                        planckProvider.cancelSync();
-                    }
+                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
+                    needsFastPoll = true;
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
