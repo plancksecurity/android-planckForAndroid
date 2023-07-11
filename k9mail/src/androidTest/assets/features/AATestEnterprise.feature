@@ -676,7 +676,7 @@ Feature: Test
 
     And I click the last message received
     And I check that the Calendar is correct and body text is ThisIsTheBody
-
+    And I go back to the Inbox
 
 
     #Summary: This Cucumber test scenario involves a user composing a message and adding unreliable recipients. The test verifies that insecurity warnings appear when adding these recipients, and the message is discarded as a result.
