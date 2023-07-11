@@ -9,6 +9,7 @@ import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
@@ -35,6 +36,7 @@ import security.planck.ui.support.export.ExportpEpSupportDataActivity
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
+    private val preferences: Preferences by inject()
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
@@ -78,7 +80,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeManualSync() {
-        findPreference<Preference>(PREFERENCE_PLANCK_MANUAL_SYNC)?.apply {
+        val preference = findPreference<Preference>(PREFERENCE_PLANCK_MANUAL_SYNC)
+        if (!shouldDisplayManualSyncButton()) {
+            preference?.isVisible = false
+        } else {
+            configureManualSync(preference)
+        }
+    }
+
+    private fun configureManualSync(preference: Preference?) {
+        preference?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 view?.let {
@@ -98,6 +109,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             }
         }
     }
+
+    private fun shouldDisplayManualSyncButton(): Boolean =
+        preferences.availableAccounts.any { it.isPlanckSyncEnabled }
 
     private fun allowManualSync() {
 
