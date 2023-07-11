@@ -12,7 +12,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,6 +39,7 @@ import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
+import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
 import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
@@ -84,7 +84,6 @@ import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
-import security.planck.notification.GroupMailInvite;
 import security.planck.notification.GroupMailSignal;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.ui.passphrase.PassphraseActivity;
@@ -109,13 +108,10 @@ public class K9 extends MultiDexApplication {
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
-    private static final Long ONE_MINUTE_IN_MILLIS = 60000L;
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
-    private static final long MANUAL_SYNC_TIME_LIMIT = ONE_MINUTE_IN_MILLIS;
-    private static final long MANUAL_SYNC_CHECK_INTERVAL = 200;
     private AuditLogger auditLogger;
     private AppAliveMonitor appAliveMonitor;
-    private CountDownTimer manualSyncCountDownTimer;
+    private ManualSyncCountDownTimer manualSyncCountDownTimer;
 
     public static K9JobManager jobManager;
 
@@ -1996,30 +1992,23 @@ public class K9 extends MultiDexApplication {
         this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
-    public void startManualSyncCountDownTimer() {
+    public void startOrResetManualSyncCountDownTimer() {
         cancelManualSyncCountDown();
         allowpEpSyncNewDevices = true;
         if (!planckProvider.isSyncRunning()) {
             planckProvider.startSync();
         }
-        manualSyncCountDownTimer = new CountDownTimer(
-                MANUAL_SYNC_TIME_LIMIT,
-                MANUAL_SYNC_CHECK_INTERVAL
-        ) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                disallowSync();
-            }
-        };
-        manualSyncCountDownTimer.start();
+        if (manualSyncCountDownTimer == null) {
+            manualSyncCountDownTimer = new ManualSyncCountDownTimer(this, planckProvider);
+        }
+        manualSyncCountDownTimer.startOrReset();
     }
 
-    private void disallowSync() {
+    public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
+        this.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
+    }
+
+    public void disallowSync() {
         allowpEpSyncNewDevices = false;
         manualSyncCountDownTimer = null;
         needsFastPoll = false;
@@ -2034,11 +2023,6 @@ public class K9 extends MultiDexApplication {
         if (manualSyncCountDownTimer != null) {
             manualSyncCountDownTimer.cancel();
         }
-    }
-
-    private void resetManualSyncCountDownTimer() {
-        cancelManualSyncCountDown();
-        startManualSyncCountDownTimer();
     }
 
     Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
@@ -2081,7 +2065,7 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifySole:
                     grouped = false;
-                    resetManualSyncCountDownTimer();
+                    startOrResetManualSyncCountDownTimer();
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:

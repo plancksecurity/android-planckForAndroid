@@ -120,7 +120,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun allowManualSync() {
         k9.enableFastPolling()
-        k9.startManualSyncCountDownTimer()
+        k9.startOrResetManualSyncCountDownTimer()
         planckProvider.syncReset()
     }
 
