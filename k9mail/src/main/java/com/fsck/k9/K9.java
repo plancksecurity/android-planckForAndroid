@@ -83,6 +83,8 @@ import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
+import security.planck.notification.GroupMailInvite;
+import security.planck.notification.GroupMailSignal;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.passphrase.PassphraseRequirementType;
@@ -151,6 +153,7 @@ public class K9 extends MultiDexApplication {
     public static final int DEFAULT_CONTACT_NAME_COLOR = 0xff00008f;
 
     public static String password = null;
+    private static long PASSPHRASE_DELAY = 4000;
 
 
     /**
@@ -2056,7 +2059,16 @@ public class K9 extends MultiDexApplication {
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
-                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
+                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
+                    break;
+                case DistributionNotifyGroupInvite:
+                    Account account = component.preferences().getDefaultAccount();
+                    if (account != null) {
+                        MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(
+                                account,
+                                GroupMailSignal.fromSignal(myself, partner, account)
+                        );
+                    }
                     break;
             }
 

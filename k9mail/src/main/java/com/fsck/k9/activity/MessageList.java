@@ -76,6 +76,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import security.planck.group.GroupTestScreen;
 import security.planck.mdm.RestrictionsListener;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
@@ -1091,6 +1092,10 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
                 onBackPressed();
                 return true;
             }
+            case R.id.group_test: {
+                GroupTestScreen.start(this);
+                return true;
+            }
             case R.id.compose: {
                 MessageActions.actionCompose(this, mAccount);
                 return true;
@@ -1265,6 +1270,7 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
         menu.findItem(R.id.tutorial).setVisible(
                 !BuildConfig.IS_ENTERPRISE
         );
+        menu.findItem(R.id.group_test).setVisible(BuildConfig.DEBUG);
         return true;
     }
 

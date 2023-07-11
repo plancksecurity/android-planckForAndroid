@@ -124,6 +124,8 @@ import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.audit.AuditLogger;
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.echo.EchoMessageReceivedListener;
+import security.planck.notification.GroupMailInvite;
+import security.planck.notification.GroupMailSignal;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -4421,7 +4423,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void deleteAccount(Account account) {
-        notificationController.clearNewMailNotifications(account);
+        notificationController.clearGroupedNotifications(account);
         memorizingMessagingListener.removeAccount(account);
         Address address = new Address(account.getEmail());
         planckProvider.setIdentityFlag(PlanckUtils.createIdentity(address, context), false);
@@ -4683,11 +4685,23 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void cancelNotificationsForAccount(Account account) {
+        notificationController.clearGroupedNotifications(account);
+    }
+
+    public void cancelNewMailNotifications(Account account) {
         notificationController.clearNewMailNotifications(account);
+    }
+
+    public void cancelGroupMailNotifications(Account account) {
+        notificationController.clearGroupMailNotifications(account);
     }
 
     public void cancelNotificationForMessage(Account account, MessageReference messageReference) {
         notificationController.removeNewMailNotification(account, messageReference);
+    }
+
+    public void cancelNotificationForGroupEvent(Account account, GroupMailInvite groupMailInvite) {
+        notificationController.removeGroupMailNotification(account, groupMailInvite);
     }
 
     public void clearCertificateErrorNotifications(Account account, CheckDirection direction) {
@@ -4900,6 +4914,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     public PlanckProvider getPlanckProvider() {
         return planckProvider;
+    }
+
+    public void notifyPlanckGroupInvite(Account account, GroupMailSignal groupMailSignal) {
+        notificationController.addGroupMailNotification(account, groupMailSignal);
     }
 
     private interface MessageActor {

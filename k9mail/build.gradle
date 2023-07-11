@@ -131,7 +131,7 @@ dependencies {
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.mockito:mockito-inline:${versions.mockito}"
-    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "io.mockk:mockk:${versions.mockk}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
     testImplementation "androidx.arch.core:core-testing:2.2.0"
@@ -157,7 +157,6 @@ dependencies {
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     androidTestImplementation "org.mockito:mockito-android:${versions.mockito}"
-    androidTestImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
 
     // Cucumber
 /*    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {

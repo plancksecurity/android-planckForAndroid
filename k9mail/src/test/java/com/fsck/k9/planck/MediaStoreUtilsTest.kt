@@ -8,7 +8,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
-import com.nhaarman.mockito_kotlin.*
+import org.mockito.kotlin.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import org.apache.commons.io.IOUtils

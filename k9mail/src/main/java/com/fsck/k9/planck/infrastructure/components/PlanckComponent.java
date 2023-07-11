@@ -26,6 +26,7 @@ import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
+import security.planck.group.GroupTestScreen;
 import security.planck.ui.about.AboutActivity;
 import security.planck.ui.calendar.CalendarInviteLayout;
 import security.planck.ui.intro.IntroFirstFragment;
@@ -101,4 +102,6 @@ public interface PlanckComponent extends ActivityComponent {
     void inject(MdmSettingsFeedbackActivity activity);
 
     void inject(AccountSetupSelectAuthFragment fragment);
+
+    void inject(GroupTestScreen activity);
 }
