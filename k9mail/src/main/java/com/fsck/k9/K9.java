@@ -2002,7 +2002,7 @@ public class K9 extends MultiDexApplication {
 
     public void allowManualSync() {
         allowpEpSyncNewDevices.set(true);
-        enableFastPolling();
+        needsFastPoll.set(true);
         startOrResetManualSyncCountDownTimer();
     }
 
