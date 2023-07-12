@@ -43,6 +43,26 @@ class GroupTestScreen: PlanckActivity() {
         binding.createEmptyGroupButton.setOnClickListener {
             createGroup()
         }
+        binding.queryManagerAndMembersButton.setOnClickListener {
+            queryManagerAndMembersOfGivenGroup()
+        }
+    }
+
+    private fun queryManagerAndMembersOfGivenGroup() {
+        uiScope.launch {
+            binding.queryManagerAndMembersFeedback.text = ""
+            val groupAddress = binding.groupQueryAddress.text.toString()
+            val groupUserName = binding.groupQueryUserName.text?.toString()
+            withContext(PlanckDispatcher) {
+                val groupIdentity = PlanckUtils.createIdentity(Address(groupAddress, groupUserName), this@GroupTestScreen)
+                planckProvider.queryGroupMailManagerAndMembers(groupIdentity)
+            }.onFailure {
+                Timber.e(it)
+                binding.queryManagerAndMembersFeedback.text = it.message
+            }.onSuccess {
+                binding.queryManagerAndMembersFeedback.text = it?.joinToString("\n").toString()
+            }
+        }
     }
 
     private fun createGroup() {
