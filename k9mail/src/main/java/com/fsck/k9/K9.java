@@ -1993,7 +1993,7 @@ public class K9 extends MultiDexApplication {
         this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
-    public void startOrResetManualSyncCountDownTimer() {
+    private void startOrResetManualSyncCountDownTimer() {
         if (manualSyncCountDownTimer == null) {
             manualSyncCountDownTimer = new ManualSyncCountDownTimer(this, planckProvider);
         }
