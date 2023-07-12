@@ -4916,7 +4916,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return planckProvider;
     }
 
-    public void notifyPlanckGroupInvite(Account account, GroupMailSignal groupMailSignal) {
+    public void notifyPlanckGroupInviteAndJoinGroup(
+            Account account,
+            GroupMailSignal groupMailSignal
+    ) {
+        joinGroup(account, groupMailSignal);
         notificationController.addGroupMailNotification(account, groupMailSignal);
     }
 
