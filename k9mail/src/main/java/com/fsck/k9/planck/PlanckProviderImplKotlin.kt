@@ -219,6 +219,11 @@ class PlanckProviderImplKotlin(
     override fun disableSyncForAllIdentites() {
         engine.get().disable_all_sync_channels()
     }
+
+    override fun syncReset() = runBlocking(PlanckDispatcher) {
+        engine.get().sync_reinit()
+    }
+
     @WorkerThread
     override fun updateSyncAccountsConfig() = runBlocking (PlanckDispatcher) {
         disableSyncForAllIdentites()
@@ -1150,6 +1155,16 @@ class PlanckProviderImplKotlin(
 
     fun Message.isEncrypted(): Boolean {
         return encFormat != Message.EncFormat.None
+    }
+
+    override fun createGroup(
+        groupIdentity: Identity,
+        manager: Identity,
+        members: Vector<Identity>,
+    ) {
+        val managerUpdated = myself(manager)
+        val membersUpdated = Vector(members.map { updateIdentity(it) })
+        engine.get().adapter_group_create(groupIdentity, managerUpdated, membersUpdated)
     }
 
     companion object {

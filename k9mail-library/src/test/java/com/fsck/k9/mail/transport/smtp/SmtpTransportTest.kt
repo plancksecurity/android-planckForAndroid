@@ -9,16 +9,16 @@ import com.fsck.k9.mail.oauth.OAuth2TokenProvider
 import com.fsck.k9.mail.store.StoreConfig
 import com.fsck.k9.mail.transport.mockServer.MockSmtpServer
 import com.google.common.truth.Truth.assertThat
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.doThrow
-import com.nhaarman.mockito_kotlin.inOrder
-import com.nhaarman.mockito_kotlin.mock
 import org.junit.Assert.fail
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.mock
 import java.io.IOException
 
 private const val USERNAME = "user"

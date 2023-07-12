@@ -5,13 +5,14 @@ import androidx.annotation.Nullable;
 
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.notification.NotificationReference;
 
 import java.util.StringTokenizer;
 
 import static com.fsck.k9.helper.Preconditions.checkNotNull;
 
 
-public class MessageReference {
+public class MessageReference implements NotificationReference {
     private static final char IDENTITY_VERSION_1 = '!';
     private static final String IDENTITY_SEPARATOR = ":";
 

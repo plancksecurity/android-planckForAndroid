@@ -192,7 +192,10 @@
     <string name="key_import_failure">Error occurred. No key imported.</string>
     <string name="key_import_success">Private key successfully imported.</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
+    <string name="sync_title">planck sync wizard</string>
+    <string name="sync_action">Sync</string>
     <string name="reset">Reset</string>
+    <string name="offline">Device is offline. Please fix internet connection and try again.</string>
     <string name="reset_all">Yes, Reset</string>
     <string name="key_reset_for_identity_context_title">Reset all planck data for this communication partner:</string>
     <string name="key_reset_identity_feedback">All planck data for this communication partner has been reset.</string>
@@ -201,9 +204,11 @@
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
     <string name="pep_key_reset_all_own_ids_summary">Reset own keys</string>
+    <string name="planck_key_sync_device_summary">Initiate sync devices</string>
     <string name="key_reset_all_own_identitities_feedback">All planck accounts have been reset.</string>
     <string name="pep_key_reset_all_own_ids_warning">Resetting your key pair generates new private and public keys for you that planck will immediately start using. Are you sure?</string>
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
+    <string name="planck_key_sync_warning">This action will sync your account with other devices. \n\nAre you sure you want to sync?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
     <string name="ellipsized_text" translatable="false">%s  …</string>
 
@@ -386,5 +391,21 @@
     <string name="compose_single_recipient_handshake_banner">Tap here to establish trust with this sender.</string>
     <string name="rooted_device_error">Unsupported Operating System</string>
     <string name="action_user_manual">User manual</string>
+    <string name="notification_channel_messages_title">Messages</string>
+    <string name="notification_channel_messages_description">Notifications related to messages</string>
+    <string name="notification_channel_miscellaneous_title">Miscellaneous</string>
+    <string name="notification_channel_miscellaneous_description">Miscellaneous notifications like errors etc.</string>
+    <!-- Title of an error notification that is displayed when creating a notification for a new message has failed -->
+    <string name="notification_notify_error_title">Notification error</string>
+    <!-- Body of an error notification that is displayed when creating a notification for a new message has failed -->
+    <string name="notification_notify_error_text">An error has occurred while trying to create a system notification for a new message. The reason is most likely a missing notification sound.\n\nTap to open notification settings.</string>
+    <string name="notification_certificate_error_public">Certificate error</string>
+    <plurals name="notification_new_group_mail_events_title">
+        <item quantity="one">%d new group mail event</item>
+        <item quantity="other">%d group mail events</item>
+    </plurals>
+    <string name="notification_additional_group_mail_events">+ %1$d more on %2$s</string>
+    <string name="group_mail_notification_subject">Group mail notification from %s</string>
+    <string name="group_mail_notification_summary">You were added to mail group %1$s by %2$s</string>
 
 </resources>

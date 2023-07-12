@@ -15,7 +15,6 @@ const val RESTRICTION_PLANCK_USE_TRUSTWORDS = "planck_use_trustwords"
 const val RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING = "unsecure_delivery_warning"
 const val RESTRICTION_PLANCK_SYNC_FOLDER = "planck_sync_folder"
 const val RESTRICTION_PLANCK_DEBUG_LOG = "debug_logging"
-const val RESTRICTION_ALLOW_PLANCK_SYNC_NEW_DEVICES = "allow_planck_sync_new_devices"
 const val RESTRICTION_ENABLE_ECHO_PROTOCOL = "planck_enable_echo_protocol"
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION = "audit_log_data_time_retention"
 

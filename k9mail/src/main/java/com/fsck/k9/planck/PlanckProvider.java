@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import foundation.pEp.jniadapter.Group;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.adapter_group_create_Return;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
@@ -260,7 +262,15 @@ public interface PlanckProvider {
 
     void disableSyncForAllIdentites();
 
+    void syncReset();
+
     void updateSyncAccountsConfig();
+
+    void createGroup(
+            Identity groupIdentity,
+            Identity manager,
+            Vector<Identity> members
+    );
 
     class KeyDetail {
         private final Address address;

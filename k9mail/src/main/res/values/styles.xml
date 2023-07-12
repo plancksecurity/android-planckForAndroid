@@ -182,6 +182,14 @@
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
+    <style name="WelcomeWizardButton" parent="AlertDialogStyle.Light">
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:background">@color/default_button_color</item>
+    </style>
+
     <style name="SyncDisableDialog.Light.Base" parent="AlertDialogStyle.Light">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>

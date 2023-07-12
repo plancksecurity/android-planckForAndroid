@@ -14,6 +14,8 @@ import javax.inject.Named
 
 class NotificationChannelManager @Inject constructor(@Named("AppContext") private val context: Context, private val preferences: Preferences) {
 
+    private val notificationResourceProvider = PlanckNotificationResourceProvider(context)
+
     enum class ChannelType {
         MESSAGES, MISCELLANEOUS
     }
@@ -72,9 +74,8 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
     }
 
     private fun getChannelMessages(account: Account): NotificationChannel {
-        // TODO: Use String resource file to support language translations
-        val channelName = "Messages"
-        val channelDescription = "Notifications related to messages"
+        val channelName = notificationResourceProvider.messagesChannelName
+        val channelDescription = notificationResourceProvider.messagesChannelDescription
         val channelId = getChannelIdFor(account, ChannelType.MESSAGES)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channelGroupId = account.uuid
@@ -87,9 +88,8 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
     }
 
     private fun getChannelMiscellaneous(account: Account): NotificationChannel {
-        // TODO: Use String resource file to support language translations
-        val channelName = "Miscellaneous"
-        val channelDescription = "Miscellaneous notifications like errors etc."
+        val channelName = notificationResourceProvider.miscellaneousChannelName
+        val channelDescription = notificationResourceProvider.miscellaneousChannelDescription
         val channelId = getChannelIdFor(account, ChannelType.MISCELLANEOUS)
         val importance = NotificationManager.IMPORTANCE_LOW
         val channelGroupId = account.uuid

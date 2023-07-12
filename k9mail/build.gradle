@@ -131,7 +131,7 @@ dependencies {
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.mockito:mockito-inline:${versions.mockito}"
-    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "io.mockk:mockk:${versions.mockk}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
     testImplementation "androidx.arch.core:core-testing:2.2.0"
@@ -157,7 +157,6 @@ dependencies {
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     androidTestImplementation "org.mockito:mockito-android:${versions.mockito}"
-    androidTestImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
 
     // Cucumber
 /*    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
@@ -393,15 +392,15 @@ android {
 
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
-    if (variant.name == "demoPlayStoreRelease") {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.planck.enterprise\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.planck.enterprise"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.planck.enterprise"
-    } else {
-        variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
-        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId}"
-        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "${variant.applicationId}"
+    def oauthAppId = ""
+    if (variant.applicationId.contains("security.planck") && variant.applicationId.contains("enterprise.debug")) {
+        oauthAppId = "security.planck.enterprise.debug"
+    } else if (variant.applicationId.contains("security.planck") && variant.applicationId.contains("enterprise")) {
+        oauthAppId = "security.planck.enterprise"
     }
+    variant.buildConfigField "String", "OAUTH_APP_ID", "\"$oauthAppId\""
+    mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = oauthAppId
+    mergedFlavor.manifestPlaceholders["oAuthAppId"] = oauthAppId
     //noinspection GroovyFallthrough
     switch (variant.name) {
         case "enterprisePlayStoreRelease":

@@ -4,3 +4,4 @@ private const val DEFAULT_NEW_LINE = "\n"
 
 @JvmField
 val NEW_LINE = System.lineSeparator() ?: DEFAULT_NEW_LINE
+const val FIRST_POSITION = 0
