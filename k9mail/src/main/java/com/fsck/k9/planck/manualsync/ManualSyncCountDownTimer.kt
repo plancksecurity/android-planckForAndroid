@@ -17,7 +17,6 @@ constructor(
 ) {
     fun startOrReset() {
         cancel()
-        k9.setAllowpEpSyncNewDevices(true)
         when (planckProvider.isSyncRunning) {
             true -> planckProvider.syncReset()
             else -> planckProvider.startSync()
