@@ -76,6 +76,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Query manager and members of given group"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Group address"
+                android:labelFor="@+id/group_query_address"/>
+            <EditText
+                android:id="@+id/group_query_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="example@example.com"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Group user name"
+                android:labelFor="@+id/group_query_user_name"/>
+            <EditText
+                android:id="@+id/group_query_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="Alice Group"/>
+            <Button
+                android:id="@+id/query_manager_and_members_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Query manager and members of this group"/>
+            <TextView
+                android:id="@+id/query_manager_and_members_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true" />
 
         </LinearLayout>
 
