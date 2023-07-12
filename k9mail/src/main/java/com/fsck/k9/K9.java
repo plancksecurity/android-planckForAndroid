@@ -2042,12 +2042,14 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInitAddOtherDevice:
                     if (allowpEpSyncNewDevices) {
                         cancelManualSyncCountDown();
+                        allowpEpSyncNewDevices = false;
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                     }
                     break;
                 case SyncNotifyInitFormGroup:
                     if (allowpEpSyncNewDevices) {
                         cancelManualSyncCountDown();
+                        allowpEpSyncNewDevices = false;
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                     }
                     break;
@@ -2062,13 +2064,17 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifySole:
                     grouped = false;
-                    startOrResetManualSyncCountDownTimer();
+                    if (allowpEpSyncNewDevices) {
+                        startOrResetManualSyncCountDownTimer();
+                    }
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:
-                    needsFastPoll = false;
                     grouped = true;
                     planckSyncEnabled = true;
+                    if (allowpEpSyncNewDevices) {
+                        startOrResetManualSyncCountDownTimer();
+                    }
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncPassphraseRequired:
