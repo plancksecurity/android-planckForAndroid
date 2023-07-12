@@ -85,7 +85,6 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
             <p><b>Server search limit:</b> ${account.remoteSearchNumResults}</p>
             <p><b>Store messages securely:</b> ${account.isUntrustedSever}</p>
             <p><b>PlanckProvider Sync this account:</b> ${account.isPlanckSyncEnabled}</p>
-            <p><b>Allow to add new devices to sync group:</b> ${K9.isAllowpEpSyncNewDevices()}</p>
             <br/>
             <p><b>Mail settings:</b></p>
                 <p><b>&emsp;Email address:</b> ${account.email}</p>

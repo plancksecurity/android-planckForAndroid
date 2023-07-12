@@ -219,6 +219,11 @@ class PlanckProviderImplKotlin(
     override fun disableSyncForAllIdentites() {
         engine.get().disable_all_sync_channels()
     }
+
+    override fun syncReset() = runBlocking(PlanckDispatcher) {
+        engine.get().sync_reinit()
+    }
+
     @WorkerThread
     override fun updateSyncAccountsConfig() = runBlocking (PlanckDispatcher) {
         disableSyncForAllIdentites()

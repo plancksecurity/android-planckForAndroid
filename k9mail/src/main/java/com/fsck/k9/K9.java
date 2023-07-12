@@ -39,6 +39,7 @@ import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
+import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
 import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
@@ -71,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
@@ -83,7 +85,6 @@ import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
-import security.planck.notification.GroupMailInvite;
 import security.planck.notification.GroupMailSignal;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.ui.passphrase.PassphraseActivity;
@@ -94,7 +95,7 @@ import timber.log.Timber.DebugTree;
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
-    private boolean needsFastPoll = false;
+    private AtomicBoolean needsFastPoll = new AtomicBoolean(false);
     private boolean isPollingMessages;
     private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
@@ -103,14 +104,15 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
+    private AtomicBoolean allowpEpSyncNewDevices = new AtomicBoolean(false);
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
-    private static Long THIRTY_DAYS_IN_SECONDS = 2592000L;
+    private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
     private AuditLogger auditLogger;
     private AppAliveMonitor appAliveMonitor;
+    private ManualSyncCountDownTimer manualSyncCountDownTimer;
 
     public static K9JobManager jobManager;
 
@@ -141,11 +143,11 @@ public class K9 extends MultiDexApplication {
     }
 
     public void enableFastPolling() {
-        needsFastPoll = true;
+        needsFastPoll.set(true);
     }
 
     public void disableFastPolling() {
-        needsFastPoll = false;
+        needsFastPoll.set(false);
     }
 
 
@@ -647,7 +649,6 @@ public class K9 extends MultiDexApplication {
                 "pEpUseTrustwords",
                 ManageableSettingKt.encodeBooleanToString(planckUseTrustwords)
         );
-        editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -883,9 +884,9 @@ public class K9 extends MultiDexApplication {
     private void initSync() {
 
         planckProvider.updateSyncAccountsConfig();
-        if (!planckProvider.isSyncRunning()) {
-            planckProvider.startSync();
-        }
+        //if (!planckProvider.isSyncRunning()) {
+        //    planckProvider.startSync();
+        //}
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
@@ -1092,7 +1093,6 @@ public class K9 extends MultiDexApplication {
                         )
                 )
         );
-        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !((K9) app).isRunningOnWorkProfile());
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1595,14 +1595,6 @@ public class K9 extends MultiDexApplication {
         planckUseTrustwords.setValue(useTrustwords);
     }
 
-    public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
-        K9.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
-    }
-
-    public static boolean isAllowpEpSyncNewDevices() {
-        return allowpEpSyncNewDevices;
-    }
-
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {
         K9.enableEchoProtocol = enableEchoProtocol;
     }
@@ -1952,7 +1944,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void polling() {
-        if (needsFastPoll && !isPollingMessages) {
+        if (needsFastPoll.get() && !isPollingMessages) {
             Log.d("pEpDecrypt", "Entering looper");
             isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
@@ -1990,7 +1982,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public boolean needsFastPoll() {
-        return needsFastPoll;
+        return needsFastPoll.get();
     }
 
     public boolean isShowingKeyimportDialog() {
@@ -1999,6 +1991,36 @@ public class K9 extends MultiDexApplication {
 
     public void setShowingKeyimportDialog(boolean showingKeyimportDialog) {
         this.showingKeyimportDialog = showingKeyimportDialog;
+    }
+
+    private void startOrResetManualSyncCountDownTimer() {
+        if (manualSyncCountDownTimer == null) {
+            manualSyncCountDownTimer = new ManualSyncCountDownTimer(this, planckProvider);
+        }
+        manualSyncCountDownTimer.startOrReset();
+    }
+
+    public void allowManualSync() {
+        allowpEpSyncNewDevices.set(true);
+        needsFastPoll.set(true);
+        startOrResetManualSyncCountDownTimer();
+    }
+
+    public void disallowSync() {
+        allowpEpSyncNewDevices.set(false);
+        manualSyncCountDownTimer = null;
+        needsFastPoll.set(false);
+    }
+
+    public void cancelSync() {
+        cancelManualSyncCountDown();
+        disallowSync();
+    }
+
+    private void cancelManualSyncCountDown() {
+        if (manualSyncCountDownTimer != null) {
+            manualSyncCountDownTimer.cancel();
+        }
     }
 
     Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
@@ -2019,43 +2041,45 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    if (allowpEpSyncNewDevices) {
+                    if (allowpEpSyncNewDevices.get()) {
+                        cancelManualSyncCountDown();
+                        allowpEpSyncNewDevices.set(false);
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
-                        needsFastPoll = true;
-                    } else {
-                        planckProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyInitFormGroup:
-                    if (allowpEpSyncNewDevices) {
+                    if (allowpEpSyncNewDevices.get()) {
+                        cancelManualSyncCountDown();
+                        allowpEpSyncNewDevices.set(false);
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
-                        needsFastPoll = true;
-                    } else {
-                        planckProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
-                    needsFastPoll = false;
+                    needsFastPoll.set(false);
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                    needsFastPoll = false;
+                    needsFastPoll.set(false);
                     break;
                 case SyncNotifySole:
-                    needsFastPoll = false;
                     grouped = false;
+                    if (allowpEpSyncNewDevices.get()) {
+                        startOrResetManualSyncCountDownTimer();
+                    }
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:
-                    needsFastPoll = false;
                     grouped = true;
                     planckSyncEnabled = true;
+                    if (allowpEpSyncNewDevices.get()) {
+                        startOrResetManualSyncCountDownTimer();
+                    }
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncPassphraseRequired:
-                    needsFastPoll = false;
+                    needsFastPoll.set(false);
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
