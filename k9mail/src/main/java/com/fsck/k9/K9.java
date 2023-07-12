@@ -72,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
@@ -94,7 +95,7 @@ import timber.log.Timber.DebugTree;
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
-    private boolean needsFastPoll = false;
+    private AtomicBoolean needsFastPoll = new AtomicBoolean(false);
     private boolean isPollingMessages;
     private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
@@ -103,7 +104,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private boolean allowpEpSyncNewDevices;
+    private AtomicBoolean allowpEpSyncNewDevices = new AtomicBoolean(false);
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
@@ -142,11 +143,11 @@ public class K9 extends MultiDexApplication {
     }
 
     public void enableFastPolling() {
-        needsFastPoll = true;
+        needsFastPoll.set(true);
     }
 
     public void disableFastPolling() {
-        needsFastPoll = false;
+        needsFastPoll.set(false);
     }
 
 
@@ -1943,7 +1944,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void polling() {
-        if (needsFastPoll && !isPollingMessages) {
+        if (needsFastPoll.get() && !isPollingMessages) {
             Log.d("pEpDecrypt", "Entering looper");
             isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
@@ -1981,7 +1982,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public boolean needsFastPoll() {
-        return needsFastPoll;
+        return needsFastPoll.get();
     }
 
     public boolean isShowingKeyimportDialog() {
@@ -2000,15 +2001,15 @@ public class K9 extends MultiDexApplication {
     }
 
     public void allowManualSync() {
-        this.allowpEpSyncNewDevices = true;
+        allowpEpSyncNewDevices.set(true);
         enableFastPolling();
         startOrResetManualSyncCountDownTimer();
     }
 
     public void disallowSync() {
-        allowpEpSyncNewDevices = false;
+        allowpEpSyncNewDevices.set(false);
         manualSyncCountDownTimer = null;
-        needsFastPoll = false;
+        needsFastPoll.set(false);
     }
 
     public void cancelSync() {
@@ -2040,31 +2041,31 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    if (allowpEpSyncNewDevices) {
+                    if (allowpEpSyncNewDevices.get()) {
                         cancelManualSyncCountDown();
-                        allowpEpSyncNewDevices = false;
+                        allowpEpSyncNewDevices.set(false);
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                     }
                     break;
                 case SyncNotifyInitFormGroup:
-                    if (allowpEpSyncNewDevices) {
+                    if (allowpEpSyncNewDevices.get()) {
                         cancelManualSyncCountDown();
-                        allowpEpSyncNewDevices = false;
+                        allowpEpSyncNewDevices.set(false);
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                     }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
-                    needsFastPoll = false;
+                    needsFastPoll.set(false);
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                    needsFastPoll = false;
+                    needsFastPoll.set(false);
                     break;
                 case SyncNotifySole:
                     grouped = false;
-                    if (allowpEpSyncNewDevices) {
+                    if (allowpEpSyncNewDevices.get()) {
                         startOrResetManualSyncCountDownTimer();
                     }
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
@@ -2072,13 +2073,13 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInGroup:
                     grouped = true;
                     planckSyncEnabled = true;
-                    if (allowpEpSyncNewDevices) {
+                    if (allowpEpSyncNewDevices.get()) {
                         startOrResetManualSyncCountDownTimer();
                     }
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncPassphraseRequired:
-                    needsFastPoll = false;
+                    needsFastPoll.set(false);
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
