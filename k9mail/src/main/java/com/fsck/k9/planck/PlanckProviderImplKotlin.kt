@@ -1176,7 +1176,7 @@ class PlanckProviderImplKotlin(
 
     @WorkerThread
     override fun joinGroupMail(group: Identity, member: Identity) =
-        engine.get().adapter_group_join(group, myself(member))
+        engine.get().group_join(group, myself(member))
 
     @WorkerThread
     override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
