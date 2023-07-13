@@ -1164,7 +1164,12 @@ class PlanckProviderImplKotlin(
     ) {
         val managerUpdated = myself(manager)
         val membersUpdated = Vector(members.map { updateIdentity(it) })
-        engine.get().adapter_group_create(groupIdentity, managerUpdated, membersUpdated)
+        val group: Group = Group().apply {
+            this.group_identity = groupIdentity
+            this.manager = managerUpdated
+            this.members = Vector()
+        }
+        engine.get().group_create(groupIdentity, managerUpdated, membersUpdated, group)
     }
 
     @WorkerThread
