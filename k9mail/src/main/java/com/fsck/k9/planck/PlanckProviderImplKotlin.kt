@@ -1173,11 +1173,11 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(group)
+    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(myself(group))
 
     @WorkerThread
     override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
-        engine.get().retrieve_full_group_membership(group)?.map { it.ident }?.let { Vector(it) }
+        engine.get().retrieve_full_group_membership(myself(group))?.map { it.ident }?.let { Vector(it) }
 
     @WorkerThread
     override fun joinGroupMail(group: Identity, member: Identity) =
@@ -1186,9 +1186,24 @@ class PlanckProviderImplKotlin(
     @WorkerThread
     override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
         return ResultCompat.of {
-            val updatedGroup = myself(group)!!
-            queryGroupMailMembers(updatedGroup)?.apply { add(queryGroupMailManager(updatedGroup)) } ?: Vector(listOf(queryGroupMailManager(updatedGroup)))
+            queryGroupMailMembers(group)?.apply { add(queryGroupMailManager(group)) } ?: Vector(listOf(queryGroupMailManager(group)))
         }
+    }
+
+    override fun dissolveGroup(group: Identity, manager: Identity) {
+        engine.get().group_dissolve(myself(group), manager)
+    }
+
+    override fun inviteMemberToGroup(group: Identity, member: Identity) {
+        engine.get().group_invite_member(myself(group), updateIdentity(member))
+    }
+
+    override fun removeMemberFromGroup(group: Identity, member: Identity) {
+        engine.get().group_remove_member(myself(group), updateIdentity(member))
+    }
+
+    override fun groupRating(group: Identity, manager: Identity): Rating {
+        return engine.get().group_rating(myself(group), manager)
     }
 
     companion object {

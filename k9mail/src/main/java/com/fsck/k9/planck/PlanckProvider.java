@@ -277,6 +277,14 @@ public interface PlanckProvider {
 
     ResultCompat<Vector<Identity>> queryGroupMailManagerAndMembers(Identity group);
 
+    void dissolveGroup(Identity group, Identity manager);
+
+    void inviteMemberToGroup(Identity group, Identity member);
+
+    void removeMemberFromGroup(Identity group, Identity member);
+
+    Rating groupRating(Identity group, Identity manager);
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
