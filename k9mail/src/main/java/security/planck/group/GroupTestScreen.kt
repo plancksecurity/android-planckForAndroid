@@ -273,7 +273,7 @@ class GroupTestScreen : PlanckActivity() {
                     Address(groupAddress, groupUserName),
                     this@GroupTestScreen
                 )
-                planckProvider.queryGroupMailManagerAndMembers(groupIdentity)
+                planckProvider.queryGroupMailManagerAndMembers(planckProvider.myself(groupIdentity))
             }
         }
     }
@@ -288,8 +288,12 @@ class GroupTestScreen : PlanckActivity() {
                     this@GroupTestScreen
                 )
                 ResultCompat.of {
-                    val manager = planckProvider.queryGroupMailManager(groupIdentity)
-                    planckProvider.dissolveGroup(groupIdentity, manager)
+                    val updatedGroup = planckProvider.myself(groupIdentity)
+                    val manager = planckProvider.queryGroupMailManager(updatedGroup)
+                    planckProvider.dissolveGroup(
+                        updatedGroup,
+                        planckProvider.myself(manager)
+                    )
                 }
             }
         }
@@ -321,7 +325,10 @@ class GroupTestScreen : PlanckActivity() {
                     this@GroupTestScreen
                 )
                 ResultCompat.of {
-                    planckProvider.inviteMemberToGroup(groupIdentity, memberIdentity)
+                    planckProvider.inviteMemberToGroup(
+                        planckProvider.myself(groupIdentity),
+                        planckProvider.updateIdentity(memberIdentity)
+                    )
                 }
             }
         }
@@ -353,7 +360,10 @@ class GroupTestScreen : PlanckActivity() {
                     this@GroupTestScreen
                 )
                 ResultCompat.of {
-                    planckProvider.removeMemberFromGroup(groupIdentity, memberIdentity)
+                    planckProvider.removeMemberFromGroup(
+                        planckProvider.myself(groupIdentity),
+                        planckProvider.updateIdentity(memberIdentity)
+                    )
                 }
             }
         }
@@ -390,12 +400,13 @@ class GroupTestScreen : PlanckActivity() {
                         null
                     }
                 }
-                val memberIdentities =
-                    if (memberIdentitiesList.isNotEmpty()) Vector(memberIdentitiesList)
-                    else Vector()
 
                 ResultCompat.of {
-                    planckProvider.createGroup(groupIdentity, manager, memberIdentities)
+                    val memberIdentities =
+                        if (memberIdentitiesList.isNotEmpty())
+                            Vector(memberIdentitiesList.map { planckProvider.updateIdentity(it) })
+                        else Vector()
+                    planckProvider.createGroup(groupIdentity, planckProvider.myself(manager), memberIdentities)
                 }
             }
         }
@@ -412,7 +423,7 @@ class GroupTestScreen : PlanckActivity() {
                 )
                 ResultCompat.of {
                     val manager = planckProvider.queryGroupMailManager(groupIdentity)
-                    planckProvider.groupRating(groupIdentity, manager)
+                    planckProvider.groupRating(planckProvider.myself(groupIdentity), manager)
                 }
             }
         }

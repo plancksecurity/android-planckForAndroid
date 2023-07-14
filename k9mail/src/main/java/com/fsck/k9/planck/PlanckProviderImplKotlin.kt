@@ -1162,26 +1162,24 @@ class PlanckProviderImplKotlin(
         manager: Identity,
         members: Vector<Identity>,
     ) {
-        val managerUpdated = myself(manager)
-        val membersUpdated = Vector(members.map { updateIdentity(it) })
         val group: Group = Group().apply {
             this.group_identity = groupIdentity
-            this.manager = managerUpdated
+            this.manager = manager
             this.members = Vector()
         }
-        engine.get().group_create(groupIdentity, managerUpdated, membersUpdated, group)
+        engine.get().group_create(groupIdentity, manager, members, group)
     }
 
     @WorkerThread
-    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(myself(group))
+    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(group)
 
     @WorkerThread
     override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
-        engine.get().retrieve_full_group_membership(myself(group))?.map { it.ident }?.let { Vector(it) }
+        engine.get().retrieve_full_group_membership(group)?.map { it.ident }?.let { Vector(it) }
 
     @WorkerThread
     override fun joinGroupMail(group: Identity, member: Identity) =
-        engine.get().group_join(group, myself(member))
+        engine.get().group_join(group, member)
 
     @WorkerThread
     override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
@@ -1190,20 +1188,20 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun dissolveGroup(group: Identity, manager: Identity) {
-        engine.get().group_dissolve(myself(group), manager)
+    override fun dissolveGroup(group: Identity, managerOrMember: Identity) {
+        engine.get().group_dissolve(group, managerOrMember)
     }
 
     override fun inviteMemberToGroup(group: Identity, member: Identity) {
-        engine.get().group_invite_member(myself(group), updateIdentity(member))
+        engine.get().group_invite_member(group, member)
     }
 
     override fun removeMemberFromGroup(group: Identity, member: Identity) {
-        engine.get().group_remove_member(myself(group), updateIdentity(member))
+        engine.get().group_remove_member(group, member)
     }
 
     override fun groupRating(group: Identity, manager: Identity): Rating {
-        return engine.get().group_rating(myself(group), manager)
+        return engine.get().group_rating(group, manager)
     }
 
     companion object {
