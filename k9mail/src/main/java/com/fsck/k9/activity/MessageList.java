@@ -781,7 +781,7 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
     @Override
     public void onPause() {
         super.onPause();
-
+        overridePendingTransition(NO_ANIMATION, NO_ANIMATION);
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
     }
 
