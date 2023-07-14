@@ -804,7 +804,7 @@ class PlanckProviderImplKotlin(
 
     @WorkerThread //already done
     override fun getRating(identity: Identity): ResultCompat<Rating> {
-        return ResultCompat.of { engine.get().identity_rating(identity) }
+        return ResultCompat.of { identityRating(identity) }
             .onFailure { Timber.e(it, "%s %s", TAG, "getRating: ") }
     }
 
@@ -824,10 +824,20 @@ class PlanckProviderImplKotlin(
 
     private fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) {
         try {
-            val rating = engine.get().identity_rating(identity)
+            val rating = identityRating(identity)
             notifyLoaded(rating, callback)
         } catch (e: Exception) {
             notifyError(e, callback)
+        }
+    }
+
+    private fun identityRating(identity: Identity): Rating {
+        return try {
+            val updatedIdentity = updateIdentity(identity)
+            val manager = queryGroupMailManager(updatedIdentity)
+            groupRating(updatedIdentity, manager)
+        } catch (e: pEpGroupNotFound) {
+            engine.get().identity_rating(identity)
         }
     }
 
