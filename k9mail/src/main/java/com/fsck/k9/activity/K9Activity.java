@@ -55,6 +55,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private boolean isShowingSearchView;
     private String searchText;
 
+    public static final int NO_ANIMATION = 0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getWindow().getDecorView().setSystemUiVisibility(
