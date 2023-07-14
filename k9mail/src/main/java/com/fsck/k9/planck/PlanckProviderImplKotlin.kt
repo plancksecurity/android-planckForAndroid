@@ -45,6 +45,7 @@ class PlanckProviderImplKotlin(
     private val showHandshakeSet = false
     private var echoMessageReceivedListener: EchoMessageReceivedListener? = null
     private val engineScope = CoroutineScope(PlanckDispatcher)
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override fun setEchoMessageReceivedListener(listener: EchoMessageReceivedListener?) {
         echoMessageReceivedListener = listener
@@ -666,7 +667,6 @@ class PlanckProviderImplKotlin(
     }
 
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             callback.onLoaded(incomingMessageRatingSuspend(message))
         }
@@ -809,7 +809,7 @@ class PlanckProviderImplKotlin(
     }
 
     override fun getRating(address: Address, callback: ResultCallback<Rating>) {
-        engineScope.launch {
+        uiScope.launch {
             val identity = PlanckUtils.createIdentity(address, context)
             getRatingSuspend(identity, callback)
         }
@@ -822,13 +822,11 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    private fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) {
-        try {
-            val rating = identityRating(identity)
-            notifyLoaded(rating, callback)
-        } catch (e: Exception) {
-            notifyError(e, callback)
-        }
+    private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) {
+        withContext(PlanckDispatcher) {
+            kotlin.runCatching { identityRating(identity) }
+        }.onSuccess { notifyLoaded(it, callback) }
+            .onFailure { notifyError(it, callback) }
     }
 
     private fun identityRating(identity: Identity): Rating {
@@ -1135,7 +1133,6 @@ class PlanckProviderImplKotlin(
 
     @WorkerThread
     override fun printLog() {
-        val uiScope = CoroutineScope(PlanckDispatcher + SupervisorJob())
         uiScope.launch {
             log.split("\n")
                     .filter { it.isNotBlank() }
@@ -1146,7 +1143,6 @@ class PlanckProviderImplKotlin(
 
     override fun getLog(callback: CompletedCallback): String {
         var result = ""
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             result = getLogSuspend()
             callback.onComplete()
