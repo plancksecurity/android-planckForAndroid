@@ -1157,6 +1157,7 @@ class PlanckProviderImplKotlin(
         return encFormat != Message.EncFormat.None
     }
 
+    @WorkerThread
     override fun createGroup(
         groupIdentity: Identity,
         manager: Identity,
@@ -1188,18 +1189,22 @@ class PlanckProviderImplKotlin(
         }
     }
 
+    @WorkerThread
     override fun dissolveGroup(group: Identity, managerOrMember: Identity) {
         engine.get().group_dissolve(group, managerOrMember)
     }
 
+    @WorkerThread
     override fun inviteMemberToGroup(group: Identity, member: Identity) {
         engine.get().group_invite_member(group, member)
     }
 
+    @WorkerThread
     override fun removeMemberFromGroup(group: Identity, member: Identity) {
         engine.get().group_remove_member(group, member)
     }
 
+    @WorkerThread
     override fun groupRating(group: Identity, manager: Identity): Rating {
         return engine.get().group_rating(group, manager)
     }
