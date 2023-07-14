@@ -12,12 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import foundation.pEp.jniadapter.Group;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
-import foundation.pEp.jniadapter.adapter_group_create_Return;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
@@ -271,6 +269,21 @@ public interface PlanckProvider {
             Identity manager,
             Vector<Identity> members
     );
+
+    Identity queryGroupMailManager(Identity group);
+    Vector<Identity> queryGroupMailMembers(Identity group);
+
+    void joinGroupMail(Identity group, Identity member);
+
+    ResultCompat<Vector<Identity>> queryGroupMailManagerAndMembers(Identity group);
+
+    void dissolveGroup(Identity group, Identity manager);
+
+    void inviteMemberToGroup(Identity group, Identity member);
+
+    void removeMemberFromGroup(Identity group, Identity member);
+
+    Rating groupRating(Identity group, Identity manager);
 
     class KeyDetail {
         private final Address address;

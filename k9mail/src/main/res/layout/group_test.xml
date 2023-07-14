@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
     <include layout="@layout/simple_toolbar_layout" />
     <ScrollView
@@ -15,64 +16,61 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Create an empty group (you are the manager)"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textStyle="bold"/>
-            <Button
-                android:id="@+id/create_empty_group_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Create empty group"/>
-            <TextView
-                android:id="@+id/empty_group_creation_feedback"
+                android:text="Select a group operation"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+            <Spinner
+                android:id="@+id/group_action_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
             <TextView
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Create a group (you are the manager)"
+                tools:text="Title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textStyle="bold"/>
+
             <TextView
+                android:id="@+id/input1_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Group address"
-                android:labelFor="@+id/group_address"/>
+                tools:text="Input 1 label"
+                android:labelFor="@+id/input1"/>
             <EditText
-                android:id="@+id/group_address"
+                android:id="@+id/input1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
                 android:hint="example@example.com"/>
             <TextView
+                android:id="@+id/input2_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Group user name"
-                android:labelFor="@+id/group_user_name"/>
+                tools:text="Input 2 label"
+                android:labelFor="@+id/input2"/>
             <EditText
-                android:id="@+id/group_user_name"
+                android:id="@+id/input2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
                 android:hint="Alice Group"/>
             <TextView
+                android:id="@+id/input3_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Group members addresses and names"
-                android:labelFor="@+id/group_member_addresses"/>
+                tools:text="Group members addresses and names"
+                android:labelFor="@+id/input3"/>
             <EditText
-                android:id="@+id/group_member_addresses"
+                android:id="@+id/input3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
                 android:hint="provide pairs address:name separated by commas"/>
             <Button
-                android:id="@+id/create_group_button"
+                android:id="@+id/group_action_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Create group"/>
+                tools:text="Create group"/>
             <TextView
-                android:id="@+id/group_creation_feedback"
+                android:id="@+id/group_action_feedback"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true" />
