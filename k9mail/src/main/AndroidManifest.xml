@@ -230,6 +230,7 @@
             android:configChanges="locale"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow"
+            android:theme="@style/Theme.Planck.Startup"
             android:exported="true">
             <intent-filter>
 
