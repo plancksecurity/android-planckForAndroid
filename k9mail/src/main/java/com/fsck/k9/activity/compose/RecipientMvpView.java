@@ -27,8 +27,6 @@ import com.fsck.k9.planck.ui.ActionRecipientSelectView;
 import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
-import java.util.List;
-
 import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
 
@@ -374,24 +372,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.messageRatingLoaded();
     }
 
-    public void doRestoringFocus(Runnable runnable) {
+    public void doUiOperationRestoringFocus(Runnable uiOperation) {
         View currentFocus = activity.getCurrentFocus();
-        runnable.run();
+        uiOperation.run();
         if (currentFocus != null) {
             bccView.post(currentFocus::requestFocus);
         }
-    }
-
-    private void notifyRecipientsChanged(
-            ActionRecipientSelectView view,
-            List<Recipient> recipients
-    ) {
-        //presenter.resetRecipients(recipients, );
-        for (Recipient recipient : recipients) {
-            view.removeRecipient(recipient);
-            view.addRecipients(recipient);
-        }
-        view.restoreFirstRecipientTruncation();
     }
 
     public void showError(Throwable throwable) {

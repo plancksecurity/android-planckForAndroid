@@ -1002,16 +1002,10 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     public void notifyRecipientsChanged() {
-        recipientMvpView.doRestoringFocus(() -> {
-            notifyRecipientsChanged(toPresenter);
-            notifyRecipientsChanged(ccPresenter);
-            notifyRecipientsChanged(bccPresenter);
+        recipientMvpView.doUiOperationRestoringFocus(() -> {
+            toPresenter.notifyRecipientsChanged();
+            ccPresenter.notifyRecipientsChanged();
+            bccPresenter.notifyRecipientsChanged();
         });
-    }
-
-    private void notifyRecipientsChanged(
-            RecipientSelectPresenter presenter
-    ) {
-        presenter.notifyRecipientsChanged();
     }
 }
