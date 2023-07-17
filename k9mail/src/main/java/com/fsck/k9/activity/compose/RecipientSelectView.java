@@ -63,6 +63,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private static final int LOADER_ID_FILTERING = 0;
     private static final int LOADER_ID_ALTERNATES = 1;
+    private static final long RECIPIENT_HOLDER_RATING_UPDATE_DELAY = 100L;
 
 
     private RecipientAdapter adapter;
@@ -215,16 +216,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             public void onLoaded(Rating rating) {
                 recipientSelectPresenter.handleUnsecureTokenWarning();
                 setCountColorIfNeeded();
-                holder.updateRating(rating);
-                postInvalidateDelayed(100);
+                updateRecipientHolderRating(holder, rating);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 recipientSelectPresenter.handleUnsecureTokenWarning();
                 setCountColorIfNeeded();
-                holder.updateRating(Rating.pEpRatingUndefined);
-                postInvalidateDelayed(100);
+                updateRecipientHolderRating(holder, Rating.pEpRatingUndefined);
             }
         });
     }
@@ -827,10 +826,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             if (holder == null) {
                 Timber.e("Tried to refresh invalid view token!");
             } else {
-                holder.updateRating(recipient.getRating());
-                postInvalidateDelayed(100);
+                updateRecipientHolderRating(holder, recipient.getRating());
             }
         }
+    }
+
+    private void updateRecipientHolderRating(RecipientTokenViewHolder holder, Rating rating) {
+        holder.updateRating(rating);
+        postInvalidateDelayed(RECIPIENT_HOLDER_RATING_UPDATE_DELAY);
     }
 
     /**
