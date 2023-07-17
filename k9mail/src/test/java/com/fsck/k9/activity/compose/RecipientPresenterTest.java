@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -35,6 +35,7 @@ import com.fsck.k9.planck.PlanckProvider;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -45,6 +46,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,7 +66,9 @@ public class RecipientPresenterTest extends RobolectricTest {
     private Account account;
     private RecipientMvpView recipientMvpView;
     private RecipientPresenter.RecipientsChangedListener listener;
-
+    private RecipientSelectPresenter toPresenter;
+    private RecipientSelectPresenter ccPresenter;
+    private RecipientSelectPresenter bccPresenter;
 
     @Before
     public void setUp() throws Exception {
@@ -73,6 +77,17 @@ public class RecipientPresenterTest extends RobolectricTest {
         PlanckProvider planckProvider = mock(PlanckProvider.class);
 
         recipientMvpView = mock(RecipientMvpView.class);
+        ArgumentCaptor<RecipientPresenter> presenterCaptor = ArgumentCaptor.forClass(RecipientPresenter.class);
+        doAnswer(invocation -> {
+            presenterCaptor.getValue().setPresenter(toPresenter, Message.RecipientType.TO);
+            presenterCaptor.getValue().setPresenter(ccPresenter, Message.RecipientType.CC);
+            presenterCaptor.getValue().setPresenter(bccPresenter, Message.RecipientType.BCC);
+            return null;
+        }).when(recipientMvpView).setPresenter(presenterCaptor.capture());
+
+        toPresenter = mock(RecipientSelectPresenter.class);
+        ccPresenter = mock(RecipientSelectPresenter.class);
+        bccPresenter = mock(RecipientSelectPresenter.class);
         account = mock(Account.class);
         composePgpInlineDecider = mock(ComposePgpInlineDecider.class);
         replyToParser = mock(ReplyToParser.class);
@@ -89,7 +104,6 @@ public class RecipientPresenterTest extends RobolectricTest {
                 composePgpInlineDecider,
                 planckProvider,
                 replyToParser, listener);
-        recipientPresenter.updateCryptoStatus();
     }
 
     @Test
@@ -104,7 +118,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         Thread.sleep(1000);
         shadowLooper.runOneTask();
 
-        verify(recipientMvpView).addRecipients(eq(Message.RecipientType.TO), any());
+        verify(toPresenter).addRecipients(any());
     }
 
     @Test
@@ -121,8 +135,8 @@ public class RecipientPresenterTest extends RobolectricTest {
         Thread.sleep(1000);
         shadowLooper.runToEndOfTasks();
 
-        verify(recipientMvpView).addRecipients(eq(Message.RecipientType.TO), any());
-        verify(recipientMvpView).addRecipients(eq(Message.RecipientType.CC), any());
+        verify(toPresenter).addRecipients(any());
+        verify(ccPresenter).addRecipients(any());
     }
 
     @Test
@@ -236,73 +250,18 @@ public class RecipientPresenterTest extends RobolectricTest {
     }
 
     @Test
-    public void onToTokenAdded_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onToTokenAdded();
+    public void onRecipientsChanged_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onRecipientsChanged();
         verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onToTokenChanged_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onToTokenChanged();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onToTokenRemoved_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onToTokenRemoved();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onCcTokenAdded_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onCcTokenAdded();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onCcTokenChanged_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onCcTokenChanged();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onCcTokenRemoved_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onCcTokenRemoved();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onBccTokenAdded_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onBccTokenAdded();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onBccTokenChanged_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onBccTokenChanged();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void onBccTokenRemoved_notifiesListenerOfRecipientChange() {
-        recipientPresenter.onBccTokenRemoved();
-        verify(listener).onRecipientsChanged();
-    }
-
-    @Test
-    public void clearUnsecureRecipients_callsViewMethod() {
-        recipientPresenter.clearUnsecureRecipients();
-
-        verify(recipientMvpView).clearUnsecureRecipients();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void handleUnsecureDeliveryWarning_usesViewToHandleWarning() {
         doReturn(true).when(account).isPlanckPrivacyProtected();
-        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
-        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
-        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        doReturn(2).when(toPresenter).getUnsecureAddressChannelCount();
+        doReturn(2).when(ccPresenter).getUnsecureAddressChannelCount();
+        doReturn(2).when(bccPresenter).getUnsecureAddressChannelCount();
         try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
             mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(true);
 
@@ -310,9 +269,9 @@ public class RecipientPresenterTest extends RobolectricTest {
             recipientPresenter.handleUnsecureDeliveryWarning();
 
 
-            verify(recipientMvpView).getToUnsecureRecipientCount();
-            verify(recipientMvpView).getCcUnsecureRecipientCount();
-            verify(recipientMvpView).getBccUnsecureRecipientCount();
+            verify(toPresenter).getUnsecureAddressChannelCount();
+            verify(ccPresenter).getUnsecureAddressChannelCount();
+            verify(bccPresenter).getUnsecureAddressChannelCount();
             verify(recipientMvpView).showUnsecureDeliveryWarning(6);
         }
     }
@@ -321,9 +280,9 @@ public class RecipientPresenterTest extends RobolectricTest {
     @Test
     public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfPEpIsDisabledForAccount() {
         doReturn(false).when(account).isPlanckPrivacyProtected();
-        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
-        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
-        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        doReturn(2).when(toPresenter).getUnsecureAddressChannelCount();
+        doReturn(2).when(ccPresenter).getUnsecureAddressChannelCount();
+        doReturn(2).when(bccPresenter).getUnsecureAddressChannelCount();
         try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
             mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(true);
 
@@ -331,9 +290,9 @@ public class RecipientPresenterTest extends RobolectricTest {
             recipientPresenter.handleUnsecureDeliveryWarning();
 
 
-            verify(recipientMvpView, never()).getToUnsecureRecipientCount();
-            verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
-            verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
+            verify(toPresenter, never()).getUnsecureAddressChannelCount();
+            verify(ccPresenter, never()).getUnsecureAddressChannelCount();
+            verify(bccPresenter, never()).getUnsecureAddressChannelCount();
             verify(recipientMvpView).hideUnsecureDeliveryWarning();
         }
     }
@@ -342,9 +301,9 @@ public class RecipientPresenterTest extends RobolectricTest {
     @Test
     public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfWarningSettingNotEnabled() {
         doReturn(true).when(account).isPlanckPrivacyProtected();
-        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
-        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
-        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        doReturn(2).when(toPresenter).getUnsecureAddressChannelCount();
+        doReturn(2).when(ccPresenter).getUnsecureAddressChannelCount();
+        doReturn(2).when(bccPresenter).getUnsecureAddressChannelCount();
         try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
             mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(false);
 
@@ -352,11 +311,40 @@ public class RecipientPresenterTest extends RobolectricTest {
             recipientPresenter.handleUnsecureDeliveryWarning();
 
 
-            verify(recipientMvpView, never()).getToUnsecureRecipientCount();
-            verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
-            verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
+            verify(toPresenter, never()).getUnsecureAddressChannelCount();
+            verify(ccPresenter, never()).getUnsecureAddressChannelCount();
+            verify(bccPresenter, never()).getUnsecureAddressChannelCount();
             verify(recipientMvpView).hideUnsecureDeliveryWarning();
         }
+    }
+
+    @Test
+    public void checkRecipientsOkForSending_calls_presenters_tryPerformCompletion() {
+        recipientPresenter.checkRecipientsOkForSending();
+
+
+        verify(toPresenter).tryPerformCompletion();
+        verify(ccPresenter).tryPerformCompletion();
+        verify(bccPresenter).tryPerformCompletion();
+    }
+
+    @Test
+    public void checkRecipientsOkForSending_returns_true_if_no_presenter_has_addresses() {
+        doReturn(new ArrayList<Address>()).when(toPresenter).getAddresses();
+        doReturn(new ArrayList<Address>()).when(ccPresenter).getAddresses();
+        doReturn(new ArrayList<Address>()).when(bccPresenter).getAddresses();
+
+
+        assertTrue(recipientPresenter.checkRecipientsOkForSending());
+        verify(toPresenter).showNoRecipientsError();
+    }
+
+    @Test
+    public void checkRecipientsOkForSending_returns_true_if_any_presenter_reports_incompleteRecipients() {
+        doReturn(true).when(toPresenter).reportedUncompletedRecipients();
+
+
+        assertTrue(recipientPresenter.checkRecipientsOkForSending());
     }
 
     private void setupCryptoProvider() throws android.os.RemoteException {
