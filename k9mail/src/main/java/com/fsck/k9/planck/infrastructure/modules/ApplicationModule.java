@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.helper.NamedThreadFactory;
+import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.planck.DefaultDispatcherProvider;
 import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckProvider;
@@ -93,5 +94,11 @@ public class ApplicationModule {
     @Provides
     public ExecutorService provideSettingsThreadExecutor() {
         return Executors.newSingleThreadExecutor(new NamedThreadFactory("SaveSettings"));
+    }
+
+    @Provides
+    @Singleton
+    public StorageManager provideStorageManager(@ApplicationContext Context application) {
+        return StorageManager.getInstance(application);
     }
 }

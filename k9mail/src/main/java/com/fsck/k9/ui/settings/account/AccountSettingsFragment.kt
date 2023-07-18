@@ -48,7 +48,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by viewModels()
     @Inject
     lateinit var dataStoreFactory: AccountSettingsDataStoreFactory
-    private val storageManager: StorageManager by inject()
+    @Inject
+    lateinit var storageManager: StorageManager
     private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })
 
     private var rootkey:String? = null
