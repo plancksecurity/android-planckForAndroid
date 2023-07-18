@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.helper.NamedThreadFactory;
+import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.planck.DefaultDispatcherProvider;
 import com.fsck.k9.planck.DispatcherProvider;
@@ -36,6 +37,7 @@ import security.planck.ui.permissions.PlanckPermissionChecker;
 
 @Module
 @InstallIn(SingletonComponent.class)
+@SuppressWarnings("unused")
 public class ApplicationModule {
 
     @Provides
@@ -107,5 +109,10 @@ public class ApplicationModule {
     @Singleton
     public Resources provideAppResources(@ApplicationContext Context application) {
         return application.getResources();
+    }
+
+    @Provides
+    public TransportProvider provideTransportProvider() {
+        return TransportProvider.getInstance();
     }
 }
