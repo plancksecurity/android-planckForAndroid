@@ -1,13 +1,10 @@
 package com.fsck.k9
 
 import android.app.Application
-import android.content.Context
 import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.mail.TransportProvider
-import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.ui.folders.FolderNameFormatter
 import org.koin.Koin
 import org.koin.KoinContext
@@ -20,11 +17,7 @@ import org.koin.standalone.StandAloneContext
 
 object DI {
     private val mainModule = applicationContext {
-        bean { Preferences.getPreferences(get()) }
         bean { MessagingController.getInstance(get()) }
-        bean { TransportProvider() }
-        bean { get<Context>().resources }
-        bean { StorageManager.getInstance(get()) }
         bean { FolderNameFormatter(get()) }
         bean { createOAuthConfigurationProvider() }
     }
