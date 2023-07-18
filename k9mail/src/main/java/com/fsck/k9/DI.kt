@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
-import com.fsck.k9.autocrypt.autocryptModule
 import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.crypto.openPgpModule
@@ -37,7 +36,6 @@ object DI {
             //unreadWidgetModule,
             endToEndUiModule,
             openPgpModule,
-            autocryptModule,
             authModule,
             autodiscoveryProvidersXmlModule,
     )
