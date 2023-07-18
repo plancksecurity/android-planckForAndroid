@@ -6,10 +6,8 @@ import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.crypto.openPgpModule
 import com.fsck.k9.mail.TransportProvider
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.ui.endtoend.endToEndUiModule
 import com.fsck.k9.ui.folders.FolderNameFormatter
 import org.koin.Koin
 import org.koin.KoinContext
@@ -34,8 +32,6 @@ object DI {
     val appModules = listOf(
             mainModule,
             //unreadWidgetModule,
-            endToEndUiModule,
-            openPgpModule,
             authModule,
             autodiscoveryProvidersXmlModule,
     )
