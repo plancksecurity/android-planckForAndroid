@@ -13,4 +13,4 @@ import org.robolectric.annotation.Config
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
-abstract class K9RobolectricTest : AutoCloseKoinTest()
+abstract class K9RobolectricTest

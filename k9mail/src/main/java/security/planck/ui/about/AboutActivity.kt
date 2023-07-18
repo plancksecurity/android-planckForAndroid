@@ -170,7 +170,6 @@ class AboutActivity : K9Activity() {
                 "Dagger" to "https://github.com/google/dagger",
                 "Barista" to "https://github.com/AdevintaSpain/Barista",
                 "Spoon" to "https://github.com/square/spoon",
-                "Koin" to "https://github.com/InsertKoinIO/koin",
                 "Cucumber" to "https://cucumber.io/"
 
         )

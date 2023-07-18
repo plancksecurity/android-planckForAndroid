@@ -699,7 +699,6 @@ public class K9 extends MultiDexApplication {
 
     public void finalizeSetup() {
         pEpSetupUiEngineSession();
-        DI.start(this);
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
