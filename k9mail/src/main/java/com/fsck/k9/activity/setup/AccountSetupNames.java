@@ -37,6 +37,7 @@ import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import security.planck.mdm.ConfigurationManager;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @AndroidEntryPoint
@@ -57,6 +58,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+
+    @Inject
+    ConfigurationManager configurationManager;
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -166,6 +170,10 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         launchGenerateAccountKeysTask(accountGenerationTask, isManualSetup);
     }
 
+    private void loadConfigurations() {
+        configurationManager.loadConfigurationsBlocking();
+    }
+
     @VisibleForTesting
     public void launchGenerateAccountKeysTask(PanckGenerateAccountKeysTask accountGenerationTask, boolean manualSetup) {
         nonConfigurationInstance = accountGenerationTask;
@@ -229,9 +237,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
                 account.setOptionsOnInstall();
             }
             if (((K9) mContext.getApplicationContext()).isRunningOnWorkProfile()) {
-                //((K9) mContext.getApplicationContext()).getComponent()
-                //        .configurationManagerFactory().create(mContext)
-                //        .loadConfigurationsBlocking();
+                ((AccountSetupNames) mActivity).loadConfigurations();
             } else {
                 account.save(Preferences.getPreferences(mActivity));
             }
