@@ -32,11 +32,6 @@ public class PlanckModule {
     }
 
     @Provides
-    public MessagingController provideMessagingController(@ActivityContext Context context) {
-        return MessagingController.getInstance(context);
-    }
-
-    @Provides
     public OpenPgpApiManager provideOpenPgpApiManager(@ApplicationContext Context application, FragmentActivity activity) {
         return new OpenPgpApiManager(application, activity);
     }

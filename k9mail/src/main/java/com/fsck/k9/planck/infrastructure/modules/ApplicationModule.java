@@ -8,6 +8,7 @@ import android.content.res.Resources;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mailstore.StorageManager;
@@ -106,7 +107,6 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Singleton
     public Resources provideAppResources(@ApplicationContext Context application) {
         return application.getResources();
     }
@@ -114,5 +114,10 @@ public class ApplicationModule {
     @Provides
     public TransportProvider provideTransportProvider() {
         return TransportProvider.getInstance();
+    }
+
+    @Provides
+    public MessagingController provideMessagingController(@ApplicationContext Context application) {
+        return MessagingController.getInstance(application);
     }
 }
