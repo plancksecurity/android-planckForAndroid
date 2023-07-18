@@ -6,10 +6,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
-import com.fsck.k9.*
+import com.fsck.k9.Account
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
+import com.fsck.k9.R
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
@@ -24,18 +28,23 @@ import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
+import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.exceptions.pEpException
-import kotlinx.android.synthetic.main.preference_loading_widget.*
-import kotlinx.coroutines.*
-import org.koin.android.architecture.ext.sharedViewModel
+import kotlinx.android.synthetic.main.preference_loading_widget.loading
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 
+@AndroidEntryPoint
 class AccountSettingsFragment : PreferenceFragmentCompat() {
-    private val viewModel: AccountSettingsViewModel by sharedViewModel()
+    private val viewModel: AccountSettingsViewModel by viewModels()
     private val dataStoreFactory: AccountSettingsDataStoreFactory by inject()
     private val storageManager: StorageManager by inject()
     private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })

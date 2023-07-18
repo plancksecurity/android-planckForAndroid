@@ -7,8 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AccountsLiveData(val preferences: Preferences) : LiveData<List<Account>>() {
+class AccountsLiveData @Inject constructor(val preferences: Preferences) : LiveData<List<Account>>() {
     init {
         loadAccountsAsync()
     }

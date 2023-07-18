@@ -3,22 +3,23 @@ package com.fsck.k9.ui.settings.account
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 import androidx.preference.PreferenceScreen
-import android.view.MenuItem
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
-import org.koin.android.architecture.ext.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import security.planck.mdm.RestrictionsListener
 import timber.log.Timber
 
-
+@AndroidEntryPoint
 class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, RestrictionsListener {
-    private val viewModel: AccountSettingsViewModel by viewModel()
+    private val viewModel: AccountSettingsViewModel by viewModels()
     private lateinit var accountUuid: String
     private var startScreenKey: String? = null
     private var fragmentAdded = false
