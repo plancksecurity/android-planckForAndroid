@@ -16,6 +16,9 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ManageIdentities extends ChooseIdentity {
     private boolean mIdentitiesChanged = false;
 

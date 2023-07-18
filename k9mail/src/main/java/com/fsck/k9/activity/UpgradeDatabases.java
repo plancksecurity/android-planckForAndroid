@@ -19,6 +19,8 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.service.DatabaseUpgradeService;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 
 /**
  * This activity triggers a database upgrade if necessary and displays the current upgrade progress.
@@ -56,6 +58,7 @@ import com.fsck.k9.service.DatabaseUpgradeService;
  * for this activity) it will appear as if {@link DatabaseUpgradeService} is performing the upgrade.
  * </p>
  */
+@AndroidEntryPoint
 public class UpgradeDatabases extends K9Activity {
     private static final String ACTION_UPGRADE_DATABASES = "upgrade_databases";
     private static final String EXTRA_START_INTENT = "start_intent";

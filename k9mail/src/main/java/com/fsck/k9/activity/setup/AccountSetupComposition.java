@@ -17,8 +17,10 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
+@AndroidEntryPoint
 public class AccountSetupComposition extends K9Activity {
 
     private static final String EXTRA_ACCOUNT = "account";

@@ -13,6 +13,9 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.ui.fragments.AccountSetupOutgoingFragment;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AccountSetupOutgoing extends K9Activity {
     private static final String EXTRA_ACCOUNT = "account";
 

@@ -68,6 +68,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.ui.PlanckUIUtils;
 import security.planck.ui.resources.PlanckResourcesProvider;
 import security.planck.ui.resources.ResourcesProvider;
@@ -80,6 +81,7 @@ import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
  * Activity shows list of the Account's folders
  */
 
+@AndroidEntryPoint
 public class FolderList extends K9ListActivity {
     private static final String EXTRA_ACCOUNT = "account";
 

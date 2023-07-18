@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -37,6 +38,7 @@ import timber.log.Timber;
  * AccountSetupIncoming activity.
  */
 
+@AndroidEntryPoint
 public class AccountSetupAccountType extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
