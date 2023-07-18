@@ -3,6 +3,7 @@ package com.fsck.k9.planck.infrastructure.modules;
 
 import android.content.Context;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 
@@ -20,11 +21,11 @@ import dagger.hilt.android.qualifiers.ActivityContext;
 public class PlanckModule {
     @Provides
     public SimpleMessageLoaderHelper providesSimpleMessageLoaderHelper(
-            @ActivityContext Context context,
-            LoaderManager loaderManager,
-            FragmentManager fragmentManager
+            FragmentActivity activity
     ) {
-        return new SimpleMessageLoaderHelper(context, loaderManager, fragmentManager);
+        LoaderManager loaderManager = LoaderManager.getInstance(activity);
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        return new SimpleMessageLoaderHelper(activity, loaderManager, fragmentManager);
     }
 
     @Provides
