@@ -182,7 +182,7 @@ public class PlanckStatusPresenter {
 
     private void onRatingChanged(Rating rating) {
         this.currentRating = rating;
-        if (localMessage != null) {
+        if (isMessageIncoming && localMessage != null) {
             localMessage.setPlanckRating(rating);
         }
         view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure);
