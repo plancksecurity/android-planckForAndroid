@@ -52,6 +52,7 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.MessageView;
+import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
@@ -323,7 +324,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onPause() {
         super.onPause();
-        ((MessageList) getContext()).removeGestureDetector();
+        ((MessageList) ContextKt.getRootContext(requireActivity())).removeGestureDetector();
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
     }
 
