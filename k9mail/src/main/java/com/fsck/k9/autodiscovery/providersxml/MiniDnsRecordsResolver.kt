@@ -4,8 +4,9 @@ import androidx.annotation.WorkerThread
 import org.minidns.hla.DnssecResolverApi
 import org.minidns.record.MX
 import timber.log.Timber
+import javax.inject.Inject
 
-class MiniDnsRecordsResolver {
+class MiniDnsRecordsResolver @Inject constructor() {
     @WorkerThread
     fun getRealDomain(domain: String): String {
         var realDomain = domain

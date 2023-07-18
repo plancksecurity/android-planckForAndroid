@@ -8,10 +8,12 @@ import android.content.res.Resources;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.auth.OAuthConfigurationsKt;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.oauth.OAuthConfigurationProvider;
 import com.fsck.k9.planck.DefaultDispatcherProvider;
 import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckProvider;
@@ -22,6 +24,8 @@ import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.planck.infrastructure.threading.UIThread;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsCheck;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
+
+import net.openid.appauth.AuthState;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -119,5 +123,16 @@ public class ApplicationModule {
     @Provides
     public MessagingController provideMessagingController(@ApplicationContext Context application) {
         return MessagingController.getInstance(application);
+    }
+
+    @Provides
+    @Singleton
+    public OAuthConfigurationProvider provideOAuthConfigurationProvider() {
+        return OAuthConfigurationsKt.createOAuthConfigurationProvider();
+    }
+
+    @Provides
+    public AuthState provideAuthState() {
+        return new AuthState();
     }
 }
