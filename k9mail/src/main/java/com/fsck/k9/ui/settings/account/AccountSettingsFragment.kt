@@ -36,7 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
@@ -50,7 +49,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     lateinit var dataStoreFactory: AccountSettingsDataStoreFactory
     @Inject
     lateinit var storageManager: StorageManager
-    private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })
+    @Inject
+    lateinit var openPgpApiManager: OpenPgpApiManager
 
     private var rootkey:String? = null
     private var mdmDialog: AlertDialog? = null

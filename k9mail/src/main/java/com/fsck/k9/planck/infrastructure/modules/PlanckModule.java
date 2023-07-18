@@ -10,11 +10,14 @@ import androidx.loader.app.LoaderManager;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper;
 
+import org.openintents.openpgp.OpenPgpApiManager;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ActivityComponent;
 import dagger.hilt.android.qualifiers.ActivityContext;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @Module
 @InstallIn(ActivityComponent.class)
@@ -31,5 +34,10 @@ public class PlanckModule {
     @Provides
     public MessagingController provideMessagingController(@ActivityContext Context context) {
         return MessagingController.getInstance(context);
+    }
+
+    @Provides
+    public OpenPgpApiManager provideOpenPgpApiManager(@ApplicationContext Context application, FragmentActivity activity) {
+        return new OpenPgpApiManager(application, activity);
     }
 }
