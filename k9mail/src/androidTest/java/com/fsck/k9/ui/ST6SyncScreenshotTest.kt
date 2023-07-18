@@ -18,6 +18,8 @@ class ST6SyncScreenshotTest : BaseScreenshotTest() {
     fun syncTest() {
         openFirstScreen()
         setTestSet("K")
+        goToSettings()
+        triggerSync()
         waitSyncDialog()
         clickNext()
         showLongTrustwords()
@@ -25,6 +27,16 @@ class ST6SyncScreenshotTest : BaseScreenshotTest() {
         selectLanguage()
         acceptSync()
         waitSyncFinish()
+    }
+
+    private fun goToSettings() {
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.action_settings))
+    }
+
+    private fun triggerSync() {
+        expandSetting(R.string.sync_title)
+        testUtils.pressOKButtonInDialog()
     }
 
     private fun waitSyncDialog() {
