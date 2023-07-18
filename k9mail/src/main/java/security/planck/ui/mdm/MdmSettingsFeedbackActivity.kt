@@ -9,8 +9,10 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.planck.PlanckActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MdmSettingsFeedbackActivity : PlanckActivity(), MdmSettingsFeedbackView {
     private var settingsTextView: TextView? = null
 
@@ -55,10 +57,6 @@ class MdmSettingsFeedbackActivity : PlanckActivity(), MdmSettingsFeedbackView {
         }
 
         startActivity(Intent.createChooser(sendIntent, null))
-    }
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
     }
 
     override fun displaySettings(settingsText: String) {

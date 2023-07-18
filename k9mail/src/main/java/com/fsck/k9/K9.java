@@ -39,12 +39,10 @@ import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
-import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
-import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.planck.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
 import com.fsck.k9.planck.ui.tools.AppTheme;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -57,6 +55,7 @@ import com.fsck.k9.service.MailServiceLegacy;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -74,6 +73,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
@@ -81,12 +82,14 @@ import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.planck.appalive.AppAliveMonitor;
 import security.planck.audit.AuditLogger;
+import security.planck.file.PlanckSystemFileLocator;
 import security.planck.mdm.ManageableSetting;
 import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
 import security.planck.notification.GroupMailSignal;
+import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.passphrase.PassphraseRequirementType;
@@ -103,7 +106,6 @@ public class K9 extends MultiDexApplication {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
     private Account currentAccount;
-    private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
     private AtomicBoolean allowpEpSyncNewDevices = new AtomicBoolean(false);
@@ -113,8 +115,16 @@ public class K9 extends MultiDexApplication {
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
     private AuditLogger auditLogger;
-    private AppAliveMonitor appAliveMonitor;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
+
+    @Inject
+    Preferences preferences;
+    @Inject
+    ProvisioningManager provisioningManager;
+    @Inject
+    PlanckSystemFileLocator planckSystemFileLocator;
+    @Inject
+    AppAliveMonitor appAliveMonitor;
 
     public static K9JobManager jobManager;
 
@@ -672,11 +682,9 @@ public class K9 extends MultiDexApplication {
         app = this;
         Globals.setContext(this);
 
-        initializeInjector();
-
         initializeAuditLog();
 
-        component.provisioningManager().startProvisioning();
+        provisioningManager.startProvisioning();
     }
 
     private void initializeAuditLog() {
@@ -684,7 +692,7 @@ public class K9 extends MultiDexApplication {
                 new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
                 auditLogDataTimeRetention
         );
-        appAliveMonitor = new AppAliveMonitor(component.preferences().getStorage());
+        appAliveMonitor = new AppAliveMonitor(preferences.getStorage());
         auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
         auditLogger.addStartEventLog();
         appAliveMonitor.startAppAliveMonitor();
@@ -707,8 +715,7 @@ public class K9 extends MultiDexApplication {
 
         checkCachedDatabaseVersion();
 
-        Preferences prefs = component.preferences();
-        loadPrefs(prefs);
+        loadPrefs(preferences);
 
         /*
          * We have to give MimeMessage a temp directory because File.createTempFile(String, String)
@@ -718,15 +725,15 @@ public class K9 extends MultiDexApplication {
         clearBodyCacheIfAppUpgrade();
 
         LocalKeyStore.setKeyStoreLocation(
-                component.pEpSystemFileLocator().getKeyStoreFolder().toString()
+                planckSystemFileLocator.getKeyStoreFolder().toString()
         );
 
         MessagingController messagingController = MessagingController.getInstance(this);
         // Perform engine provisioning just after its initialization in MessagingController
         planckProvider = messagingController.getPlanckProvider();
-        component.provisioningManager().performInitializedEngineProvisioning();
+        provisioningManager.performInitializedEngineProvisioning();
 
-        initJobManager(prefs, messagingController);
+        initJobManager(preferences, messagingController);
 
         /*
          * Enable background sync of messages
@@ -1921,20 +1928,6 @@ public class K9 extends MultiDexApplication {
         K9.planckForwardWarningEnabled = planckForwardWarningEnabled;
     }
 
-    private void initializeInjector() {
-        component = createApplicationComponent();
-    }
-
-    protected ApplicationComponent createApplicationComponent() {
-        return DaggerApplicationComponent
-                .factory()
-                .create(this);
-    }
-
-    public ApplicationComponent getComponent() {
-        return component;
-    }
-
     private void setupFastPoller() {
         if (poller == null) {
             poller = new Poller(new Handler(Looper.getMainLooper()));
@@ -2088,7 +2081,7 @@ public class K9 extends MultiDexApplication {
                             PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
                     break;
                 case DistributionNotifyGroupInvite:
-                    Account account = component.preferences().getDefaultAccount();
+                    Account account = preferences.getDefaultAccount();
                     if (account != null) {
                         MessagingController.getInstance(K9.this).notifyPlanckGroupInviteAndJoinGroup(
                                 account,

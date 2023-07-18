@@ -24,8 +24,10 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.permissions.PermissionRequester;
 
+@AndroidEntryPoint
 public class PermissionsActivity extends PlanckActivity {
 
     @Bind(R.id.permission_contacts)
@@ -77,11 +79,6 @@ public class PermissionsActivity extends PlanckActivity {
                 getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation)
         );
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @OnClick(R.id.action_continue)

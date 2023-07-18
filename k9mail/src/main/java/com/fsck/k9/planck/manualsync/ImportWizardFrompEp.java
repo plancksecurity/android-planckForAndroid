@@ -31,12 +31,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.planck.sync.SyncState;
 import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
+@AndroidEntryPoint
 public class ImportWizardFrompEp extends WizardActivity implements ImportWizardFromPGPView {
 
     public static final String IS_FORMING_GROUP = "isFormingGroup";
@@ -154,12 +156,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         filter.addAction(PEP_SYNC_SIGNAL_ACTION);
         filter.setPriority(1);
         registerReceiver(receiver, filter);
-    }
-
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override

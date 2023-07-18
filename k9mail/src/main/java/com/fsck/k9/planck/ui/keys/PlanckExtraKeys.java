@@ -18,7 +18,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class PlanckExtraKeys extends PlanckActivity implements PlanckExtraKeysView {
 
     @Inject
@@ -42,11 +44,6 @@ public class PlanckExtraKeys extends PlanckActivity implements PlanckExtraKeysVi
         keysView.setLayoutManager(keysViewManager);
         presenter.initialize(this);
         initializeToolbar(true, R.string.master_key_management);
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override

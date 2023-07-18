@@ -1,5 +1,6 @@
 package security.planck.appalive
 
+import com.fsck.k9.Preferences
 import com.fsck.k9.preferences.Storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -7,10 +8,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Calendar
+import javax.inject.Inject
 
 private const val APP_ALIVE_MONITOR_FREQUENCY = 3000L
 
-class AppAliveMonitor(private val storage: Storage) {
+class AppAliveMonitor @Inject constructor(preferences: Preferences) {
+    private val storage: Storage
+    init {
+        storage = preferences.storage
+    }
 
     fun getLastAppAliveMonitoredTime(): Long = runBlocking(Dispatchers.IO) {
         storage.lastAppAliveMonitoredTime

@@ -27,7 +27,15 @@ import static com.fsck.k9.mail.ServerSettings.Type.POP3;
 import static com.fsck.k9.mail.ServerSettings.Type.SMTP;
 import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
 
-public class ChooseAccountTypeFragment extends PlanckFragment {
+import androidx.fragment.app.Fragment;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import security.planck.ui.toolbar.ToolBarCustomizer;
+
+@AndroidEntryPoint
+public class ChooseAccountTypeFragment extends Fragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
@@ -37,6 +45,8 @@ public class ChooseAccountTypeFragment extends PlanckFragment {
     private boolean mMakeDefault;
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
+    @Inject
+    ToolBarCustomizer toolbarCustomizer;
 
 
     public static ChooseAccountTypeFragment actionSelectAccountType(Account account, boolean makeDefault) {
@@ -51,7 +61,7 @@ public class ChooseAccountTypeFragment extends PlanckFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setupPlanckFragmentToolbar();
+        toolbarCustomizer.setDefaultStatusBarColor();
         rootView = inflater.inflate(R.layout.fragment_choose_account_type, container, false);
         rootView.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,10 +190,5 @@ public class ChooseAccountTypeFragment extends PlanckFragment {
         String toastText = getString(R.string.account_setup_bad_uri, use.getMessage());
 
         FeedbackTools.showLongFeedback(rootView, toastText);
-    }
-
-    @Override
-    protected void inject() {
-        getPlanckComponent().inject(this);
     }
 }

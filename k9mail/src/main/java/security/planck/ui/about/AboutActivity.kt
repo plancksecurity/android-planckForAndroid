@@ -13,14 +13,17 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.planck.PlanckActivity
-import com.fsck.k9.planck.ui.tools.ThemeManager
-import kotlinx.android.synthetic.main.activity_about.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_about.aboutText
+import kotlinx.android.synthetic.main.activity_about.documentation_button
+import kotlinx.android.synthetic.main.activity_about.librariesText
+import kotlinx.android.synthetic.main.activity_about.terms_and_conditions
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity
 import security.planck.ui.toolbar.ToolBarCustomizer
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class AboutActivity : PlanckActivity() {
 
     @Inject
@@ -83,10 +86,6 @@ class AboutActivity : PlanckActivity() {
     override fun onResume() {
         super.onResume()
         iconClickCount = 0
-    }
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
     }
 
     private fun buildAboutString(): String {

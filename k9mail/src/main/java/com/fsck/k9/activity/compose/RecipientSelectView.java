@@ -30,7 +30,6 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
@@ -38,7 +37,6 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.tokenautocomplete.CountSpan;
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -110,7 +108,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
         // TODO: validator?
         this.context = context;
-        getApplicationComponent(context).inject(this);
 
         uiCache = PlanckUIArtefactCache.getInstance(context);
 
@@ -922,9 +919,5 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
             return holder.getRemoveButtonLocation();
         }
-    }
-
-    private ApplicationComponent getApplicationComponent(Context context) {
-        return ((K9) context.getApplicationContext()).getComponent();
     }
 }

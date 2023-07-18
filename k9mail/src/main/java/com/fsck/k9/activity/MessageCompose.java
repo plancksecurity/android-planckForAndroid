@@ -38,7 +38,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
@@ -97,8 +96,8 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.ComposeView;
 import com.fsck.k9.planck.infrastructure.ConstantsKt;
 import com.fsck.k9.planck.infrastructure.extensions.ThrowableKt;
@@ -121,6 +120,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.mdm.RestrictionsListener;
 import security.planck.permissions.PermissionChecker;
@@ -132,7 +132,7 @@ import security.planck.ui.toolbar.ToolBarCustomizer;
 import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
 
-
+@AndroidEntryPoint
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
 public class MessageCompose extends PlanckActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
@@ -291,11 +291,6 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
         intent.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
         intent.setAction(MessageCompose.ACTION_EDIT_DRAFT);
         return intent;
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override

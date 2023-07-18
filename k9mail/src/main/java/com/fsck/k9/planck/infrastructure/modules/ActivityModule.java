@@ -9,7 +9,8 @@ import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
 
 import dagger.Module;
 import dagger.Provides;
-import dagger.hilt.migration.DisableInstallInCheck;
+import dagger.hilt.InstallIn;
+import dagger.hilt.android.components.ActivityComponent;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.permissions.PlanckPermissionRequester;
 import security.planck.ui.resources.PlanckResourcesProvider;
@@ -17,7 +18,7 @@ import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @Module
-@DisableInstallInCheck
+@InstallIn(ActivityComponent.class)
 public class ActivityModule {
 
    @Provides

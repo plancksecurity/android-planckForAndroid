@@ -75,6 +75,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.group.GroupTestScreen;
 import security.planck.mdm.RestrictionsListener;
@@ -91,6 +92,7 @@ import timber.log.Timber;
  * shows a list of messages.
  * From this Activity the user can perform all standard message operations.
  */
+@AndroidEntryPoint
 public class MessageList extends PlanckActivity implements MessageListFragmentListener,
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker, RestrictionsListener {
 
@@ -425,11 +427,6 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
 
         }
         return appData;
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override

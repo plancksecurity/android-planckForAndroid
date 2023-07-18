@@ -1,6 +1,7 @@
 package com.fsck.k9.planck.infrastructure.modules;
 
 
+import android.app.Application;
 import android.content.Context;
 
 import com.fsck.k9.K9;
@@ -20,13 +21,14 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
-import dagger.hilt.migration.DisableInstallInCheck;
+import dagger.hilt.components.SingletonComponent;
 import security.planck.permissions.PermissionChecker;
 import security.planck.ui.permissions.PlanckPermissionChecker;
 
 @Module
-@DisableInstallInCheck
+@InstallIn(SingletonComponent.class)
 public class ApplicationModule {
 
     @Provides
@@ -76,9 +78,7 @@ public class ApplicationModule {
     }
 
     @Provides
-    @ApplicationContext
-    Context provideAppContext(K9 k9) {
-        return k9.getApplicationContext();
+    K9 provideK9(Application context) {
+        return (K9) context;
     }
-
 }

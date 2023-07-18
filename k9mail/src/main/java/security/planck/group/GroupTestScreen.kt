@@ -19,6 +19,7 @@ import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.tools.FeedbackTools
+import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,7 @@ import timber.log.Timber
 import java.util.Vector
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class GroupTestScreen : PlanckActivity() {
     private lateinit var binding: GroupTestBinding
 
@@ -448,10 +450,6 @@ class GroupTestScreen : PlanckActivity() {
 
     private fun displayError(e: Throwable) {
         FeedbackTools.showLongFeedback(binding.root, e.message)
-    }
-
-    override fun inject() {
-        planckComponent.inject(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

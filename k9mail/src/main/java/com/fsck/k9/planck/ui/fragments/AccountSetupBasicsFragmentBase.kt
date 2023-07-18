@@ -3,7 +3,9 @@ package com.fsck.k9.planck.ui.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
@@ -14,16 +16,19 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.planck.ui.ConnectionSettings
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator
 import com.fsck.k9.planck.ui.tools.SetupAccountType
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.provisioning.ProvisioningSettings
+import security.planck.ui.toolbar.ToolBarCustomizer
 import timber.log.Timber
 import java.net.URISyntaxException
 import javax.inject.Inject
 
-abstract class AccountSetupBasicsFragmentBase : PlanckFragment() {
+@AndroidEntryPoint
+abstract class AccountSetupBasicsFragmentBase : Fragment() {
 
     protected var account: Account? = null
     private var checkedIncoming = false
@@ -39,6 +44,12 @@ abstract class AccountSetupBasicsFragmentBase : PlanckFragment() {
 
     @Inject
     lateinit var setupAccountType: SetupAccountType
+
+    @Inject
+    lateinit var toolbarCustomizer: ToolBarCustomizer
+
+    @Inject
+    lateinit var k9: K9
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

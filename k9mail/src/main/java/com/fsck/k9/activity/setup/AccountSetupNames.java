@@ -29,16 +29,17 @@ import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.planck.PlanckUtils;
-import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
+@AndroidEntryPoint
 public class AccountSetupNames extends PlanckActivity implements OnClickListener {
     public static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MANUAL_SETUP = "manualSetup";
@@ -141,11 +142,6 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
     }
 
     @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
@@ -238,9 +234,9 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
                 account.setOptionsOnInstall();
             }
             if (((K9) mContext.getApplicationContext()).isRunningOnWorkProfile()) {
-                ((K9) mContext.getApplicationContext()).getComponent()
-                        .configurationManagerFactory().create(mContext)
-                        .loadConfigurationsBlocking();
+                //((K9) mContext.getApplicationContext()).getComponent()
+                //        .configurationManagerFactory().create(mContext)
+                //        .loadConfigurationsBlocking();
             } else {
                 account.save(Preferences.getPreferences(mActivity));
             }

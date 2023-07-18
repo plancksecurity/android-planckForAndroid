@@ -22,10 +22,6 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
-import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.helper.MessageHelper;
@@ -35,11 +31,14 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.PlanckContactBadge;
 import com.fsck.k9.planck.ui.infrastructure.MessageAction;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import java.util.Arrays;
@@ -112,7 +111,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        getApplicationComponent().inject(this);
 
     }
 
@@ -634,9 +632,5 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void setOnCryptoClickListener(OnCryptoClickListener onCryptoClickListener) {
         this.onCryptoClickListener = onCryptoClickListener;
-    }
-
-    private ApplicationComponent getApplicationComponent() {
-        return ((K9) mContext.getApplicationContext()).getComponent();
     }
 }

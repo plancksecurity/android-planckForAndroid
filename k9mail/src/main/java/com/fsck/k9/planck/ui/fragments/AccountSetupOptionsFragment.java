@@ -2,6 +2,8 @@ package com.fsck.k9.planck.ui.fragments;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +21,18 @@ import com.fsck.k9.activity.setup.SpinnerOption;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 /**
  * Created by arturo on 7/14/17.
  */
 
-public class AccountSetupOptionsFragment extends PlanckFragment {
+@AndroidEntryPoint
+public class AccountSetupOptionsFragment extends Fragment {
     private static final String EXTRA_ACCOUNT = "account";
 
     private Spinner mCheckFrequencyView;
@@ -42,6 +49,9 @@ public class AccountSetupOptionsFragment extends PlanckFragment {
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
 
+    @Inject
+    ToolBarCustomizer toolbarCustomizer;
+
     public static AccountSetupOptionsFragment actionOptions(Account account) {
         AccountSetupOptionsFragment fragment = new AccountSetupOptionsFragment();
         Bundle bundle = new Bundle();
@@ -53,7 +63,7 @@ public class AccountSetupOptionsFragment extends PlanckFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        setupPlanckFragmentToolbar();
+        toolbarCustomizer.setDefaultStatusBarColor();
         rootView = inflater.inflate(R.layout.account_setup_options, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_settings_title_fmt);
@@ -141,11 +151,6 @@ public class AccountSetupOptionsFragment extends PlanckFragment {
             mPushEnable.setChecked(true);
         }
         return rootView;
-    }
-
-    @Override
-    protected void inject() {
-        getPlanckComponent().inject(this);
     }
 
     private void onDone() {

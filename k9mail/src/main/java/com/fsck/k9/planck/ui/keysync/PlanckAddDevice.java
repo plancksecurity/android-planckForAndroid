@@ -36,10 +36,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
+@AndroidEntryPoint
 public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
@@ -71,6 +73,8 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
 
     @Inject
     ResourcesProvider resourcesProvider;
+    @Inject
+    PlanckProvider planckProvider;
 
     @Bind(R.id.fingerprintView) View fingerPrints;
     @Bind(R.id.partnerLabel) TextView partnerLabel;
@@ -119,7 +123,6 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
 
         int resource = resourcesProvider.getAttributeResource(R.attr.iconLanguageGray);
         getToolbar().setOverflowIcon(ContextCompat.getDrawable(this, resource));
-        initPep();
 
         if (intent != null) {
             explanationTextView.setText(intent.getStringExtra(EXPLANATION));
@@ -130,7 +133,6 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
                 partnerIdentity = (Identity) intent.getSerializableExtra(PARTNER);
                 myIdentity = (Identity) intent.getSerializableExtra(MYSELF);
                 boolean isManualSync = intent.getBooleanExtra(MANUAL, false);
-                List<Account> accounts = Preferences.getPreferences(PlanckAddDevice.this).getAccounts();
 
                 try {
                     showDebugInfo();
@@ -139,7 +141,7 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
                 intent.removeExtra(TRUSTWORDS);
                 intent.removeExtra(MYSELF);
                 intent.removeExtra(PARTNER);
-                presenter.initialize(this, getPlanck(), myIdentity, partnerIdentity, accounts, isManualSync, intent.getStringExtra(PEP_KEY_LIST));
+                presenter.initialize(this, myIdentity, partnerIdentity, isManualSync, intent.getStringExtra(PEP_KEY_LIST));
             }
         }
 
@@ -158,11 +160,6 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
     @Override
     public void search(String query) {
 
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -231,7 +228,7 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
 //        myIdentity = getpEp().updateIdentity(myIdentity);
 //        partnerIdentity = getpEp().updateIdentity(partnerIdentity);
 
-        getPlanck().obtainTrustwords(myIdentity, partnerIdentity, language,
+        planckProvider.obtainTrustwords(myIdentity, partnerIdentity, language,
                 true,
                 new PlanckProvider.ResultCallback<HandshakeData>() {
             @Override
@@ -255,7 +252,7 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
     private void changeTrustwordsLength(Boolean areShort) {
         areTrustwordsShort = areShort;
         if (areShort) {
-            getPlanck().obtainTrustwords(myIdentity, partnerIdentity,
+            planckProvider.obtainTrustwords(myIdentity, partnerIdentity,
                     trustwordsLanguage,
                     true,
                     new PlanckProvider.ResultCallback<HandshakeData>() {
@@ -271,7 +268,7 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
                 }
             });
         } else {
-            getPlanck().obtainTrustwords(myIdentity, partnerIdentity,
+            planckProvider.obtainTrustwords(myIdentity, partnerIdentity,
                     trustwordsLanguage,
                     true,
                     new PlanckProvider.ResultCallback<HandshakeData>() {
@@ -388,7 +385,7 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getPlanck().obtainTrustwords(myIdentity, partnerIdentity,
+        planckProvider.obtainTrustwords(myIdentity, partnerIdentity,
                 trustwordsLanguage,
                 true,
                 new PlanckProvider.ResultCallback<HandshakeData>() {

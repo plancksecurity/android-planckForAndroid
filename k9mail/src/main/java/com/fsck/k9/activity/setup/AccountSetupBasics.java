@@ -28,6 +28,7 @@ import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.permissions.PermissionRequester;
 
 /**
@@ -37,6 +38,7 @@ import security.planck.permissions.PermissionRequester;
  * activity. If no settings are found the settings are handed off to the
  * AccountSetupAccountType activity.
  */
+@AndroidEntryPoint
 public class AccountSetupBasics extends PlanckImporterActivity {
 
     private static final String EXTRA_ACCOUNT = "account";
@@ -147,11 +149,6 @@ public class AccountSetupBasics extends PlanckImporterActivity {
     @Override
     public void search(String query) {
 
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override

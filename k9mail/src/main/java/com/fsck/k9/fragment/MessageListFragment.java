@@ -1,5 +1,20 @@
 package com.fsck.k9.fragment;
 
+import static android.view.View.GONE;
+import static com.fsck.k9.fragment.MLFProjectionInfo.ACCOUNT_UUID_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.FLAGGED_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.FOLDER_ID_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.FOLDER_NAME_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.ID_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.PROJECTION;
+import static com.fsck.k9.fragment.MLFProjectionInfo.READ_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.SENDER_LIST_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.SUBJECT_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.THREADED_PROJECTION;
+import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_COUNT_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_ROOT_COLUMN;
+import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,23 +25,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-
-import com.fsck.k9.planck.ui.fragments.PlanckFragment;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
-import com.fsck.k9.ui.contacts.ContactPictureLoader;
-import com.fsck.k9.search.SqlQueryBuilderInvoker;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.annotation.AttrRes;
-import androidx.fragment.app.DialogFragment;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -44,6 +42,18 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.AttrRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -93,12 +103,12 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import org.jetbrains.annotations.NotNull;
-
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,28 +124,14 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
-import static android.view.View.GONE;
-import static com.fsck.k9.fragment.MLFProjectionInfo.ACCOUNT_UUID_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.FLAGGED_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.FOLDER_ID_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.FOLDER_NAME_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.ID_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.PEP_RATING_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.PROJECTION;
-import static com.fsck.k9.fragment.MLFProjectionInfo.READ_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.SENDER_LIST_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.SUBJECT_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.THREADED_PROJECTION;
-import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_COUNT_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_ROOT_COLUMN;
-import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
-
-
-public class MessageListFragment extends PlanckFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
+@AndroidEntryPoint
+public class MessageListFragment extends Fragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
     private static final long CLICK_THRESHOLD_MILLIS = 300;
     private FloatingActionButton fab;
@@ -557,11 +553,6 @@ public class MessageListFragment extends PlanckFragment implements ConfirmationD
         createCacheBroadcastReceiver(appContext);
 
         initialized = true;
-    }
-
-    @Override
-    protected void inject() {
-        getPlanckComponent().inject(this);
     }
 
     private boolean anyAccountWasDeleted() {

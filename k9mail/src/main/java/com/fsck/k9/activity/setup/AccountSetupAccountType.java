@@ -80,11 +80,6 @@ public class AccountSetupAccountType extends PlanckActivity implements OnClickLi
     }
 
     @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {

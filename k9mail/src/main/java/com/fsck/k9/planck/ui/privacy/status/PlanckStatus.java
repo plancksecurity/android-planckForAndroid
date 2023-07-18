@@ -40,9 +40,11 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
+@AndroidEntryPoint
 public class PlanckStatus extends PlanckActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
@@ -132,11 +134,6 @@ public class PlanckStatus extends PlanckActivity implements PlanckStatusView, Co
         presenter.restoreInstanceState(savedInstanceState);
         setUpActionBar();
         presenter.loadRecipients();
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     private void setUpActionBar() {
