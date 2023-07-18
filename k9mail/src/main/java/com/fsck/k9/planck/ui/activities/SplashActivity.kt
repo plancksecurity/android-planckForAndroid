@@ -9,7 +9,12 @@ import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningActivity
 class SplashActivity : AppCompatActivity(), SplashScreen {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startActivity(Intent(this, ProvisioningActivity::class.java))
+        startActivity(
+            Intent(
+                this,
+                ProvisioningActivity::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        )
         finish()
     }
 }
