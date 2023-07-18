@@ -4,6 +4,7 @@ package com.fsck.k9.planck.infrastructure.modules;
 import android.app.Application;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -100,5 +101,11 @@ public class ApplicationModule {
     @Singleton
     public StorageManager provideStorageManager(@ApplicationContext Context application) {
         return StorageManager.getInstance(application);
+    }
+
+    @Provides
+    @Singleton
+    public Resources provideAppResources(@ApplicationContext Context application) {
+        return application.getResources();
     }
 }
