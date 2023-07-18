@@ -50,11 +50,13 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.scopes.ViewScoped;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.permissions.PermissionChecker;
 import timber.log.Timber;
 
 @AndroidEntryPoint
+@ViewScoped
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
     private Context mContext;
     private TextView mFromView;

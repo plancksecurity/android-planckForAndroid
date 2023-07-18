@@ -49,10 +49,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.scopes.ViewScoped;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 @AndroidEntryPoint
+@ViewScoped
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
         AlternateRecipientListener, RecipientSelectContract {
 
