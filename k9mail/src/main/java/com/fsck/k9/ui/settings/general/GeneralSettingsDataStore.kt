@@ -5,11 +5,13 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.ui.tools.ThemeManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
+import javax.inject.Inject
 
-class GeneralSettingsDataStore(
-        private val context: Context,
+class GeneralSettingsDataStore @Inject constructor(
+        @ApplicationContext private val context: Context,
         private val preferences: Preferences,
         private val executorService: ExecutorService
 ) : PreferenceDataStore() {
