@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.planck.DefaultDispatcherProvider;
 import com.fsck.k9.planck.DispatcherProvider;
 import com.fsck.k9.planck.PlanckProvider;
@@ -17,6 +18,9 @@ import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.planck.infrastructure.threading.UIThread;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsCheck;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -85,4 +89,9 @@ public class ApplicationModule {
 
     @Provides
     IntentFilter provideNewIntentFilter() { return new IntentFilter(); }
+
+    @Provides
+    public ExecutorService provideSettingsThreadExecutor() {
+        return Executors.newSingleThreadExecutor(new NamedThreadFactory("SaveSettings"));
+    }
 }

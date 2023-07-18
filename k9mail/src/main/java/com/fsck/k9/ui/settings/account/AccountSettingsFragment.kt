@@ -41,11 +41,13 @@ import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by viewModels()
-    private val dataStoreFactory: AccountSettingsDataStoreFactory by inject()
+    @Inject
+    lateinit var dataStoreFactory: AccountSettingsDataStoreFactory
     private val storageManager: StorageManager by inject()
     private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })
 
