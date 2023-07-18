@@ -410,10 +410,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         }
     }
 
-    override fun search(query: String?) {
-
-    }
-
     private fun onCancel() {
         setMessage(R.string.account_setup_check_settings_canceling_msg)
         checkSettingsViewModel.cancel()

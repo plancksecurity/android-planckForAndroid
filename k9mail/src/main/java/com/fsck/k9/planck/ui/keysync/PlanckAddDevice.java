@@ -158,11 +158,6 @@ public class PlanckAddDevice extends WizardActivity implements AddDeviceView {
     }
 
     @Override
-    public void search(String query) {
-
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (presenter.ispEp()) {
             getMenuInflater().inflate(R.menu.menu_add_device, menu);

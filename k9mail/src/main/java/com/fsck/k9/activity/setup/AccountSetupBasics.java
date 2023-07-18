@@ -147,11 +147,6 @@ public class AccountSetupBasics extends PlanckImporterActivity {
     }
 
     @Override
-    public void search(String query) {
-
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);

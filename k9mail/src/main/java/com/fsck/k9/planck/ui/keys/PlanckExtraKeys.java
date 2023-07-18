@@ -3,13 +3,14 @@ package com.fsck.k9.planck.ui.keys;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fsck.k9.R;
-import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.ui.blacklist.KeyListItem;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import butterknife.ButterKnife;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class PlanckExtraKeys extends PlanckActivity implements PlanckExtraKeysView {
+public class PlanckExtraKeys extends K9Activity implements PlanckExtraKeysView {
 
     @Inject
     PlanckExtraKeysPresenter presenter;

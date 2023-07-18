@@ -94,7 +94,6 @@ import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
@@ -134,7 +133,7 @@ import timber.log.Timber;
 
 @AndroidEntryPoint
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
-public class MessageCompose extends PlanckActivity implements OnClickListener,
+public class MessageCompose extends K9Activity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
         AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener, RestrictionsListener {
@@ -575,11 +574,6 @@ public class MessageCompose extends PlanckActivity implements OnClickListener,
         }
         toolBarCustomizer.setMessageToolbarColor();
         toolBarCustomizer.setMessageStatusBarColor();
-    }
-
-    @Override
-    public void search(String query) {
-
     }
 
     /**

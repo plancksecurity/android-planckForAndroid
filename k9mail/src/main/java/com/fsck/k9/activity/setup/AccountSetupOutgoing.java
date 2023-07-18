@@ -61,9 +61,4 @@ public class AccountSetupOutgoing extends K9Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void search(String query) {
-
-    }
-
 }

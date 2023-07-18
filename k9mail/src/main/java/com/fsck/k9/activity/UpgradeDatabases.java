@@ -121,11 +121,6 @@ public class UpgradeDatabases extends K9Activity {
         setupBroadcastReceiver();
     }
 
-    @Override
-    public void search(String query) {
-
-    }
-
     /**
      * Initialize the activity's layout
      */

@@ -11,9 +11,9 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import com.fsck.k9.Preferences
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.databinding.GroupTestBinding
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
@@ -31,7 +31,7 @@ import java.util.Vector
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class GroupTestScreen : PlanckActivity() {
+class GroupTestScreen : K9Activity() {
     private lateinit var binding: GroupTestBinding
 
     @Inject

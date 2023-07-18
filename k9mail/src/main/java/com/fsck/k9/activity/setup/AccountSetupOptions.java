@@ -138,11 +138,6 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
     }
 
     @Override
-    public void search(String query) {
-
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {

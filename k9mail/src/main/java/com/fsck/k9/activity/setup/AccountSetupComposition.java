@@ -113,11 +113,6 @@ public class AccountSetupComposition extends K9Activity {
         }
     }
 
-    @Override
-    public void search(String query) {
-
-    }
-
     private void saveSettings() {
         mAccount.setEmail(mAccountEmail.getText().toString());
         mAccount.setAlwaysBcc(mAccountAlwaysBcc.getText().toString());

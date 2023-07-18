@@ -245,7 +245,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         ButterKnife.bind(this);
     }
 
-    public abstract void search(String query);
+    public void search(String query) {}
 
     @Override
     protected void onResume() {

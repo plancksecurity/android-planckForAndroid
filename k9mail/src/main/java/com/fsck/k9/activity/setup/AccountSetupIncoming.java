@@ -62,11 +62,6 @@ public class AccountSetupIncoming extends K9Activity {
     }
 
     @Override
-    public void search(String query) {
-
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:

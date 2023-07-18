@@ -21,13 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.models.PlanckIdentity;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 
@@ -45,7 +44,7 @@ import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @AndroidEntryPoint
-public class PlanckStatus extends PlanckActivity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
+public class PlanckStatus extends K9Activity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String SENDER = "isComposedKey";

@@ -46,7 +46,6 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.planck.ui.infrastructure.Router;
@@ -93,7 +92,7 @@ import timber.log.Timber;
  * From this Activity the user can perform all standard message operations.
  */
 @AndroidEntryPoint
-public class MessageList extends PlanckActivity implements MessageListFragmentListener,
+public class MessageList extends K9Activity implements MessageListFragmentListener,
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker, RestrictionsListener {
 
     @Inject

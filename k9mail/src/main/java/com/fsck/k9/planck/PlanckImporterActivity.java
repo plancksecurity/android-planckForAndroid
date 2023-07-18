@@ -29,6 +29,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
@@ -51,7 +52,7 @@ import java.util.Set;
 
 import timber.log.Timber;
 
-public abstract class PlanckImporterActivity extends PlanckActivity {
+public abstract class PlanckImporterActivity extends K9Activity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0;
     protected static final int DIALOG_NO_FILE_MANAGER = 4;

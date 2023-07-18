@@ -170,8 +170,6 @@ class OAuthFlowActivity : K9Activity(), ConfirmationDialogFragment.ConfirmationD
         outState.putBoolean(STATE_PROGRESS, signInProgress.isVisible)
     }
 
-    override fun search(query: String?) {}
-
     override fun onTokenRevoked(accountUuid: String) {
         val currentAccountUuid = intent.getStringExtra(EXTRA_ACCOUNT_UUID)
         if (currentAccountUuid != null && currentAccountUuid != accountUuid) {

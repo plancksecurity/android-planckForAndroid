@@ -93,11 +93,6 @@ public class EditIdentity extends K9Activity {
         }
     }
 
-    @Override
-    public void search(String query) {
-
-    }
-
     private void saveIdentity() {
 
         mIdentity.setDescription(mDescriptionView.getText().toString());

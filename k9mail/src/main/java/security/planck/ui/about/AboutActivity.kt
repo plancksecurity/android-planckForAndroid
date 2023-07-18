@@ -11,8 +11,8 @@ import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
-import com.fsck.k9.planck.PlanckActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_about.aboutText
 import kotlinx.android.synthetic.main.activity_about.documentation_button
@@ -24,7 +24,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AboutActivity : PlanckActivity() {
+class AboutActivity : K9Activity() {
 
     @Inject
     lateinit var toolbarCustomizer: ToolBarCustomizer

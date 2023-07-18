@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import butterknife.ButterKnife
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.planck.PlanckActivity
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.ui.keys.KeyItemAdapter
 import com.fsck.k9.planck.ui.keys.OnKeyClickListener
@@ -33,7 +33,7 @@ import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 
 @AndroidEntryPoint
-class PlanckBlacklist : PlanckActivity(), SearchView.OnQueryTextListener {
+class PlanckBlacklist : K9Activity(), SearchView.OnQueryTextListener {
 
     private lateinit var recipientsView: RecyclerView
     private lateinit var container: LinearLayout

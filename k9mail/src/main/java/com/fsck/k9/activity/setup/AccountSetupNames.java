@@ -24,12 +24,12 @@ import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
@@ -40,7 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @AndroidEntryPoint
-public class AccountSetupNames extends PlanckActivity implements OnClickListener {
+public class AccountSetupNames extends K9Activity implements OnClickListener {
     public static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MANUAL_SETUP = "manualSetup";
 
@@ -134,11 +134,6 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
         if (nonConfigurationInstance != null) {
             nonConfigurationInstance.restore(this);
         }
-    }
-
-    @Override
-    public void search(String query) {
-
     }
 
     @Override
