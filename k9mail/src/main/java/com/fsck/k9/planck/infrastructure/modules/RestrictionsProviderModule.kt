@@ -21,10 +21,8 @@ interface RestrictionsProviderModule {
         planckRestrictions: PlanckRestrictions
     ): RestrictionsProvider
 
-    @Module
     companion object {
         @Provides
-        @JvmStatic
         fun provideSystemRestrictionsManager(
             @ApplicationContext application: Context
         ): RestrictionsManager {
@@ -32,7 +30,6 @@ interface RestrictionsProviderModule {
         }
 
         @Provides
-        @JvmStatic
         fun providePackageName(
             @ApplicationContext application: Context
         ): String {
