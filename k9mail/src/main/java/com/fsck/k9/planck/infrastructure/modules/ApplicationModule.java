@@ -3,6 +3,7 @@ package com.fsck.k9.planck.infrastructure.modules;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -81,4 +82,7 @@ public class ApplicationModule {
     K9 provideK9(Application context) {
         return (K9) context;
     }
+
+    @Provides
+    IntentFilter provideNewIntentFilter() { return new IntentFilter(); }
 }

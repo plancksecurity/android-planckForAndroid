@@ -18,12 +18,12 @@ class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val urlChecker: UrlChecker,
-    private val configurationManagerFactory: ConfigurationManager.Factory,
+    private val configurationManager: ConfigurationManager,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
 ) {
     private var provisionState: ProvisionState =
-        if (k9.isRunningOnWorkProfile()) ProvisionState.WaitingForProvisioning
+        if (k9.isRunningOnWorkProfile) ProvisionState.WaitingForProvisioning
         else ProvisionState.Initializing()
 
     private val listeners = mutableListOf<ProvisioningStateListener>()
@@ -56,7 +56,7 @@ class ProvisioningManager @Inject constructor(
             }
             else -> {
                 val hasAccounts = preferences.accounts.isNotEmpty()
-                configurationManagerFactory.create(k9).loadConfigurationsSuspend(
+                configurationManager.loadConfigurationsSuspend(
                     ProvisioningStage.Startup(!hasAccounts)
                 ).flatMapSuspend {
                     if(!hasAccounts) {
@@ -71,7 +71,7 @@ class ProvisioningManager @Inject constructor(
 
     fun performInitializedEngineProvisioning() = runBlocking<Unit> {
         if (k9.isRunningOnWorkProfile) {
-            configurationManagerFactory.create(k9)
+            configurationManager
                 .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine)
                 .onFailure { throw it }
         }

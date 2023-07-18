@@ -22,6 +22,8 @@ import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.mdm.ConfigurationManager;
 import security.planck.mdm.RestrictionsListener;
@@ -40,22 +42,6 @@ public class K9ActivityCommon {
     private IntentFilter passphraseReceiverfilter;
     private ConfigurationManager configurationManager;
     private OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver;
-
-    /**
-     * Creates a new instance of {@link K9ActivityCommon} bound to the specified activity.
-     *
-     * @param activity
-     *         The {@link Activity} the returned {@code K9ActivityCommon} instance will be bound to.
-     *
-     * @return The {@link K9ActivityCommon} instance that will provide the base functionality of the
-     *         "K9" activities.
-     */
-    public static K9ActivityCommon newInstance(
-            Activity activity,
-            ConfigurationManager.Factory configurationManagerFactory
-    ) {
-        return new K9ActivityCommon(activity, configurationManagerFactory);
-    }
 
     public static void setLanguage(Context context, String language) {
         invalidateChromeLocaleForWebView(context);
@@ -102,22 +88,24 @@ public class K9ActivityCommon {
     private GestureDetector mGestureDetector;
     private SwipeGestureDetector swipeGestureDetector;
 
-
-    private K9ActivityCommon(
+    @Inject
+    public K9ActivityCommon(
             Activity activity,
-            ConfigurationManager.Factory configurationManagerFactory
+            ConfigurationManager configurationManager,
+            PassphraseRequestReceiver passphraseRequestReceiver,
+            IntentFilter passphraseReceiverfilter,
+            OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver
     ) {
         mActivity = activity;
+        this.configurationManager = configurationManager;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
+        this.passphraseReceiverfilter = passphraseReceiverfilter;
         initPassphraseRequestReceiver();
-        initConfigurationManager(configurationManagerFactory);
-        initOAuthTokenRevokedReceiver();
+        this.oAuthTokenRevokedReceiver = oAuthTokenRevokedReceiver;
+        this.passphraseReceiver = passphraseRequestReceiver;
+        this.passphraseReceiverfilter = passphraseReceiverfilter;
         configureNavigationBar(activity);
-    }
-
-    private void initConfigurationManager(ConfigurationManager.Factory configurationManagerFactory) {
-        configurationManager = configurationManagerFactory.create(mActivity);
     }
 
     public static void configureNavigationBar(Activity activity) {
@@ -178,8 +166,6 @@ public class K9ActivityCommon {
     }
 
     private void initPassphraseRequestReceiver() {
-        passphraseReceiver = new PassphraseRequestReceiver();
-        passphraseReceiverfilter = new IntentFilter();
         passphraseReceiverfilter.addAction(PassphraseActivityKt.PASSPHRASE_REQUEST_ACTION);
         passphraseReceiverfilter.setPriority(1);
     }
@@ -215,6 +201,9 @@ public class K9ActivityCommon {
     }
 
     public static class PassphraseRequestReceiver extends BroadcastReceiver {
+
+        @Inject
+        public PassphraseRequestReceiver() {}
 
         @Override
         public void onReceive(Context context, Intent intent) {

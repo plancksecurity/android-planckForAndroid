@@ -692,7 +692,6 @@ public class K9 extends MultiDexApplication {
                 new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
                 auditLogDataTimeRetention
         );
-        appAliveMonitor = new AppAliveMonitor(preferences.getStorage());
         auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
         auditLogger.addStartEventLog();
         appAliveMonitor.startAppAliveMonitor();
