@@ -407,5 +407,6 @@
     <string name="notification_additional_group_mail_events">+ %1$d more on %2$s</string>
     <string name="group_mail_notification_subject">Group mail notification from %s</string>
     <string name="group_mail_notification_summary">You were added to mail group %1$s by %2$s</string>
+    <string name="sync_dialog_awaiting_other_device">Waiting for the other device…</string>
 
 </resources>

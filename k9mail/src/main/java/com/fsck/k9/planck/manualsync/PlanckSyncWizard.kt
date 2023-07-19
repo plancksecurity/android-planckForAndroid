@@ -3,6 +3,8 @@ package com.fsck.k9.planck.manualsync
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -11,7 +13,9 @@ import androidx.core.view.isVisible
 import com.fsck.k9.R
 import com.fsck.k9.databinding.ActivityImportWizzardFromPgpBinding
 import com.fsck.k9.planck.ui.tools.ThemeManager
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PlanckSyncWizard : WizardActivity() {
     private lateinit var binding: ActivityImportWizzardFromPgpBinding
     private val viewModel: PlanckSyncWizardViewModel by viewModels()
@@ -26,21 +30,31 @@ class PlanckSyncWizard : WizardActivity() {
         observeViewModel()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.english -> viewModel.changeTrustwordsLanguage(0)
+            R.id.german -> viewModel.changeTrustwordsLanguage(1)
+        }
+        return true
+    }
+
     private fun setupViews() {
 
     }
 
     private fun observeViewModel() {
-        viewModel.syncState.observe(this) {
+        viewModel.getSyncState().observe(this) {
             renderSyncState(it)
         }
     }
 
     private fun renderSyncState(syncState: SyncScreenState) {
+        binding.syncStateFeedback.text = "State: ${syncState::class.java.simpleName}"
         when (syncState) {
-            SyncScreenState.Idle -> {}
-            SyncScreenState.AwaitingHandshakeStart -> {
+            SyncScreenState.Idle,
+            SyncScreenState.AwaitingOtherDevice -> {
                 binding.waitingForSync.isVisible = true
+                binding.syncStateFeedback.setText(R.string.sync_dialog_awaiting_other_device)
             }
 
             SyncScreenState.HandshakeReadyAwaitingUser -> {
@@ -58,7 +72,29 @@ class PlanckSyncWizard : WizardActivity() {
             is SyncScreenState.Done -> {
                 showKeySyncDone()
             }
+
+            SyncScreenState.Cancelled -> {
+                finish()
+            }
+            SyncScreenState.TimeoutError -> {
+                showSomethingWentWrong()
+            }
         }
+    }
+
+    private fun showSomethingWentWrong() {
+        binding.description.setText(R.string.keysync_wizard_error_message)
+        binding.dissmissActionButton.isVisible = false
+        binding.afirmativeActionButton.isVisible = true
+        binding.afirmativeActionButton.setTextColor(ThemeManager.getColorFromAttributeResource(this, R.attr.defaultColorOnBackground))
+        binding.afirmativeActionButton.setOnClickListener {
+            viewModel.cancelHandshake()
+            finish()
+        }
+        binding.negativeActionButton.isVisible = false
+        binding.trustwordsContainer.isVisible = false
+        binding.currentState.isVisible = true
+        binding.loading.isVisible = false
     }
 
     private fun showKeySyncDone() {
@@ -84,7 +120,10 @@ class PlanckSyncWizard : WizardActivity() {
         binding.loading.isVisible = true
         binding.afirmativeActionButton.isVisible = false
         binding.negativeActionButton.isVisible = false
-        binding.dissmissActionButton.setOnClickListener { viewModel.cancelHandshake() }
+        binding.dissmissActionButton.setOnClickListener {
+            viewModel.cancelHandshake()
+            finish()
+        }
     }
 
     private fun showAwaitingUserToStartHandshake() {

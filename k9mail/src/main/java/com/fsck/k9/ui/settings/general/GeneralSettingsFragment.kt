@@ -14,6 +14,7 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.manualsync.PlanckSyncWizard
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
@@ -105,7 +106,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             .setMessage(R.string.planck_key_sync_warning)
                             .setCancelable(true)
                             .setPositiveButton(R.string.sync_action) { _, _ ->
-                                k9.allowManualSync()
+                                startManualSync()
                             }.setNegativeButton(R.string.cancel_action, null).show()
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
@@ -114,6 +115,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun startManualSync() {
+        k9.allowManualSync()
+        PlanckSyncWizard.startKeySync(requireActivity())
     }
 
     private fun shouldDisplayManualSyncButton(): Boolean =

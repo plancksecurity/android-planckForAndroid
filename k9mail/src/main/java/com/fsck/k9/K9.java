@@ -43,6 +43,8 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
 import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
+import com.fsck.k9.planck.manualsync.SyncScreenState;
+import com.fsck.k9.planck.manualsync.SyncStateChangeListener;
 import com.fsck.k9.planck.ui.tools.AppTheme;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -116,6 +118,8 @@ public class K9 extends MultiDexApplication {
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
     private AuditLogger auditLogger;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
+    private SyncScreenState syncState = SyncScreenState.Idle.INSTANCE;
+    private SyncStateChangeListener syncStateChangeListener;
 
     @Inject
     Preferences preferences;
@@ -1937,7 +1941,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void polling() {
-        if (needsFastPoll.get() && !isPollingMessages) {
+        if (syncState.getNeedsFastPolling() && !isPollingMessages) {
             Log.d("pEpDecrypt", "Entering looper");
             isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
@@ -1986,6 +1990,42 @@ public class K9 extends MultiDexApplication {
         this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
+    public SyncScreenState getSyncState() {
+        return syncState;
+    }
+
+    public void setSyncState(SyncScreenState syncState) {
+        this.syncState = syncState;
+    }
+
+    private void setSyncStateAndNotify(SyncScreenState syncState) {
+        this.syncState = syncState;
+        if (syncStateChangeListener != null) {
+            syncStateChangeListener.syncStateChanged(syncState);
+        }
+    }
+
+    private void setSyncStateAndNotify(
+            SyncScreenState syncState,
+            Identity myself,
+            Identity partner,
+            boolean formingGroup
+    ) {
+        this.syncState = syncState;
+        if (syncStateChangeListener != null) {
+            syncStateChangeListener.syncStateChanged(
+                    syncState,
+                    myself,
+                    partner,
+                    formingGroup
+            );
+        }
+    }
+
+    public void setSyncStateChangeListener(SyncStateChangeListener syncStateChangeListener) {
+        this.syncStateChangeListener = syncStateChangeListener;
+    }
+
     private void startOrResetManualSyncCountDownTimer() {
         if (manualSyncCountDownTimer == null) {
             manualSyncCountDownTimer = new ManualSyncCountDownTimer(this, planckProvider);
@@ -1994,15 +2034,17 @@ public class K9 extends MultiDexApplication {
     }
 
     public void allowManualSync() {
-        allowpEpSyncNewDevices.set(true);
-        needsFastPoll.set(true);
+        //allowpEpSyncNewDevices.set(true);
+        //needsFastPoll.set(true);
         startOrResetManualSyncCountDownTimer();
     }
 
     public void disallowSync() {
-        allowpEpSyncNewDevices.set(false);
+        //allowpEpSyncNewDevices.set(false);
+        setSyncStateAndNotify(SyncScreenState.Cancelled.INSTANCE);
         manualSyncCountDownTimer = null;
-        needsFastPoll.set(false);
+        //needsFastPoll.set(false);
+        syncState = SyncScreenState.Idle.INSTANCE;
     }
 
     public void cancelSync() {
@@ -2034,45 +2076,59 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
-                        allowpEpSyncNewDevices.set(false);
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                        setSyncStateAndNotify(
+                                SyncScreenState.HandshakeReadyAwaitingUser.INSTANCE,
+                                myself,
+                                partner,
+                                false
+                        );
+                        //allowpEpSyncNewDevices.set(false);
+                        //ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                     }
                     break;
                 case SyncNotifyInitFormGroup:
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
-                        allowpEpSyncNewDevices.set(false);
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
+                        setSyncStateAndNotify(
+                                SyncScreenState.HandshakeReadyAwaitingUser.INSTANCE,
+                                myself,
+                                partner,
+                                true
+                        );
+                        //allowpEpSyncNewDevices.set(false);
+                        //ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                     }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
-                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
-                    needsFastPoll.set(false);
+                    setSyncStateAndNotify(SyncScreenState.TimeoutError.INSTANCE);
+                    //ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
+                    //needsFastPoll.set(false);
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                    needsFastPoll.set(false);
+                    setSyncStateAndNotify(SyncScreenState.Done.INSTANCE);
+                    //needsFastPoll.set(false);
                     break;
                 case SyncNotifySole:
                     grouped = false;
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
-                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
+                    //ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:
                     grouped = true;
                     planckSyncEnabled = true;
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
-                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
+                    //ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncPassphraseRequired:
-                    needsFastPoll.set(false);
+                    //needsFastPoll.set(false);
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
