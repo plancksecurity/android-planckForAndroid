@@ -1,0 +1,24 @@
+package com.fsck.k9.planck.manualsync
+sealed class SyncScreenState {
+    object Idle: SyncScreenState()
+
+    object AwaitingHandshakeStart: SyncScreenState()
+
+    object HandshakeReadyAwaitingUser: SyncScreenState()
+
+    data class UserHandshaking(
+        val ownFpr: String,
+        val partnerFpr: String,
+        val trustwords: String,
+    ): SyncScreenState()
+
+    data class AwaitingHandshakeCompletion(
+        val ownFpr: String,
+        val partnerFpr: String,
+    ): SyncScreenState()
+
+    object Done: SyncScreenState()
+}
+
+
+

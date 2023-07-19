@@ -576,6 +576,13 @@
             android:launchMode="singleInstance"
             android:excludeFromRecents="true" />
 
+        <activity
+            android:name=".planck.manualsync.PlanckSyncWizard"
+            android:theme="@style/OverlayTheme"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
         <activity android:name="security.planck.ui.passphrase.PassphraseActivity"
             android:launchMode="singleTask"
             android:label="@string/passhphrase_title"
