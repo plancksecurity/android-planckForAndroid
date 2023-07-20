@@ -2041,6 +2041,7 @@ public class K9 extends MultiDexApplication {
         setSyncStateAndNotify(SyncState.Cancelled.INSTANCE);
         manualSyncCountDownTimer = null;
         syncState = SyncState.Idle.INSTANCE;
+        planckProvider.stopSync();
     }
 
     public void cancelSync() {
