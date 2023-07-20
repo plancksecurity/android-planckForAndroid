@@ -282,6 +282,10 @@ class PlanckSyncWizard : WizardActivity() {
         else R.drawable.add_device_to_group
     }
 
+    override fun onBackPressed() {
+        // NOP
+    }
+
     companion object {
         fun startKeySync(context: Activity) {
             val intent = Intent(context, PlanckSyncWizard::class.java)
