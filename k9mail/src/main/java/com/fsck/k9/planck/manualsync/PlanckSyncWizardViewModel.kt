@@ -33,6 +33,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     private lateinit var myself: Identity
     private lateinit var partner: Identity
+    private var wasDone = false
 
     init {
         if (k9.syncState != SyncState.Idle && BuildConfig.DEBUG) {
@@ -126,6 +127,9 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     override fun syncStateChanged(state: SyncState) {
+        if (state == SyncState.Done) {
+            wasDone = true
+        }
         this.syncState.postValue(state)
     }
 
@@ -153,5 +157,9 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     fun isHandshaking(): Boolean = syncState.value is SyncState.UserHandshaking
+
+    fun cancelIfNotDone() {
+        if (!wasDone) cancelHandshake()
+    }
 
 }

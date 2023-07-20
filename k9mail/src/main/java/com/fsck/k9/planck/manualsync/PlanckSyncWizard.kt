@@ -283,7 +283,7 @@ class PlanckSyncWizard : WizardActivity() {
     }
 
     override fun onBackPressed() {
-        // NOP
+        viewModel.cancelIfNotDone()
     }
 
     companion object {
