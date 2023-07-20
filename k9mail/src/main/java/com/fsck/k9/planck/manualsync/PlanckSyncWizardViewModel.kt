@@ -61,7 +61,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
                 )
             }
 
-            else -> error("No next")
+            else -> error("No next for ${syncState.value}")
         }
     }
 
