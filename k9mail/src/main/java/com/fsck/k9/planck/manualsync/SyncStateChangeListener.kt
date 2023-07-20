@@ -6,7 +6,7 @@ interface SyncStateChangeListener {
     fun syncStateChanged(state: SyncState)
 
     fun syncStateChanged(
-        state: SyncState,
+        state: SyncState.HandshakeReadyAwaitingUser,
         myself: Identity,
         partner: Identity,
         formingGroup: Boolean,

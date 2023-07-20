@@ -134,7 +134,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     override fun syncStateChanged(
-        state: SyncState,
+        state: SyncState.HandshakeReadyAwaitingUser,
         myself: Identity,
         partner: Identity,
         formingGroup: Boolean

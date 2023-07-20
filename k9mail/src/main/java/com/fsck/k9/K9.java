@@ -2005,16 +2005,15 @@ public class K9 extends MultiDexApplication {
         }
     }
 
-    private void setSyncStateAndNotify(
-            SyncState syncState,
+    private void setHandshakeReadyStateAndNotify(
             Identity myself,
             Identity partner,
             boolean formingGroup
     ) {
-        this.syncState = syncState;
+        this.syncState = SyncState.HandshakeReadyAwaitingUser.INSTANCE;
         if (syncStateChangeListener != null) {
             syncStateChangeListener.syncStateChanged(
-                    syncState,
+                    SyncState.HandshakeReadyAwaitingUser.INSTANCE,
                     myself,
                     partner,
                     formingGroup
@@ -2075,8 +2074,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInitAddOtherDevice:
                     if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
-                        setSyncStateAndNotify(
-                                SyncState.HandshakeReadyAwaitingUser.INSTANCE,
+                        setHandshakeReadyStateAndNotify(
                                 myself,
                                 partner,
                                 false
@@ -2086,8 +2084,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInitFormGroup:
                     if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
-                        setSyncStateAndNotify(
-                                SyncState.HandshakeReadyAwaitingUser.INSTANCE,
+                        setHandshakeReadyStateAndNotify(
                                 myself,
                                 partner,
                                 true
