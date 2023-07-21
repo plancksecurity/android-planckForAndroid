@@ -26,7 +26,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     fun getSyncState(): LiveData<SyncScreenState> = syncState
 
     var formingGroup = false
-    var shortTrustWords = false
+    var shortTrustWords = true
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
@@ -140,4 +140,12 @@ class PlanckSyncWizardViewModel @Inject constructor(
         finish()
         k9.setSyncStateChangeListener(null)
     }
+
+    fun switchTrustwordsLength() {
+        shortTrustWords = !shortTrustWords
+        getOrRefreshTrustWords()
+    }
+
+    fun isHandshaking(): Boolean = syncState.value is SyncScreenState.UserHandshaking
+
 }
