@@ -118,7 +118,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun startManualSync() {
-        k9.allowManualSync()
         PlanckSyncWizard.startKeySync(requireActivity())
     }
 

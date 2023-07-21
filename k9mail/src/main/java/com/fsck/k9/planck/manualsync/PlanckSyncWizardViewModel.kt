@@ -36,7 +36,8 @@ class PlanckSyncWizardViewModel @Inject constructor(
     init {
         syncState.value = k9.syncState
         k9.setSyncStateChangeListener(this)
-        k9.syncState = SyncScreenState.AwaitingOtherDevice
+        setState(SyncScreenState.AwaitingOtherDevice)
+        k9.allowManualSync()
     }
 
     fun next() {
