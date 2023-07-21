@@ -24,6 +24,7 @@ import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.planck.infrastructure.threading.UIThread;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsCheck;
 import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
+import com.fsck.k9.preferences.Storage;
 
 import net.openid.appauth.AuthState;
 
@@ -75,6 +76,11 @@ public class ApplicationModule {
     @Provides
     public Preferences providePreferences(@ApplicationContext Context application) {
         return Preferences.getPreferences(application);
+    }
+
+    @Provides
+    public Storage provideStorage(Preferences preferences) {
+        return preferences.getStorage();
     }
 
     @Provides
