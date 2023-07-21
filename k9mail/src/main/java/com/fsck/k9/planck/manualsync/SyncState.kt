@@ -2,37 +2,37 @@ package com.fsck.k9.planck.manualsync
 
 object SyncState {
     // common states
-    object Idle: SyncScreenState, SyncAppState
+    object Idle : SyncScreenState, SyncAppState
 
-    object AwaitingOtherDevice: SyncScreenState, SyncAppState
+    object AwaitingOtherDevice : SyncScreenState, SyncAppState
 
-    object HandshakeReadyAwaitingUser: SyncScreenState, SyncAppState
+    object HandshakeReadyAwaitingUser : SyncScreenState, SyncAppState
 
-    object Done: SyncScreenState, SyncAppState
+    object Done : SyncScreenState, SyncAppState
 
-    object TimeoutError: SyncScreenState, SyncAppState
+    object TimeoutError : SyncScreenState, SyncAppState
 
-    object Cancelled: SyncScreenState, SyncAppState
+    object Cancelled : SyncScreenState, SyncAppState
 
-    object SyncStartTimeout: SyncScreenState, SyncAppState
+    object SyncStartTimeout : SyncScreenState, SyncAppState
 
     // only Screen states
 
-    data class Error(val throwable: Throwable): SyncScreenState
+    data class Error(val throwable: Throwable) : SyncScreenState
 
     data class UserHandshaking(
         val ownFpr: String,
         val partnerFpr: String,
         val trustwords: String,
-    ): SyncScreenState
+    ) : SyncScreenState
 
     data class AwaitingHandshakeCompletion(
         val ownFpr: String,
         val partnerFpr: String,
-    ): SyncScreenState
+    ) : SyncScreenState
 
     // only app state
-    object PerformingHandshake: SyncAppState
+    object PerformingHandshake : SyncAppState
 }
 
 sealed interface SyncScreenState
