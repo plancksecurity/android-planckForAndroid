@@ -899,8 +899,9 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         List<Address> newToAdresses = getToAddresses();
         List<Address> newCcAdresses = getCcAddresses();
         List<Address> newBccAdresses = getBccAddresses();
-        if (privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+        if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
             showDefaultStatus();
+            handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
             recipientMvpView.messageRatingLoaded();
             return;
         }
@@ -934,7 +935,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 recipientMvpView.messageRatingLoaded();
             }
         });
-        recipientMvpView.messageRatingLoaded();
     }
 
     private boolean isRequestOutdated(long requestTime) {
