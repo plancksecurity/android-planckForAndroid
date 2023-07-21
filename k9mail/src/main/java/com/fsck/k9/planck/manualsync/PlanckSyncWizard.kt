@@ -74,7 +74,7 @@ class PlanckSyncWizard : WizardActivity() {
         }
     }
 
-    private fun renderSyncState(syncState: SyncState) {
+    private fun renderSyncState(syncState: SyncScreenState) {
         binding.syncStateFeedback.text = "State: ${syncState::class.java.simpleName}"
         binding.showLongTrustwords.isVisible = viewModel.shortTrustWords
         when (syncState) {

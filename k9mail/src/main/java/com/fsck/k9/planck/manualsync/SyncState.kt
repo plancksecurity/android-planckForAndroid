@@ -1,39 +1,46 @@
 package com.fsck.k9.planck.manualsync
 
-sealed class SyncState {
-    object Idle: SyncState()
+object SyncState {
+    // common states
+    object Idle: SyncScreenState, SyncAppState
 
-    object AwaitingOtherDevice: SyncState()
+    object AwaitingOtherDevice: SyncScreenState, SyncAppState
 
-    object HandshakeReadyAwaitingUser: SyncState()
+    object HandshakeReadyAwaitingUser: SyncScreenState, SyncAppState
+
+    object Done: SyncScreenState, SyncAppState
+
+    object TimeoutError: SyncScreenState, SyncAppState
+
+    object Cancelled: SyncScreenState, SyncAppState
+
+    // only Screen states
+
+    data class Error(val throwable: Throwable): SyncScreenState
 
     data class UserHandshaking(
         val ownFpr: String,
         val partnerFpr: String,
         val trustwords: String,
-    ): SyncState()
+    ): SyncScreenState
 
     data class AwaitingHandshakeCompletion(
         val ownFpr: String,
         val partnerFpr: String,
-    ): SyncState()
+    ): SyncScreenState
 
-    object Done: SyncState()
-
-    object TimeoutError: SyncState()
-
-    data class Error(val throwable: Throwable): SyncState()
-
-    object Cancelled: SyncState()
-
-    fun finish() = Idle
-
-    val needsFastPolling: Boolean
-        get() = this == AwaitingOtherDevice || this is AwaitingHandshakeCompletion
-
-    val allowSyncNewDevices: Boolean
-        get() = this == AwaitingOtherDevice
+    // only app state
+    object PerformingHandshake: SyncAppState
 }
 
+sealed interface SyncScreenState
 
+sealed interface SyncAppState {
+    val needsFastPolling: Boolean
+        get() = this == SyncState.AwaitingOtherDevice || this is SyncState.PerformingHandshake
+    val allowSyncNewDevices: Boolean
+        get() = this == SyncState.AwaitingOtherDevice
+
+    fun finish() = SyncState.Idle
+}
 

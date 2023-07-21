@@ -43,6 +43,8 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
 import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
+import com.fsck.k9.planck.manualsync.SyncAppState;
+import com.fsck.k9.planck.manualsync.SyncScreenState;
 import com.fsck.k9.planck.manualsync.SyncState;
 import com.fsck.k9.planck.manualsync.SyncStateChangeListener;
 import com.fsck.k9.planck.ui.tools.AppTheme;
@@ -118,7 +120,7 @@ public class K9 extends MultiDexApplication {
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
     private AuditLogger auditLogger;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
-    private SyncState syncState = SyncState.Idle.INSTANCE;
+    private SyncAppState syncState = SyncState.Idle.INSTANCE;
     private SyncStateChangeListener syncStateChangeListener;
 
     @Inject
@@ -1990,18 +1992,18 @@ public class K9 extends MultiDexApplication {
         this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
-    public SyncState getSyncState() {
+    public SyncAppState getSyncState() {
         return syncState;
     }
 
-    public void setSyncState(SyncState syncState) {
+    public void setSyncState(SyncAppState syncState) {
         this.syncState = syncState;
     }
 
-    private void setSyncStateAndNotify(SyncState syncState) {
+    private void setSyncStateAndNotify(SyncAppState syncState) {
         this.syncState = syncState;
         if (syncStateChangeListener != null) {
-            syncStateChangeListener.syncStateChanged(syncState);
+            syncStateChangeListener.syncStateChanged((SyncScreenState) syncState);
         }
     }
 
