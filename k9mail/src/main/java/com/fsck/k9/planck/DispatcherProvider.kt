@@ -11,7 +11,7 @@ interface DispatcherProvider {
     fun default(): CoroutineDispatcher = Dispatchers.Default
     fun io(): CoroutineDispatcher = Dispatchers.IO
     fun unconfined(): CoroutineDispatcher = Dispatchers.Unconfined
-    fun pEpDispatcher(): CoroutineDispatcher = PlanckDispatcher
+    fun planckDispatcher(): CoroutineDispatcher = PlanckDispatcher
 
 }
 

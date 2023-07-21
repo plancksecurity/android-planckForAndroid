@@ -38,7 +38,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     fun startProvisioning() {
-        runBlocking(dispatcherProvider.pEpDispatcher()) {
+        runBlocking(dispatcherProvider.planckDispatcher()) {
             // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
             performProvisioningIfNeeded()
                 .onFailure {
