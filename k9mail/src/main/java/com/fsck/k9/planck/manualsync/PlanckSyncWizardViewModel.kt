@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
+import com.fsck.k9.planck.DefaultDispatcherProvider
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Identity
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,8 @@ private const val DEFAULT_TRUSTWORDS_LANGUAGE = "en"
 @HiltViewModel
 class PlanckSyncWizardViewModel @Inject constructor(
     private val k9: K9,
-    private val planckProvider: PlanckProvider
+    private val planckProvider: PlanckProvider,
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
 ) : ViewModel(), SyncStateChangeListener {
     private val syncState = MutableLiveData<SyncState>(SyncState.Idle)
     fun getSyncState(): LiveData<SyncState> = syncState
@@ -108,7 +110,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     private fun getOrRefreshTrustWords() {
         uiScope.launch {
-            val trustwords = withContext(PlanckDispatcher) {
+            val trustwords = withContext(dispatcherProvider.planckDispatcher()) {
                 planckProvider.trustwords(
                     myself,
                     partner,
