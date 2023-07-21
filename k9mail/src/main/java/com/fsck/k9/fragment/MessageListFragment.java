@@ -336,20 +336,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         return resourcesProvider.getColorFromAttributeResource(resource);
     }
 
-    int getAttributeResource(@AttrRes int resource) {
-        return resourcesProvider.getAttributeResource(resource);
-    }
-
-    private void enableSwipeToRefresh(boolean enable) {
-        if (!isFastPolling()) {
-            swipeRefreshLayout.setRefreshing(enable);
-        }
-    }
-
-    private boolean isFastPolling() {
-        return ((K9) getActivity().getApplication()).needsFastPoll();
-    }
-
     /**
      * @return The comparator to use to display messages in an ordered
      *         fashion. Never {@code null}.

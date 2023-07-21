@@ -74,7 +74,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -103,15 +102,12 @@ import timber.log.Timber.DebugTree;
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
-    private AtomicBoolean needsFastPoll = new AtomicBoolean(false);
     private boolean isPollingMessages;
-    private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
     private Account currentAccount;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private AtomicBoolean allowpEpSyncNewDevices = new AtomicBoolean(false);
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
@@ -157,14 +153,6 @@ public class K9 extends MultiDexApplication {
 
     public void batteryOptimizationAsked() {
         batteryOptimizationAsked = true;
-    }
-
-    public void enableFastPolling() {
-        needsFastPoll.set(true);
-    }
-
-    public void disableFastPolling() {
-        needsFastPoll.set(false);
     }
 
 
@@ -1968,18 +1956,6 @@ public class K9 extends MultiDexApplication {
             shutdownSync();
         }
         forceSaveAppSettings();
-    }
-
-    public boolean needsFastPoll() {
-        return needsFastPoll.get();
-    }
-
-    public boolean isShowingKeyimportDialog() {
-        return showingKeyimportDialog;
-    }
-
-    public void setShowingKeyimportDialog(boolean showingKeyimportDialog) {
-        this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
     public SyncAppState getSyncState() {
