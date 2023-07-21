@@ -1,28 +1,28 @@
 package com.fsck.k9.planck.manualsync
 
-sealed class SyncScreenState {
-    object Idle: SyncScreenState()
+sealed class SyncState {
+    object Idle: SyncState()
 
-    object AwaitingOtherDevice: SyncScreenState()
+    object AwaitingOtherDevice: SyncState()
 
-    object HandshakeReadyAwaitingUser: SyncScreenState()
+    object HandshakeReadyAwaitingUser: SyncState()
 
     data class UserHandshaking(
         val ownFpr: String,
         val partnerFpr: String,
         val trustwords: String,
-    ): SyncScreenState()
+    ): SyncState()
 
     data class AwaitingHandshakeCompletion(
         val ownFpr: String,
         val partnerFpr: String,
-    ): SyncScreenState()
+    ): SyncState()
 
-    object Done: SyncScreenState()
+    object Done: SyncState()
 
-    object TimeoutError: SyncScreenState()
+    object TimeoutError: SyncState()
 
-    object Cancelled: SyncScreenState()
+    object Cancelled: SyncState()
 
     fun finish() = Idle
 

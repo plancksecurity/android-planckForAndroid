@@ -43,7 +43,7 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
 import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
-import com.fsck.k9.planck.manualsync.SyncScreenState;
+import com.fsck.k9.planck.manualsync.SyncState;
 import com.fsck.k9.planck.manualsync.SyncStateChangeListener;
 import com.fsck.k9.planck.ui.tools.AppTheme;
 import com.fsck.k9.planck.ui.tools.Theme;
@@ -118,7 +118,7 @@ public class K9 extends MultiDexApplication {
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
     private AuditLogger auditLogger;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
-    private SyncScreenState syncState = SyncScreenState.Idle.INSTANCE;
+    private SyncState syncState = SyncState.Idle.INSTANCE;
     private SyncStateChangeListener syncStateChangeListener;
 
     @Inject
@@ -1990,15 +1990,15 @@ public class K9 extends MultiDexApplication {
         this.showingKeyimportDialog = showingKeyimportDialog;
     }
 
-    public SyncScreenState getSyncState() {
+    public SyncState getSyncState() {
         return syncState;
     }
 
-    public void setSyncState(SyncScreenState syncState) {
+    public void setSyncState(SyncState syncState) {
         this.syncState = syncState;
     }
 
-    private void setSyncStateAndNotify(SyncScreenState syncState) {
+    private void setSyncStateAndNotify(SyncState syncState) {
         this.syncState = syncState;
         if (syncStateChangeListener != null) {
             syncStateChangeListener.syncStateChanged(syncState);
@@ -2006,7 +2006,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void setSyncStateAndNotify(
-            SyncScreenState syncState,
+            SyncState syncState,
             Identity myself,
             Identity partner,
             boolean formingGroup
@@ -2038,9 +2038,9 @@ public class K9 extends MultiDexApplication {
     }
 
     public void disallowSync() {
-        setSyncStateAndNotify(SyncScreenState.Cancelled.INSTANCE);
+        setSyncStateAndNotify(SyncState.Cancelled.INSTANCE);
         manualSyncCountDownTimer = null;
-        syncState = SyncScreenState.Idle.INSTANCE;
+        syncState = SyncState.Idle.INSTANCE;
     }
 
     public void cancelSync() {
@@ -2075,7 +2075,7 @@ public class K9 extends MultiDexApplication {
                     if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
                         setSyncStateAndNotify(
-                                SyncScreenState.HandshakeReadyAwaitingUser.INSTANCE,
+                                SyncState.HandshakeReadyAwaitingUser.INSTANCE,
                                 myself,
                                 partner,
                                 false
@@ -2086,7 +2086,7 @@ public class K9 extends MultiDexApplication {
                     if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
                         setSyncStateAndNotify(
-                                SyncScreenState.HandshakeReadyAwaitingUser.INSTANCE,
+                                SyncState.HandshakeReadyAwaitingUser.INSTANCE,
                                 myself,
                                 partner,
                                 true
@@ -2095,11 +2095,11 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
-                    setSyncStateAndNotify(SyncScreenState.TimeoutError.INSTANCE);
+                    setSyncStateAndNotify(SyncState.TimeoutError.INSTANCE);
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                    setSyncStateAndNotify(SyncScreenState.Done.INSTANCE);
+                    setSyncStateAndNotify(SyncState.Done.INSTANCE);
                     break;
                 case SyncNotifySole:
                     grouped = false;

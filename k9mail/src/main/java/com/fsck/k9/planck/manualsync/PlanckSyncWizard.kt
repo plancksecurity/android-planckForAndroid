@@ -74,36 +74,36 @@ class PlanckSyncWizard : WizardActivity() {
         }
     }
 
-    private fun renderSyncState(syncState: SyncScreenState) {
+    private fun renderSyncState(syncState: SyncState) {
         binding.syncStateFeedback.text = "State: ${syncState::class.java.simpleName}"
         binding.showLongTrustwords.isVisible = viewModel.shortTrustWords
         when (syncState) {
-            SyncScreenState.Idle,
-            SyncScreenState.AwaitingOtherDevice -> {
+            SyncState.Idle,
+            SyncState.AwaitingOtherDevice -> {
                 showAwaitingOtherDevice()
             }
 
-            SyncScreenState.HandshakeReadyAwaitingUser -> {
+            SyncState.HandshakeReadyAwaitingUser -> {
                 showAwaitingUserToStartHandshake()
             }
 
-            is SyncScreenState.UserHandshaking -> {
+            is SyncState.UserHandshaking -> {
                 showHandshake(syncState)
             }
 
-            is SyncScreenState.AwaitingHandshakeCompletion -> {
+            is SyncState.AwaitingHandshakeCompletion -> {
                 showAwaitingHandshakeCompletion(syncState)
             }
 
-            is SyncScreenState.Done -> {
+            is SyncState.Done -> {
                 showKeySyncDone()
             }
 
-            SyncScreenState.Cancelled -> {
+            SyncState.Cancelled -> {
                 finish()
             }
 
-            SyncScreenState.TimeoutError -> {
+            SyncState.TimeoutError -> {
                 showSomethingWentWrong()
             }
         }
@@ -140,7 +140,7 @@ class PlanckSyncWizard : WizardActivity() {
         }
     }
 
-    private fun showAwaitingHandshakeCompletion(syncState: SyncScreenState.AwaitingHandshakeCompletion) {
+    private fun showAwaitingHandshakeCompletion(syncState: SyncState.AwaitingHandshakeCompletion) {
         invalidateOptionsMenu()
         showScreen(
             description = R.string.keysync_wizard_waiting_message,
@@ -162,7 +162,7 @@ class PlanckSyncWizard : WizardActivity() {
         }
     }
 
-    private fun showHandshake(syncState: SyncScreenState.UserHandshaking) {
+    private fun showHandshake(syncState: SyncState.UserHandshaking) {
         invalidateOptionsMenu()
         showLangIcon()
         showScreen(

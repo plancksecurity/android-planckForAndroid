@@ -23,8 +23,8 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private val k9: K9,
     private val planckProvider: PlanckProvider
 ) : ViewModel(), SyncStateChangeListener {
-    private val syncState = MutableLiveData<SyncScreenState>(SyncScreenState.Idle)
-    fun getSyncState(): LiveData<SyncScreenState> = syncState
+    private val syncState = MutableLiveData<SyncState>(SyncState.Idle)
+    fun getSyncState(): LiveData<SyncState> = syncState
 
     var formingGroup = false
     var shortTrustWords = true
@@ -35,25 +35,25 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private lateinit var partner: Identity
 
     init {
-        if (k9.syncState != SyncScreenState.Idle && BuildConfig.DEBUG) {
+        if (k9.syncState != SyncState.Idle && BuildConfig.DEBUG) {
             error("unexpected initial state: ${k9.syncState}")
         }
         syncState.value = k9.syncState
         k9.setSyncStateChangeListener(this)
-        setState(SyncScreenState.AwaitingOtherDevice)
+        setState(SyncState.AwaitingOtherDevice)
         k9.allowManualSync()
     }
 
     fun next() {
         when (syncState.value) {
-            SyncScreenState.HandshakeReadyAwaitingUser -> {
+            SyncState.HandshakeReadyAwaitingUser -> {
                 getOrRefreshTrustWords()
             }
 
-            is SyncScreenState.UserHandshaking -> {
+            is SyncState.UserHandshaking -> {
                 setState(
 
-                    SyncScreenState.AwaitingHandshakeCompletion(
+                    SyncState.AwaitingHandshakeCompletion(
                         PlanckUtils.formatFpr(myself.fpr),
                         PlanckUtils.formatFpr(partner.fpr),
                     )
@@ -68,7 +68,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
         k9.syncState = k9.syncState.finish()
     }
 
-    private fun setState(state: SyncScreenState) {
+    private fun setState(state: SyncState) {
         syncState.value = state.also { k9.syncState = it }
     }
 
@@ -116,7 +116,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
                 )
             }
             setState(
-                SyncScreenState.UserHandshaking(
+                SyncState.UserHandshaking(
                     PlanckUtils.formatFpr(myself.fpr),
                     PlanckUtils.formatFpr(partner.fpr),
                     trustwords
@@ -125,12 +125,12 @@ class PlanckSyncWizardViewModel @Inject constructor(
         }
     }
 
-    override fun syncStateChanged(state: SyncScreenState) {
+    override fun syncStateChanged(state: SyncState) {
         this.syncState.postValue(state)
     }
 
     override fun syncStateChanged(
-        state: SyncScreenState,
+        state: SyncState,
         myself: Identity,
         partner: Identity,
         formingGroup: Boolean
@@ -152,6 +152,6 @@ class PlanckSyncWizardViewModel @Inject constructor(
         getOrRefreshTrustWords()
     }
 
-    fun isHandshaking(): Boolean = syncState.value is SyncScreenState.UserHandshaking
+    fun isHandshaking(): Boolean = syncState.value is SyncState.UserHandshaking
 
 }
