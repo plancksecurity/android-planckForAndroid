@@ -158,6 +158,7 @@ class PlanckSyncWizard : WizardActivity() {
             description = getAwaitingUserDescription(),
             currentState = getAwaitingUserStateDrawable(),
             positiveButtonText = R.string.keysync_wizard_action_next,
+            dismissButtonVisible = true,
         ) {
             viewModel.next()
         }
@@ -194,11 +195,8 @@ class PlanckSyncWizard : WizardActivity() {
         positiveButtonClose: Boolean = false,
         positiveButtonClick: () -> Unit = {},
     ) {
-        if (description == NO_RESOURCE) {
-            binding.description.isVisible = false
-        } else {
-            binding.description.isVisible = true
-            binding.description.setText(description)
+        binding.description.apply {
+            isVisible = (description != NO_RESOURCE).also { if (it) setText(description) }
         }
         if (ownFpr.isNotBlank()) {
             showFprs(ownFpr, partnerFpr)
@@ -210,39 +208,34 @@ class PlanckSyncWizard : WizardActivity() {
         } else {
             binding.trustwordsContainer.isVisible = false
         }
-        if (currentState == NO_RESOURCE) {
-            binding.currentState.isVisible = false
-        } else {
-            binding.currentState.isVisible = true
-            binding.currentState.setImageResource(currentState)
+        binding.currentState.apply {
+            isVisible =
+                (currentState != NO_RESOURCE).also { if (it) setImageResource(currentState) }
         }
-        if (loadingAnimation == NO_RESOURCE) {
-            binding.loading.isVisible = false
-        } else {
-            binding.loading.isVisible = true
-            binding.loading.indeterminateDrawable = ContextCompat.getDrawable(
-                this, getLoadingAnimationDrawable()
-            )
+        binding.loading.apply {
+            isVisible = (loadingAnimation != NO_RESOURCE).also {
+                if (it) indeterminateDrawable = ContextCompat.getDrawable(
+                    this@PlanckSyncWizard, loadingAnimation
+                )
+            }
         }
         binding.waitingForSync.isVisible = waitingForSyncVisible
         binding.syncStateFeedback.isVisible = syncStateFeedbackVisible
         binding.negativeActionButton.isVisible = negativeButtonVisible
         binding.dissmissActionButton.visibility =
             if (dismissButtonVisible) View.VISIBLE else View.INVISIBLE
-        if (positiveButtonText == NO_RESOURCE) {
-            binding.afirmativeActionButton.isVisible = false
-        } else {
-            binding.afirmativeActionButton.isVisible = true
-            binding.afirmativeActionButton.setText(positiveButtonText)
-        }
-        if (positiveButtonClose) {
-            binding.afirmativeActionButton.setTextColor(
-                ThemeManager.getColorFromAttributeResource(
-                    this, R.attr.defaultColorOnBackground
+        binding.afirmativeActionButton.apply {
+            isVisible =
+                (positiveButtonText != NO_RESOURCE).also { if (it) setText(positiveButtonText) }
+            if (positiveButtonClose) {
+                setTextColor(
+                    ThemeManager.getColorFromAttributeResource(
+                        this@PlanckSyncWizard, R.attr.defaultColorOnBackground
+                    )
                 )
-            )
+            }
+            setOnClickListener { positiveButtonClick() }
         }
-        binding.afirmativeActionButton.setOnClickListener { positiveButtonClick() }
     }
 
     private fun showTrustwords(trustwords: String) {
