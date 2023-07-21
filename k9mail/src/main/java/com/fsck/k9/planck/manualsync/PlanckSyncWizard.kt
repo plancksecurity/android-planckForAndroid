@@ -67,11 +67,6 @@ class PlanckSyncWizard : WizardActivity() {
             viewModel.switchTrustwordsLength()
             true
         }
-        binding.afirmativeActionButton.setTextColor(
-            ThemeManager.getColorFromAttributeResource(
-                this, R.attr.defaultColorOnBackground
-            )
-        )
     }
 
     private fun observeViewModel() {
@@ -119,7 +114,7 @@ class PlanckSyncWizard : WizardActivity() {
         showScreen(
             waitingForSyncVisible = true,
             dismissButtonVisible = true,
-            syncStateFeedbackVisible = true
+            syncStateFeedbackVisible = true,
         )
         binding.syncStateFeedback.setText(R.string.sync_dialog_awaiting_other_device)
     }
@@ -128,7 +123,8 @@ class PlanckSyncWizard : WizardActivity() {
         showScreen(
             description = R.string.keysync_wizard_error_message,
             currentState = getAwaitingUserStateDrawable(),
-            positiveButtonText = R.string.key_import_accept
+            positiveButtonText = R.string.key_import_accept,
+            positiveButtonClose = true,
         ) {
             viewModel.cancelHandshake()
             finish()
@@ -139,7 +135,8 @@ class PlanckSyncWizard : WizardActivity() {
         showScreen(
             description = getKeySyncDoneDescription(),
             currentState = getKeySyncDoneStateDrawable(),
-            positiveButtonText = R.string.key_import_accept
+            positiveButtonText = R.string.key_import_accept,
+            positiveButtonClose = true,
         ) {
             finish()
         }
@@ -152,7 +149,7 @@ class PlanckSyncWizard : WizardActivity() {
             ownFpr = syncState.ownFpr,
             partnerFpr = syncState.partnerFpr,
             loadingAnimation = getLoadingAnimationDrawable(),
-            dismissButtonVisible = true
+            dismissButtonVisible = true,
         )
     }
 
@@ -160,7 +157,7 @@ class PlanckSyncWizard : WizardActivity() {
         showScreen(
             description = getAwaitingUserDescription(),
             currentState = getAwaitingUserStateDrawable(),
-            positiveButtonText = R.string.keysync_wizard_action_next
+            positiveButtonText = R.string.keysync_wizard_action_next,
         ) {
             viewModel.next()
         }
@@ -176,7 +173,7 @@ class PlanckSyncWizard : WizardActivity() {
             trustwords = syncState.trustwords,
             negativeButtonVisible = true,
             dismissButtonVisible = true,
-            positiveButtonText = R.string.key_import_accept
+            positiveButtonText = R.string.key_import_accept,
         ) {
             viewModel.acceptHandshake()
         }
@@ -194,6 +191,7 @@ class PlanckSyncWizard : WizardActivity() {
         negativeButtonVisible: Boolean = false,
         dismissButtonVisible: Boolean = false,
         @StringRes positiveButtonText: Int = NO_RESOURCE,
+        positiveButtonClose: Boolean = false,
         positiveButtonClick: () -> Unit = {},
     ) {
         if (description == NO_RESOURCE) {
@@ -236,6 +234,13 @@ class PlanckSyncWizard : WizardActivity() {
         } else {
             binding.afirmativeActionButton.isVisible = true
             binding.afirmativeActionButton.setText(positiveButtonText)
+        }
+        if (positiveButtonClose) {
+            binding.afirmativeActionButton.setTextColor(
+                ThemeManager.getColorFromAttributeResource(
+                    this, R.attr.defaultColorOnBackground
+                )
+            )
         }
         binding.afirmativeActionButton.setOnClickListener { positiveButtonClick() }
     }

@@ -254,6 +254,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:gravity="center_horizontal"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@id/dissmissActionButton" />
 
 
