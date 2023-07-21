@@ -22,6 +22,8 @@ sealed class SyncState {
 
     object TimeoutError: SyncState()
 
+    data class Error(val throwable: Throwable): SyncState()
+
     object Cancelled: SyncState()
 
     fun finish() = Idle

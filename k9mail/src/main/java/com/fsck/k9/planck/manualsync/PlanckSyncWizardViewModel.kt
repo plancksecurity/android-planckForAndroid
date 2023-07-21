@@ -110,21 +110,24 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     private fun getOrRefreshTrustWords() {
         uiScope.launch {
-            val trustwords = withContext(dispatcherProvider.planckDispatcher()) {
+            withContext(dispatcherProvider.planckDispatcher()) {
                 planckProvider.trustwords(
                     myself,
                     partner,
                     trustwordsLanguage,
                     shortTrustWords,
                 )
-            }
-            setState(
-                SyncState.UserHandshaking(
-                    PlanckUtils.formatFpr(myself.fpr),
-                    PlanckUtils.formatFpr(partner.fpr),
-                    trustwords
+            }.onSuccess { trustwords ->
+                setState(
+                    SyncState.UserHandshaking(
+                        PlanckUtils.formatFpr(myself.fpr),
+                        PlanckUtils.formatFpr(partner.fpr),
+                        trustwords
+                    )
                 )
-            )
+            }.onFailure {
+                setState(SyncState.Error(it))
+            }
         }
     }
 

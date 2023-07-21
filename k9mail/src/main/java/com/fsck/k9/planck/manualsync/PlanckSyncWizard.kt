@@ -106,6 +106,13 @@ class PlanckSyncWizard : WizardActivity() {
             SyncState.TimeoutError -> {
                 showSomethingWentWrong()
             }
+
+            is SyncState.Error -> {
+                binding.syncStateFeedback.text = syncState.throwable.message
+                binding.syncStateFeedback.setTextColor(
+                    ContextCompat.getColor(this, R.color.planck_red)
+                )
+            }
         }
     }
 
