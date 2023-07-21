@@ -41,7 +41,6 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
-import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
 import com.fsck.k9.planck.manualsync.SyncAppState;
 import com.fsck.k9.planck.manualsync.SyncScreenState;
@@ -900,15 +899,6 @@ public class K9 extends MultiDexApplication {
         //if (!planckProvider.isSyncRunning()) {
         //    planckProvider.startSync();
         //}
-    }
-
-    private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
-        Timber.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
-
-        Context context = K9.this.getApplicationContext();
-        Intent syncTrustowordsActivity = ImportWizardFrompEp.createActionStartKeySyncIntent(context, myself, partner, signal, formingGroup);
-        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(syncTrustowordsActivity);
     }
 
     private void pEpSetupUiEngineSession() {
