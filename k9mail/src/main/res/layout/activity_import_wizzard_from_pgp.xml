@@ -249,6 +249,15 @@
         app:layout_constraintTop_toBottomOf="@id/include" />
 
     <TextView
+        android:id="@+id/waiting_for_sync_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/waiting_for_sync" />
+
+    <TextView
         android:id="@+id/sync_state_feedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -77,7 +77,8 @@ class PlanckSyncWizard : WizardActivity() {
     }
 
     private fun renderSyncState(syncState: SyncScreenState) {
-        binding.syncStateFeedback.text = "State: ${syncState::class.java.simpleName}"
+        val stateDebugText = "State: ${syncState::class.java.simpleName}"
+        binding.syncStateFeedback.text = stateDebugText
         binding.showLongTrustwords.isVisible = viewModel.shortTrustWords
         when (syncState) {
             SyncState.Idle,
@@ -127,9 +128,8 @@ class PlanckSyncWizard : WizardActivity() {
         showScreen(
             waitingForSyncVisible = true,
             dismissButtonVisible = true,
-            syncStateFeedbackVisible = true,
         )
-        binding.syncStateFeedback.setText(R.string.sync_dialog_awaiting_other_device)
+        binding.waitingForSyncText.setText(R.string.sync_dialog_awaiting_other_device)
     }
 
     private fun showSomethingWentWrong() {
@@ -243,6 +243,7 @@ class PlanckSyncWizard : WizardActivity() {
             }
         }
         binding.waitingForSync.isVisible = waitingForSyncVisible
+        binding.waitingForSyncText.isVisible = waitingForSyncVisible
         binding.syncStateFeedback.isVisible = syncStateFeedbackVisible
         binding.negativeActionButton.isVisible = negativeButtonVisible
         binding.dissmissActionButton.visibility =
