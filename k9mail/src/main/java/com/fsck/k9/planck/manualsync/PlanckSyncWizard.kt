@@ -114,6 +114,7 @@ class PlanckSyncWizard : WizardActivity() {
                 binding.syncStateFeedback.setTextColor(
                     ContextCompat.getColor(this, R.color.planck_red)
                 )
+                showSomethingWentWrong()
             }
         }
     }
