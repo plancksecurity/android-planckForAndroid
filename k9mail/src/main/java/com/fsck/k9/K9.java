@@ -2034,16 +2034,12 @@ public class K9 extends MultiDexApplication {
     }
 
     public void allowManualSync() {
-        //allowpEpSyncNewDevices.set(true);
-        //needsFastPoll.set(true);
         startOrResetManualSyncCountDownTimer();
     }
 
     public void disallowSync() {
-        //allowpEpSyncNewDevices.set(false);
         setSyncStateAndNotify(SyncScreenState.Cancelled.INSTANCE);
         manualSyncCountDownTimer = null;
-        //needsFastPoll.set(false);
         syncState = SyncScreenState.Idle.INSTANCE;
     }
 
@@ -2084,8 +2080,6 @@ public class K9 extends MultiDexApplication {
                                 partner,
                                 false
                         );
-                        //allowpEpSyncNewDevices.set(false);
-                        //ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                     }
                     break;
                 case SyncNotifyInitFormGroup:
@@ -2097,27 +2091,21 @@ public class K9 extends MultiDexApplication {
                                 partner,
                                 true
                         );
-                        //allowpEpSyncNewDevices.set(false);
-                        //ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                     }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
                     setSyncStateAndNotify(SyncScreenState.TimeoutError.INSTANCE);
-                    //ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
-                    //needsFastPoll.set(false);
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
                     setSyncStateAndNotify(SyncScreenState.Done.INSTANCE);
-                    //needsFastPoll.set(false);
                     break;
                 case SyncNotifySole:
                     grouped = false;
                     if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
-                    //ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:
                     grouped = true;
@@ -2125,10 +2113,8 @@ public class K9 extends MultiDexApplication {
                     if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
-                    //ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncPassphraseRequired:
-                    //needsFastPoll.set(false);
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->

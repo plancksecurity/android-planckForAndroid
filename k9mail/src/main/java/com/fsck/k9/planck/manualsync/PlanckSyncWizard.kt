@@ -52,7 +52,6 @@ class PlanckSyncWizard : WizardActivity() {
     private fun setupViews() {
         binding.dissmissActionButton.setOnClickListener {
             viewModel.cancelHandshake()
-            finish()
         }
         binding.negativeActionButton.setOnClickListener {
             viewModel.rejectHandshake()
@@ -127,7 +126,6 @@ class PlanckSyncWizard : WizardActivity() {
             positiveButtonClose = true,
         ) {
             viewModel.cancelHandshake()
-            finish()
         }
     }
 

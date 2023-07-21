@@ -70,6 +70,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     fun rejectHandshake() {
         planckProvider.rejectSync()
+        k9.cancelSync()
     }
 
     fun acceptHandshake() {
