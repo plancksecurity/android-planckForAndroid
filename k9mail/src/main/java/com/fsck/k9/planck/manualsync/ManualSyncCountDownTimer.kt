@@ -13,7 +13,7 @@ class ManualSyncCountDownTimer
 constructor(
     private val k9: K9,
     private val planckProvider: PlanckProvider,
-    private var manualSyncCountDownTimer: CountDownTimer = getCountDownTimer(k9)
+    private var countDownTimer: CountDownTimer = getCountDownTimer(k9)
 ) {
     fun startOrReset() {
         cancel()
@@ -22,11 +22,11 @@ constructor(
             else -> planckProvider.startSync()
         }
 
-        manualSyncCountDownTimer.start()
+        countDownTimer.start()
     }
 
     fun cancel() {
-        manualSyncCountDownTimer.cancel()
+        countDownTimer.cancel()
     }
 
     companion object {
@@ -40,7 +40,7 @@ constructor(
                 }
 
                 override fun onFinish() {
-                    k9.disallowSync()
+                    k9.syncStartTimeout()
                 }
             }
         }

@@ -116,6 +116,10 @@ class PlanckSyncWizard : WizardActivity() {
                 )
                 showSomethingWentWrong()
             }
+
+            is SyncState.SyncStartTimeout -> {
+                showSyncStartTimeout()
+            }
         }
     }
 
@@ -136,6 +140,17 @@ class PlanckSyncWizard : WizardActivity() {
             positiveButtonClose = true,
         ) {
             viewModel.cancelHandshake()
+        }
+    }
+
+    private fun showSyncStartTimeout() {
+        showScreen(
+            description = R.string.sync_dialog_sync_start_timeout,
+            currentState = getAwaitingUserStateDrawable(),
+            positiveButtonText = R.string.key_import_accept,
+            positiveButtonClose = true,
+        ) {
+            finish()
         }
     }
 

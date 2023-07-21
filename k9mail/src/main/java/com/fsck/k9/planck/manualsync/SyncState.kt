@@ -14,6 +14,8 @@ object SyncState {
 
     object Cancelled: SyncScreenState, SyncAppState
 
+    object SyncStartTimeout: SyncScreenState, SyncAppState
+
     // only Screen states
 
     data class Error(val throwable: Throwable): SyncScreenState
