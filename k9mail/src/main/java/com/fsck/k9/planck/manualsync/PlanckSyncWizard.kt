@@ -18,6 +18,8 @@ import com.fsck.k9.planck.ui.tools.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val NO_RESOURCE = 0
+private const val ENGLISH_POSITION = 0
+private const val GERMAN_POSITION = 1
 
 @AndroidEntryPoint
 class PlanckSyncWizard : WizardActivity() {
@@ -43,8 +45,8 @@ class PlanckSyncWizard : WizardActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.english -> viewModel.changeTrustwordsLanguage(0)
-            R.id.german -> viewModel.changeTrustwordsLanguage(1)
+            R.id.english -> viewModel.changeTrustwordsLanguage(ENGLISH_POSITION)
+            R.id.german -> viewModel.changeTrustwordsLanguage(GERMAN_POSITION)
         }
         return true
     }
