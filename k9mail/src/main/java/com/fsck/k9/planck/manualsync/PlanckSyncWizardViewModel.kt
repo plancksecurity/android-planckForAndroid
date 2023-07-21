@@ -3,6 +3,7 @@ package com.fsck.k9.planck.manualsync
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
@@ -34,6 +35,9 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private lateinit var partner: Identity
 
     init {
+        if (k9.syncState != SyncScreenState.Idle && BuildConfig.DEBUG) {
+            error("unexpected initial state: ${k9.syncState}")
+        }
         syncState.value = k9.syncState
         k9.setSyncStateChangeListener(this)
         setState(SyncScreenState.AwaitingOtherDevice)
