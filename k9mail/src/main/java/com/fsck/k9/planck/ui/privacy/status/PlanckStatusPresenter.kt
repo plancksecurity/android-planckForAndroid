@@ -160,8 +160,10 @@ class PlanckStatusPresenter @Inject internal constructor(
 
     private fun onRatingChanged(rating: Rating) {
         currentRating = rating
-        if (isMessageIncoming && localMessage != null) {
-            localMessage!!.planckRating = rating
+        if (isMessageIncoming) {
+            localMessage?.let {
+                it.planckRating = rating
+            }
         }
         view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
     }
