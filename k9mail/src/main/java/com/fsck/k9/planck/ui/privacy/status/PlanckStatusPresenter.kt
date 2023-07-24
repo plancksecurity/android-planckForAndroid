@@ -46,6 +46,9 @@ class PlanckStatusPresenter @Inject internal constructor(
 
     private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
+    private val recipientAddresses: List<Address>
+        get() = identities.map { Address(it.address) }
+
     fun initialize(
         planckStatusView: PlanckStatusView,
         isMessageIncoming: Boolean,
@@ -149,17 +152,6 @@ class PlanckStatusPresenter @Inject internal constructor(
         val addresses = recipientAddresses
         return planckProvider.getRatingResult(senderAddress, addresses, emptyList(), emptyList())
     }
-
-    val recipientAddresses: List<Address>
-        get() {
-            val addresses: MutableList<Address> = ArrayList(
-                identities.size
-            )
-            for (identity in identities) {
-                addresses.add(Address(identity.address))
-            }
-            return addresses
-        }
 
     private fun onRatingChanged(rating: Rating) {
         currentRating = rating
