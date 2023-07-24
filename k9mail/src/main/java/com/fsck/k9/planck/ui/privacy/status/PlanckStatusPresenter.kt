@@ -108,14 +108,14 @@ class PlanckStatusPresenter @Inject internal constructor(
             emptyList(),
             object : PlanckProvider.ResultCallback<Rating> {
                 override fun onLoaded(rating: Rating) {
-                    onTrustReset(rating, id)
+                    onTrustReset(rating)
                 }
 
                 override fun onError(throwable: Throwable) {}
             })
     }
 
-    private fun onTrustReset(rating: Rating, id: Identity) {
+    private fun onTrustReset(rating: Rating) {
         val workerThread = WorkerThread(identities, ON_TRUST_RESET, rating)
         workerThread.start()
     }
@@ -132,7 +132,7 @@ class PlanckStatusPresenter @Inject internal constructor(
             id,
             object : PlanckProvider.ResultCallback<Rating> {
                 override fun onLoaded(result: Rating) {
-                    onTrustReset(result, id)
+                    onTrustReset(result)
                 }
 
                 override fun onError(throwable: Throwable) {}
@@ -184,7 +184,7 @@ class PlanckStatusPresenter @Inject internal constructor(
             refreshRating(object : SimpleResultCallback<Rating>() {
                 override fun onLoaded(rating: Rating) {
                     onRatingChanged(rating)
-                    onTrustReset(rating, id)
+                    onTrustReset(rating)
                 }
             })
             view.showResetPartnerKeySuccessFeedback()
