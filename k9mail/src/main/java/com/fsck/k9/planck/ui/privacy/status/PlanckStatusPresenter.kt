@@ -112,13 +112,12 @@ class PlanckStatusPresenter @Inject internal constructor(
         } else {
             val addresses = recipientAddresses
             resetOutgoingMessageTrust(id, addresses)
-        }.mapCatching {
+        }.alsoDoCatching {
             updateIdentities()
-            it
         }
-    }.onSuccess {rating ->
-        onRatingChanged(rating)
-        view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
+    }.alsoDoFlatSuspend {
+        onRatingChanged(it)
+    }.onSuccess {
         view.updateIdentities(identities)
     }
 
@@ -138,7 +137,7 @@ class PlanckStatusPresenter @Inject internal constructor(
         trustWasReset(identities, rating)
     }
 
-    private fun trustWasReset(newIdentities: List<PlanckIdentity>, rating: Rating) {
+    private suspend fun trustWasReset(newIdentities: List<PlanckIdentity>, rating: Rating) {
         onRatingChanged(rating)
         view.updateIdentities(newIdentities)
     }
@@ -156,14 +155,26 @@ class PlanckStatusPresenter @Inject internal constructor(
         return planckProvider.getRatingResult(senderAddress, addresses, emptyList(), emptyList())
     }
 
-    private fun onRatingChanged(rating: Rating) {
+    private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
         currentRating = rating
-        if (isMessageIncoming) {
+        return if (isMessageIncoming) {
+            saveRatingToMessage(rating)
+        } else {
+            ResultCompat.success(Unit)
+        }.also {
+            view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
+        }
+    }
+
+    private suspend fun saveRatingToMessage(
+        rating: Rating
+    ): ResultCompat<Unit> = withContext(dispatcherProvider.io()) {
+        ResultCompat.of {
             localMessage?.let {
                 it.planckRating = rating
             }
+            Unit
         }
-        view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
     }
 
     fun onHandshakeResult(id: Identity?, trust: Boolean) {
@@ -200,10 +211,9 @@ class PlanckStatusPresenter @Inject internal constructor(
             planckProvider.incomingMessageRating(localMessage)
         } else {
             setupOutgoingMessageRating()
-        }.map {
-            onRatingChanged(it)
-            it
         }
+    }.alsoDoFlatSuspend {
+        onRatingChanged(it)
     }
 
     private fun showUndoAction(trustAction: TrustAction) {
