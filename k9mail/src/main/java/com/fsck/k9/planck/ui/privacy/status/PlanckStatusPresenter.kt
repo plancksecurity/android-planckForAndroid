@@ -1,361 +1,317 @@
-package com.fsck.k9.planck.ui.privacy.status;
+package com.fsck.k9.planck.ui.privacy.status
 
-import android.content.Intent;
-import android.content.IntentSender;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.content.Intent
+import android.content.IntentSender
+import android.os.Bundle
+import android.os.Handler
+import android.os.Message
+import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks
+import com.fsck.k9.activity.MessageReference
+import com.fsck.k9.mail.Address
+import com.fsck.k9.mailstore.LocalMessage
+import com.fsck.k9.mailstore.MessageViewInfo
+import com.fsck.k9.message.html.DisplayHtml
+import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.PlanckProvider.SimpleResultCallback
+import com.fsck.k9.planck.PlanckProvider.TrustAction
+import com.fsck.k9.planck.PlanckUIArtefactCache
+import com.fsck.k9.planck.infrastructure.MessageView
+import com.fsck.k9.planck.models.PlanckIdentity
+import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper
+import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper
+import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.Rating
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-
-import com.fsck.k9.activity.MessageLoaderHelper;
-import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.infrastructure.MessageView;
-import com.fsck.k9.planck.models.PlanckIdentity;
-import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper;
-import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
-
-public class PlanckStatusPresenter {
-
-    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
-    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
-    private static final int LOAD_RECIPIENTS = 1, ON_TRUST_RESET = 2, UPDATE_IDENTITIES = 3;
-    private final SimpleMessageLoaderHelper simpleMessageLoaderHelper;
-    private final PlanckIdentityMapper planckIdentityMapper;
-    private PlanckStatusView view;
-    private PlanckUIArtefactCache cache;
-    private PlanckProvider planckProvider;
-    private List<PlanckIdentity> identities;
-    private LocalMessage localMessage;
-    private boolean isMessageIncoming;
-    private Address senderAddress;
-    private Rating currentRating;
-    private Identity latestHandshakeId;
-    private boolean forceUnencrypted = false;
-    private boolean isAlwaysSecure = false;
-    private DisplayHtml displayHtml;
-
-    private Handler mainThreadHandler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            List<PlanckIdentity> newIdentities = (List<PlanckIdentity>) msg.obj;
-            switch (msg.what) {
-                case ON_TRUST_RESET:
-                    trustWasReset(newIdentities, Rating.getByInt(msg.arg1));
-                    break;
-                case UPDATE_IDENTITIES:
-                    identitiesUpdated(newIdentities);
-                    break;
-                case LOAD_RECIPIENTS:
-                    recipientsLoaded(newIdentities);
-                    break;
+class PlanckStatusPresenter @Inject internal constructor(
+    private val planckProvider: PlanckProvider,
+    private val cache: PlanckUIArtefactCache,
+    @param:MessageView private val displayHtml: DisplayHtml,
+    private val simpleMessageLoaderHelper: SimpleMessageLoaderHelper,
+    private val planckIdentityMapper: PlanckIdentityMapper
+) {
+    private var view: PlanckStatusView? = null
+    private var identities: List<PlanckIdentity>? = null
+    private var localMessage: LocalMessage? = null
+    private var isMessageIncoming = false
+    private var senderAddress: Address? = null
+    private var currentRating: Rating? = null
+    private var latestHandshakeId: Identity? = null
+    private var forceUnencrypted = false
+    private var isAlwaysSecure = false
+    private val mainThreadHandler: Handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            val newIdentities = msg.obj as List<PlanckIdentity>
+            when (msg.what) {
+                ON_TRUST_RESET -> trustWasReset(newIdentities, Rating.getByInt(msg.arg1))
+                UPDATE_IDENTITIES -> identitiesUpdated(newIdentities)
+                LOAD_RECIPIENTS -> recipientsLoaded(newIdentities)
             }
         }
-    };
-
-    @Inject
-    PlanckStatusPresenter(
-            PlanckProvider planckProvider,
-            PlanckUIArtefactCache cache,
-            @MessageView DisplayHtml displayHtml,
-            SimpleMessageLoaderHelper simpleMessageLoaderHelper,
-            PlanckIdentityMapper planckIdentityMapper
-    ) {
-        this.planckProvider = planckProvider;
-        this.cache = cache;
-        this.displayHtml = displayHtml;
-        this.simpleMessageLoaderHelper = simpleMessageLoaderHelper;
-        this.planckIdentityMapper = planckIdentityMapper;
     }
 
-    void initialize(PlanckStatusView planckStatusView,
-                    boolean isMessageIncoming,
-                    Address senderAddress,
-                    boolean forceUnencrypted,
-                    boolean alwaysSecure
+    fun initialize(
+        planckStatusView: PlanckStatusView?,
+        isMessageIncoming: Boolean,
+        senderAddress: Address?,
+        forceUnencrypted: Boolean,
+        alwaysSecure: Boolean
     ) {
-        this.view = planckStatusView;
-        this.isMessageIncoming = isMessageIncoming;
-        this.senderAddress = senderAddress;
-        this.forceUnencrypted = forceUnencrypted;
-        this.isAlwaysSecure = alwaysSecure;
+        view = planckStatusView
+        this.isMessageIncoming = isMessageIncoming
+        this.senderAddress = senderAddress
+        this.forceUnencrypted = forceUnencrypted
+        isAlwaysSecure = alwaysSecure
     }
 
-    void loadMessage(MessageReference messageReference) {
+    fun loadMessage(messageReference: MessageReference?) {
         if (messageReference != null) {
-            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback(), displayHtml);
+            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(
+                messageReference,
+                callback(),
+                displayHtml
+            )
         }
     }
 
-    void loadRecipients() {
-        List<Identity> recipients = cache.getRecipients();
-        WorkerThread workerThread = new WorkerThread(recipients, LOAD_RECIPIENTS);
-        workerThread.start();
+    fun loadRecipients() {
+        val recipients: List<Identity> = cache.recipients
+        val workerThread: WorkerThread = WorkerThread(recipients, LOAD_RECIPIENTS)
+        workerThread.start()
     }
 
-    private void recipientsLoaded(List<PlanckIdentity> newIdentities) {
-        identities = newIdentities;
-        if (!identities.isEmpty()) {
-            view.setupRecipients(identities);
+    private fun recipientsLoaded(newIdentities: List<PlanckIdentity>) {
+        identities = newIdentities
+        if (!identities!!.isEmpty()) {
+            view!!.setupRecipients(identities)
         } else {
-            view.showItsOnlyOwnMsg();
+            view!!.showItsOnlyOwnMsg()
         }
     }
 
-    private void resetTrust(Identity id) {
+    private fun resetTrust(id: Identity) {
         if (isMessageIncoming) {
-            resetIncomingMessageTrust(id);
+            resetIncomingMessageTrust(id)
         } else {
-            List<Address> addresses = getRecipientAddresses();
-            resetOutgoingMessageTrust(id, addresses);
+            val addresses = recipientAddresses
+            resetOutgoingMessageTrust(id, addresses)
         }
     }
 
-    private void resetOutgoingMessageTrust(Identity id, List<Address> addresses) {
-        planckProvider.loadOutgoingMessageRatingAfterResetTrust(id, senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PlanckProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                onTrustReset(rating, id);
+    private fun resetOutgoingMessageTrust(id: Identity, addresses: List<Address>) {
+        planckProvider.loadOutgoingMessageRatingAfterResetTrust(
+            id,
+            senderAddress,
+            addresses,
+            emptyList(),
+            emptyList(),
+            object : PlanckProvider.ResultCallback<Rating?> {
+                override fun onLoaded(rating: Rating) {
+                    onTrustReset(rating, id)
+                }
+
+                override fun onError(throwable: Throwable) {}
+            })
+    }
+
+    private fun onTrustReset(rating: Rating?, id: Identity) {
+        val workerThread: WorkerThread = WorkerThread(identities, ON_TRUST_RESET, rating)
+        workerThread.start()
+    }
+
+    private fun trustWasReset(newIdentities: List<PlanckIdentity>, rating: Rating) {
+        onRatingChanged(rating)
+        view!!.updateIdentities(newIdentities)
+    }
+
+    private fun resetIncomingMessageTrust(id: Identity) {
+        planckProvider.loadMessageRatingAfterResetTrust(
+            localMessage,
+            isMessageIncoming,
+            id,
+            object : PlanckProvider.ResultCallback<Rating?> {
+                override fun onLoaded(result: Rating) {
+                    onTrustReset(result, id)
+                }
+
+                override fun onError(throwable: Throwable) {}
+            })
+    }
+
+    private fun setupOutgoingMessageRating(callback: PlanckProvider.ResultCallback<Rating>) {
+        val addresses = recipientAddresses
+        planckProvider.getRating(senderAddress, addresses, emptyList(), emptyList(), callback)
+    }
+
+    val recipientAddresses: List<Address>
+        get() {
+            val addresses: MutableList<Address> = ArrayList(
+                identities!!.size
+            )
+            for (identity in identities!!) {
+                addresses.add(Address(identity.address))
             }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-        });
-    }
-
-    private void onTrustReset(Rating rating, Identity id) {
-        WorkerThread workerThread = new WorkerThread(identities, ON_TRUST_RESET, rating);
-        workerThread.start();
-    }
-
-    private void trustWasReset(List<PlanckIdentity> newIdentities, Rating rating) {
-        onRatingChanged(rating);
-        view.updateIdentities(newIdentities);
-    }
-
-    private void resetIncomingMessageTrust(Identity id) {
-        planckProvider.loadMessageRatingAfterResetTrust(localMessage, isMessageIncoming, id, new PlanckProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating result) {
-                onTrustReset(result, id);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-        });
-    }
-
-    private void setupOutgoingMessageRating(PlanckProvider.ResultCallback<Rating> callback) {
-        List<Address> addresses = getRecipientAddresses();
-        planckProvider.getRating(senderAddress, addresses, Collections.emptyList(),
-                Collections.emptyList(), callback);
-    }
-
-    @NonNull
-    List<Address> getRecipientAddresses() {
-        List<Address> addresses = new ArrayList<>(identities.size());
-        for (PlanckIdentity identity : identities) {
-            addresses.add(new Address(identity.address));
+            return addresses
         }
-        return addresses;
-    }
 
-    private void onRatingChanged(Rating rating) {
-        this.currentRating = rating;
+    private fun onRatingChanged(rating: Rating) {
+        currentRating = rating
         if (isMessageIncoming && localMessage != null) {
-            localMessage.setPlanckRating(rating);
+            localMessage!!.planckRating = rating
         }
-        view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure);
+        view!!.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
     }
 
-    void onHandshakeResult(Identity id, boolean trust) {
-        latestHandshakeId = id;
-        refreshRating(new PlanckProvider.SimpleResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                onRatingChanged(rating);
+    fun onHandshakeResult(id: Identity?, trust: Boolean) {
+        latestHandshakeId = id
+        refreshRating(object : SimpleResultCallback<Rating?>() {
+            override fun onLoaded(rating: Rating) {
+                onRatingChanged(rating)
                 if (trust) {
-                    showUndoAction(PlanckProvider.TrustAction.TRUST);
+                    showUndoAction(TrustAction.TRUST)
                 } else {
-                    view.showMistrustFeedback(latestHandshakeId.username);
+                    view!!.showMistrustFeedback(latestHandshakeId!!.username)
                 }
-                updateIdentities();
+                updateIdentities()
             }
-        });
+        })
     }
 
-    public void resetpEpData(Identity id) {
+    fun resetpEpData(id: Identity) {
         try {
-            planckProvider.keyResetIdentity(id, null);
-            refreshRating(new PlanckProvider.SimpleResultCallback<Rating>() {
-                @Override
-                public void onLoaded(Rating rating) {
-                    onRatingChanged(rating);
-                    onTrustReset(currentRating, id);
+            planckProvider.keyResetIdentity(id, null)
+            refreshRating(object : SimpleResultCallback<Rating?>() {
+                override fun onLoaded(rating: Rating) {
+                    onRatingChanged(rating)
+                    onTrustReset(currentRating, id)
                 }
-            });
-
-            view.showResetPartnerKeySuccessFeedback();
-        } catch (Exception e) {
-            view.showResetPartnerKeyErrorFeedback();
+            })
+            view!!.showResetPartnerKeySuccessFeedback()
+        } catch (e: Exception) {
+            view!!.showResetPartnerKeyErrorFeedback()
         }
-
     }
 
-    private void refreshRating(PlanckProvider.ResultCallback<Rating> callback) {
+    private fun refreshRating(callback: PlanckProvider.ResultCallback<Rating>) {
         if (isMessageIncoming) {
-            planckProvider.incomingMessageRating(localMessage, callback);
+            planckProvider.incomingMessageRating(localMessage, callback)
         } else {
-            setupOutgoingMessageRating(callback);
+            setupOutgoingMessageRating(callback)
         }
     }
 
-    private void updateIdentities() {
-        ArrayList<Identity> recipients = cache.getRecipients();
-        WorkerThread workerThread = new WorkerThread(recipients, UPDATE_IDENTITIES);
-        workerThread.start();
+    private fun updateIdentities() {
+        val recipients = cache.recipients
+        val workerThread: WorkerThread = WorkerThread(recipients, UPDATE_IDENTITIES)
+        workerThread.start()
     }
 
-    private void identitiesUpdated(List<PlanckIdentity> newIdentities) {
-        identities = newIdentities;
-        view.updateIdentities(identities);
+    private fun identitiesUpdated(newIdentities: List<PlanckIdentity>) {
+        identities = newIdentities
+        view!!.updateIdentities(identities)
     }
 
-    private void showUndoAction(PlanckProvider.TrustAction trustAction) {
-        switch (trustAction) {
-            case TRUST:
-                view.showUndoTrust(latestHandshakeId.username);
-                break;
-            case MISTRUST:
-                view.showUndoMistrust(latestHandshakeId.username);
-                break;
+    private fun showUndoAction(trustAction: TrustAction) {
+        when (trustAction) {
+            TrustAction.TRUST -> view!!.showUndoTrust(latestHandshakeId!!.username)
+            TrustAction.MISTRUST -> view!!.showUndoMistrust(latestHandshakeId!!.username)
         }
     }
 
-    public MessageLoaderHelper.MessageLoaderCallbacks callback() {
-        return new MessageLoaderHelper.MessageLoaderCallbacks() {
-            @Override
-            public void onMessageDataLoadFinished(LocalMessage message) {
-                localMessage = message;
-                currentRating = localMessage.getPlanckRating();
+    fun callback(): MessageLoaderCallbacks {
+        return object : MessageLoaderCallbacks {
+            override fun onMessageDataLoadFinished(message: LocalMessage) {
+                localMessage = message
+                currentRating = localMessage!!.planckRating
             }
 
-            @Override
-            public void onMessageDataLoadFailed() {
-                view.showDataLoadError();
+            override fun onMessageDataLoadFailed() {
+                view!!.showDataLoadError()
             }
 
-            @Override
-            public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
+            override fun onMessageViewInfoLoadFinished(messageViewInfo: MessageViewInfo) {}
+            override fun onMessageViewInfoLoadFailed(messageViewInfo: MessageViewInfo) {}
+            override fun setLoadingProgress(current: Int, max: Int) {}
+            override fun onDownloadErrorMessageNotFound() {}
+            override fun onDownloadErrorNetworkError() {}
+            override fun startIntentSenderForMessageLoaderHelper(
+                si: IntentSender, requestCode: Int, fillIntent: Intent,
+                flagsMask: Int, flagValues: Int, extraFlags: Int
+            ) {
             }
-
-            @Override
-            public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-            }
-
-            @Override
-            public void setLoadingProgress(int current, int max) {
-            }
-
-            @Override
-            public void onDownloadErrorMessageNotFound() {
-            }
-
-            @Override
-            public void onDownloadErrorNetworkError() {
-            }
-
-            @Override
-            public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
-                                                                int flagsMask, int flagValues, int extraFlags) {
-            }
-        };
+        }
     }
 
-    public void undoTrust() {
+    fun undoTrust() {
         if (latestHandshakeId != null) {
-            resetTrust(latestHandshakeId);
+            resetTrust(latestHandshakeId!!)
         }
     }
 
-    public void saveInstanceState(Bundle outState) {
-        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
-        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure);
+    fun saveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted)
+        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure)
     }
 
-    public void restoreInstanceState(Bundle savedInstanceState) {
+    fun restoreInstanceState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
-            forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
-            isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
+            forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED)
+            isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE)
         }
     }
 
-    public boolean isForceUnencrypted() {
-        return forceUnencrypted;
+    fun isForceUnencrypted(): Boolean {
+        return forceUnencrypted
     }
 
-    public void setForceUnencrypted(boolean forceUnencrypted) {
-        this.forceUnencrypted = forceUnencrypted;
-        view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure);
+    fun setForceUnencrypted(forceUnencrypted: Boolean) {
+        this.forceUnencrypted = forceUnencrypted
+        view!!.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure)
     }
 
-    public boolean isAlwaysSecure() {
-        return isAlwaysSecure;
+    fun isAlwaysSecure(): Boolean {
+        return isAlwaysSecure
     }
 
-    public void setAlwaysSecure(boolean alwaysSecure) {
-        isAlwaysSecure = alwaysSecure;
-        view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure);
+    fun setAlwaysSecure(alwaysSecure: Boolean) {
+        isAlwaysSecure = alwaysSecure
+        view!!.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure)
     }
 
-    private class WorkerThread extends Thread {
+    private inner class WorkerThread : Thread {
+        private var identities: List<Identity>
+        private var what: Int
+        private var rating: Rating? = null
 
-        private List<Identity> identities;
-        private int what;
-        private Rating rating;
-
-        public WorkerThread(List<Identity> identities, int what) {
-            this.identities = identities;
-            this.what = what;
+        constructor(identities: List<Identity>, what: Int) {
+            this.identities = identities
+            this.what = what
         }
 
-        public WorkerThread(List<PlanckIdentity> identities, int what, Rating rating) {
-            this.identities = new ArrayList<>(identities);
-            this.what = what;
-            this.rating = rating;
+        constructor(identities: List<PlanckIdentity>?, what: Int, rating: Rating?) {
+            this.identities = ArrayList<Identity>(identities)
+            this.what = what
+            this.rating = rating
         }
 
-        @Override
-        public void run() {
-            List<PlanckIdentity> updatedIdentities = planckIdentityMapper.mapRecipients(identities);
-            Message childThreadMessage = new Message();
-            childThreadMessage.what = what;
-            childThreadMessage.obj = updatedIdentities;
+        override fun run() {
+            val updatedIdentities = planckIdentityMapper.mapRecipients(identities)
+            val childThreadMessage = Message()
+            childThreadMessage.what = what
+            childThreadMessage.obj = updatedIdentities
             if (rating != null) {
-                childThreadMessage.arg1 = rating.value;
+                childThreadMessage.arg1 = rating!!.value
             }
-            mainThreadHandler.sendMessage(childThreadMessage);
+            mainThreadHandler.sendMessage(childThreadMessage)
         }
     }
 
+    companion object {
+        private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
+        private const val STATE_ALWAYS_SECURE = "alwaysSecure"
+        private const val LOAD_RECIPIENTS = 1
+        private const val ON_TRUST_RESET = 2
+        private const val UPDATE_IDENTITIES = 3
+    }
 }
