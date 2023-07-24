@@ -225,7 +225,7 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
     public void doPositiveClick(int dialogId) {
         switch (dialogId) {
             case R.id.dialog_reset_partner_key_confirmation:
-                presenter.resetpEpData(planckIdentity);
+                presenter.resetPlanckData(planckIdentity);
                 break;
             case R.id.dialog_reset_partner_key_error:
                 rendererBuilder.getResetClickListener().keyReset(planckIdentity);

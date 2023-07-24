@@ -181,7 +181,7 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    fun resetpEpData(id: Identity) {
+    fun resetPlanckData(id: Identity) {
         uiScope.launch {
             ResultCompat.of { planckProvider.keyResetIdentity(id, null) }
                 .flatMapSuspend {
