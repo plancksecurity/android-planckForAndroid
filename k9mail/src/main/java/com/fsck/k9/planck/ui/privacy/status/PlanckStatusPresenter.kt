@@ -9,17 +9,19 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.message.html.DisplayHtml
+import com.fsck.k9.planck.DefaultDispatcherProvider
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckProvider.TrustAction
 import com.fsck.k9.planck.PlanckUIArtefactCache
 import com.fsck.k9.planck.infrastructure.MessageView
 import com.fsck.k9.planck.infrastructure.ResultCompat
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.models.PlanckIdentity
 import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,7 +34,8 @@ class PlanckStatusPresenter @Inject internal constructor(
     private val cache: PlanckUIArtefactCache,
     @param:MessageView private val displayHtml: DisplayHtml,
     private val simpleMessageLoaderHelper: SimpleMessageLoaderHelper,
-    private val planckIdentityMapper: PlanckIdentityMapper
+    private val planckIdentityMapper: PlanckIdentityMapper,
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
 ) {
     private lateinit var view: PlanckStatusView
     private var identities: List<PlanckIdentity> = emptyList()
@@ -45,6 +48,8 @@ class PlanckStatusPresenter @Inject internal constructor(
     private var isAlwaysSecure = false
 
     private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val planckDispatcher: CoroutineDispatcher
+        get() = dispatcherProvider.planckDispatcher()
 
     private val recipientAddresses: List<Address>
         get() = identities.map { Address(it.address) }
@@ -87,7 +92,7 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    private suspend fun updateIdentitiesSuspend() = withContext(PlanckDispatcher) {
+    private suspend fun updateIdentitiesSuspend() = withContext(planckDispatcher) {
         updateIdentities()
     }
 
@@ -103,7 +108,7 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    private suspend fun resetTrust(id: Identity) = withContext(PlanckDispatcher) {
+    private suspend fun resetTrust(id: Identity) = withContext(planckDispatcher) {
         if (isMessageIncoming) {
             resetIncomingMessageTrust(id)
         } else {
@@ -190,7 +195,7 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    private suspend fun refreshRating(): ResultCompat<Rating> = withContext(PlanckDispatcher) {
+    private suspend fun refreshRating(): ResultCompat<Rating> = withContext(planckDispatcher) {
         if (isMessageIncoming) {
             planckProvider.incomingMessageRating(localMessage)
         } else {
