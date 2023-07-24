@@ -3,8 +3,6 @@ package com.fsck.k9.planck.ui.privacy.status
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mail.Address
@@ -12,15 +10,21 @@ import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.message.html.DisplayHtml
 import com.fsck.k9.planck.PlanckProvider
-import com.fsck.k9.planck.PlanckProvider.SimpleResultCallback
 import com.fsck.k9.planck.PlanckProvider.TrustAction
 import com.fsck.k9.planck.PlanckUIArtefactCache
 import com.fsck.k9.planck.infrastructure.MessageView
+import com.fsck.k9.planck.infrastructure.ResultCompat
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.models.PlanckIdentity
 import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PlanckStatusPresenter @Inject internal constructor(
@@ -39,17 +43,8 @@ class PlanckStatusPresenter @Inject internal constructor(
     private var latestHandshakeId: Identity? = null
     private var forceUnencrypted = false
     private var isAlwaysSecure = false
-    private val mainThreadHandler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            val newIdentities = msg.obj as List<PlanckIdentity>
-            when (msg.what) {
-                ON_TRUST_RESET -> trustWasReset(newIdentities, Rating.getByInt(msg.arg1))
-                UPDATE_IDENTITIES -> identitiesUpdated(newIdentities)
-                LOAD_RECIPIENTS -> recipientsLoaded(newIdentities)
-            }
-        }
-    }
+
+    private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun initialize(
         planckStatusView: PlanckStatusView,
@@ -66,7 +61,7 @@ class PlanckStatusPresenter @Inject internal constructor(
     }
 
     fun loadMessage(messageReference: MessageReference?) {
-        if (messageReference != null) {
+        messageReference?.let {
             simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(
                 messageReference,
                 callback(),
@@ -76,13 +71,28 @@ class PlanckStatusPresenter @Inject internal constructor(
     }
 
     fun loadRecipients() {
-        val recipients: List<Identity> = cache.recipients
-        val workerThread = WorkerThread(recipients, LOAD_RECIPIENTS)
-        workerThread.start()
+        uiScope.launch {
+            updateIdentitiesSuspend()
+            recipientsLoaded()
+        }
     }
 
-    private fun recipientsLoaded(newIdentities: List<PlanckIdentity>) {
-        identities = newIdentities
+    private fun updateIdentitiesAndNotify() {
+        uiScope.launch {
+            updateIdentitiesSuspend()
+            view.updateIdentities(identities)
+        }
+    }
+
+    private suspend fun updateIdentitiesSuspend() = withContext(PlanckDispatcher) {
+        updateIdentities()
+    }
+
+    private fun updateIdentities() {
+        identities = planckIdentityMapper.mapRecipients(cache.recipients)
+    }
+
+    private fun recipientsLoaded() {
         if (identities.isNotEmpty()) {
             view.setupRecipients(identities)
         } else {
@@ -90,34 +100,36 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    private fun resetTrust(id: Identity) {
+    private suspend fun resetTrust(id: Identity) = withContext(PlanckDispatcher) {
         if (isMessageIncoming) {
             resetIncomingMessageTrust(id)
         } else {
             val addresses = recipientAddresses
             resetOutgoingMessageTrust(id, addresses)
+        }.mapCatching {
+            updateIdentities()
+            it
         }
+    }.onSuccess {rating ->
+        onRatingChanged(rating)
+        view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
+        view.updateIdentities(identities)
     }
 
-    private fun resetOutgoingMessageTrust(id: Identity, addresses: List<Address>) {
-        planckProvider.loadOutgoingMessageRatingAfterResetTrust(
-            id,
-            senderAddress,
-            addresses,
-            emptyList(),
-            emptyList(),
-            object : PlanckProvider.ResultCallback<Rating> {
-                override fun onLoaded(rating: Rating) {
-                    onTrustReset(rating)
-                }
+    private fun resetOutgoingMessageTrust(
+        id: Identity,
+        addresses: List<Address>
+    ): ResultCompat<Rating> = planckProvider.loadOutgoingMessageRatingAfterResetTrust(
+        id,
+        senderAddress,
+        addresses,
+        emptyList(),
+        emptyList()
+    )
 
-                override fun onError(throwable: Throwable) {}
-            })
-    }
-
-    private fun onTrustReset(rating: Rating) {
-        val workerThread = WorkerThread(identities, ON_TRUST_RESET, rating)
-        workerThread.start()
+    private suspend fun onTrustReset(rating: Rating) {
+        updateIdentitiesSuspend()
+        trustWasReset(identities, rating)
     }
 
     private fun trustWasReset(newIdentities: List<PlanckIdentity>, rating: Rating) {
@@ -125,23 +137,17 @@ class PlanckStatusPresenter @Inject internal constructor(
         view.updateIdentities(newIdentities)
     }
 
-    private fun resetIncomingMessageTrust(id: Identity) {
-        planckProvider.loadMessageRatingAfterResetTrust(
-            localMessage,
-            isMessageIncoming,
-            id,
-            object : PlanckProvider.ResultCallback<Rating> {
-                override fun onLoaded(result: Rating) {
-                    onTrustReset(result)
-                }
+    private fun resetIncomingMessageTrust(
+        id: Identity
+    ): ResultCompat<Rating> = planckProvider.loadMessageRatingAfterResetTrust(
+        localMessage,
+        isMessageIncoming,
+        id
+    )
 
-                override fun onError(throwable: Throwable) {}
-            })
-    }
-
-    private fun setupOutgoingMessageRating(callback: PlanckProvider.ResultCallback<Rating>) {
+    private fun setupOutgoingMessageRating(): ResultCompat<Rating> {
         val addresses = recipientAddresses
-        planckProvider.getRating(senderAddress, addresses, emptyList(), emptyList(), callback)
+        return planckProvider.getRatingResult(senderAddress, addresses, emptyList(), emptyList())
     }
 
     val recipientAddresses: List<Address>
@@ -164,52 +170,43 @@ class PlanckStatusPresenter @Inject internal constructor(
     }
 
     fun onHandshakeResult(id: Identity?, trust: Boolean) {
-        latestHandshakeId = id
-        refreshRating(object : SimpleResultCallback<Rating>() {
-            override fun onLoaded(rating: Rating) {
-                onRatingChanged(rating)
-                if (trust) {
-                    showUndoAction(TrustAction.TRUST)
-                } else {
-                    view.showMistrustFeedback(latestHandshakeId!!.username)
+        uiScope.launch {
+            latestHandshakeId = id
+            refreshRating()
+                .onSuccess {
+                    if (trust) {
+                        showUndoAction(TrustAction.TRUST)
+                    } else {
+                        view.showMistrustFeedback(latestHandshakeId!!.username)
+                    }
+                    updateIdentitiesAndNotify()
                 }
-                updateIdentities()
-            }
-        })
+        }
     }
 
     fun resetpEpData(id: Identity) {
-        try {
-            planckProvider.keyResetIdentity(id, null)
-            refreshRating(object : SimpleResultCallback<Rating>() {
-                override fun onLoaded(rating: Rating) {
-                    onRatingChanged(rating)
-                    onTrustReset(rating)
+        uiScope.launch {
+            ResultCompat.of { planckProvider.keyResetIdentity(id, null) }
+                .flatMapSuspend {
+                    refreshRating()
+                }.onSuccessSuspend {
+                    onTrustReset(it)
+                    view.showResetPartnerKeySuccessFeedback()
+                }.onFailure {
+                    view.showResetPartnerKeyErrorFeedback()
                 }
-            })
-            view.showResetPartnerKeySuccessFeedback()
-        } catch (e: Exception) {
-            view.showResetPartnerKeyErrorFeedback()
         }
     }
 
-    private fun refreshRating(callback: PlanckProvider.ResultCallback<Rating>) {
+    private suspend fun refreshRating(): ResultCompat<Rating> = withContext(PlanckDispatcher) {
         if (isMessageIncoming) {
-            planckProvider.incomingMessageRating(localMessage, callback)
+            planckProvider.incomingMessageRating(localMessage)
         } else {
-            setupOutgoingMessageRating(callback)
+            setupOutgoingMessageRating()
+        }.map {
+            onRatingChanged(it)
+            it
         }
-    }
-
-    private fun updateIdentities() {
-        val recipients = cache.recipients
-        val workerThread = WorkerThread(recipients, UPDATE_IDENTITIES)
-        workerThread.start()
-    }
-
-    private fun identitiesUpdated(newIdentities: List<PlanckIdentity>) {
-        identities = newIdentities
-        view.updateIdentities(identities)
     }
 
     private fun showUndoAction(trustAction: TrustAction) {
@@ -244,7 +241,9 @@ class PlanckStatusPresenter @Inject internal constructor(
     }
 
     fun undoTrust() {
-        latestHandshakeId?.let { resetTrust(it) }
+        uiScope.launch {
+            latestHandshakeId?.let { resetTrust(it) }
+        }
     }
 
     fun saveInstanceState(outState: Bundle) {
@@ -277,39 +276,8 @@ class PlanckStatusPresenter @Inject internal constructor(
         view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure)
     }
 
-    private inner class WorkerThread : Thread {
-        private var identities: List<Identity>
-        private var what: Int
-        private var rating: Rating? = null
-
-        constructor(identities: List<Identity>, what: Int) {
-            this.identities = identities
-            this.what = what
-        }
-
-        constructor(identities: List<PlanckIdentity>, what: Int, rating: Rating?) {
-            this.identities = ArrayList<Identity>(identities)
-            this.what = what
-            this.rating = rating
-        }
-
-        override fun run() {
-            val updatedIdentities = planckIdentityMapper.mapRecipients(identities)
-            val childThreadMessage = Message()
-            childThreadMessage.what = what
-            childThreadMessage.obj = updatedIdentities
-            rating?.let {rating ->
-                childThreadMessage.arg1 = rating.value
-            }
-            mainThreadHandler.sendMessage(childThreadMessage)
-        }
-    }
-
     companion object {
         private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
         private const val STATE_ALWAYS_SECURE = "alwaysSecure"
-        private const val LOAD_RECIPIENTS = 1
-        private const val ON_TRUST_RESET = 2
-        private const val UPDATE_IDENTITIES = 3
     }
 }

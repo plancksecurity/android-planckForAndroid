@@ -622,17 +622,29 @@ class PlanckProviderImplKotlin(
     }
 
     override fun loadOutgoingMessageRatingAfterResetTrust(
-            identity: Identity, from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
-            bccAddresses: List<Address>, callback: ResultCallback<Rating>) {
-        engineScope.launch {
-            getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
-        }
+        identity: Identity,
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating> {
+        return getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses)
     }
 
     override fun loadMessageRatingAfterResetTrust(
-            mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity, resultCallback: ResultCallback<Rating>) {
-        engineScope.launch {
-            loadMessageRatingAfterResetTrustSuspend(mimeMessage, isIncoming, id, resultCallback)
+        mimeMessage: MimeMessage?,
+        isIncoming: Boolean,
+        id: Identity
+    ): ResultCompat<Rating> = ResultCompat.of {
+        engine.get().keyResetTrust(id)
+        val pEpMessage = PlanckMessageBuilder(mimeMessage)
+            .createMessage(context)
+        if (isIncoming) {
+            pEpMessage.dir = Message.Direction.Incoming
+            engine.get().re_evaluate_message_rating(pEpMessage)
+        } else {
+            pEpMessage.dir = Message.Direction.Outgoing
+            engine.get().outgoing_message_rating(pEpMessage)
         }
     }
 
@@ -658,14 +670,11 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking(PlanckDispatcher) {
-        try {
-            val pEpMessage = PlanckMessageBuilder(message).createMessage(context)
-            engine.get().re_evaluate_message_rating(pEpMessage)
-        } catch (e: pEpException) {
-            Timber.e(e)
-            Rating.pEpRatingUndefined
-        }
+    override fun incomingMessageRating(
+        message: MimeMessage
+    ): ResultCompat<Rating> = ResultCompat.of {
+        val planckMessage = PlanckMessageBuilder(message).createMessage(context)
+        engine.get().re_evaluate_message_rating(planckMessage)
     }
 
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
@@ -706,9 +715,21 @@ class PlanckProviderImplKotlin(
                            ccAddresses: List<Address>,
                            bccAddresses: List<Address>,
                            callback: ResultCallback<Rating>) {
-        engineScope.launch {
-            getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses, callback)
+        uiScope.launch {
+            withContext(PlanckDispatcher) {
+                getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses)
+            }.onSuccess { callback.onLoaded(it) }
+                .onFailure { callback.onError(it) }
         }
+    }
+
+    override fun getRatingResult(
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating> {
+        return getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses)
     }
 
     /*
@@ -739,29 +760,30 @@ class PlanckProviderImplKotlin(
         return Rating.pEpRatingUndefined
     }
 
-    private fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
-                                         ccAddresses: List<Address>, bccAddresses: List<Address>,
-                                         callback: ResultCallback<Rating>) {
+    private fun getRatingSuspend(
+        identity: Identity?,
+        from: Address?,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating> {
         Timber.i("Counter of PEpProviderImpl +1")
         EspressoTestingIdlingResource.increment()
-        when {
-            bccAddresses.isNotEmpty() -> notifyLoaded(Rating.pEpRatingUnencrypted, callback)
+        return when {
+            bccAddresses.isNotEmpty() -> ResultCompat.success(Rating.pEpRatingUnencrypted)
             else -> {
                 var message: Message? = null
-                try {
+                ResultCompat.of {
                     if (identity != null) engine.get().keyResetTrust(identity)
                     val areRecipientsEmpty = toAddresses.isEmpty() && ccAddresses.isEmpty() && bccAddresses.isEmpty()
-                    if (from == null || areRecipientsEmpty) notifyLoaded(Rating.pEpRatingUndefined, callback)
-
-                    message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
-                    val result = getRatingOnBackground(message) // stupid way to be able to patch the value in debugger
-                    Timber.i("%s %s", TAG, "getRating " + result.name)
-                    notifyLoaded(result, callback)
-                } catch (e: Throwable) {
-                    Timber.e(e, "%s %s", TAG, "during color test:")
-                    notifyError(e, callback)
-                } finally {
-                    Timber.i("Counter of PEpProviderImpl  -1")
+                    if (from == null || areRecipientsEmpty) Rating.pEpRatingUndefined
+                    else {
+                        message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
+                        val result = getRatingOnBackground(message!!) // stupid way to be able to patch the value in debugger
+                        Timber.i("%s %s", TAG, "getRating " + result.name)
+                        result
+                    }
+                }.also {
                     EspressoTestingIdlingResource.decrement()
                     message?.close()
                 }

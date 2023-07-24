@@ -65,6 +65,8 @@ public interface PlanckProvider {
 
     void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
 
+    ResultCompat<Rating> getRatingResult(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
+
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
      * pEp library interaction.
@@ -206,7 +208,7 @@ public interface PlanckProvider {
 
     void cancelSync();
 
-    void loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id, ResultCallback<Rating> loadedCallback);
+    ResultCompat<Rating> loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id);
 
     String getLog();
 
@@ -226,11 +228,11 @@ public interface PlanckProvider {
 
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
-    Rating incomingMessageRating(MimeMessage message);
+    ResultCompat<Rating> incomingMessageRating(MimeMessage message);
 
     void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback);
 
-    void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+    ResultCompat<Rating> loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
 
     Map<String, PlanckLanguage> obtainLanguages();
 
