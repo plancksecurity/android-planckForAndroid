@@ -172,7 +172,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
+        verify(recipientMvpView, times(2)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -187,7 +187,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         assertTrue(status.isEncryptionOpportunistic());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
+        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -201,7 +201,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isCryptoDisabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
+        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
+        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -230,7 +230,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
         verify(recipientMvpView).showOpenPgpSignOnlyDialog(true);
-        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
+        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -246,7 +246,7 @@ public class RecipientPresenterTest extends RobolectricTest {
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
         verify(recipientMvpView).showOpenPgpInlineDialog(true);
-        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
+        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -293,7 +293,7 @@ public class RecipientPresenterTest extends RobolectricTest {
             verify(toPresenter, never()).getUnsecureAddressChannelCount();
             verify(ccPresenter, never()).getUnsecureAddressChannelCount();
             verify(bccPresenter, never()).getUnsecureAddressChannelCount();
-            verify(recipientMvpView).hideUnsecureDeliveryWarning();
+            verify(recipientMvpView, times(2)).hideUnsecureDeliveryWarning();
         }
     }
 
@@ -314,7 +314,7 @@ public class RecipientPresenterTest extends RobolectricTest {
             verify(toPresenter, never()).getUnsecureAddressChannelCount();
             verify(ccPresenter, never()).getUnsecureAddressChannelCount();
             verify(bccPresenter, never()).getUnsecureAddressChannelCount();
-            verify(recipientMvpView).hideUnsecureDeliveryWarning();
+            verify(recipientMvpView, times(2)).hideUnsecureDeliveryWarning();
         }
     }
 
