@@ -55,6 +55,7 @@ import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,7 +105,7 @@ import static org.junit.Assert.fail;
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
 
-    private static final String HOST = "@sq.planck.security";
+    private static final String HOST = "@bot.planck.dev";
 
     private boolean syncThirdDevice = false;
 
@@ -3383,6 +3384,12 @@ public class CucumberTestSteps {
     }
 
     public String accountAddress(String cucumberMessageTo) {
+        String textCase = "";
+        if (cucumberMessageTo.contains("-")) {
+            String[] parts = cucumberMessageTo.split("-");
+            cucumberMessageTo = parts[0];
+            textCase = parts[1];
+        }
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
@@ -3425,6 +3432,26 @@ public class CucumberTestSteps {
             case "bot9":
                 Timber.i("Filling message to bot4");
                 cucumberMessageTo = bot[8] + "acc" + accountSelected + HOST;
+                break;
+        }
+        switch (textCase) {
+            case "UpperCase":
+                cucumberMessageTo = cucumberMessageTo.toUpperCase();
+                break;
+            case "LowerCase":
+                cucumberMessageTo = cucumberMessageTo.toLowerCase();
+                break;
+            case "MixCase":
+                String newText = "";
+                Random random = new Random();
+                for (int i = 0; i < cucumberMessageTo.length(); i++) {
+                    if (random.nextBoolean()) {
+                        newText = newText + Character.toUpperCase(cucumberMessageTo.charAt(i));
+                    } else {
+                        newText = newText + Character.toLowerCase(cucumberMessageTo.charAt(i));
+                    }
+                }
+                cucumberMessageTo = newText;
                 break;
         }
         return cucumberMessageTo;
