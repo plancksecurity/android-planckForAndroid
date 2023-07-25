@@ -2383,9 +2383,9 @@ public class TestUtils {
             color = -10;
         } else if (rating.value == pEpRatingMistrust.value) {
             color = R.color.planck_red;
-        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+        } else if (rating.value >= Rating.pEpRatingReliable.value) {
             color = R.color.planck_green;
-        } else if (rating.value == Rating.pEpRatingReliable.value) {
+        } else if (rating.value < Rating.pEpRatingReliable.value) {
             color = R.color.planck_yellow;
         } else {
             color = -10;
@@ -2483,15 +2483,20 @@ public class TestUtils {
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
-                int x = (object.getVisibleBounds().right - object.getVisibleBounds().left)/4 + object.getVisibleBounds().left;
-                int iconColor = getPixelColor(x, object.getVisibleCenter().y);
+                int iconColor = iconColor(object);
                 expectedColor = ContextCompat.getColor(context, expectedColor);
                 if (iconColor != expectedColor) {
-                        fail("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
+                        fail("Wrong icon color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
                     break;
                 }
             }
         }
+    }
+
+    private int iconColor (UiObject2 object) {
+        int x = (object.getVisibleBounds().right - object.getVisibleBounds().left)*2/5 + object.getVisibleBounds().left;
+        int color = getPixelColor(x, object.getVisibleCenter().y);
+        return color;
     }
     public void setWifi (boolean enable) throws IOException {
         if (enable) {
@@ -2569,28 +2574,28 @@ public class TestUtils {
 
     public String getStatusRating(Rating [] statusRating, String status) {
         switch (status){
-            case "pEpRatingUndefined":
+            case "Undefined":
                 statusRating[0] = Rating.pEpRatingUndefined;
                 break;
-            case "pEpRatingCannotDecrypt":
+            case "CannotDecrypt":
                 statusRating[0] = Rating.pEpRatingCannotDecrypt;
                 break;
             case "pEpRatingHaveNoKey":
                 statusRating[0] = Rating.pEpRatingHaveNoKey;
                 break;
-            case "pEpRatingUnencrypted":
+            case "NotEncrypted":
                 statusRating[0] = Rating.pEpRatingUnencrypted;
                 break;
-            case "pEpRatingUnreliable":
+            case "WeaklyEncrypted":
                 statusRating[0] = Rating.pEpRatingUnreliable;
                 break;
-            case "pEpRatingMediaKeyProtected":
+            case "MediaKey":
                 statusRating[0] = Rating.pEpRatingMediaKeyProtected;
                 break;
-            case "pEpRatingReliable":
+            case "Encrypted":
                 statusRating[0] = Rating.pEpRatingReliable;
                 break;
-            case "pEpRatingTrusted":
+            case "Trusted":
                 statusRating[0] = Rating.pEpRatingTrusted;
                 break;
             case "pEpRatingTrustedAndAnonymized":
@@ -2599,13 +2604,13 @@ public class TestUtils {
             case "pEpRatingFullyAnonymous":
                 statusRating[0] = Rating.pEpRatingFullyAnonymous;
                 break;
-            case "pEpRatingMistrust":
+            case "Dangerous":
                 statusRating[0] = Rating.pEpRatingMistrust;
                 break;
-            case "pEpRatingB0rken":
+            case "Broken":
                 statusRating[0] = Rating.pEpRatingB0rken;
                 break;
-            case "pEpRatingUnderAttack":
+            case "UnderAttack":
                 statusRating[0] = Rating.pEpRatingUnderAttack;
                 break;
         }
@@ -2628,9 +2633,10 @@ public class TestUtils {
                             currentMessage++;
                         }
                         else {
-                            int pixel = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                            if (pixel != resources.getColor(statusColor)) {
-                                fail("Badge status colors are different");
+                            int pixel = iconColor(object);
+                            if (pixel != ContextCompat.getColor(context, statusColor)) {
+                                //ContextCompat.getColor(context, statusColor)
+                                fail("Wrong color: Expected badge color is " + String.format("#%06X", (0xFFFFFF & statusColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & pixel)));
                             }
                             assertedBadgeColor = true;
                             break;
@@ -2638,8 +2644,7 @@ public class TestUtils {
                     }
                 } catch (Exception ex){
                     Timber.i("Cannot find text on screen: " + ex);
-                }
-            }
+                }            }
         }
     }
 
