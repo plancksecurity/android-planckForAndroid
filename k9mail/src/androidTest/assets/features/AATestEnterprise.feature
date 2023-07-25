@@ -2,7 +2,8 @@ Feature: Test
   Background:
     Given I created an account
 
-
+#Summary: the user composes and sends a message to a bot with specific content, checks and confirms privacy status and trust words, and verifies the updated privacy status as "Trusted."
+#Description: the user interacts with a messaging system to send a message to a bot. They then perform various actions to check and ensure the privacy and trustworthiness of the communication. The scenario involves verifying privacy status, confirming trust words, and ultimately confirming that the privacy status is updated as "Trusted."
   Scenario: Cucumber Handshake in new Message
     When I click compose message
     And I send 1 message to bot3 with subject TM-16 and body TM-16body
@@ -15,6 +16,9 @@ Feature: Test
     When I click confirm trust words
     Then I check if the privacy status is Trusted
 
+
+    #Summary : the user composes a message to a bot with specific subject and body. They check and confirm that the message is not encrypted, then send it. After receiving a new message, they verify trust words, confirm the trust, and check that the privacy status is updated to "Trusted."
+  #Description: the user interacts with a messaging system to send a message to a bot with a particular subject and body. They ensure that the message is not encrypted and proceed to send it. After receiving a new message, they verify trust words, confirm trust, and finally, check if the privacy status of the communication is updated to "Trusted." The scenario revolves around messaging, privacy, and trust verification.
   Scenario: Cucumber Handshake in existing message
     When I click compose message
     And I enter bot6 in the messageTo field
@@ -28,7 +32,8 @@ Feature: Test
     When I click confirm trust words
     Then I check if the privacy status is Trusted
 
-
+#Summary: the user sends multiple messages to a bot with different contents. They check and manipulate the privacy status by mistrusting, resetting partner key, and confirming trust words. The process includes verifying badge colors for each message to indicate whether it's "Encrypted," "Dangerous," or "Trusted."
+  #Description: the user engages in a series of actions to interact with a messaging system involving a bot. They send multiple messages with various content and subject lines. Throughout the scenario, the user checks and modifies the privacy status of these messages, using actions like mistrusting, resetting the partner key, and confirming trust words. The privacy status is indicated by badge colors, which can be "Encrypted," "Dangerous," or "Trusted" for different messages. The scenario serves as a comprehensive test of the messaging system's privacy and trust features.
   Scenario: Cucumber Reset Handshake
     When I click compose message
     And I send 1 message to bot4 with subject TM-18 and body cucumberStopTrusting
@@ -60,7 +65,8 @@ Feature: Test
     When I click the last message received
     Then I check if the privacy status is Trusted
 
-
+#Summary: the user sends messages with incorrect trust words to a bot and clicks to stop trusting. The privacy status is checked and found to be "Dangerous" for both messages.
+#Description: the user engages in interactions with a messaging system involving a bot. They send messages with incorrect trust words, leading to a privacy status of "Dangerous." The user then verifies this status for the messages, both when stopping trusting and when sending new messages. The scenario aims to test the system's handling of incorrect trust words and the correct updating of the privacy status.
   Scenario: Cucumber Handshake wrong trustwords
     When I send 1 message to bot1 with subject TM-19 and body handshakeWrongTrustwords
     And I click the last message received
@@ -72,7 +78,8 @@ Feature: Test
     When I click the last message received
     Then I check if the privacy status is Dangerous
 
-
+#Summary: the user sends a message with specific content to a bot. They then stop trusting the message, leading to a privacy status of "Dangerous." After resetting the partner key, the privacy status is restored to "Encrypted."
+  #Description: the user engages with a messaging system involving a bot. They send a message with specific content, but due to mistrusted words, the privacy status becomes "Dangerous." To rectify this, the user resets the partner key, which restores the privacy status to "Encrypted." The scenario serves to test the system's response to mistrusted messages and the successful recovery of privacy status after a key reset.
   Scenario: Cucumber Trust Reset: Mistrusted
 
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted
@@ -82,6 +89,8 @@ Feature: Test
     When I reset partner key
     Then I check if the privacy status is Encrypted
 
+#Summary: the user sends a message with specific content to a bot and confirms trust. The privacy status becomes "Trusted." After resetting the partner key, the privacy status is restored to "Encrypted."
+  #Description: the user interacts with a messaging system involving a bot. They send a message with specific content, and upon confirming trust in the message, the privacy status is updated to "Trusted." However, the user later resets the partner key, and as a result, the privacy status is reverted to "Encrypted." The scenario aims to test the system's response to trusted messages and the successful recovery of privacy status after a key reset.
 
   Scenario: Cucumber Trust Reset: Trusted
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted
@@ -91,6 +100,8 @@ Feature: Test
     When I reset partner key
     Then I check if the privacy status is Encrypted
 
+    #Summary:
+  #Description:
 
   Scenario: Cucumber Trust Reset: Trusted message
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted2
@@ -105,6 +116,8 @@ Feature: Test
     And I click the last message received
     Then I check if the privacy status is Encrypted
 
+        #Summary:
+  #Description:
 
   Scenario: Cucumber Trust Reset: Mistrusted message
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted2
@@ -267,6 +280,38 @@ Feature: Test
     And I go to spam folder from navigation menu
     And I click the first message
     Then I compare messageBody from json file with ThisMessageWillMovedToAnotherFolder
+    And I press back
+    And I go to inbox folder from navigation menu
+
+    #Summary: the user sends two messages to a bot with different privacy statuses. They move one message to the "spam" folder and verify that the privacy status remains "NotEncrypted." The user successfully navigates between the Inbox and "spam" folders in the messaging system.
+  #Description: the user interacts with a messaging system involving a bot. They send two messages with different privacy statuses: one encrypted and one not encrypted. The user then moves the non-encrypted message to the "spam" folder and verifies that the privacy status remains "NotEncrypted" after moving. Additionally, the user successfully navigates between the Inbox and "spam" folders in the messaging system. The scenario aims to test the system's handling of moving non-encrypted emails and folder navigation.
+
+  Scenario: Cucumber Move Non encrypted email to a folder
+    When I send 1 message to bot1 with subject Reset and body ThisMessageWillBeEncrypted
+    When I send 1 message to bot1 with subject Reset and body ThisMessageWillBeNotEncrypted
+    And I click the last message received
+    Then I check the privacy status is NotEncrypted
+    When I move the message to the folder spam
+    And I go back to the Inbox
+    And I go to spam folder from navigation menu
+    And I click the first message
+    Then I check the privacy status is NotEncrypted
+    And I press back
+    And I go to inbox folder from navigation menu
+
+    #Summary: the user sends two messages to a bot with different privacy statuses. They copy one non-encrypted message to the "spam" folder and verify that the privacy status remains "NotEncrypted." The user successfully navigates between the Inbox and "spam" folders in the messaging system.
+  #Description: the user interacts with a messaging system involving a bot. They send two messages, one encrypted and one not encrypted. The user then copies the non-encrypted message to the "spam" folder and confirms that the privacy status remains "NotEncrypted" after copying. Additionally, the user successfully navigates between the Inbox and "spam" folders in the messaging system. The scenario aims to test the system's handling of copying non-encrypted emails and folder navigation.
+
+  Scenario: Cucumber Copy Non encrypted email to a folder
+    When I send 1 message to bot1 with subject Reset and body ThisMessageWillBeEncrypted
+    When I send 1 message to bot1 with subject Reset and body ThisMessageWillBeNotEncrypted
+    And I click the last message received
+    Then I check the privacy status is NotEncrypted
+    When I copy the message to the folder spam
+    And I go back to the Inbox
+    And I go to spam folder from navigation menu
+    And I click the first message
+    Then I check the privacy status is NotEncrypted
     And I press back
     And I go to inbox folder from navigation menu
 
