@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
@@ -19,6 +20,7 @@ import com.fsck.k9.planck.infrastructure.exceptions.AppCannotDecryptException
 import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageException
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailureWrongPassphrase
+import com.fsck.k9.planck.infrastructure.exceptions.CannotCreateMessageException
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
@@ -785,7 +787,7 @@ class PlanckProviderImplKotlin(
         idFrom.user_id = PLANCK_OWN_USER_ID
         idFrom.me = true
 
-        val message = Message()
+        val message = insistToInitializeMessageOrThrow()
         message.from = idFrom
         message.to = PlanckUtils.createIdentities(toAddresses, context)
         message.cc = PlanckUtils.createIdentities(ccAddresses, context)
@@ -794,6 +796,23 @@ class PlanckProviderImplKotlin(
         message.longmsg = "Lorem ipsum"
         message.dir = Message.Direction.Outgoing
         return message
+    }
+
+    private fun insistToInitializeMessageOrThrow(): Message {
+        var error: Throwable? = null
+        repeat(MESSAGE_CREATION_ATTEMPTS) { count ->
+            try {
+                return Message()
+            } catch (ex: Throwable) {
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "ERROR CREATING MESSAGE IN ATTEMPT ${count + 1}", ex)
+                }
+                error = ex
+                runBlocking { delay(MESSAGE_CREATION_ATTEMPT_COOLDOWN) }
+            }
+        }
+
+        throw CannotCreateMessageException(error!!)
     }
 
     @WorkerThread //Already done
@@ -1219,6 +1238,8 @@ class PlanckProviderImplKotlin(
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"
         private const val ECHO_PROTOCOL_MESSAGE_SUBJECT = "key management message (Distribution)"
+        private const val MESSAGE_CREATION_ATTEMPTS = 20
+        private const val MESSAGE_CREATION_ATTEMPT_COOLDOWN = 10L
 
         @Throws(MessagingException::class)
         private fun getMimeMessage(source: MimeMessage?, message: Message): MimeMessage {
