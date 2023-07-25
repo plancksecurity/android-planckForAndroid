@@ -3,6 +3,121 @@ Feature: Test
     Given I created an account
 
 
+  Scenario: Cucumber Handshake in new Message
+    When I click compose message
+    And I send 1 message to bot3 with subject TM-16 and body TM-16body
+    And I click the last message received
+    And I go back to the Inbox
+    And I click compose message
+    And I enter bot3 in the messageTo field
+    Then I check if the privacy status is Encrypted
+    And I confirm trust words match
+    When I click confirm trust words
+    Then I check if the privacy status is Trusted
+
+  Scenario: Cucumber Handshake in existing message
+    When I click compose message
+    And I enter bot6 in the messageTo field
+    And I enter TM-17 in the messageSubject field
+    And I enter TM-17 in the messageBody field
+    Then I check the privacy status is NotEncrypted
+    When I click the send message button
+    And I wait for the new message
+    And I click the last message received
+    Then I confirm trust words match
+    When I click confirm trust words
+    Then I check if the privacy status is Trusted
+
+
+  Scenario: Cucumber Reset Handshake
+    When I click compose message
+    And I send 1 message to bot4 with subject TM-18 and body cucumberStopTrusting
+    Then I check the badge color of the first message is Encrypted
+    When I click the last message received
+    Then I check if the privacy status is Encrypted
+    When I click mistrust words
+    Then I check if the privacy status is Dangerous
+    When I go back to the Inbox
+    Then I check the badge color of the first message is Dangerous
+    And I click compose message
+    And I send 1 message to bot4 with subject TM-18A and body cucumberStopTrustingMistrust
+    Then I check the badge color of the first message is Dangerous
+    When I click the last message received
+    Then I check if the privacy status is Dangerous
+    When I reset partner key
+    And I go back to the Inbox
+    And I click compose message
+    And I send 1 message to bot4 with subject TM-18B and body cucumberStopTrustingReseted
+    Then I check the badge color of the first message is Encrypted
+    When I click the last message received
+    Then I check if the privacy status is Encrypted
+    When I click confirm trust words
+    And I go back to the Inbox
+    Then I check the badge color of the first message is Trusted
+    When I click compose message
+    And I send 1 message to bot4 with subject TM-18C and body cucumberStopTrustingConfirmTrustWords
+    Then I check the badge color of the first message is Trusted
+    When I click the last message received
+    Then I check if the privacy status is Trusted
+
+
+  Scenario: Cucumber Handshake wrong trustwords
+    When I send 1 message to bot1 with subject TM-19 and body handshakeWrongTrustwords
+    And I click the last message received
+    And I click stop trusting words
+    Then I check if the privacy status is Dangerous
+    When I go back to the Inbox
+    And I send 1 message to bot1 with subject TM-19A and body handshakeWrongTrustwordsA
+    Then I check the badge color of the first message is Dangerous
+    When I click the last message received
+    Then I check if the privacy status is Dangerous
+
+
+  Scenario: Cucumber Trust Reset: Mistrusted
+
+    And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted
+    And I click the last message received
+    And I click stop trusting words
+    Then I check if the privacy status is Dangerous
+    When I reset partner key
+    Then I check if the privacy status is Encrypted
+
+
+  Scenario: Cucumber Trust Reset: Trusted
+    And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted
+    And I click the last message received
+    And I click confirm trust words
+    Then I check if the privacy status is Trusted
+    When I reset partner key
+    Then I check if the privacy status is Encrypted
+
+
+  Scenario: Cucumber Trust Reset: Trusted message
+    And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted2
+    And I click the last message received
+    And I click confirm trust words
+    Then I check if the privacy status is Trusted
+    When I click reply message
+    And I reset partner key
+    Then I check if the privacy status is NotEncrypted
+    When I send 1 messages to bot2 with subject handshake2nd and body ThisWillBeGrey
+    And I select the inbox
+    And I click the last message received
+    Then I check if the privacy status is Encrypted
+
+
+  Scenario: Cucumber Trust Reset: Mistrusted message
+    And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted2
+    And I click the last message received
+    And I click stop trusting words
+    Then I check if the privacy status is Dangerous
+    When I click reply message
+    And I reset partner key
+    Then I check if the privacy status is NotEncrypted
+
+
+    #Summary: The scenario involves sending messages to a bot, confirming trust words, checking privacy status, resetting own key, and verifying privacy status after sending messages with different subjects and bodies. The desired outcome is to ensure that privacy status is "Trusted" for certain messages and "Encrypted" for others.
+  #Description: This scenario tests the messaging application's functionality related to privacy and encryption. It includes actions such as sending messages to a bot, confirming trust words, checking and verifying privacy status, resetting the user's own key, and sending additional messages to verify the privacy status again. The purpose is to ensure that the privacy status is accurately reflected as "Trusted" or "Encrypted" for different scenarios and interactions within the application.
   Scenario: Cucumber Reset Own Key when Trusted Partner
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
     And I click the last message received
@@ -28,8 +143,8 @@ Feature: Test
     And I wait for the message and click it
     Then I check the privacy status is Encrypted
 
-
-
+#Summary: The scenario involves sending a message to a bot with specific subject and body, confirming trust words, checking privacy status, resetting the partner key, composing another message, and verifying privacy status. The desired outcome is to ensure that the privacy status is "Trusted" for the initial message, "NotEncrypted" after doing the Key Reset, and "Encrypted" after sending and receiving the second message.
+#Description: This scenario tests the messaging application's functionality related to privacy and encryption. It includes actions such as sending messages to a bot, confirming trust words, checking and verifying privacy status, resetting the partner key, composing another message, and checking the privacy status again. The purpose is to ensure that the privacy status is accurately reflected as "Trusted" for the initial message, "NotEncrypted" for the subsequent message, and "Encrypted" after sending and receiving the second message.
   Scenario: Cucumber Reset Trusted Partner Key
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
     And I click the last message received
@@ -46,6 +161,8 @@ Feature: Test
     And I wait for the message and click it
     Then I check the privacy status is Encrypted
 
+    #Summary: The scenario tests the messaging application's privacy and encryption features by sending messages, resetting the partner key, and verifying the privacy status. The desired outcome is to ensure that the privacy status is accurately reflected for each message, alternating between "NotEncrypted" and "Encrypted" as expected.
+  #Description: This scenario is a test case for a messaging application's privacy and encryption features. It involves a series of steps where messages are sent, the partner key is reset, additional messages are composed and sent, and the privacy status is checked. The purpose of the scenario is to verify that the privacy status is accurately reflected for each message, ensuring proper encryption where necessary and absence of encryption in other cases. The scenario aims to assess the application's adherence to privacy and encryption requirements during message transmission and key management.
 
   Scenario: Cucumber Reset Partner Key
     When I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
@@ -173,7 +290,59 @@ Feature: Test
     And I wait for the new message
     And I go to the sent folder
     And I click the first message
-    Then I compare messageBody with bodyMailToNewContact2
+    Then I check the privacy status is Encrypted
+    And I compare messageBody with bodyMailToNewContact2
+
+    #Summary: The scenario tests the messaging application's treatment of uppercase characters in message fields. It involves sending messages with uppercase subjects and bodies to a bot, checking and verifying the privacy status, and ensuring proper encryption for messages with uppercase components.
+  #Description: This scenario is designed to test the behavior of a messaging application when handling uppercase characters in message fields. The steps involve composing and sending messages with uppercase subjects and bodies to a bot, checking and verifying the privacy status, and ensuring that messages with uppercase components are properly encrypted. The scenario aims to assess the application's ability to handle and process uppercase characters accurately and maintain consistent privacy and encryption standards.
+
+  Scenario: Cucumber Mail with Upper case
+
+    When I click compose message
+    And I send 1 message to bot1 with subject UpperCase and body TestingUpperCase
+    And I click compose message
+    And I check the privacy status is Undefined
+    And I enter bot1-UpperCase in the messageTo field
+    And I enter UpperCaseTest in the messageSubject field
+    And I enter RecipientInUpperCase in the messageBody field
+    Then I check the privacy status is Encrypted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is Encrypted
+
+    #Summary: The scenario tests the messaging application's treatment of lowercase characters in message fields. It involves sending messages with lowercase subjects and bodies to a bot, checking and verifying the privacy status, and ensuring proper encryption for messages with lowercase components.
+#Description: This scenario aims to test how the messaging application handles lowercase characters in message fields. The steps include composing and sending messages with lowercase subjects and bodies to the recipient "bot1". It also involves checking the privacy status, which should initially be "Undefined", and then verifying that the privacy status transitions to "Encrypted" after sending and receiving the message. The scenario ensures that the application correctly handles lowercase characters in different message components, maintaining the expected privacy and encryption standards.
+
+  Scenario: Cucumber Mail with Lower case
+
+    When I click compose message
+    And I send 1 message to bot1 with subject LowerCase and body TestingLowerCase
+    And I click compose message
+    And I check the privacy status is Undefined
+    And I enter bot1-LowerCase in the messageTo field
+    And I enter LowerCaseTest in the messageSubject field
+    And I enter RecipientInLowerCase in the messageBody field
+    Then I check the privacy status is Encrypted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is Encrypted
+
+    #Summary: The scenario tests the messaging application's treatment of mixed-case characters in message fields. It involves sending messages with mixed-case subjects and bodies to a bot, checking and verifying the privacy status, and ensuring proper encryption for messages with mixed-case components.
+  #Description: This scenario aims to test the behavior of a messaging application when dealing with mixed-case characters in message fields. The steps include composing and sending messages with mixed-case subjects and bodies. It also involves checking the privacy status, which should initially be "Undefined", and then verifying that the privacy status remains "Encrypted" throughout the process. The scenario ensures that the application correctly handles mixed-case characters in different message components, maintains consistent privacy and encryption standards, and accurately processes and delivers messages with mixed-case content.
+
+  Scenario: Cucumber Mail with Mix case
+
+    When I click compose message
+    And I send 1 message to bot1 with subject MixCase and body TestingMixCase
+    And I click compose message
+    And I check the privacy status is Undefined
+    And I enter bot1-MixCase in the messageTo field
+    And I enter MixCaseTest in the messageSubject field
+    And I enter RecipientInMixCase in the messageBody field
+    Then I check the privacy status is Encrypted
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check the privacy status is Encrypted
 
 
 #Summary: This Cucumber test involves sending an email with a long text message to a bot and then verifying that the message was sent and received correctly.
@@ -213,7 +382,8 @@ Feature: Test
     And I click the first message
     Then I compare messageBody with longText
 
-
+  #Summary: The scenario tests sending an encrypted email with a long subject using the messaging application. It involves composing and sending a message with a short subject and body, checking the privacy status, entering a long subject and body, sending the message, comparing the subject and body with values from a JSON file, and verifying the sent message in the sent folder.
+  #Description: This scenario focuses on testing the messaging application's capability to send encrypted emails with long subjects. It involves composing and sending a message with a short subject and body, checking the privacy status, entering a long subject and body, sending the message, comparing the subject and body with values from a JSON file, and verifying the sent message in the sent folder. The scenario ensures that the application can handle and deliver encrypted emails with long subject lines accurately and securely. It also verifies that the sent message's subject and body match the expected values and confirms the preservation of privacy throughout the email transmission process.
 
   Scenario: Cucumber Send Encrypted email with long subject
 
@@ -250,6 +420,7 @@ Feature: Test
     And I enter bot2 in the messageTo field
     And I enter TM154A in the messageSubject field
     And I enter longText in the messageBody field
+    Then I check the privacy status is Encrypted
     And I save as draft
     And I go to the drafts folder
     And I click message at position 1
