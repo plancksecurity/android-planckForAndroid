@@ -6,6 +6,7 @@ import com.fsck.k9.planck.infrastructure.exceptions.CouldNotExportPEpDataExcepti
 import com.fsck.k9.planck.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.planck.infrastructure.extensions.flatMap
 import com.fsck.k9.planck.saveToDocuments
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
@@ -13,10 +14,9 @@ import security.planck.file.PlanckSystemFileLocator
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-import javax.inject.Named
 
 class ExportPlanckSupportData @Inject constructor(
-    @Named("AppContext") private val context: Context,
+    @ApplicationContext private val context: Context,
     private val systemFileLocator: PlanckSystemFileLocator,
 ) {
     suspend operator fun invoke(

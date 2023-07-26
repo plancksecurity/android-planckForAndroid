@@ -7,10 +7,10 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.planck.ui.tools.Theme
 import com.fsck.k9.planck.ui.tools.ThemeManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import javax.inject.Named
 
-class ContactLetterBitmapConfig  @Inject constructor(@Named("AppContext") context: Context) {
+class ContactLetterBitmapConfig  @Inject constructor(@ApplicationContext context: Context) {
     val hasDefaultBackgroundColor: Boolean = !K9.isColorizeMissingContactPictures()
     private val appThemeResourceId =
             if (ThemeManager.legacyTheme == Theme.LIGHT)

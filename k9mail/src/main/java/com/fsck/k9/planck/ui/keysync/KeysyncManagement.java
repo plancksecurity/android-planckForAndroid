@@ -3,29 +3,28 @@ package com.fsck.k9.planck.ui.keysync;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.Preferences;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fsck.k9.R;
-import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
-import foundation.pEp.jniadapter.Identity;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import dagger.hilt.android.AndroidEntryPoint;
+import foundation.pEp.jniadapter.Identity;
 
-public class KeysyncManagement extends PlanckActivity implements KeysyncManagementView {
+@AndroidEntryPoint
+public class KeysyncManagement extends K9Activity implements KeysyncManagementView {
 
     @Inject
     KeysyncManagerPresenter presenter;
@@ -42,19 +41,12 @@ public class KeysyncManagement extends PlanckActivity implements KeysyncManageme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keysync_management);
         ButterKnife.bind(this);
-        initPep();
         initializePresenter();
         initializeToolbar(true, R.string.manage_identities_title);
     }
 
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
-    }
-
     private void initializePresenter() {
-        List<Account> accounts = Preferences.getPreferences(KeysyncManagement.this).getAccounts();
-        presenter.initialize(this, getPlanck(), accounts);
+        presenter.initialize(this);
     }
 
     @Override

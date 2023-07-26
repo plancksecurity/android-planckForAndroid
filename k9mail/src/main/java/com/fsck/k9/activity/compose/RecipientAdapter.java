@@ -1,14 +1,8 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -20,13 +14,21 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
 import com.fsck.k9.R;
-import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.activity.compose.RecipientSelectView.RecipientCryptoStatus;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.ThemeUtils;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.inject.Inject;
-import javax.inject.Named;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 
 public class RecipientAdapter extends BaseAdapter implements Filterable {
@@ -37,7 +39,7 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
     private ContactPictureLoader contactPictureLoader;
 
     @Inject
-    public RecipientAdapter(@Named("AppContext") Context context,
+    public RecipientAdapter(@ApplicationContext Context context,
                             ContactPictureLoader contactPictureLoader) {
         super();
         this.context = context;

@@ -128,7 +128,7 @@ public interface PlanckProvider {
      */
     String trustwords(Identity id, String language);
 
-    String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
+    ResultCompat<String> trustwords(Identity myself, Identity partner, String lang, boolean isShort);
 
     void trustwords(Identity myself, Identity partner, String lang, boolean isShort,SimpleResultCallback<String> callback);
 

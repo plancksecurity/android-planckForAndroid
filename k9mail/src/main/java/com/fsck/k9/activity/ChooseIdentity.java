@@ -19,6 +19,9 @@ import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ChooseIdentity extends K9ListActivity {
     Account mAccount;
     ArrayAdapter<String> adapter;

@@ -4,6 +4,8 @@ package com.fsck.k9.activity.setup;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.mail.Store;
 
+@AndroidEntryPoint
 public class AccountSetupOptions extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
 
@@ -134,11 +137,6 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
             mPushEnable.setChecked(true);
         }
 
-
-    }
-
-    @Override
-    public void search(String query) {
 
     }
 

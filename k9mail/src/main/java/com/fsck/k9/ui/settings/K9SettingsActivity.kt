@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
@@ -13,11 +14,12 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.Section
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_settings.*
-import org.koin.android.architecture.ext.viewModel
 
+@AndroidEntryPoint
 class K9SettingsActivity : K9Activity() {
-    private val viewModel: SettingsViewModel by viewModel()
+    private val viewModel: SettingsViewModel by viewModels()
 
     private lateinit var settingsAdapter: GroupAdapter<ViewHolder>
 

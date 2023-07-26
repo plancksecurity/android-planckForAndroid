@@ -63,7 +63,7 @@ class PlanckExtraKeysPresenter @Inject constructor(
     }
 
     private suspend fun getMasterKeyInfo(): List<KeyListItem>? =
-        withContext(dispatcherProvider.pEpDispatcher()) {
+        withContext(dispatcherProvider.planckDispatcher()) {
             planck.masterKeysInfo
         }
 }

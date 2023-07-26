@@ -883,13 +883,13 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? {
-        return try {
-            engine.get().get_trustwords(myself, partner, lang, !isShort)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "trustwords: ")
-            null
-        }
+    override fun trustwords(
+        myself: Identity,
+        partner: Identity,
+        lang: String,
+        isShort: Boolean
+    ): ResultCompat<String> {
+        return ResultCompat.of { engine.get().get_trustwords(myself, partner, lang, !isShort) }
     }
 
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean,

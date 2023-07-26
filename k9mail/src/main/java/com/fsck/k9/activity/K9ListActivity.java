@@ -186,7 +186,4 @@ public abstract class K9ListActivity extends K9Activity {
     public View getRootView() {
         return mList;
     }
-
-    @Override
-    public void search(String query) {}
 }

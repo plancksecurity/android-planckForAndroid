@@ -1,6 +1,8 @@
 package com.fsck.k9.activity;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class Search extends MessageList {
     protected static boolean isActive = false;
 

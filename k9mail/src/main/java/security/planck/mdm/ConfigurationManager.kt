@@ -15,16 +15,15 @@ import security.planck.provisioning.ProvisioningStage
 import timber.log.Timber
 import javax.inject.Inject
 
-class ConfigurationManager(
-    private val context: Context,
+class ConfigurationManager @Inject constructor(
+    private val k9: K9,
     private val preferences: Preferences,
-    private val restrictionsManager: RestrictionsProvider
+    private val restrictionsManager: RestrictionsProvider,
+    private val settingsUpdater: ConfiguredSettingsUpdater,
 ) {
 
     private var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
-    private val k9: K9 = context.applicationContext as K9
-    private val settingsUpdater = ConfiguredSettingsUpdater(k9, preferences)
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -67,12 +66,10 @@ class ConfigurationManager(
                         .filterNot { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.InitializedEngine -> {
-                    settingsUpdater.planck = k9.component.pEpProvider()
                     entries = restrictionsManager.manifestRestrictions
                         .filter{ it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.ProvisioningDone -> {
-                    settingsUpdater.planck = k9.component.pEpProvider()
                     entries = restrictionsManager.manifestRestrictions
                 }
             }
@@ -119,7 +116,7 @@ class ConfigurationManager(
 
     fun unregisterReceiver() {
         if (restrictionsReceiver != null) {
-            context.applicationContext.unregisterReceiver(restrictionsReceiver)
+            k9.unregisterReceiver(restrictionsReceiver)
             restrictionsReceiver = null
         }
     }
@@ -128,21 +125,12 @@ class ConfigurationManager(
         if (restrictionsReceiver == null) {
             restrictionsReceiver = RestrictionsReceiver(this)
         }
-        context.applicationContext.registerReceiver(
+        k9.registerReceiver(
             restrictionsReceiver, IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
         )
     }
 
     fun setListener(listener: RestrictionsListener) {
         this.listener = listener
-    }
-
-    class Factory @Inject constructor(
-        private val preferences: Preferences,
-        private val restrictionsManager: RestrictionsProvider,
-    ) {
-        fun create(
-            context: Context,
-        ): ConfigurationManager = ConfigurationManager(context, preferences, restrictionsManager)
     }
 }

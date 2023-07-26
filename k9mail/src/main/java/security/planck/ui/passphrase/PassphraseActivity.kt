@@ -8,6 +8,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
 import com.fsck.k9.planck.manualsync.WizardActivity
 import com.takisoft.preferencex.PreferenceFragmentCompat
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_passphrase.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -24,13 +25,10 @@ fun PreferenceFragmentCompat.requestPassphraseForNewKeys() {
     startActivityForResult(intent, PASSPHRASE_RESULT_CODE)
 }
 
+@AndroidEntryPoint
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
     @Inject
     lateinit var presenter: PassphrasePresenter
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

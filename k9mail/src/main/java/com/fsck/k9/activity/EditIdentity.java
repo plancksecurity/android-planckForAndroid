@@ -15,7 +15,9 @@ import com.fsck.k9.R;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class EditIdentity extends K9Activity {
 
     public static final String EXTRA_IDENTITY = "com.fsck.k9.EditIdentity_identity";
@@ -91,11 +93,6 @@ public class EditIdentity extends K9Activity {
         } else {
             mSignatureLayout.setVisibility(View.GONE);
         }
-    }
-
-    @Override
-    public void search(String query) {
-
     }
 
     private void saveIdentity() {

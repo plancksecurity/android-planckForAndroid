@@ -1,10 +1,12 @@
 package com.fsck.k9.planck.ui.keysync;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.planck.PlanckProvider;
 
@@ -24,12 +26,14 @@ public class AddDevicePresenterTest extends RobolectricTest {
     private AddDevicePresenter addDevicePresenter;
     @Mock private AddDeviceView view;
     @Mock private PlanckProvider planckProvider;
+    @Mock private Preferences preferences;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        addDevicePresenter = new AddDevicePresenter();
-        addDevicePresenter.initialize(view, planckProvider, identity(), identity(), accounts(),false, "");
+        doReturn(accounts()).when(preferences).getAccounts();
+        addDevicePresenter = new AddDevicePresenter(planckProvider, preferences);
+        addDevicePresenter.initialize(view, identity(), identity(),false, "");
     }
 
     @Test

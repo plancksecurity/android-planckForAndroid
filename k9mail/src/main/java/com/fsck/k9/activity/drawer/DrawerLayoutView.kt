@@ -33,6 +33,7 @@ import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
+import dagger.hilt.android.qualifiers.ActivityContext
 import security.planck.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import security.planck.foldable.folders.displayers.LevelItemActionListener
 import security.planck.foldable.folders.model.LevelListItem
@@ -40,10 +41,9 @@ import security.planck.foldable.folders.util.LevelListBuilder
 import security.planck.ui.PlanckUIUtils
 import security.planck.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
-import javax.inject.Named
 
 class DrawerLayoutView @Inject constructor(
-    @Named("ActivityContext") private val context: Context,
+    @ActivityContext private val context: Context,
     private var drawerFolderPopulator: DrawerFolderPopulator,
     private var drawerLayoutPresenter: DrawerLayoutPresenter,
     private var messagingController: MessagingController

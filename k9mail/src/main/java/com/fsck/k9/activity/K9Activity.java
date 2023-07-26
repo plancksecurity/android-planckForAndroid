@@ -12,7 +12,11 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import androidx.annotation.*;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -27,17 +31,18 @@ import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.scottyab.rootbeer.RootBeer;
 
+import org.jetbrains.annotations.NotNull;
+
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import security.planck.auth.OAuthTokenRevokedListener;
-import security.planck.mdm.ConfigurationManager;
 import security.planck.mdm.RestrictionsListener;
 import timber.log.Timber;
-
-import org.jetbrains.annotations.NotNull;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
         OAuthTokenRevokedListener {
@@ -50,7 +55,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
 
-    private K9ActivityCommon mBase;
+    @Inject
+    K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
     private boolean isShowingSearchView;
     private String searchText;
@@ -63,9 +69,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
                         | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         );
-        ConfigurationManager.Factory configurationManagerFactory =
-                ((K9) getApplication()).getComponent().configurationManagerFactory();
-        mBase = K9ActivityCommon.newInstance(this, configurationManagerFactory);
+
         super.onCreate(savedInstanceState);
 //        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
         if(savedInstanceState != null) {
@@ -94,7 +98,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     protected void onDestroy() {
-        mBase = null;
         PlanckUIArtefactCache planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
         planckUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
@@ -242,7 +245,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         ButterKnife.bind(this);
     }
 
-    public abstract void search(String query);
+    public void search(String query) {}
 
     @Override
     protected void onResume() {

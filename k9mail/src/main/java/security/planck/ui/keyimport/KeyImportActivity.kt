@@ -9,20 +9,17 @@ import android.view.View
 import com.fsck.k9.R
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.manualsync.WizardActivity
+import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class KeyImportActivity : WizardActivity(), KeyImportView {
 
     @Inject
     internal lateinit var presenter: KeyImportPresenter
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

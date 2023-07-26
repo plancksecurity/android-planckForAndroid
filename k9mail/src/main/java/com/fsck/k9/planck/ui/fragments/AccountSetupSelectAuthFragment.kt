@@ -25,8 +25,10 @@ import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator
+import dagger.hilt.android.AndroidEntryPoint
 import security.planck.provisioning.AccountMailSettingsProvision
 
+@AndroidEntryPoint
 class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
 
     private var _binding: FragmentAccountSelectAuthBinding? = null
@@ -197,10 +199,6 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
     }
 
     companion object {

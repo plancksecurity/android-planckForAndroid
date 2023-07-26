@@ -21,6 +21,8 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.search.SearchAccount;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 
 /**
  * Activity displaying the list of accounts.

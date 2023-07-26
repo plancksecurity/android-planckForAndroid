@@ -9,8 +9,8 @@ import android.view.View;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.PlanckPermissionView;
 import com.fsck.k9.preferences.StorageEditor;
 import com.karumi.dexter.PermissionToken;
@@ -24,9 +24,11 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.permissions.PermissionRequester;
 
-public class PermissionsActivity extends PlanckActivity {
+@AndroidEntryPoint
+public class PermissionsActivity extends K9Activity {
 
     @Bind(R.id.permission_contacts)
     PlanckPermissionView contactsPermissionView;
@@ -77,11 +79,6 @@ public class PermissionsActivity extends PlanckActivity {
                 getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation)
         );
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @OnClick(R.id.action_continue)

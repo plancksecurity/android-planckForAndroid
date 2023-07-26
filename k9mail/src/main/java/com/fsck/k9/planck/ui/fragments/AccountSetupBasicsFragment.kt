@@ -23,8 +23,10 @@ import com.fsck.k9.planck.ui.ConnectionSettings
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.view.ClientCertificateSpinner
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
 
     private var _binding: FragmentAccountLoginBinding? = null
@@ -50,7 +52,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setupPlanckFragmentToolbar()
+        toolbarCustomizer.setDefaultStatusBarColor()
         _binding = FragmentAccountLoginBinding.inflate(inflater, container, false)
         _wizardSetupBinding = WizardSetupBinding.bind(binding.root)
         setupViews()
@@ -319,10 +321,6 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         super.onDestroyView()
         _binding = null
         _wizardSetupBinding = null
-    }
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
     }
 
     companion object {

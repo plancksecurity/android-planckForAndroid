@@ -8,14 +8,13 @@ import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
-import com.fsck.k9.Globals
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
-import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.manualsync.PlanckSyncWizard
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
@@ -23,28 +22,31 @@ import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.withArguments
 import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.preference_loading_widget.loading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportpEpSupportDataActivity
+import javax.inject.Inject
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
+@AndroidEntryPoint
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
-    private val dataStore: GeneralSettingsDataStore by inject()
-    private val preferences: Preferences by inject()
+    @Inject
+    lateinit var dataStore: GeneralSettingsDataStore
+    @Inject
+    lateinit var preferences: Preferences
+    @Inject
+    lateinit var k9: K9
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
-
-    private val k9: K9 = Globals.getContext() as K9
-    private val planckProvider : PlanckProvider = k9.planckProvider
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -104,7 +106,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             .setMessage(R.string.planck_key_sync_warning)
                             .setCancelable(true)
                             .setPositiveButton(R.string.sync_action) { _, _ ->
-                                k9.allowManualSync()
+                                startManualSync()
                             }.setNegativeButton(R.string.cancel_action, null).show()
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
@@ -113,6 +115,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun startManualSync() {
+        PlanckSyncWizard.startKeySync(requireActivity())
     }
 
     private fun shouldDisplayManualSyncButton(): Boolean =

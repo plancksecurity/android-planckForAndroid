@@ -8,11 +8,11 @@ import android.content.Context
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.Executors
 import javax.inject.Inject
-import javax.inject.Named
 
-class NotificationChannelManager @Inject constructor(@Named("AppContext") private val context: Context, private val preferences: Preferences) {
+class NotificationChannelManager @Inject constructor(@ApplicationContext private val context: Context, private val preferences: Preferences) {
 
     private val notificationResourceProvider = PlanckNotificationResourceProvider(context)
 

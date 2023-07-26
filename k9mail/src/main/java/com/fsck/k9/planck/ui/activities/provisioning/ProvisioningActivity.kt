@@ -7,13 +7,14 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity.NO_ANIMATION
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.planck.ui.activities.SplashScreen
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen {
     @Inject
     lateinit var presenter: ProvisioningPresenter
@@ -22,7 +23,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        initializeInjector()
         super.onCreate(savedInstanceState)
         setupViews()
     }
@@ -95,9 +95,5 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
 
     override fun displayUnknownError(trace: String) {
         waitingForProvisioningText.text = trace
-    }
-
-    private fun initializeInjector() {
-        (application as K9).component.inject(this)
     }
 }

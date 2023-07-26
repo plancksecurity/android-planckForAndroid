@@ -27,7 +27,6 @@ class ProvisioningManagerTest: RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val urlChecker: UrlChecker = mockk()
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
-    private val configurationManagerFactory: ConfigurationManager.Factory = mockk()
     private val configurationManager: ConfigurationManager = mockk(relaxed = true)
     private val provisioningSettings: ProvisioningSettings = mockk()
     private val preferences: Preferences = mockk()
@@ -35,7 +34,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         k9,
         preferences,
         urlChecker,
-        configurationManagerFactory,
+        configurationManager,
         provisioningSettings,
         coroutinesTestRule.testDispatcherProvider,
     )
@@ -48,7 +47,6 @@ class ProvisioningManagerTest: RobolectricTest() {
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { preferences.accounts }.returns(emptyList())
-        coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
         coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.success(Unit))
         mockkObject(PlanckProviderImplKotlin)

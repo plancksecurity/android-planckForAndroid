@@ -3,6 +3,7 @@ package com.fsck.k9.planck.ui.keysync;
 import android.util.Log;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.planck.PlanckProvider;
 
 import foundation.pEp.jniadapter.Identity;
@@ -25,15 +26,15 @@ public class AddDevicePresenter {
     private String keylist;
 
     @Inject
-    AddDevicePresenter() {
+    AddDevicePresenter(PlanckProvider planckProvider, Preferences preferences) {
+        this.planckProvider = planckProvider;
+        this.accounts = preferences.getAccounts();
     }
 
-    public void initialize(AddDeviceView view, PlanckProvider planckProvider, Identity myId,
+    public void initialize(AddDeviceView view, Identity myId,
                            Identity partnerId,
-                           List<Account> accounts, boolean isManualSync, String keylist) {
+                           boolean isManualSync, String keylist) {
         this.view = view;
-        this.planckProvider = planckProvider;
-        this.accounts = accounts;
         partner = partnerId;
         myself = myId;
         isPGP = keylist != null;

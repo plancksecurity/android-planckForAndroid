@@ -11,14 +11,15 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import com.fsck.k9.Preferences
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.databinding.GroupTestBinding
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.tools.FeedbackTools
+import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +30,8 @@ import timber.log.Timber
 import java.util.Vector
 import javax.inject.Inject
 
-class GroupTestScreen : PlanckActivity() {
+@AndroidEntryPoint
+class GroupTestScreen : K9Activity() {
     private lateinit var binding: GroupTestBinding
 
     @Inject
@@ -448,10 +450,6 @@ class GroupTestScreen : PlanckActivity() {
 
     private fun displayError(e: Throwable) {
         FeedbackTools.showLongFeedback(binding.root, e.message)
-    }
-
-    override fun inject() {
-        planckComponent.inject(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

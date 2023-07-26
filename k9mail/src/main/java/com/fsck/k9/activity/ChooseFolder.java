@@ -31,7 +31,10 @@ import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mailstore.LocalFolder;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+
+@AndroidEntryPoint
 public class ChooseFolder extends K9ListActivity {
     public static final String EXTRA_ACCOUNT = "com.fsck.k9.ChooseFolder_account";
     public static final String EXTRA_CUR_FOLDER = "com.fsck.k9.ChooseFolder_curfolder";

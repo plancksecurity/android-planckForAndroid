@@ -2,29 +2,44 @@ package com.fsck.k9.ui.settings.account
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.AttributeSet
 import androidx.core.content.res.TypedArrayUtils
 import androidx.preference.ListPreference
-import android.util.AttributeSet
+import androidx.preference.R
 import com.fsck.k9.K9
 import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.ui.folders.FolderNameFormatter
-import org.koin.standalone.KoinComponent
-import org.koin.standalone.inject
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.components.SingletonComponent
 
 /**
  * A [ListPreference] that allows selecting one of an account's folders.
  */
 @SuppressLint("RestrictedApi")
+@ActivityScoped
 class FolderListPreference
 @JvmOverloads
 constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = TypedArrayUtils.getAttr(context, androidx.preference.R.attr.dialogPreferenceStyle,
+        defStyleAttr: Int = TypedArrayUtils.getAttr(context, R.attr.dialogPreferenceStyle,
                 android.R.attr.dialogPreferenceStyle),
         defStyleRes: Int = 0
-) : ListPreference(context, attrs, defStyleAttr, defStyleRes), KoinComponent {
-    private val folderNameFormatter: FolderNameFormatter by inject()
+) : ListPreference(context, attrs, defStyleAttr, defStyleRes) {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface FolderListPreferenceEntryPoint {
+        fun getFolderNameFormatter(): FolderNameFormatter
+    }
+
+    private val folderNameFormatter: FolderNameFormatter = EntryPoints.get(
+        K9.app as K9,
+        FolderListPreferenceEntryPoint::class.java
+    ).getFolderNameFormatter()
 
     var folders: List<Folder>
         get() = throw UnsupportedOperationException()

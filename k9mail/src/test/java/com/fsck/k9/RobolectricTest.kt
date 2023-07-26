@@ -9,7 +9,6 @@ import org.robolectric.annotation.Config
  * A Robolectric test that creates an instance of our [Application] class [K9]
  * without initialization.
  *
- * See also [K9RobolectricTest].
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(application = RobolectricTestApp::class, manifest = Config.NONE, sdk = [30])

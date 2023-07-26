@@ -15,12 +15,13 @@ import com.fsck.k9.oauth.OAuthConfigurationProvider
 import org.xmlpull.v1.XmlPullParser
 import security.planck.provisioning.ProvisioningSettings
 import timber.log.Timber
+import javax.inject.Inject
 
-class ProvidersXmlDiscovery(
+class ProvidersXmlDiscovery @Inject constructor(
     private val xmlProvider: ProvidersXmlProvider,
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
     private val dnsRecordsResolver: MiniDnsRecordsResolver,
-    private val provisioningSettings: ProvisioningSettings = (K9.app as K9).component.provisioningSettings(),
+    private val provisioningSettings: ProvisioningSettings,
 ) : ConnectionSettingsDiscovery {
 
     private val provisionedProvider: Provider?

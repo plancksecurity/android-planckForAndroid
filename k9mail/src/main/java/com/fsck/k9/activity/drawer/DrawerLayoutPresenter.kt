@@ -12,17 +12,17 @@ import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
+import dagger.hilt.android.qualifiers.ActivityContext
 import security.planck.foldable.folders.model.LevelListItem
 import security.planck.foldable.folders.util.Constants
 import security.planck.foldable.folders.util.LevelListBuilderImpl
 import javax.inject.Inject
-import javax.inject.Named
 
 const val DEFAULT_PATH_DEPTH = 4
 const val DEFAULT_SEPARATOR = "."
 
 class DrawerLayoutPresenter @Inject constructor(
-        @Named("ActivityContext") private val context: Context,
+        @ActivityContext private val context: Context,
         private val preferences: Preferences,
         private var accountUtils: AccountUtils,
 ) {

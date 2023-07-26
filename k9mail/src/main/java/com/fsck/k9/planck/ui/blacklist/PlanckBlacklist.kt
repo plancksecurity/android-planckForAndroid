@@ -18,20 +18,22 @@ import androidx.recyclerview.widget.RecyclerView
 import butterknife.ButterKnife
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.planck.PlanckProvider
-import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.ui.keys.KeyItemAdapter
 import com.fsck.k9.planck.ui.keys.OnKeyClickListener
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.KeyboardUtils
-import com.fsck.k9.planck.ui.tools.ThemeManager
-import kotlinx.coroutines.*
-import security.planck.ui.toolbar.ToolBarCustomizer
-import java.util.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
-import javax.inject.Inject
 
-class PlanckBlacklist : PlanckActivity(), SearchView.OnQueryTextListener {
+@AndroidEntryPoint
+class PlanckBlacklist : K9Activity(), SearchView.OnQueryTextListener {
 
     private lateinit var recipientsView: RecyclerView
     private lateinit var container: LinearLayout
@@ -67,10 +69,6 @@ class PlanckBlacklist : PlanckActivity(), SearchView.OnQueryTextListener {
         }
 
 
-    }
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
     }
 
     private fun initializeViews() {

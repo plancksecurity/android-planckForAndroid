@@ -1,11 +1,13 @@
 package com.fsck.k9.activity.setup;
 
 
+import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
+import static com.fsck.k9.mail.ServerSettings.Type.POP3;
+import static com.fsck.k9.mail.ServerSettings.Type.SMTP;
+import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
+
 import android.content.Context;
 import android.os.Bundle;
-
-import security.planck.ui.toolbar.ToolBarCustomizer;
-import timber.log.Timber;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,9 +15,9 @@ import android.view.View.OnClickListener;
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings.Type;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
@@ -25,10 +27,9 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
-import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
-import static com.fsck.k9.mail.ServerSettings.Type.POP3;
-import static com.fsck.k9.mail.ServerSettings.Type.SMTP;
-import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
+import dagger.hilt.android.AndroidEntryPoint;
+import security.planck.ui.toolbar.ToolBarCustomizer;
+import timber.log.Timber;
 
 
 /**
@@ -37,7 +38,8 @@ import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
  * AccountSetupIncoming activity.
  */
 
-public class AccountSetupAccountType extends PlanckActivity implements OnClickListener {
+@AndroidEntryPoint
+public class AccountSetupAccountType extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
 
@@ -72,16 +74,6 @@ public class AccountSetupAccountType extends PlanckActivity implements OnClickLi
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
         mMakeDefault = getIntent().getBooleanExtra(EXTRA_MAKE_DEFAULT, false);
-    }
-
-    @Override
-    public void search(String query) {
-
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override

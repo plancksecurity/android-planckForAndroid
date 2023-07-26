@@ -9,12 +9,15 @@ import com.fsck.k9.Account
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.planck.DefaultDispatcherProvider
 import com.fsck.k9.planck.DispatcherProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.serversettings.ServerSettingsChecker
+import javax.inject.Inject
 
-class CheckSettingsViewModel(
+@HiltViewModel
+class CheckSettingsViewModel @Inject constructor(
     private val serverSettingsChecker: ServerSettingsChecker,
     private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
 ) : ViewModel() {
