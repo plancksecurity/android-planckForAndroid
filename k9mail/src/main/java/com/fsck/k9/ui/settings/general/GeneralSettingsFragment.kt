@@ -122,7 +122,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun shouldDisplayManualSyncButton(): Boolean =
-        preferences.availableAccounts.any { it.isPlanckSyncEnabled }
+        K9.isPlanckSyncEnabled() && preferences.availableAccounts.any { it.isPlanckSyncEnabled }
 
     private fun isDeviceOnline(): Boolean =
         kotlin.runCatching { Utility.hasConnectivity(K9.app) }.getOrDefault(false)
