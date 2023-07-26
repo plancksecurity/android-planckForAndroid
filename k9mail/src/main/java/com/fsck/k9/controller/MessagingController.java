@@ -3596,6 +3596,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     }
                 }
+                for (MessagingListener listener : getListeners()) {
+                    listener.listFoldersFinished(account);
+                }
 
                 List<String> origUidKeys = new ArrayList<>(origUidMap.keySet());
                 queueMoveOrCopy(account, srcFolder, destFolder, isCopy, origUidKeys, uidMap);

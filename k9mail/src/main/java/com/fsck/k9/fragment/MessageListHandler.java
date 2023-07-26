@@ -26,6 +26,7 @@ public class MessageListHandler extends Handler {
     private static final int ACTION_GO_BACK = 5;
     private static final int ACTION_RESTORE_LIST_POSITION = 6;
     private static final int ACTION_OPEN_MESSAGE = 7;
+    private static final int ACTION_REFRESH_LOCAL_FOLDERS = 8;
 
     private WeakReference<MessageListFragment> mFragment;
 
@@ -40,6 +41,11 @@ public class MessageListHandler extends Handler {
 
     public void refreshTitle() {
         android.os.Message msg = android.os.Message.obtain(this, ACTION_REFRESH_TITLE);
+        sendMessage(msg);
+    }
+
+    public void refreshLocalFolders() {
+        android.os.Message msg = android.os.Message.obtain(this, ACTION_REFRESH_LOCAL_FOLDERS);
         sendMessage(msg);
     }
 
@@ -117,6 +123,10 @@ public class MessageListHandler extends Handler {
             }
             case ACTION_REFRESH_TITLE: {
                 fragment.updateTitle();
+                break;
+            }
+            case ACTION_REFRESH_LOCAL_FOLDERS: {
+                fragment.refreshLocalFolders();
                 break;
             }
             case ACTION_PROGRESS: {

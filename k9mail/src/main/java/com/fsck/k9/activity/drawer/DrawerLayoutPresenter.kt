@@ -70,7 +70,7 @@ class DrawerLayoutPresenter @Inject constructor(
         populateDrawerGroup()
     }
 
-    fun populateDrawerGroup() {
+    fun populateDrawerGroup(force: Boolean = false) {
         unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context)
         allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
 
@@ -81,7 +81,7 @@ class DrawerLayoutPresenter @Inject constructor(
             false
         }
         when {
-            isSameUid -> setupFolders(true)
+            !force && isSameUid -> setupFolders(true)
             account != null -> getFolders()
         }
     }

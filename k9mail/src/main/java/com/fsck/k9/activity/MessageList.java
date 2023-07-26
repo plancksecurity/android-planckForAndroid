@@ -1886,6 +1886,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         this.direction = direction;
     }
 
+    @Override
+    public void refreshFolders() {
+        drawerLayoutView.refreshFolders();
+    }
+
 
     @Override
     public void disableDeleteAction() {

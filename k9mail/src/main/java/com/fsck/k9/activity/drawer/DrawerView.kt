@@ -26,5 +26,6 @@ interface DrawerView {
     fun removeActivityListener()
     fun addActivityListener()
     fun populateDrawerGroup()
+    fun refreshFolders()
 
 }
