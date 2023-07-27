@@ -15,13 +15,9 @@ public interface PlanckStatusView {
 
     void showDataLoadError();
 
-    void showResetPlanckDataFeedback();
-
     void finish();
 
-    void showUndoTrust(String username);
-
-    void showUndoMistrust(String username);
+    void showTrustFeedback(String username);
 
     void showMistrustFeedback(String username);
 
