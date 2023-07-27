@@ -159,7 +159,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                         .setCancelable(false)
                         .setPositiveButton(R.string.reset_all) { _, _ ->
                             dopEpKeyReset()
-                        }.setNegativeButton(R.string.cancel_action, null)
+                        }.setNeutralButton(R.string.cancel_action, null)
                         .show()
 
 

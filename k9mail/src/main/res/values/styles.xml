@@ -214,11 +214,13 @@
 
     <style name="ResetAllAccountsDialog.Light" parent="AlertDialogStyle.Light">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/NegativeButtonStyle</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
     </style>
 
     <style name="ResetAllAccountsDialog.Dark" parent="AlertDialogStyle.Dark">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/NegativeButtonStyle</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
     </style>
 
