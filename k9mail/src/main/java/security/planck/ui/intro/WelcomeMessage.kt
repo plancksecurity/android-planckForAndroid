@@ -16,10 +16,10 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.ui.fragments.PlanckFragment
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
+import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.fragment_intro_first.contactBadge
 import kotlinx.android.synthetic.main.fragment_intro_first.headerText
@@ -49,6 +49,7 @@ fun startOnBoarding(activity: Activity) {
     }
 }
 
+@AndroidEntryPoint
 class WelcomeMessage : AppIntro() {
 
     var automatic: Boolean = false
@@ -108,14 +109,12 @@ class WelcomeMessage : AppIntro() {
     }
 
 }
-class IntroFirstFragment : PlanckFragment() {
+
+@AndroidEntryPoint
+class IntroFirstFragment : Fragment() {
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_first, container, false)
@@ -156,14 +155,11 @@ class IntroThirdFragment : Fragment() {
 
 }
 
-class IntroFourthFragment : PlanckFragment() {
+@AndroidEntryPoint
+class IntroFourthFragment : Fragment() {
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_fourth, container, false)

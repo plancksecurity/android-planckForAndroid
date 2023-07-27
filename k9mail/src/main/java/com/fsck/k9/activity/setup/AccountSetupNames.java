@@ -24,22 +24,24 @@ import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import security.planck.mdm.ConfigurationManager;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
-public class AccountSetupNames extends PlanckActivity implements OnClickListener {
+@AndroidEntryPoint
+public class AccountSetupNames extends K9Activity implements OnClickListener {
     public static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MANUAL_SETUP = "manualSetup";
 
@@ -56,6 +58,9 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
 
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+
+    @Inject
+    ConfigurationManager configurationManager;
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -136,16 +141,6 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
     }
 
     @Override
-    public void search(String query) {
-
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
@@ -173,6 +168,10 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
         boolean isManualSetup = getIntent().getBooleanExtra(EXTRA_MANUAL_SETUP, false);
         PanckGenerateAccountKeysTask accountGenerationTask = new PanckGenerateAccountKeysTask(this, mAccount);
         launchGenerateAccountKeysTask(accountGenerationTask, isManualSetup);
+    }
+
+    private void loadConfigurations() {
+        configurationManager.loadConfigurationsBlocking();
     }
 
     @VisibleForTesting
@@ -238,9 +237,7 @@ public class AccountSetupNames extends PlanckActivity implements OnClickListener
                 account.setOptionsOnInstall();
             }
             if (((K9) mContext.getApplicationContext()).isRunningOnWorkProfile()) {
-                ((K9) mContext.getApplicationContext()).getComponent()
-                        .configurationManagerFactory().create(mContext)
-                        .loadConfigurationsBlocking();
+                ((AccountSetupNames) mActivity).loadConfigurations();
             } else {
                 account.save(Preferences.getPreferences(mActivity));
             }

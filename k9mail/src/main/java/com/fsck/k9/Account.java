@@ -1436,7 +1436,7 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     private OAuthTokenProviderFactory getOAuthTokenProviderFactory() {
-        return new RealOAuthTokenProviderFactory(K9.app, ((K9) K9.app).getComponent().preferences());
+        return new RealOAuthTokenProviderFactory(K9.app, Preferences.getPreferences(K9.app));
     }
 
     // It'd be great if this actually went into the store implementation

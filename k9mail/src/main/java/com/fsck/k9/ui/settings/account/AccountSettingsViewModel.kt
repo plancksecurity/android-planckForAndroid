@@ -7,12 +7,15 @@ import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.mailstore.FolderRepositoryManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AccountSettingsViewModel(
+@HiltViewModel
+class AccountSettingsViewModel @Inject constructor(
         private val preferences: Preferences,
         private val folderRepositoryManager: FolderRepositoryManager
 ) : ViewModel() {

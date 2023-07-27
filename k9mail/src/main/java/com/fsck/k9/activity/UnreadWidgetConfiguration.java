@@ -11,10 +11,13 @@ import com.fsck.k9.BaseAccount;
 import com.fsck.k9.R;
 import com.fsck.k9.provider.UnreadWidgetProvider;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 
 /**
  * Activity to select an account for the unread widget.
  */
+@AndroidEntryPoint
 public class UnreadWidgetConfiguration extends AccountList {
     /**
      * Name of the preference file to store the widget configuration.

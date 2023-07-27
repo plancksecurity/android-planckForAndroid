@@ -13,15 +13,16 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.mailstore.AttachmentViewInfo
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.view.MessageWebView
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 private const val ARROW_ORIGINAL_ROTATION = 0f
 private const val ARROW_FINAL_ROTATION = 180f
 private const val ARROW_ROTATION_TIME = 200L
 
+@AndroidEntryPoint
 class CalendarInviteLayout(
     context: Context,
     attrs: AttributeSet?
@@ -49,7 +50,6 @@ class CalendarInviteLayout(
     init {
         inflate(context, R.layout.calendar_invite, this)
         setupViews()
-        initializeInjector()
     }
 
     fun initialize(
@@ -182,9 +182,5 @@ class CalendarInviteLayout(
         layoutTransition = LayoutTransition().apply {
             enableTransitionType(LayoutTransition.CHANGING)
         }
-    }
-
-    private fun initializeInjector() {
-        (context as PlanckActivity).getPlanckComponent().inject(this)
     }
 }

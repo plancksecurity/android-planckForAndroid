@@ -27,14 +27,14 @@ class NonProvisioningManagerTest: RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val urlChecker: UrlChecker = mockk()
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
-    private val configurationManagerFactory: ConfigurationManager.Factory = mockk()
+    private val configurationManager: ConfigurationManager = mockk()
     private val provisioningSettings: ProvisioningSettings = mockk()
     private val preferences: Preferences = mockk()
     private val manager = ProvisioningManager(
         k9,
         preferences,
         urlChecker,
-        configurationManagerFactory,
+        configurationManager,
         provisioningSettings,
         coroutinesTestRule.testDispatcherProvider,
     )
@@ -84,10 +84,6 @@ class NonProvisioningManagerTest: RobolectricTest() {
 
     @Test
     fun `performInitializedEngineProvisioning() never calls configurationManager_loadConfigurationsSuspend`() {
-        val configurationManager: ConfigurationManager = mockk()
-        every { configurationManagerFactory.create(any()) }.returns(configurationManager)
-
-
         manager.performInitializedEngineProvisioning()
 
 

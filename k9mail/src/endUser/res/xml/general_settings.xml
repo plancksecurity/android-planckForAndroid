@@ -348,6 +348,11 @@
                 android:summaryOn="@string/pep_sync_is_enabled_global"
                 android:title="@string/pep_sync" />
 
+            <Preference
+                android:key="planck_key_sync"
+                android:summary="@string/planck_key_sync_device_summary"
+                android:title="@string/sync_title" />
+
             <SwitchPreferenceCompat
                 android:key="pep_sync_folder"
                 android:summaryOff="@string/pep_sync_folder_is_disabled"

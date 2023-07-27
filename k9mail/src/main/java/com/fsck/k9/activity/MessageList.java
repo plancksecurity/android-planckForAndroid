@@ -46,7 +46,6 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.planck.ui.infrastructure.Router;
@@ -75,6 +74,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.group.GroupTestScreen;
 import security.planck.mdm.RestrictionsListener;
@@ -91,7 +91,8 @@ import timber.log.Timber;
  * shows a list of messages.
  * From this Activity the user can perform all standard message operations.
  */
-public class MessageList extends PlanckActivity implements MessageListFragmentListener,
+@AndroidEntryPoint
+public class MessageList extends K9Activity implements MessageListFragmentListener,
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker, RestrictionsListener {
 
     @Inject
@@ -425,11 +426,6 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
 
         }
         return appData;
-    }
-
-    @Override
-    public void inject() {
-        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -781,7 +777,7 @@ public class MessageList extends PlanckActivity implements MessageListFragmentLi
     @Override
     public void onPause() {
         super.onPause();
-
+        overridePendingTransition(NO_ANIMATION, NO_ANIMATION);
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
     }
 

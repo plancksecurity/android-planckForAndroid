@@ -4916,8 +4916,20 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return planckProvider;
     }
 
-    public void notifyPlanckGroupInvite(Account account, GroupMailSignal groupMailSignal) {
+    public void notifyPlanckGroupInviteAndJoinGroup(
+            Account account,
+            GroupMailSignal groupMailSignal
+    ) {
+        joinGroup(account, groupMailSignal);
         notificationController.addGroupMailNotification(account, groupMailSignal);
+    }
+
+    public void joinGroup(Account account, GroupMailSignal groupMailSignal) {
+        put("join groupmail", null, () -> {
+            Address myAddress = new Address(account.getEmail(), account.getName());
+            foundation.pEp.jniadapter.Identity myIdentity = PlanckUtils.createIdentity(myAddress, context);
+            planckProvider.joinGroupMail(groupMailSignal.getGroupIdentity(), planckProvider.myself(myIdentity));
+        });
     }
 
     private interface MessageActor {

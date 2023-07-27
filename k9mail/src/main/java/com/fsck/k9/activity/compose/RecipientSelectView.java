@@ -30,14 +30,13 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.tokenautocomplete.CountSpan;
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -49,12 +48,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.scopes.ViewScoped;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
-
+@AndroidEntryPoint
+@ViewScoped
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
-        AlternateRecipientListener, RecipientSelectViewContract {
+        AlternateRecipientListener, RecipientSelectContract {
 
     private static final int MINIMUM_LENGTH_FOR_FILTERING = 1;
 
@@ -62,6 +64,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private static final int LOADER_ID_FILTERING = 0;
     private static final int LOADER_ID_ALTERNATES = 1;
+    private static final long RECIPIENT_HOLDER_RATING_UPDATE_DELAY = 100L;
 
 
     private RecipientAdapter adapter;
@@ -72,7 +75,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private ListPopupWindow alternatesPopup;
     private Recipient alternatesPopupRecipient;
-    private TokenListener<Recipient> listener;
     private Context context;
     private Account account;
     private PlanckUIArtefactCache uiCache;
@@ -81,7 +83,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
-    @Inject UnsecureAddressHelper unsecureAddressHelper;
+    @Inject
+    RecipientSelectPresenter recipientSelectPresenter;
 
     public RecipientSelectView(Context context) {
         super(context);
@@ -108,7 +111,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
         // TODO: validator?
         this.context = context;
-        getApplicationComponent(context).inject(this);
 
         uiCache = PlanckUIArtefactCache.getInstance(context);
 
@@ -127,11 +129,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         setAdapter(adapter);
 
         setLongClickable(false);
-        unsecureAddressHelper.initialize(this);
+        recipientSelectPresenter.initialize(this);
 
         setOnEditorActionListener((v, actionId, event) -> {
             if ((actionId == EditorInfo.IME_ACTION_NEXT)) {
-                if (hasUncompletedText()) {
+                if (hasUncompletedRecipients()) {
                     performCompletion();
                     return true;
                 }
@@ -144,22 +146,29 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
             @Override
             public void onTokenAdded(Recipient token) {
-                if (listener != null) {
-                    listener.onTokenAdded(token);
-                }
+                recipientSelectPresenter.onRecipientsChanged();
             }
 
             @Override
             public void onTokenRemoved(Recipient token) {
-                if (listener != null) {
-                    unsecureAddressHelper.removeUnsecureAddressChannel(token.getAddress());
-                    listener.handleUnsecureTokenWarning();
-                    listener.onTokenRemoved(token);
-                }
+                recipientSelectPresenter.removeUnsecureAddressChannel(token.getAddress());
+                recipientSelectPresenter.handleUnsecureTokenWarning();
+                recipientSelectPresenter.onRecipientsChanged();
             }
         });
     }
 
+    @Override
+    public void showUncompletedError() {
+        setError(getContext().getString(R.string.compose_error_incomplete_recipient));
+    }
+
+    @Override
+    public void showNoRecipientsError() {
+        setError(getContext().getString(R.string.message_compose_error_no_recipients));
+    }
+
+    @Override
     public void restoreFirstRecipientTruncation() {
         post(() -> {
             if (!hasFocus()) {
@@ -199,28 +208,22 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.bind(recipient);
 
-        unsecureAddressHelper.getRecipientRating(
+        recipientSelectPresenter.getRecipientRating(
                 recipient,
                 account.isPlanckPrivacyProtected(),
                 new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
-                if (listener != null) {
-                    listener.handleUnsecureTokenWarning();
-                }
+                recipientSelectPresenter.handleUnsecureTokenWarning();
                 setCountColorIfNeeded();
-                holder.updateRating(rating);
-                postInvalidateDelayed(100);
+                updateRecipientHolderRating(holder, rating);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                if (listener != null) {
-                    listener.handleUnsecureTokenWarning();
-                }
+                recipientSelectPresenter.handleUnsecureTokenWarning();
                 setCountColorIfNeeded();
-                holder.updateRating(Rating.pEpRatingUndefined);
-                postInvalidateDelayed(100);
+                updateRecipientHolderRating(holder, Rating.pEpRatingUndefined);
             }
         });
     }
@@ -240,7 +243,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                     TokenImageSpan span = links[0];
                     Recipient recipient = span.getToken();
                     if (isRemoveRecipientClicked(event, span)) {
-                        removeRecipient(recipient);
+                        removeRecipientAndResetView(recipient);
                     } else {
                         showAlternates(recipient);
                     }
@@ -394,7 +397,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     private void setCountColor(Editable editable, CountSpan countSpan, int count) {
-        boolean unsecure = unsecureAddressHelper.hasHiddenUnsecureAddressChannel(
+        boolean unsecure = recipientSelectPresenter.hasHiddenUnsecureAddressChannel(
                 getAddresses(),
                 count
         );
@@ -536,6 +539,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     @Override
+    protected CharSequence convertSelectionToString(Object object) {
+        return super.convertSelectionToString(object).toString().toLowerCase();
+    }
+
+    @Override
     protected void performFiltering(@NonNull CharSequence text, int start, int end, int keyCode) {
         if (loaderManager == null) {
             return;
@@ -557,17 +565,19 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
-        if (recipients.length == 1) {
-            addObject(recipients[0]);
-        } else {
-            unsecureAddressHelper.sortRecipientsByRating(recipients, sortedRecipients -> {
-                for (Recipient recipient : sortedRecipients) {
-                    addObject(recipient);
-                }
-            });
-        }
+        recipientSelectPresenter.addRecipients(recipients);
     }
 
+    public void setPresenter(RecipientPresenter presenter, Message.RecipientType type) {
+        recipientSelectPresenter.setPresenter(presenter, type);
+    }
+
+    @Override
+    public void addRecipient(@NonNull Recipient recipient) {
+        addObject(recipient);
+    }
+
+    @NonNull
     public Address[] getAddresses() {
         List<Recipient> recipients = getObjects();
         Address[] address = new Address[recipients.size()];
@@ -578,17 +588,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return address;
     }
 
-    public int getUnsecureRecipientCount() {
-        return unsecureAddressHelper.getUnsecureAddressChannelCount();
-    }
-
-    public void clearUnsecureRecipients() {
-        for (Recipient recipient : getObjects()) {
-            if (unsecureAddressHelper.isUnsecure(recipient.getAddress())) {
-                removeObject(recipient);
-            }
-        }
-        resetCollapsedViewIfNeeded();
+    @NonNull
+    @Override
+    public List<Recipient> getRecipients() {
+        return getObjects();
     }
 
     public void emptyAddresses() {
@@ -621,13 +624,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public void postShowAlternatesPopup(final List<Recipient> data) {
         // We delay this call so the soft keyboard is gone by the time the popup is layouted
-        new Handler().post(() -> unsecureAddressHelper.rateRecipients(
-                data,
-                this::showAlternatesPopup
-        ));
+        new Handler().post(() -> recipientSelectPresenter.rateAlternateRecipients(data));
     }
 
-    public void showAlternatesPopup(List<RatedRecipient> data) {
+    @Override
+    public void showAlternatesPopup(@NonNull List<RatedRecipient> data) {
         if (loaderManager == null) {
             return;
         }
@@ -683,12 +684,18 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return super.onKeyDown(keyCode, event);
     }
 
-    public void removeRecipient(Recipient recipient) {
-        removeObject(recipient);
+    public void removeRecipientAndResetView(Recipient recipient) {
+        removeRecipient(recipient);
         resetCollapsedViewIfNeeded();
     }
 
-    private void resetCollapsedViewIfNeeded() {
+    @Override
+    public void removeRecipient(@NonNull Recipient recipient) {
+        removeObject(recipient);
+    }
+
+    @Override
+    public void resetCollapsedViewIfNeeded() {
         post(() -> {
             if (!hasFocus()) {
                 if (getTokenCount() == 1) {
@@ -749,8 +756,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
     }
 
+    @Override
     public boolean tryPerformCompletion() {
-        if (!hasUncompletedText()) {
+        if (!hasUncompletedRecipients()) {
             return false;
         }
         int previousNumRecipients = getTokenCount();
@@ -764,7 +772,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return getObjects().size();
     }
 
-    public boolean hasUncompletedText() {
+    @Override
+    public boolean hasUncompletedRecipients() {
         String currentCompletionText = currentCompletionText();
         return !TextUtils.isEmpty(currentCompletionText) && !isPlaceholderText(currentCompletionText);
     }
@@ -777,7 +786,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public void onRecipientRemove(Recipient currentRecipient) {
         alternatesPopup.dismiss();
-        removeRecipient(currentRecipient);
+        removeRecipientAndResetView(currentRecipient);
     }
 
     @Override
@@ -808,32 +817,28 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             return;
         }
 
-        unsecureAddressHelper.removeUnsecureAddressChannel(recipientToReplace.getAddress());
+        recipientSelectPresenter.removeUnsecureAddressChannel(recipientToReplace.getAddress());
         bindObjectView(currentRecipient, recipientTokenView);
 
-        if (listener != null) {
-            listener.onTokenChanged(currentRecipient);
+        recipientSelectPresenter.onRecipientsChanged();
+    }
+
+    @Override
+    public void updateRecipients(List<RatedRecipient> recipients) {
+        for (RatedRecipient recipient : recipients) {
+            setCountColorIfNeeded();
+            RecipientTokenViewHolder holder = getRecipientHolder(recipient.getBaseRecipient());
+            if (holder == null) {
+                Timber.e("Tried to refresh invalid view token!");
+            } else {
+                updateRecipientHolderRating(holder, recipient.getRating());
+            }
         }
     }
 
-    public void updateRecipientsFromEcho(String echoSender) {
-        unsecureAddressHelper.updateRecipientsFromEcho(
-                getObjects(),
-                echoSender,
-                recipients -> {
-                    for (RatedRecipient recipient : recipients) {
-                        setCountColorIfNeeded();
-                        RecipientTokenViewHolder holder = getRecipientHolder(recipient.getBaseRecipient());
-                        if (holder == null) {
-                            Timber.e("Tried to refresh invalid view token!");
-                        } else {
-                            holder.updateRating(recipient.getRating());
-                            postInvalidateDelayed(100);
-                            listener.handleUnsecureTokenWarning();
-                        }
-                    }
-                }
-        );
+    private void updateRecipientHolderRating(RecipientTokenViewHolder holder, Rating rating) {
+        holder.updateRating(rating);
+        postInvalidateDelayed(RECIPIENT_HOLDER_RATING_UPDATE_DELAY);
     }
 
     /**
@@ -878,19 +883,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 : null;
     }
 
-    /**
-     * We use a specialized version of TokenCompleteTextView.TokenListener as well,
-     * adding a callback for onTokenChanged.
-     */
-    public void setTokenListener(TokenListener<Recipient> listener) {
-        this.listener = listener;
-    }
-
-    public void notifyDatasetChanged() {
-        alternatesAdapter.notifyDataSetChanged();
-        adapter.notifyDataSetChanged();
-    }
-
     @Override
     public boolean hasRecipient(@NonNull Recipient recipient) {
         return getObjects().contains(recipient);
@@ -899,13 +891,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public boolean isAlwaysUnsecure() {
         return alwaysUnsecure;
-    }
-
-    @Override
-    public void showError(@NonNull Throwable throwable) {
-        if (listener != null) {
-            listener.onError(throwable);
-        }
     }
 
     public enum RecipientCryptoStatus {
@@ -917,12 +902,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         public boolean isAvailable() {
             return this == AVAILABLE_TRUSTED || this == AVAILABLE_UNTRUSTED;
         }
-    }
-
-    public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
-        void onTokenChanged(T token);
-        void handleUnsecureTokenWarning();
-        void onError(Throwable throwable);
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {
@@ -938,9 +917,5 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
             return holder.getRemoveButtonLocation();
         }
-    }
-
-    private ApplicationComponent getApplicationComponent(Context context) {
-        return ((K9) context.getApplicationContext()).getComponent();
     }
 }

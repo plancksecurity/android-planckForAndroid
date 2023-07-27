@@ -12,12 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import foundation.pEp.jniadapter.Group;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
-import foundation.pEp.jniadapter.adapter_group_create_Return;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
@@ -66,6 +64,8 @@ public interface PlanckProvider {
     void getRating(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback);
 
     void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+
+    ResultCompat<Rating> getRatingResult(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
@@ -130,7 +130,7 @@ public interface PlanckProvider {
      */
     String trustwords(Identity id, String language);
 
-    String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
+    ResultCompat<String> trustwords(Identity myself, Identity partner, String lang, boolean isShort);
 
     void trustwords(Identity myself, Identity partner, String lang, boolean isShort,SimpleResultCallback<String> callback);
 
@@ -208,7 +208,7 @@ public interface PlanckProvider {
 
     void cancelSync();
 
-    void loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id, ResultCallback<Rating> loadedCallback);
+    ResultCompat<Rating> loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id);
 
     String getLog();
 
@@ -228,11 +228,11 @@ public interface PlanckProvider {
 
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
-    Rating incomingMessageRating(MimeMessage message);
+    ResultCompat<Rating> incomingMessageRating(MimeMessage message);
 
     void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback);
 
-    void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+    ResultCompat<Rating> loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
 
     Map<String, PlanckLanguage> obtainLanguages();
 
@@ -271,6 +271,21 @@ public interface PlanckProvider {
             Identity manager,
             Vector<Identity> members
     );
+
+    Identity queryGroupMailManager(Identity group);
+    Vector<Identity> queryGroupMailMembers(Identity group);
+
+    void joinGroupMail(Identity group, Identity member);
+
+    ResultCompat<Vector<Identity>> queryGroupMailManagerAndMembers(Identity group);
+
+    void dissolveGroup(Identity group, Identity manager);
+
+    void inviteMemberToGroup(Identity group, Identity member);
+
+    void removeMemberFromGroup(Identity group, Identity member);
+
+    Rating groupRating(Identity group, Identity manager);
 
     class KeyDetail {
         private final Address address;

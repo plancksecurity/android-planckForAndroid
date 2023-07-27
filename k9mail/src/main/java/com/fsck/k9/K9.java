@@ -39,12 +39,13 @@ import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
-import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.Poller;
-import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.planck.infrastructure.components.DaggerApplicationComponent;
-import com.fsck.k9.planck.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer;
+import com.fsck.k9.planck.manualsync.SyncAppState;
+import com.fsck.k9.planck.manualsync.SyncScreenState;
+import com.fsck.k9.planck.manualsync.SyncState;
+import com.fsck.k9.planck.manualsync.SyncStateChangeListener;
 import com.fsck.k9.planck.ui.tools.AppTheme;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -57,6 +58,7 @@ import com.fsck.k9.service.MailServiceLegacy;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -72,47 +74,58 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.planck.appalive.AppAliveMonitor;
 import security.planck.audit.AuditLogger;
+import security.planck.file.PlanckSystemFileLocator;
 import security.planck.mdm.ManageableSetting;
 import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
 import security.planck.notification.GroupMailSignal;
+import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
+@HiltAndroidApp
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
-    private AtomicBoolean needsFastPoll = new AtomicBoolean(false);
     private boolean isPollingMessages;
-    private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
     private Account currentAccount;
-    private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private AtomicBoolean allowpEpSyncNewDevices = new AtomicBoolean(false);
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
     private AuditLogger auditLogger;
-    private AppAliveMonitor appAliveMonitor;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
+    private SyncAppState syncState = SyncState.Idle.INSTANCE;
+    private SyncStateChangeListener syncStateChangeListener;
+
+    @Inject
+    Preferences preferences;
+    @Inject
+    ProvisioningManager provisioningManager;
+    @Inject
+    PlanckSystemFileLocator planckSystemFileLocator;
+    @Inject
+    AppAliveMonitor appAliveMonitor;
 
     public static K9JobManager jobManager;
 
@@ -140,14 +153,6 @@ public class K9 extends MultiDexApplication {
 
     public void batteryOptimizationAsked() {
         batteryOptimizationAsked = true;
-    }
-
-    public void enableFastPolling() {
-        needsFastPoll.set(true);
-    }
-
-    public void disableFastPolling() {
-        needsFastPoll.set(false);
     }
 
 
@@ -670,11 +675,9 @@ public class K9 extends MultiDexApplication {
         app = this;
         Globals.setContext(this);
 
-        initializeInjector();
-
         initializeAuditLog();
 
-        component.provisioningManager().startProvisioning();
+        provisioningManager.startProvisioning();
     }
 
     private void initializeAuditLog() {
@@ -682,7 +685,6 @@ public class K9 extends MultiDexApplication {
                 new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
                 auditLogDataTimeRetention
         );
-        appAliveMonitor = new AppAliveMonitor(component.preferences().getStorage());
         auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
         auditLogger.addStartEventLog();
         appAliveMonitor.startAppAliveMonitor();
@@ -690,7 +692,6 @@ public class K9 extends MultiDexApplication {
 
     public void finalizeSetup() {
         pEpSetupUiEngineSession();
-        DI.start(this);
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
@@ -705,8 +706,7 @@ public class K9 extends MultiDexApplication {
 
         checkCachedDatabaseVersion();
 
-        Preferences prefs = component.preferences();
-        loadPrefs(prefs);
+        loadPrefs(preferences);
 
         /*
          * We have to give MimeMessage a temp directory because File.createTempFile(String, String)
@@ -716,15 +716,15 @@ public class K9 extends MultiDexApplication {
         clearBodyCacheIfAppUpgrade();
 
         LocalKeyStore.setKeyStoreLocation(
-                component.pEpSystemFileLocator().getKeyStoreFolder().toString()
+                planckSystemFileLocator.getKeyStoreFolder().toString()
         );
 
         MessagingController messagingController = MessagingController.getInstance(this);
         // Perform engine provisioning just after its initialization in MessagingController
         planckProvider = messagingController.getPlanckProvider();
-        component.provisioningManager().performInitializedEngineProvisioning();
+        provisioningManager.performInitializedEngineProvisioning();
 
-        initJobManager(prefs, messagingController);
+        initJobManager(preferences, messagingController);
 
         /*
          * Enable background sync of messages
@@ -887,15 +887,6 @@ public class K9 extends MultiDexApplication {
         //if (!planckProvider.isSyncRunning()) {
         //    planckProvider.startSync();
         //}
-    }
-
-    private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
-        Timber.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
-
-        Context context = K9.this.getApplicationContext();
-        Intent syncTrustowordsActivity = ImportWizardFrompEp.createActionStartKeySyncIntent(context, myself, partner, signal, formingGroup);
-        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(syncTrustowordsActivity);
     }
 
     private void pEpSetupUiEngineSession() {
@@ -1919,20 +1910,6 @@ public class K9 extends MultiDexApplication {
         K9.planckForwardWarningEnabled = planckForwardWarningEnabled;
     }
 
-    private void initializeInjector() {
-        component = createApplicationComponent();
-    }
-
-    protected ApplicationComponent createApplicationComponent() {
-        return DaggerApplicationComponent
-                .factory()
-                .create(this);
-    }
-
-    public ApplicationComponent getComponent() {
-        return component;
-    }
-
     private void setupFastPoller() {
         if (poller == null) {
             poller = new Poller(new Handler(Looper.getMainLooper()));
@@ -1944,7 +1921,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void polling() {
-        if (needsFastPoll.get() && !isPollingMessages) {
+        if (syncState.getNeedsFastPolling() && !isPollingMessages) {
             Log.d("pEpDecrypt", "Entering looper");
             isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
@@ -1981,16 +1958,39 @@ public class K9 extends MultiDexApplication {
         forceSaveAppSettings();
     }
 
-    public boolean needsFastPoll() {
-        return needsFastPoll.get();
+    public SyncAppState getSyncState() {
+        return syncState;
     }
 
-    public boolean isShowingKeyimportDialog() {
-        return showingKeyimportDialog;
+    public void setSyncState(SyncAppState syncState) {
+        this.syncState = syncState;
     }
 
-    public void setShowingKeyimportDialog(boolean showingKeyimportDialog) {
-        this.showingKeyimportDialog = showingKeyimportDialog;
+    private void setSyncStateAndNotify(SyncAppState syncState) {
+        this.syncState = syncState;
+        if (syncStateChangeListener != null) {
+            syncStateChangeListener.syncStateChanged((SyncScreenState) syncState);
+        }
+    }
+
+    private void setHandshakeReadyStateAndNotify(
+            Identity myself,
+            Identity partner,
+            boolean formingGroup
+    ) {
+        this.syncState = SyncState.HandshakeReadyAwaitingUser.INSTANCE;
+        if (syncStateChangeListener != null) {
+            syncStateChangeListener.syncStateChanged(
+                    SyncState.HandshakeReadyAwaitingUser.INSTANCE,
+                    myself,
+                    partner,
+                    formingGroup
+            );
+        }
+    }
+
+    public void setSyncStateChangeListener(SyncStateChangeListener syncStateChangeListener) {
+        this.syncStateChangeListener = syncStateChangeListener;
     }
 
     private void startOrResetManualSyncCountDownTimer() {
@@ -2001,19 +2001,23 @@ public class K9 extends MultiDexApplication {
     }
 
     public void allowManualSync() {
-        allowpEpSyncNewDevices.set(true);
-        needsFastPoll.set(true);
         startOrResetManualSyncCountDownTimer();
     }
 
-    public void disallowSync() {
-        allowpEpSyncNewDevices.set(false);
+    private void disallowSync() {
         manualSyncCountDownTimer = null;
-        needsFastPoll.set(false);
+        syncState = SyncState.Idle.INSTANCE;
+        planckProvider.stopSync();
     }
 
     public void cancelSync() {
         cancelManualSyncCountDown();
+        setSyncStateAndNotify(SyncState.Cancelled.INSTANCE);
+        disallowSync();
+    }
+
+    public void syncStartTimeout() {
+        setSyncStateAndNotify(SyncState.SyncStartTimeout.INSTANCE);
         disallowSync();
     }
 
@@ -2041,54 +2045,56 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
-                        allowpEpSyncNewDevices.set(false);
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                        setHandshakeReadyStateAndNotify(
+                                myself,
+                                partner,
+                                false
+                        );
                     }
                     break;
                 case SyncNotifyInitFormGroup:
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         cancelManualSyncCountDown();
-                        allowpEpSyncNewDevices.set(false);
-                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
+                        setHandshakeReadyStateAndNotify(
+                                myself,
+                                partner,
+                                true
+                        );
                     }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
-                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
-                    needsFastPoll.set(false);
+                    setSyncStateAndNotify(SyncState.TimeoutError.INSTANCE);
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                    needsFastPoll.set(false);
+                    setSyncStateAndNotify(SyncState.Done.INSTANCE);
                     break;
                 case SyncNotifySole:
                     grouped = false;
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
-                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:
                     grouped = true;
                     planckSyncEnabled = true;
-                    if (allowpEpSyncNewDevices.get()) {
+                    if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
-                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncPassphraseRequired:
-                    needsFastPoll.set(false);
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
                             PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
                     break;
                 case DistributionNotifyGroupInvite:
-                    Account account = component.preferences().getDefaultAccount();
+                    Account account = preferences.getDefaultAccount();
                     if (account != null) {
-                        MessagingController.getInstance(K9.this).notifyPlanckGroupInvite(
+                        MessagingController.getInstance(K9.this).notifyPlanckGroupInviteAndJoinGroup(
                                 account,
                                 GroupMailSignal.fromSignal(myself, partner, account)
                         );

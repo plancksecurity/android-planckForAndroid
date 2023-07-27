@@ -3,6 +3,10 @@
 
     <style name="Theme.K9.Startup" parent="Theme.K9.DayNight"/>
 
+    <style name="Theme.Planck.Startup" parent="Theme.K9.Startup">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>/>
+
     <!-- Empty base themes that can be easily replaced by RRO (Runtime Resource Overlay) themes -->
     <style name="Theme.K9.Light.Base" parent="Theme.AppCompat.Light.NoActionBar" />
     <style name="Theme.K9.Dark.Base" parent="Theme.AppCompat.NoActionBar" />
@@ -67,6 +71,7 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@drawable/background_splash</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="Theme.K9.Light.Common" parent="Theme.K9.Light.Base">

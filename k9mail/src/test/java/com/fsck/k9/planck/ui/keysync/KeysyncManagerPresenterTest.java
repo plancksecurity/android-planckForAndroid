@@ -1,6 +1,7 @@
 package com.fsck.k9.planck.ui.keysync;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckProvider.ResultCallback;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 public class KeysyncManagerPresenterTest {
@@ -23,18 +25,20 @@ public class KeysyncManagerPresenterTest {
     @Mock KeysyncManagementView view;
     @Mock
     PlanckProvider provider;
+    @Mock private Preferences preferences;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        presenter = new KeysyncManagerPresenter();
+        doReturn(accounts()).when(preferences).getAccounts();
+        presenter = new KeysyncManagerPresenter(provider, preferences);
     }
 
     @Test
     public void shouldGetMasterKeysInfoWhenSetupMasterKeys() throws Exception {
         setupResultCallback();
 
-        presenter.initialize(view, provider, accounts());
+        presenter.initialize(view);
 
         verify(view).showIdentities(any());
     }
@@ -43,7 +47,7 @@ public class KeysyncManagerPresenterTest {
     public void shouldShowErrorWhenEngineReturnsError() throws Exception {
         setupErrorCallback();
 
-        presenter.initialize(view, provider, accounts());
+        presenter.initialize(view);
 
         verify(view).showError();
     }

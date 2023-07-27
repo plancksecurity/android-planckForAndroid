@@ -5,12 +5,15 @@ import android.content.RestrictionsManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import security.planck.mdm.PlanckRestrictions
 import security.planck.mdm.RestrictionsProvider
-import javax.inject.Named
 
 @Suppress("unused")
 @Module
+@InstallIn(SingletonComponent::class)
 interface RestrictionsProviderModule {
 
     @Binds
@@ -18,20 +21,17 @@ interface RestrictionsProviderModule {
         planckRestrictions: PlanckRestrictions
     ): RestrictionsProvider
 
-    @Module
     companion object {
         @Provides
-        @JvmStatic
         fun provideSystemRestrictionsManager(
-            @Named("AppContext") application: Context
+            @ApplicationContext application: Context
         ): RestrictionsManager {
             return application.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
         }
 
         @Provides
-        @JvmStatic
         fun providePackageName(
-            @Named("AppContext") application: Context
+            @ApplicationContext application: Context
         ): String {
             return application.packageName
         }

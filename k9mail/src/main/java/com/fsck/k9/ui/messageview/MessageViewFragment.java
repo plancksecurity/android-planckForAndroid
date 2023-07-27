@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 
@@ -48,16 +49,15 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.MessageView;
-import com.fsck.k9.planck.ui.fragments.PlanckFragment;
+import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
@@ -70,6 +70,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.permissions.PermissionChecker;
@@ -81,7 +82,8 @@ import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
-public class MessageViewFragment extends PlanckFragment implements ConfirmationDialogFragmentListener,
+@AndroidEntryPoint
+public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
 
     private static final String ARG_REFERENCE = "reference";
@@ -173,11 +175,6 @@ public class MessageViewFragment extends PlanckFragment implements ConfirmationD
     @Inject
     @MessageView
     DisplayHtml displayHtml;
-
-    @Override
-    protected void inject() {
-        getPlanckComponent().inject(this);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -327,7 +324,7 @@ public class MessageViewFragment extends PlanckFragment implements ConfirmationD
     @Override
     public void onPause() {
         super.onPause();
-        ((MessageList) getContext()).removeGestureDetector();
+        ((MessageList) ContextKt.getRootContext(requireActivity())).removeGestureDetector();
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
     }
 

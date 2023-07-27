@@ -25,6 +25,7 @@ import security.planck.provisioning.isValidServer
 import security.planck.provisioning.toConnectionSecurity
 import security.planck.provisioning.toSimpleMailSettings
 import timber.log.Timber
+import javax.inject.Inject
 
 const val GMAIL_INCOMING_PORT = 993
 const val GMAIL_OUTGOING_PORT = 465
@@ -32,14 +33,15 @@ const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
 const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
 private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 
-class ConfiguredSettingsUpdater(
+class ConfiguredSettingsUpdater @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val urlChecker: UrlChecker = UrlChecker(),
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
-    private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
+    private val provisioningSettings: ProvisioningSettings,
 ) {
-    lateinit var planck: PlanckProvider
+    private val planck: PlanckProvider
+        get() = k9.planckProvider
 
     fun update(
         restrictions: Bundle,

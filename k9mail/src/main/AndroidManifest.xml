@@ -230,6 +230,7 @@
             android:configChanges="locale"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow"
+            android:theme="@style/Theme.Planck.Startup"
             android:exported="true">
             <intent-filter>
 
@@ -533,12 +534,6 @@
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".planck.manualsync.ImportWizardFrompEp$SyncDialogReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="PEP_SYNC_SIGNAL" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name=".planck.ui.activities.SplashActivity"
@@ -570,10 +565,13 @@
         <activity
             android:name="security.planck.ui.keyimport.KeyImportActivity"
             android:theme="@style/OverlayTheme"/>
-        <activity android:name=".planck.manualsync.ImportWizardFrompEp"
+
+        <activity
+            android:name=".planck.manualsync.PlanckSyncWizard"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true" />
+            android:excludeFromRecents="true"
+            android:exported="false" />
 
         <activity android:name="security.planck.ui.passphrase.PassphraseActivity"
             android:launchMode="singleTask"

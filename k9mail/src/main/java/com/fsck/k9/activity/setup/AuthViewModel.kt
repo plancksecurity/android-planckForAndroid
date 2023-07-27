@@ -24,6 +24,7 @@ import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import com.fsck.k9.planck.ui.ConnectionSettings
 import com.fsck.k9.planck.ui.fragments.toServerSettings
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,11 +33,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.openid.appauth.*
 import timber.log.Timber
+import javax.inject.Inject
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
 private const val ACCESS_DENIED_BY_USER = "access_denied"
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     application: Application,
     private val accountManager: Preferences,
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
@@ -386,6 +389,6 @@ sealed interface AuthFlowState {
 
 class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
 
-class AuthServiceFactory(private val application: Application) {
+class AuthServiceFactory @Inject constructor(private val application: Application) {
     fun create(): AuthorizationService = AuthorizationService(application)
 }

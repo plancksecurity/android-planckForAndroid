@@ -14,8 +14,9 @@ import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.planck.infrastructure.exceptions.DeviceOfflineException
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import timber.log.Timber
+import javax.inject.Inject
 
-class ServerSettingsChecker(
+class ServerSettingsChecker @Inject constructor(
     private val controller: MessagingController,
     private val preferences: Preferences,
 ) {

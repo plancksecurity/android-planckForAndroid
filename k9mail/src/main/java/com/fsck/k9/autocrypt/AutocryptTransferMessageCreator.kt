@@ -19,9 +19,11 @@ import com.fsck.k9.mail.internet.MimeMessageHelper
 import com.fsck.k9.mail.internet.MimeMultipart
 import com.fsck.k9.mail.internet.TextBody
 import com.fsck.k9.mailstore.BinaryMemoryBody
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class AutocryptTransferMessageCreator(val resources: Resources) {
+@Singleton
+class AutocryptTransferMessageCreator @Inject constructor(val resources: Resources) {
     fun createAutocryptTransferMessage(data: ByteArray, address: Address): Message {
         try {
             val subjectText = resources.getString(R.string.ac_transfer_msg_subject)

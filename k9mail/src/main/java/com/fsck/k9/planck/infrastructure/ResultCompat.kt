@@ -45,6 +45,16 @@ sealed class ResultCompat<T> {
         }
     }
 
+    suspend fun alsoDoFlatSuspend(action: suspend (T) -> ResultCompat<Unit>): ResultCompat<T> = flatMapSuspend { content ->
+        action(content)
+            .map { content }
+    }
+
+    fun alsoDoCatching(action: (T) -> Unit): ResultCompat<T> = mapCatching { content ->
+        action(content)
+        content
+    }
+
     fun <OUT> mapCatching(transform: (T) -> OUT): ResultCompat<OUT> {
         return when (this) {
             is Success -> of { transform(content) }
@@ -59,7 +69,21 @@ sealed class ResultCompat<T> {
         }
     }
 
+    suspend fun <OUT> flatMapSuspend (transform: suspend (T) -> ResultCompat<OUT>): ResultCompat<OUT> {
+        return when (this) {
+            is Success -> transform(content)
+            is Failure -> Failure(throwable)
+        }
+    }
+
     fun onSuccess(block: (T) -> Unit): ResultCompat<T> {
+        if (this is Success) {
+            block(content)
+        }
+        return this
+    }
+
+    suspend fun onSuccessSuspend(block: suspend (T) -> Unit): ResultCompat<T> {
         if (this is Success) {
             block(content)
         }

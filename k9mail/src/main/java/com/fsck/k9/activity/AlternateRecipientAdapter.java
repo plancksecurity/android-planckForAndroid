@@ -6,11 +6,6 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.core.content.ContextCompat;
-
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +15,18 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
-import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.PlanckContactBadge;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
@@ -35,8 +35,8 @@ import com.fsck.k9.view.ThemeUtils;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import foundation.pEp.jniadapter.Rating;
 
 
@@ -56,7 +56,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
 
     @Inject
-    public AlternateRecipientAdapter(@Named("AppContext") Context context,
+    public AlternateRecipientAdapter(@ApplicationContext Context context,
                                      ContactPictureLoader contactPictureLoader
     ) {
         super();

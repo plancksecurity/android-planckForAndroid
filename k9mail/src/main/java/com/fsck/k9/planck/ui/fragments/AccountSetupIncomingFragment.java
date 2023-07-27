@@ -23,6 +23,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -55,7 +57,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class AccountSetupIncomingFragment extends PlanckFragment {
+import dagger.hilt.android.AndroidEntryPoint;
+import security.planck.ui.toolbar.ToolBarCustomizer;
+
+@AndroidEntryPoint
+public class AccountSetupIncomingFragment extends Fragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
@@ -67,6 +73,9 @@ public class AccountSetupIncomingFragment extends PlanckFragment {
     PlanckSettingsChecker planckSettingsChecker;
 
     @Inject Preferences preferences;
+
+    @Inject
+    ToolBarCustomizer toolbarCustomizer;
 
     private ServerSettings.Type mStoreType;
     private EditText mUsernameView;
@@ -131,7 +140,7 @@ public class AccountSetupIncomingFragment extends PlanckFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((AccountSetupBasics) requireActivity()).configurePasswordFlowScreen();
-        setupPlanckFragmentToolbar();
+        toolbarCustomizer.setDefaultStatusBarColor();
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
@@ -316,11 +325,6 @@ public class AccountSetupIncomingFragment extends PlanckFragment {
         return editSettings
                 ? preferences.getAccount(accountUuid)
                 : preferences.getAccountAllowingIncomplete(accountUuid);
-    }
-
-    @Override
-    protected void inject() {
-        getPlanckComponent().inject(this);
     }
 
     /**

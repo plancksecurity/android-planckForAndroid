@@ -5,11 +5,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import javax.inject.Inject
 
 const val OAUTH_TOKEN_REVOKED_ACTION = "OAUTH_TOKEN_REVOKED"
 const val EXTRA_ACCOUNT_UUID = "ACCOUNT_UUID"
 
-class OAuthTokenRevokedReceiver: BroadcastReceiver() {
+class OAuthTokenRevokedReceiver @Inject constructor(): BroadcastReceiver() {
     private var listener: OAuthTokenRevokedListener? = null
 
     override fun onReceive(context: Context, intent: Intent) {

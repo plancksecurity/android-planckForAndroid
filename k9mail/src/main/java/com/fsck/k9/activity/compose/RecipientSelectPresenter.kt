@@ -2,6 +2,7 @@ package com.fsck.k9.activity.compose
 
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
+import com.fsck.k9.mail.Message.RecipientType
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import foundation.pEp.jniadapter.Rating
@@ -10,52 +11,106 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class UnsecureAddressHelper @Inject constructor(
+class RecipientSelectPresenter @Inject constructor(
     private val planck: PlanckProvider,
 ) {
     private val unsecureAddresses = mutableSetOf<Address>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
-    private lateinit var view: RecipientSelectViewContract
+    private lateinit var view: RecipientSelectContract
+    private lateinit var presenter: RecipientPresenter
 
     val unsecureAddressChannelCount: Int
         get() = unsecureAddresses.size
 
-    fun initialize(view: RecipientSelectViewContract) {
+    val addresses: List<Address>
+        get() = recipients.map { it.address }
+
+    val recipients: List<Recipient>
+        get() = view.recipients
+
+    fun initialize(view: RecipientSelectContract) {
         this.view = view
     }
 
-    fun sortRecipientsByRating(
-        recipients: Array<Recipient>,
-        recipientsReadyListener: RecipientsReadyListener
-    ) {
-        coroutineScope.launch {
-            recipients.map { recipient ->
-                val rating = planck.getRating(recipient.address)
-                    .onFailure { view.showError(it) }
-                    .getOrDefault(Rating.pEpRatingUndefined)
-                Pair(recipient, rating)
-            }.sortedBy { pair ->
-                pair.second
-            }.map { pair ->
-                pair.first
-            }.also { recipientsReadyListener.recipientsReady(it.toMutableList()) }
+    fun setPresenter(presenter: RecipientPresenter, type: RecipientType) {
+        this.presenter = presenter
+        presenter.setPresenter(this, type)
+    }
+
+    fun clearUnsecureAddresses() {
+        recipients.forEach { recipient ->
+            if (isUnsecure(recipient.address)) {
+                view.removeRecipient(recipient)
+            }
+        }
+        view.resetCollapsedViewIfNeeded()
+    }
+
+    private fun addRecipient(recipient: Recipient) {
+        view.addRecipient(recipient)
+    }
+
+    fun addRecipients(vararg recipients: Recipient) {
+        if (recipients.size == 1) {
+            addRecipient(recipients.first())
+        } else {
+            coroutineScope.launch {
+                sortRecipientsByRatingSuspend(recipients.toList()).onEach { addRecipient(it) }
+            }
         }
     }
 
-    fun updateRecipientsFromEcho(
+    private fun removeRecipient(recipient: Recipient) {
+        view.removeRecipient(recipient)
+    }
+
+    fun showNoRecipientsError() {
+        view.showNoRecipientsError()
+    }
+
+    fun reportedUncompletedRecipients(): Boolean {
+        return view.hasUncompletedRecipients().also {
+            if (it) {
+                view.showUncompletedError()
+            }
+        }
+    }
+
+    fun tryPerformCompletion(): Boolean = view.tryPerformCompletion()
+
+    fun notifyRecipientsChanged() {
+        for (recipient in recipients) {
+            removeRecipient(recipient)
+            addRecipient(recipient)
+        }
+        view.restoreFirstRecipientTruncation()
+    }
+
+    private fun sortRecipientsByRatingSuspend(
         recipients: List<Recipient>,
+    ): List<Recipient> = recipients.map { recipient ->
+        val rating = planck.getRating(recipient.address)
+            .onFailure { presenter.showError(it) }
+            .getOrDefault(Rating.pEpRatingUndefined)
+        Pair(recipient, rating)
+    }.sortedBy { pair ->
+        pair.second
+    }.map { pair ->
+        pair.first
+    }
+
+    fun updateRecipientsFromEcho(
         echoSender: String,
-        ratedRecipientsReadyListener: RatedRecipientsReadyListener
     ) {
         coroutineScope.launch {
-            recipients
+            view.recipients
                 .filter { it.address.address.equals(echoSender, true) }
                 .filter { it.address in unsecureAddresses }
                 .map { recipient ->
                     recipient
                         .toRatedRecipient(
                             planck.getRating(recipient.address)
-                                .onFailure { view.showError(it) }
+                                .onFailure { presenter.showError(it) }
                                 .getOrDefault(Rating.pEpRatingUndefined)
                         )
                         .also {
@@ -64,23 +119,23 @@ class UnsecureAddressHelper @Inject constructor(
                             }
                         }
                 }.also {
-                    ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList())
+                    view.updateRecipients(it.toMutableList())
+                    presenter.handleUnsecureDeliveryWarning()
                 }
         }
     }
 
-    fun rateRecipients(
+    fun rateAlternateRecipients(
         recipients: List<Recipient>,
-        ratedRecipientsReadyListener: RatedRecipientsReadyListener
     ) {
         coroutineScope.launch {
             recipients.map { recipient ->
                 recipient.toRatedRecipient(
                     planck.getRating(recipient.address)
-                        .onFailure { view.showError(it) }
+                        .onFailure { presenter.showError(it) }
                         .getOrDefault(Rating.pEpRatingUndefined)
                 )
-            }.also { ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList()) }
+            }.also { view.showAlternatesPopup(it.toMutableList()) }
         }
     }
 
@@ -110,7 +165,7 @@ class UnsecureAddressHelper @Inject constructor(
                 if (isPEpPrivacyProtected && view.hasRecipient(recipient)) {
                     addUnsecureAddressChannel(address)
                 }
-                view.showError(throwable)
+                presenter.showError(throwable)
                 callback.onError(throwable)
             }
         })
@@ -120,7 +175,7 @@ class UnsecureAddressHelper @Inject constructor(
         unsecureAddresses.remove(address)
     }
 
-    fun isUnsecure(address: Address): Boolean {
+    private fun isUnsecure(address: Address): Boolean {
         return unsecureAddresses.contains(address)
     }
 
@@ -142,12 +197,12 @@ class UnsecureAddressHelper @Inject constructor(
             unsecureAddresses.add(address)
         }
     }
-}
 
-interface RecipientsReadyListener {
-    fun recipientsReady(recipients: MutableList<Recipient>)
-}
+    fun onRecipientsChanged() {
+        presenter.onRecipientsChanged()
+    }
 
-interface RatedRecipientsReadyListener {
-    fun ratedRecipientsReady(recipients: MutableList<RatedRecipient>)
+    fun handleUnsecureTokenWarning() {
+        presenter.handleUnsecureDeliveryWarning()
+    }
 }

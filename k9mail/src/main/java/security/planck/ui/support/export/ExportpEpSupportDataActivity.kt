@@ -10,8 +10,10 @@ import android.widget.TextView
 import androidx.core.widget.ContentLoadingProgressBar
 import com.fsck.k9.R
 import com.fsck.k9.planck.manualsync.WizardActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView {
     @Inject
     lateinit var presenter: ExportPlanckSupportDataPresenter
@@ -20,10 +22,6 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     private lateinit var messageText: TextView
     private lateinit var progressBar: ContentLoadingProgressBar
     private lateinit var successFailureImage: ImageView
-
-    override fun inject() {
-        getPlanckComponent().inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

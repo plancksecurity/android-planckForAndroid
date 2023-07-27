@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
@@ -19,6 +20,7 @@ import com.fsck.k9.planck.infrastructure.exceptions.AppCannotDecryptException
 import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageException
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailureWrongPassphrase
+import com.fsck.k9.planck.infrastructure.exceptions.CannotCreateMessageException
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
@@ -45,6 +47,7 @@ class PlanckProviderImplKotlin(
     private val showHandshakeSet = false
     private var echoMessageReceivedListener: EchoMessageReceivedListener? = null
     private val engineScope = CoroutineScope(PlanckDispatcher)
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override fun setEchoMessageReceivedListener(listener: EchoMessageReceivedListener?) {
         echoMessageReceivedListener = listener
@@ -619,17 +622,29 @@ class PlanckProviderImplKotlin(
     }
 
     override fun loadOutgoingMessageRatingAfterResetTrust(
-            identity: Identity, from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
-            bccAddresses: List<Address>, callback: ResultCallback<Rating>) {
-        engineScope.launch {
-            getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
-        }
+        identity: Identity,
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating> {
+        return getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses)
     }
 
     override fun loadMessageRatingAfterResetTrust(
-            mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity, resultCallback: ResultCallback<Rating>) {
-        engineScope.launch {
-            loadMessageRatingAfterResetTrustSuspend(mimeMessage, isIncoming, id, resultCallback)
+        mimeMessage: MimeMessage?,
+        isIncoming: Boolean,
+        id: Identity
+    ): ResultCompat<Rating> = ResultCompat.of {
+        engine.get().keyResetTrust(id)
+        val pEpMessage = PlanckMessageBuilder(mimeMessage)
+            .createMessage(context)
+        if (isIncoming) {
+            pEpMessage.dir = Message.Direction.Incoming
+            engine.get().re_evaluate_message_rating(pEpMessage)
+        } else {
+            pEpMessage.dir = Message.Direction.Outgoing
+            engine.get().outgoing_message_rating(pEpMessage)
         }
     }
 
@@ -655,18 +670,14 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking(PlanckDispatcher) {
-        try {
-            val pEpMessage = PlanckMessageBuilder(message).createMessage(context)
-            engine.get().re_evaluate_message_rating(pEpMessage)
-        } catch (e: pEpException) {
-            Timber.e(e)
-            Rating.pEpRatingUndefined
-        }
+    override fun incomingMessageRating(
+        message: MimeMessage
+    ): ResultCompat<Rating> = ResultCompat.of {
+        val planckMessage = PlanckMessageBuilder(message).createMessage(context)
+        engine.get().re_evaluate_message_rating(planckMessage)
     }
 
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             callback.onLoaded(incomingMessageRatingSuspend(message))
         }
@@ -704,9 +715,21 @@ class PlanckProviderImplKotlin(
                            ccAddresses: List<Address>,
                            bccAddresses: List<Address>,
                            callback: ResultCallback<Rating>) {
-        engineScope.launch {
-            getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses, callback)
+        uiScope.launch {
+            withContext(PlanckDispatcher) {
+                getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses)
+            }.onSuccess { callback.onLoaded(it) }
+                .onFailure { callback.onError(it) }
         }
+    }
+
+    override fun getRatingResult(
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating> {
+        return getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses)
     }
 
     /*
@@ -737,29 +760,30 @@ class PlanckProviderImplKotlin(
         return Rating.pEpRatingUndefined
     }
 
-    private fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
-                                         ccAddresses: List<Address>, bccAddresses: List<Address>,
-                                         callback: ResultCallback<Rating>) {
+    private fun getRatingSuspend(
+        identity: Identity?,
+        from: Address?,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating> {
         Timber.i("Counter of PEpProviderImpl +1")
         EspressoTestingIdlingResource.increment()
-        when {
-            bccAddresses.isNotEmpty() -> notifyLoaded(Rating.pEpRatingUnencrypted, callback)
+        return when {
+            bccAddresses.isNotEmpty() -> ResultCompat.success(Rating.pEpRatingUnencrypted)
             else -> {
                 var message: Message? = null
-                try {
+                ResultCompat.of {
                     if (identity != null) engine.get().keyResetTrust(identity)
                     val areRecipientsEmpty = toAddresses.isEmpty() && ccAddresses.isEmpty() && bccAddresses.isEmpty()
-                    if (from == null || areRecipientsEmpty) notifyLoaded(Rating.pEpRatingUndefined, callback)
-
-                    message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
-                    val result = getRatingOnBackground(message) // stupid way to be able to patch the value in debugger
-                    Timber.i("%s %s", TAG, "getRating " + result.name)
-                    notifyLoaded(result, callback)
-                } catch (e: Throwable) {
-                    Timber.e(e, "%s %s", TAG, "during color test:")
-                    notifyError(e, callback)
-                } finally {
-                    Timber.i("Counter of PEpProviderImpl  -1")
+                    if (from == null || areRecipientsEmpty) Rating.pEpRatingUndefined
+                    else {
+                        message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
+                        val result = getRatingOnBackground(message!!) // stupid way to be able to patch the value in debugger
+                        Timber.i("%s %s", TAG, "getRating " + result.name)
+                        result
+                    }
+                }.also {
                     EspressoTestingIdlingResource.decrement()
                     message?.close()
                 }
@@ -785,7 +809,7 @@ class PlanckProviderImplKotlin(
         idFrom.user_id = PLANCK_OWN_USER_ID
         idFrom.me = true
 
-        val message = Message()
+        val message = insistToInitializeMessageOrThrow()
         message.from = idFrom
         message.to = PlanckUtils.createIdentities(toAddresses, context)
         message.cc = PlanckUtils.createIdentities(ccAddresses, context)
@@ -796,6 +820,23 @@ class PlanckProviderImplKotlin(
         return message
     }
 
+    private fun insistToInitializeMessageOrThrow(): Message {
+        var error: Throwable? = null
+        repeat(MESSAGE_CREATION_ATTEMPTS) { count ->
+            try {
+                return Message()
+            } catch (ex: Throwable) {
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "ERROR CREATING MESSAGE IN ATTEMPT ${count + 1}", ex)
+                }
+                error = ex
+                runBlocking { delay(MESSAGE_CREATION_ATTEMPT_COOLDOWN) }
+            }
+        }
+
+        throw CannotCreateMessageException(error!!)
+    }
+
     @WorkerThread //Already done
     override fun getRating(address: Address): ResultCompat<Rating> = runBlocking(PlanckDispatcher) {
         val identity = PlanckUtils.createIdentity(address, context)
@@ -804,12 +845,12 @@ class PlanckProviderImplKotlin(
 
     @WorkerThread //already done
     override fun getRating(identity: Identity): ResultCompat<Rating> {
-        return ResultCompat.of { engine.get().identity_rating(identity) }
+        return ResultCompat.of { identityRating(identity) }
             .onFailure { Timber.e(it, "%s %s", TAG, "getRating: ") }
     }
 
     override fun getRating(address: Address, callback: ResultCallback<Rating>) {
-        engineScope.launch {
+        uiScope.launch {
             val identity = PlanckUtils.createIdentity(address, context)
             getRatingSuspend(identity, callback)
         }
@@ -822,12 +863,20 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    private fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) {
-        try {
-            val rating = engine.get().identity_rating(identity)
-            notifyLoaded(rating, callback)
-        } catch (e: Exception) {
-            notifyError(e, callback)
+    private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) {
+        withContext(PlanckDispatcher) {
+            kotlin.runCatching { identityRating(identity) }
+        }.onSuccess { notifyLoaded(it, callback) }
+            .onFailure { notifyError(it, callback) }
+    }
+
+    private fun identityRating(identity: Identity): Rating {
+        return try {
+            val updatedIdentity = updateIdentity(identity)
+            val manager = queryGroupMailManager(updatedIdentity)
+            groupRating(updatedIdentity, manager)
+        } catch (e: pEpGroupNotFound) {
+            engine.get().identity_rating(identity)
         }
     }
 
@@ -856,13 +905,13 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? {
-        return try {
-            engine.get().get_trustwords(myself, partner, lang, !isShort)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "trustwords: ")
-            null
-        }
+    override fun trustwords(
+        myself: Identity,
+        partner: Identity,
+        lang: String,
+        isShort: Boolean
+    ): ResultCompat<String> {
+        return ResultCompat.of { engine.get().get_trustwords(myself, partner, lang, !isShort) }
     }
 
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean,
@@ -1125,7 +1174,6 @@ class PlanckProviderImplKotlin(
 
     @WorkerThread
     override fun printLog() {
-        val uiScope = CoroutineScope(PlanckDispatcher + SupervisorJob())
         uiScope.launch {
             log.split("\n")
                     .filter { it.isNotBlank() }
@@ -1136,7 +1184,6 @@ class PlanckProviderImplKotlin(
 
     override fun getLog(callback: CompletedCallback): String {
         var result = ""
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             result = getLogSuspend()
             callback.onComplete()
@@ -1157,20 +1204,64 @@ class PlanckProviderImplKotlin(
         return encFormat != Message.EncFormat.None
     }
 
+    @WorkerThread
     override fun createGroup(
         groupIdentity: Identity,
         manager: Identity,
         members: Vector<Identity>,
     ) {
-        val managerUpdated = myself(manager)
-        val membersUpdated = Vector(members.map { updateIdentity(it) })
-        engine.get().adapter_group_create(groupIdentity, managerUpdated, membersUpdated)
+        val group: Group = Group().apply {
+            this.group_identity = groupIdentity
+            this.manager = manager
+            this.members = Vector()
+        }
+        engine.get().group_create(groupIdentity, manager, members, group)
+    }
+
+    @WorkerThread
+    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(group)
+
+    @WorkerThread
+    override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
+        engine.get().retrieve_full_group_membership(group)?.map { it.ident }?.let { Vector(it) }
+
+    @WorkerThread
+    override fun joinGroupMail(group: Identity, member: Identity) =
+        engine.get().group_join(group, member)
+
+    @WorkerThread
+    override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
+        return ResultCompat.of {
+            queryGroupMailMembers(group)?.apply { add(queryGroupMailManager(group)) } ?: Vector(listOf(queryGroupMailManager(group)))
+        }
+    }
+
+    @WorkerThread
+    override fun dissolveGroup(group: Identity, managerOrMember: Identity) {
+        engine.get().group_dissolve(group, managerOrMember)
+    }
+
+    @WorkerThread
+    override fun inviteMemberToGroup(group: Identity, member: Identity) {
+        engine.get().group_invite_member(group, member)
+    }
+
+    @WorkerThread
+    override fun removeMemberFromGroup(group: Identity, member: Identity) {
+        engine.get().group_remove_member(group, member)
+    }
+
+    @WorkerThread
+    override fun groupRating(group: Identity, manager: Identity): Rating {
+        return engine.get().group_rating(group, manager)
     }
 
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"
         private const val ECHO_PROTOCOL_MESSAGE_SUBJECT = "key management message (Distribution)"
+        private const val MESSAGE_CREATION_ATTEMPTS = 20
+        private const val MESSAGE_CREATION_ATTEMPT_COOLDOWN = 10L
 
         @Throws(MessagingException::class)
         private fun getMimeMessage(source: MimeMessage?, message: Message): MimeMessage {

@@ -21,6 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'com.google.dagger.hilt.android'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
@@ -94,18 +95,17 @@ dependencies {
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
 
     // Arch dependencies
-    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
-    implementation "com.google.dagger:dagger:${versions.dagger}"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycleViewModel}"
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
+    implementation "androidx.activity:activity-ktx:${versions.androidxActivity}"
+    implementation "androidx.fragment:fragment-ktx:${versions.androidxFragment}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycleExtensions}"
     implementation "androidx.lifecycle:lifecycle-common:${versions.androidxLifecycle}"
-    //implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidxLifecycle}"
     implementation "com.xwray:groupie:${versions.groupie}"
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
-    implementation "org.koin:koin-android-architecture:${versions.koin}"
     implementation "androidx.core:core-ktx:${versions.androidXcore}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
@@ -153,7 +153,6 @@ dependencies {
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
-    testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     androidTestImplementation "org.mockito:mockito-android:${versions.mockito}"
@@ -180,7 +179,11 @@ dependencies {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
-    kaptAndroidTest "com.google.dagger:dagger-compiler:${versions.dagger}"
+    kaptAndroidTest "com.google.dagger:hilt-compiler:${versions.hilt}"
+}
+
+kapt {
+    correctErrorTypes true
 }
 
 android {
