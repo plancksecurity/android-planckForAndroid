@@ -1700,7 +1700,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
 
         @Override
-        public void listFoldersFinished(Account account) {
+        public void messagesMovedOrCopied() {
             handler.refreshLocalFolders();
         }
 

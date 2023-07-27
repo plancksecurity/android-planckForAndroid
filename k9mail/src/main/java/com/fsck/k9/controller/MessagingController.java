@@ -3597,7 +3597,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                 }
                 for (MessagingListener listener : getListeners()) {
-                    listener.listFoldersFinished(account);
+                    listener.messagesMovedOrCopied();
                 }
 
                 List<String> origUidKeys = new ArrayList<>(origUidMap.keySet());
