@@ -3,6 +3,7 @@ package com.fsck.k9.planck.manualsync
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.planck.DefaultDispatcherProvider
@@ -11,8 +12,6 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Identity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -31,7 +30,6 @@ class PlanckSyncWizardViewModel @Inject constructor(
     var formingGroup = false
     var shortTrustWords = true
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
-    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     private lateinit var myself: Identity
     private lateinit var partner: Identity
@@ -111,7 +109,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private fun getOrRefreshTrustWords() {
-        uiScope.launch {
+        viewModelScope.launch {
             withContext(dispatcherProvider.planckDispatcher()) {
                 planckProvider.trustwords(
                     myself,
