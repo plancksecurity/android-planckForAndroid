@@ -2070,6 +2070,7 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
+                case SyncNotifyAcceptedDeviceAccepted:
                     setSyncStateAndNotify(SyncState.Done.INSTANCE);
                     break;
                 case SyncNotifySole:
