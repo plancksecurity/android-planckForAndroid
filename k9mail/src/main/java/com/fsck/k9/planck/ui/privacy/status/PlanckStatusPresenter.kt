@@ -12,7 +12,6 @@ import com.fsck.k9.message.html.DisplayHtml
 import com.fsck.k9.planck.DefaultDispatcherProvider
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
-import com.fsck.k9.planck.PlanckProvider.TrustAction
 import com.fsck.k9.planck.PlanckUIArtefactCache
 import com.fsck.k9.planck.infrastructure.MessageView
 import com.fsck.k9.planck.infrastructure.ResultCompat
@@ -182,11 +181,7 @@ class PlanckStatusPresenter @Inject internal constructor(
             latestHandshakeId = id
             refreshRating()
                 .onSuccessSuspend {
-                    if (trust) {
-                        showUndoAction(TrustAction.TRUST)
-                    } else {
-                        view.showMistrustFeedback(latestHandshakeId?.username)
-                    }
+                    showTrustFeedback(trust)
                     updateIdentitiesAndNotify()
                 }
         }
@@ -216,10 +211,10 @@ class PlanckStatusPresenter @Inject internal constructor(
         onRatingChanged(it)
     }
 
-    private fun showUndoAction(trustAction: TrustAction) {
-        when (trustAction) {
-            TrustAction.TRUST -> view.showUndoTrust(latestHandshakeId?.username)
-            TrustAction.MISTRUST -> view.showUndoMistrust(latestHandshakeId?.username)
+    private fun showTrustFeedback(trust: Boolean) {
+        when (trust) {
+            true -> view.showTrustFeedback(latestHandshakeId?.username)
+            false -> view.showMistrustFeedback(latestHandshakeId?.username)
         }
     }
 
