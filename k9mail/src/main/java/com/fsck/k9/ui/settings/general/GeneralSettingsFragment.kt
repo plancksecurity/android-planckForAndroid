@@ -150,6 +150,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeGlobalpEpKeyReset() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             setOnPreferenceClickListener {
+                widgetLayoutResource = R.layout.preference_loading_widget
                 AlertDialog.Builder(view?.context,
                     ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
                         .setMessage(R.string.pep_key_reset_all_own_ids_warning)
