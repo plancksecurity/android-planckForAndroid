@@ -55,6 +55,7 @@ import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,7 +105,7 @@ import static org.junit.Assert.fail;
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
 
-    private static final String HOST = "@sq.planck.security";
+    private static final String HOST = "@bot.planck.dev";
 
     private boolean syncThirdDevice = false;
 
@@ -472,8 +473,8 @@ public class CucumberTestSteps {
 
     private void textViewEditor(String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
-        String messageText = "";
-        int endOfLongMessage = 0;
+        String messageText;
+        int endOfLongMessage;
         while (!exists(onView(withId(viewId)))) {
             waitForIdle();
             TestUtils.swipeDownScreen();
@@ -497,6 +498,8 @@ public class CucumberTestSteps {
             case "specialCharacters":
                 testUtils.insertTextNTimes(testUtils.specialCharacters(), 1);
                 break;
+            case "longSubject":
+                text = testUtils.longText();
             default:
                 timeRequiredForThisMethod(10);
                 testUtils.scrollUpToSubject();
@@ -621,6 +624,10 @@ public class CucumberTestSteps {
             case "rating_string":
                 assertText(stringToCompare, TestUtils.rating);
                 break;
+            case "messageSubject":
+                if (stringToCompare.contains("longSubject")) {
+                    stringToCompare = testUtils.longText();
+                }
             case "messageBody":
                 if (stringToCompare.contains("longText")) {
                     stringToCompare = testUtils.longText();
@@ -629,7 +636,7 @@ public class CucumberTestSteps {
                     BySelector selector = By.clazz("android.widget.MessageWebView");
                     for (UiObject2 object : device.findObjects(selector)) {
                         if (!object.getText().contains(stringToCompare)) {
-                            fail("Message Body is not containing: " + stringToCompare);
+                            fail("Message is not containing: " + stringToCompare);
                         }
                     }
                 } else {
@@ -1004,7 +1011,7 @@ public class CucumberTestSteps {
     }
 
     @When("^I switch (\\S+) Wi-Fi")
-    public void I_switch_wifi(String state) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+    public void I_switch_wifi(String state) throws IOException {
         switch (state){
             case "on":
                 testUtils.setWifi(true);
@@ -1038,11 +1045,25 @@ public class CucumberTestSteps {
         }
         while (!exists(onView(withId(R.id.confirmHandshake)))) {
             waitForIdle();
-            waitUntilIdle();
         }
         onView(withId(R.id.confirmHandshake)).check(matches(isCompletelyDisplayed()));
-        onView(withId(R.id.confirmHandshake)).perform(click());
-        waitForIdle();
+        while (exists(onView(withId(R.id.confirmHandshake)))) {
+            onView(withId(R.id.confirmHandshake)).perform(click());
+            waitForIdle();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 100; i++) {
+            waitForIdle();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         testUtils.pressBack();
     }
 
@@ -1252,8 +1273,22 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I reset my own key$")
+    @When("^I reset own key$")
     public void I_reset_own_key() {
+        testUtils.selectFromMenu(R.string.action_settings);
+        testUtils.selectFromScreen(testUtils.stringToID("reset"));
+        testUtils.pressOKButtonInDialog();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        testUtils.pressBack();
+        waitForIdle();
+
+    }
+    @When("^I reset my own key$")
+    public void I_reset_my_own_key() {
         switch (testUtils.test_number()) {
             case "0":
             case "1":
@@ -1565,7 +1600,16 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
-        waitForIdle();
+        if (!status.equals("Undefined")) {
+            while (!viewIsDisplayed(R.id.securityStatusIcon)) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                waitForIdle();
+            }
+        }
         switch (status) {
             case "NotEncrypted":
                 testUtils.assertStatus(Rating.pEpRatingUnencrypted);
@@ -1678,6 +1722,7 @@ public class CucumberTestSteps {
 
     @And("^I test widgets$")
     public void I_test_widget() {
+        String brand = "planck";
         device.pressHome();
         BySelector selector = By.clazz("android.widget.TextView");
         BySelector horizontalScroll = By.clazz("android.widget.LinearLayout");
@@ -1691,16 +1736,16 @@ public class CucumberTestSteps {
             String text = "";
             switch (widgetToDrag) {
                 case 1:
-                    text = "p≡p Unread";
+                    text = brand + " Unread";
                     break;
                 case 2:
-                    text = "p≡p Message List";
+                    text = brand + " Message List";
                     break;
                 case 3:
-                    text = "p≡p Accounts";
+                    text = brand + " Accounts";
                     break;
                 default:
-                    text = "p≡p";
+                    text = brand;
                     break;
             }
             while (!testUtils.textExistsOnScreen("Widgets")) {
@@ -1726,7 +1771,7 @@ public class CucumberTestSteps {
                 boolean openWidgetMenu = true;
                 for (scroll = 1; scroll < 30; scroll++) {
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (openWidgetMenu && textView.getText().equals("p≡p")) {
+                        if (openWidgetMenu && textView.getText().equals(brand)) {
                             textView.click();
                             openWidgetMenu = false;
                             break;
@@ -1755,7 +1800,7 @@ public class CucumberTestSteps {
                     waitForIdle();
                     int elements = 0;
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (textView.getText() != null && textView.getText().equals("p≡p")) {
+                        if (textView.getText() != null && textView.getText().equals(brand)) {
                             textView.click();
                             waitForIdle();
                             int widgetPreview = 0;
@@ -3018,6 +3063,15 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
+        waitForIdle();
+        while (!testUtils.textExistsOnScreen(resources.getString(R.string.discard_action))) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            waitForIdle();
+        }
         onView(withText(R.string.discard_action)).perform(click());
     }
 
@@ -3071,7 +3125,6 @@ public class CucumberTestSteps {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            waitForIdle();
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
@@ -3331,6 +3384,12 @@ public class CucumberTestSteps {
     }
 
     public String accountAddress(String cucumberMessageTo) {
+        String textCase = "";
+        if (cucumberMessageTo.contains("-")) {
+            String[] parts = cucumberMessageTo.split("-");
+            cucumberMessageTo = parts[0];
+            textCase = parts[1];
+        }
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
@@ -3373,6 +3432,26 @@ public class CucumberTestSteps {
             case "bot9":
                 Timber.i("Filling message to bot4");
                 cucumberMessageTo = bot[8] + "acc" + accountSelected + HOST;
+                break;
+        }
+        switch (textCase) {
+            case "UpperCase":
+                cucumberMessageTo = cucumberMessageTo.toUpperCase();
+                break;
+            case "LowerCase":
+                cucumberMessageTo = cucumberMessageTo.toLowerCase();
+                break;
+            case "MixCase":
+                String newText = "";
+                Random random = new Random();
+                for (int i = 0; i < cucumberMessageTo.length(); i++) {
+                    if (random.nextBoolean()) {
+                        newText = newText + Character.toUpperCase(cucumberMessageTo.charAt(i));
+                    } else {
+                        newText = newText + Character.toLowerCase(cucumberMessageTo.charAt(i));
+                    }
+                }
+                cucumberMessageTo = newText;
                 break;
         }
         return cucumberMessageTo;
