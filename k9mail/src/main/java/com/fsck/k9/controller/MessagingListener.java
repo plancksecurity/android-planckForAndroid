@@ -74,4 +74,5 @@ public interface MessagingListener {
 
     void enableProgressIndicator(boolean enable);
     void updateProgress(int progress);
+    void messagesMovedOrCopied();
 }

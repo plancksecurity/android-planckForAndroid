@@ -1598,6 +1598,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         adapter.notifyDataSetChanged();
     }
 
+    public void refreshLocalFolders() {
+        if (fragmentListener != null) {
+            fragmentListener.refreshFolders();
+        }
+    }
+
     class MessageListActivityListener extends ActivityListener {
         @Override
         public void remoteSearchFailed(String folder, final String err) {
@@ -1691,6 +1697,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 MessageListFragment.this.unreadMessageCount = unreadMessageCount;
             }
             super.folderStatusChanged(account, folder, unreadMessageCount);
+        }
+
+        @Override
+        public void messagesMovedOrCopied() {
+            handler.refreshLocalFolders();
         }
 
         private boolean updateForMe(Account account, String folder) {
@@ -2710,6 +2721,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         void goBack();
         void updateMenu();
         void setDirection(MessageSwipeDirection direction);
+        void refreshFolders();
     }
 
     public void onReverseSort() {
