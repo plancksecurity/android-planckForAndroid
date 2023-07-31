@@ -2617,8 +2617,8 @@ public class TestUtils {
         return status;
     }
 
-    public void checkBadgeStatus(String status, int messageFromList){
-        Rating [] statusRating = new Rating[1];
+    public void checkBadgeStatus(String status, int messageFromList) {
+        Rating[] statusRating = new Rating[1];
         int currentMessage = 1;
         waitForIdle();
         getStatusRating(statusRating, status);
@@ -2631,8 +2631,7 @@ public class TestUtils {
                     if (object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/privacyBadge")) {
                         if (currentMessage != messageFromList) {
                             currentMessage++;
-                        }
-                        else {
+                        } else {
                             int pixel = iconColor(object);
                             if (pixel != ContextCompat.getColor(context, statusColor)) {
                                 //ContextCompat.getColor(context, statusColor)
@@ -2642,9 +2641,10 @@ public class TestUtils {
                             break;
                         }
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     Timber.i("Cannot find text on screen: " + ex);
-                }            }
+                }
+            }
         }
     }
 
