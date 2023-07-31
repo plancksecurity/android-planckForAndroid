@@ -164,24 +164,15 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
 
     @NonNull
     private PlanckStatusRendererBuilder.ResetClickListener getOnResetClickListener() {
-        return showResetDialog();
+        return identity -> presenter.startKeyReset(identity);
     }
 
-    private PlanckIdentity planckIdentity;
-
-    private PlanckStatusRendererBuilder.ResetClickListener showResetDialog() {
-        return this::showResetPartnerKeyRequestDialog;
-    }
-
-    private void showDialogFragment(int dialogId, PlanckIdentity identity) {
+    private void showDialogFragment(int dialogId) {
         if (isDestroyed()) return;
-
-        findViewById(R.id.resetDataLayout).setVisibility(identity == null ? View.GONE : View.VISIBLE);
 
         ConfirmationDialogFragment fragment;
         switch (dialogId) {
             case R.id.dialog_reset_partner_key_confirmation:
-                planckIdentity = identity;
                 fragment = ConfirmationDialogFragment.newInstance(
                         dialogId,
                         getString(R.string.reset_partner_keys_title),
@@ -225,10 +216,8 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
     public void doPositiveClick(int dialogId) {
         switch (dialogId) {
             case R.id.dialog_reset_partner_key_confirmation:
-                presenter.resetPlanckData(planckIdentity);
-                break;
             case R.id.dialog_reset_partner_key_error:
-                rendererBuilder.getResetClickListener().keyReset(planckIdentity);
+                presenter.resetPlanckData();
                 break;
             default:
                 break;
@@ -370,17 +359,17 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
 
     @Override
     public void showResetPartnerKeyErrorFeedback() {
-        showDialogFragment(R.id.dialog_reset_partner_key_error, null);
+        showDialogFragment(R.id.dialog_reset_partner_key_error);
     }
 
     @Override
     public void showResetPartnerKeySuccessFeedback() {
-        showDialogFragment(R.id.dialog_reset_partner_key_success, null);
+        showDialogFragment(R.id.dialog_reset_partner_key_success);
     }
 
     @Override
-    public void showResetPartnerKeyRequestDialog(PlanckIdentity identity) {
-        showDialogFragment(R.id.dialog_reset_partner_key_confirmation, identity);
+    public void showPartnerKeyResetConfirmation() {
+        showDialogFragment(R.id.dialog_reset_partner_key_confirmation);
     }
 
 }

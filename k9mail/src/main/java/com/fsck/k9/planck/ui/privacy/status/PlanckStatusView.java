@@ -25,5 +25,5 @@ public interface PlanckStatusView {
 
     void showResetPartnerKeyErrorFeedback();
     void showResetPartnerKeySuccessFeedback();
-    void showResetPartnerKeyRequestDialog(PlanckIdentity identity);
+    void showPartnerKeyResetConfirmation();
 }

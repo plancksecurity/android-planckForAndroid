@@ -45,6 +45,7 @@ class PlanckStatusPresenter @Inject internal constructor(
     private var latestHandshakeId: Identity? = null
     private var forceUnencrypted = false
     private var isAlwaysSecure = false
+    private var resetIdentity: PlanckIdentity? = null
 
     private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val planckDispatcher: CoroutineDispatcher
@@ -187,9 +188,14 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    fun resetPlanckData(id: Identity) {
+    fun startKeyReset(identity: PlanckIdentity) {
+        resetIdentity = identity
+        view.showPartnerKeyResetConfirmation()
+    }
+
+    fun resetPlanckData() {
         uiScope.launch {
-            ResultCompat.of { planckProvider.keyResetIdentity(id, null) }
+            ResultCompat.of { planckProvider.keyResetIdentity(resetIdentity, null) }
                 .flatMapSuspend {
                     refreshRating()
                 }.onSuccessSuspend {
@@ -251,12 +257,14 @@ class PlanckStatusPresenter @Inject internal constructor(
     fun saveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted)
         outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure)
+        outState.putSerializable(STATE_RESET_IDENTITY, resetIdentity)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED)
             isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE)
+            resetIdentity = savedInstanceState.getSerializable(STATE_RESET_IDENTITY) as? PlanckIdentity
         }
     }
 
@@ -281,5 +289,6 @@ class PlanckStatusPresenter @Inject internal constructor(
     companion object {
         private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
         private const val STATE_ALWAYS_SECURE = "alwaysSecure"
+        private const val STATE_RESET_IDENTITY = "resetIdentity"
     }
 }
