@@ -3,7 +3,6 @@ package com.fsck.k9.ui.messageview
 import android.content.Context
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
-import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.planck.PlanckProvider
@@ -15,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class SenderKeyResetHelper(
     private val context: Context,
@@ -24,6 +24,15 @@ class SenderKeyResetHelper(
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private var currentRating: Rating = Rating.pEpRatingUndefined
     private lateinit var message: LocalMessage
+    private lateinit var view: SenderKeyResetHelperView
+    private var resetPartnerKeyView: ResetPartnerKeyView? = null
+    private var resetState = ResetPartnerKeyView.State.CONFIRMATION
+
+    fun initialize(view: SenderKeyResetHelperView, message: LocalMessage) {
+        this.view = view
+        this.message = message
+        this.currentRating = message.planckRating
+    }
 
     fun checkCanResetSenderKeys(message: LocalMessage, account: Account) {
         uiScope.launch {
@@ -34,57 +43,67 @@ class SenderKeyResetHelper(
                         message
                     )
             if (canResetSenderKey) {
-                // here call to the view or set a livedata to allow the option of sender key reset
+                view.allowResetSenderKey()
             }
         }
     }
 
-    private fun meetsConditionsForSenderKeyReset(senderRating: Rating, message: LocalMessage): Boolean {
-        return !PlanckUtils.isRatingUnsecure(senderRating) || (message.planckRating == Rating.pEpRatingMistrust)
-    }
-
-    private fun messageConditionsForSenderKeyReset(message: LocalMessage, account: Account): Boolean {
-        return message.account.uuid == account.uuid && // same account of message
-                message.sender.size == 1 && // only one sender
-                preferences.availableAccounts.none { it.email == message.sender.first().address } && // sender not one of my own accounts
-                message.getRecipients(Message.RecipientType.TO).size == 1 && // only one recipient in TO
-                message.getRecipients(Message.RecipientType.CC).isNullOrEmpty() && // no recipients in CC
-                message.getRecipients(Message.RecipientType.BCC).isNullOrEmpty() && // no recipients in BCC
-                message.getRecipients(Message.RecipientType.TO).first().address == account.email // only recipient is me
+    fun partnerKeyResetFinished() {
+        resetState = ResetPartnerKeyView.State.CONFIRMATION
+        resetPartnerKeyView = null
     }
 
     fun resetPlanckData(message: LocalMessage) {
         uiScope.launch {
+            resetState = ResetPartnerKeyView.State.LOADING
+            resetPartnerKeyView?.showState(resetState)
             ResultCompat.of {
                 val resetIdentity = PlanckUtils.createIdentity(message.sender.first(), context)
                 planckProvider.keyResetIdentity(resetIdentity, null)
             }.flatMapSuspend {
                 refreshRating(message)
             }.onSuccess {
-                // here we need to give back new rating to the MessageViewFragment.
+                view.updateRating(it)
+                resetState = ResetPartnerKeyView.State.SUCCESS
+                resetPartnerKeyView?.showState(resetState)
             }.onFailure {
-                // here we need to report the error in some way
+                Timber.e(it)
+                resetState = ResetPartnerKeyView.State.ERROR
+                resetPartnerKeyView?.showState(resetState)
             }
         }
     }
 
-    private suspend fun refreshRating(message: LocalMessage): ResultCompat<Rating> = withContext(PlanckDispatcher) {
-        planckProvider.incomingMessageRating(message)
-    }.alsoDoCatching { rating ->
-        currentRating = rating
-        message.planckRating = rating
+    private fun meetsConditionsForSenderKeyReset(
+        senderRating: Rating,
+        message: LocalMessage
+    ): Boolean {
+        return !PlanckUtils.isRatingUnsecure(senderRating) || (message.planckRating == Rating.pEpRatingMistrust)
     }
 
-    private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
-        currentRating = rating
-        return saveRatingToMessage(rating)
+    private fun messageConditionsForSenderKeyReset(
+        message: LocalMessage,
+        account: Account
+    ): Boolean {
+        return message.account.uuid == account.uuid // same account of message
+                && message.sender.size == 1 // only one sender
+                && preferences.availableAccounts.none {
+                    it.email == message.sender.first().address
+                } // sender not one of my own accounts
+                && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
+                && message.getRecipients(Message.RecipientType.CC)
+                    .isNullOrEmpty() // no recipients in CC
+                && message.getRecipients(Message.RecipientType.BCC)
+                    .isNullOrEmpty() // no recipients in BCC
+                && message.getRecipients(Message.RecipientType.TO)
+                    .first().address == account.email // only recipient is me
     }
 
-    private suspend fun saveRatingToMessage(
-        rating: Rating
-    ): ResultCompat<Unit> = withContext(Dispatchers.IO) {
-        ResultCompat.of {
+    private suspend fun refreshRating(message: LocalMessage): ResultCompat<Rating> =
+        withContext(PlanckDispatcher) {
+            planckProvider.incomingMessageRating(message)
+        }.alsoDoCatching { rating ->
+            currentRating = rating
             message.planckRating = rating
         }
-    }
 }
