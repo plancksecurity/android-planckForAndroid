@@ -1333,6 +1333,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
+            menu.findItem(R.id.reset_sender_keys).setVisible(false);
         } else {
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
             checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
