@@ -97,7 +97,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun configureManualSync(preference: Preference?) {
         preference?.apply {
-            widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 view?.let {
                     if (isDeviceOnline()) {
@@ -152,6 +151,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
+                widgetLayoutResource = R.layout.preference_loading_widget
                 AlertDialog.Builder(view?.context,
                     ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
                         .setMessage(R.string.pep_key_reset_all_own_ids_warning)
@@ -161,8 +161,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             dopEpKeyReset()
                         }.setNeutralButton(R.string.cancel_action, null)
                         .show()
-
-
                 true
             }
         }
