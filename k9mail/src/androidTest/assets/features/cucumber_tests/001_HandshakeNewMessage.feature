@@ -8,6 +8,7 @@ Feature: Handshake in new Message
     When I click compose message
     And I send 1 message to bot3 with subject TM-16 and body TM-16body
     And I click the last message received
+    And I compare rating_string from json file with unencrypted
     And I go back to the Inbox
     And I click compose message
     And I enter bot3 in the messageTo field
