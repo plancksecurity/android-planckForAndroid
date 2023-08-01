@@ -305,6 +305,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private ProgressBar mActionBarProgress;
     private MenuItem mMenuButtonCheckMail;
     private MenuItem flaggedCheckbox;
+    private MenuItem resetSenderKey;
     private View mActionButtonIndeterminateProgress;
     private int mLastDirection = (K9.messageViewShowNext()) ? NEXT : PREVIOUS;
 
@@ -1262,6 +1263,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
+        resetSenderKey = menu.findItem(R.id.reset_sender_keys);
 
         menu.findItem(R.id.tutorial).setVisible(
                 !BuildConfig.IS_ENTERPRISE
