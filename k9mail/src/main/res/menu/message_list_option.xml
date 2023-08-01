@@ -72,6 +72,14 @@
         android:icon="?attr/iconActionDelete"
         app:showAsAction="ifRoom"
         android:title="@string/delete_action"/>
+
+    <!-- MessageView -->
+    <item
+        android:id="@+id/reset_sender_keys"
+        app:showAsAction="never"
+        android:title="@string/reset_sender_key_action"
+        android:visible="false"/>
+
     <!-- MessageView -->
     <item
         android:id="@+id/archive"
