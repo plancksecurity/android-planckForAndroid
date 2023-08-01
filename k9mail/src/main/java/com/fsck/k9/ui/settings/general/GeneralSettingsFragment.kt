@@ -149,6 +149,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeGlobalpEpKeyReset() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
+            widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 widgetLayoutResource = R.layout.preference_loading_widget
                 AlertDialog.Builder(view?.context,
