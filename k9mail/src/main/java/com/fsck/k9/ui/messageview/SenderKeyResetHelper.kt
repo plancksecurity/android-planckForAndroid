@@ -12,6 +12,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.dialog.BackgroundTaskDialogView
@@ -37,7 +38,7 @@ class SenderKeyResetHelper @Inject constructor(
         this.currentRating = message.planckRating
     }
 
-    fun isInitialized(): Boolean = ::view.isInitialized
+    fun isInitialized(): Boolean = ::message.isInitialized
 
     fun initializeResetPartnerKeyView(resetPartnerKeyView: BackgroundTaskDialogView) {
         this.resetPartnerKeyView = resetPartnerKeyView
@@ -56,6 +57,7 @@ class SenderKeyResetHelper @Inject constructor(
 
     fun resetPlanckData() {
         uiScope.launch {
+            waitForInitialization()
             resetState = BackgroundTaskDialogView.State.LOADING
             resetPartnerKeyView?.showState(resetState)
             ResultCompat.of {
@@ -72,6 +74,12 @@ class SenderKeyResetHelper @Inject constructor(
                 resetState = BackgroundTaskDialogView.State.ERROR
                 resetPartnerKeyView?.showState(resetState)
             }
+        }
+    }
+
+    private suspend fun waitForInitialization() {
+        while (!isInitialized()) {
+            delay(20)
         }
     }
 
@@ -98,8 +106,9 @@ class SenderKeyResetHelper @Inject constructor(
     private suspend fun refreshRating(message: LocalMessage): ResultCompat<Rating> =
         withContext(PlanckDispatcher) {
             planckProvider.incomingMessageRating(message)
-        }.alsoDoCatching { rating ->
-            currentRating = rating
-            message.planckRating = rating
+                .alsoDoCatching { rating ->
+                    currentRating = rating
+                    message.planckRating = rating
+                }
         }
 }
