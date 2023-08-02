@@ -226,6 +226,7 @@
     <string name="reset_partner_keys_failure">An error has occurred resetting the partner key.\n\nTry again or if the problem persist cancel and please contact with an IT Member.</string>
     <string name="reset_partner_keys_title">Reset Partner Keys</string>
     <string name="reset_partner_keys_description">Resetting the public key of a recipient will clear the link between that key and the recipient\'s key from your database.\n\nAfter resetting and as soon as you start composing an email to the recipient, planck will automatically get the correct public key. Are you sure you want to reset?</string>
+    <string name="reset_partner_keys_progress">Resetting partner keys…</string>
 
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>

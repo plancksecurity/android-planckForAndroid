@@ -1093,6 +1093,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 GroupTestScreen.start(this);
                 return true;
             }
+            case R.id.reset_sender_keys: {
+                mMessageViewFragment.resetSenderKey();
+                return true;
+            }
             case R.id.compose: {
                 MessageActions.actionCompose(this, mAccount);
                 return true;
@@ -1357,6 +1361,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
+            menu.findItem(R.id.reset_sender_keys).setVisible(mMessageViewFragment.shouldDisplayResetSenderKeyOption());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {

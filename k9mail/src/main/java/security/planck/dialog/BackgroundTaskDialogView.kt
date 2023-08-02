@@ -1,6 +1,6 @@
-package com.fsck.k9.ui.messageview
+package security.planck.dialog
 
-interface ResetPartnerKeyView {
+interface BackgroundTaskDialogView {
     fun showState(state: State)
 
     enum class State {

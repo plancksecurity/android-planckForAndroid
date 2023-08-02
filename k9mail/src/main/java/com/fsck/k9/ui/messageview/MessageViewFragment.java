@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -84,7 +85,7 @@ import timber.log.Timber;
 
 @AndroidEntryPoint
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderKeyResetHelperView {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -175,6 +176,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Inject
     @MessageView
     DisplayHtml displayHtml;
+    @Inject
+    SenderKeyResetHelper senderKeyResetHelper;
 
     @Override
     public void onAttach(Context context) {
@@ -281,6 +284,20 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageLoaderHelper.onDestroy();
         }
         getActivity().setResult(RESULT_CANCELED);
+    }
+
+    public boolean shouldDisplayResetSenderKeyOption() {
+        return mMessage != null
+                && messageLoaderHelper != null
+                && !messageLoaderHelper.hasToBeDecrypted(mMessage)
+                && senderKeyResetHelper.isInitialized()
+                && senderKeyResetHelper.canResetSenderKeys(mMessage);
+    }
+
+    public void resetSenderKey() {
+        if (shouldDisplayResetSenderKeyOption()) {
+            ResetPartnerKeyDialog.showResetPartnerKeyDialog(this);
+        }
     }
 
     private void setupSwipeDetector() {
@@ -869,6 +886,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
+    @Override
+    public void updateRating(@NonNull Rating rating) {
+
+    }
+
     public interface MessageViewFragmentListener {
         void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
                        Rating pEpRating);
@@ -928,9 +950,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 pEpRating = pEpRatingUndefined;
             }
 
-            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
-            if (shouldStopProgressDialog)
+            boolean alreadyDecrypted = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            if (alreadyDecrypted) {
                 mMessageView.displayViewOnLoadFinished(true);
+                // check to allow key reset
+                senderKeyResetHelper.initialize(MessageViewFragment.this, message);
+                mFragmentListener.updateMenu();
+            }
 
             setToolbar();
         }
