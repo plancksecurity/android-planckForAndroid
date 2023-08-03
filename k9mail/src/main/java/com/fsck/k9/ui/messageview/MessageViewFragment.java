@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -40,6 +39,7 @@ import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
@@ -256,7 +256,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 displayHtml);
         displayMessage();
         if (K9.isUsingTrustwords()) {
-            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
         }
     }
 
@@ -389,7 +389,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void setToolbar() {
         if (isAdded()) {
             if (K9.isUsingTrustwords()) {
-                planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+                planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
             }
             planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setMessageToolbarColor();
@@ -878,9 +878,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         planckUIArtefactCache.setRecipients(mAccount, addresses);
     }
 
-    public void onPEpPrivacyStatus(boolean force) {
+    public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        if (force || PlanckUtils.isPepStatusClickable(planckUIArtefactCache.getRecipients(), pEpRating)) {
+        if (MessageKt.isValidForHandshake(mMessage)) {
             String myAddress = mAccount.getEmail();
             PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }

@@ -252,12 +252,6 @@
         app:showAsAction="never"
         android:title="@string/action_settings"/>
 
-    <!-- MessageView -->
-    <item
-        android:id="@+id/privacyStatus"
-        app:showAsAction="never"
-        android:title="@string/pep_title_activity_privacy_status"/>
-
     <item
         android:id="@+id/tutorial"
         app:showAsAction="never"

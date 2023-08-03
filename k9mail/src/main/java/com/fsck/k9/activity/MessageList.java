@@ -1227,9 +1227,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 updateMenu();
                 return true;
             }
-            case R.id.privacyStatus:
-                mMessageViewFragment.onPEpPrivacyStatus(true);
-                return true;
             case R.id.flag:
                 mMessageViewFragment.onToggleFlagged();
                 return true;
@@ -1428,10 +1425,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.send_messages).setVisible(false);
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
-            menu.findItem(R.id.privacyStatus).setVisible(K9.isUsingTrustwords());
             drawerLayoutView.setDrawerEnabled(false);
         } else {
-            menu.findItem(R.id.privacyStatus).setVisible(false);
             menu.findItem(R.id.set_sort).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(true);
             menu.findItem(R.id.compose).setVisible(true);
