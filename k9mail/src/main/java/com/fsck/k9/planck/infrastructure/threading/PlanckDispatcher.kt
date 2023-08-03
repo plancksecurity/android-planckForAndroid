@@ -1,7 +1,7 @@
 package com.fsck.k9.planck.infrastructure.threading
 
 import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.SynchronousQueue
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -21,7 +21,7 @@ class PlanckEnginePool(
     MAX_POOL_SIZE,
     KEEP_ALIVE_TIME,
     TimeUnit.SECONDS,
-    SynchronousQueue(),
+    LinkedBlockingQueue(),
     engineThreadFactory,
 ) {
     init {
