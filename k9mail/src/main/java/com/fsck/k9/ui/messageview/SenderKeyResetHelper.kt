@@ -80,17 +80,14 @@ class SenderKeyResetHelper @Inject constructor(
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
-    private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean {
-        return message.from.size == 1 // only one sender
-                && preferences.availableAccounts.none {
-            it.email == message.from.first().address
-        } // sender not one of my own accounts
+    private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
+        message.from != null // sender not null
+                && message.from.size == 1 // only one sender
+                && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
                 && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
                 && message.getRecipients(Message.RecipientType.CC)
             .isNullOrEmpty() // no recipients in CC
                 && message.getRecipients(Message.RecipientType.BCC)
             .isNullOrEmpty() // no recipients in BCC
-                && message.getRecipients(Message.RecipientType.TO)
-            .first().address == message.account.email // only recipient is me
-    }
+
 }
