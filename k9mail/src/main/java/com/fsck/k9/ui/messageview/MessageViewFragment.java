@@ -85,7 +85,7 @@ import timber.log.Timber;
 
 @AndroidEntryPoint
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderKeyResetHelperView {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -886,11 +886,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
-    @Override
-    public void updateRating(@NonNull Rating rating) {
-
-    }
-
     public interface MessageViewFragmentListener {
         void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
                        Rating pEpRating);
@@ -952,9 +947,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             boolean alreadyDecrypted = !messageLoaderHelper.hasToBeDecrypted(mMessage);
             if (alreadyDecrypted) {
+                senderKeyResetHelper.initialize(message);
                 mMessageView.displayViewOnLoadFinished(true);
-                // check to allow key reset
-                senderKeyResetHelper.initialize(MessageViewFragment.this, message);
                 mFragmentListener.updateMenu();
             }
 

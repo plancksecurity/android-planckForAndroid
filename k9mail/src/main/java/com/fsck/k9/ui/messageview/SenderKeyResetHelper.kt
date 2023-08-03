@@ -7,14 +7,12 @@ import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import dagger.hilt.android.scopes.ActivityScoped
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import security.planck.dialog.BackgroundTaskDialogView
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,16 +24,12 @@ class SenderKeyResetHelper @Inject constructor(
     private val preferences: Preferences,
 ) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
-    private var currentRating: Rating = Rating.pEpRatingUndefined
     private lateinit var message: LocalMessage
-    private lateinit var view: SenderKeyResetHelperView
     private var resetPartnerKeyView: BackgroundTaskDialogView? = null
     private var resetState = BackgroundTaskDialogView.State.CONFIRMATION
 
-    fun initialize(view: SenderKeyResetHelperView, message: LocalMessage) {
-        this.view = view
+    fun initialize(message: LocalMessage) {
         this.message = message
-        this.currentRating = message.planckRating
     }
 
     fun isInitialized(): Boolean = ::message.isInitialized
@@ -63,10 +57,7 @@ class SenderKeyResetHelper @Inject constructor(
             ResultCompat.of {
                 val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
                 planckProvider.keyResetIdentity(resetIdentity, null)
-            }.flatMapSuspend {
-                refreshRating(message)
             }.onSuccess {
-                view.updateRating(it)
                 resetState = BackgroundTaskDialogView.State.SUCCESS
                 resetPartnerKeyView?.showState(resetState)
             }.onFailure {
@@ -102,13 +93,4 @@ class SenderKeyResetHelper @Inject constructor(
                 && message.getRecipients(Message.RecipientType.TO)
             .first().address == message.account.email // only recipient is me
     }
-
-    private suspend fun refreshRating(message: LocalMessage): ResultCompat<Rating> =
-        withContext(PlanckDispatcher) {
-            planckProvider.incomingMessageRating(message)
-                .alsoDoCatching { rating ->
-                    currentRating = rating
-                    message.planckRating = rating
-                }
-        }
 }
