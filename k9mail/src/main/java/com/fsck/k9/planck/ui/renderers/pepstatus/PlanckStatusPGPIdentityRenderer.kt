@@ -43,11 +43,10 @@ class PlanckStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader:
     internal lateinit var myselfFpr: TextView
 
 
-    fun setUp(resetClickListener: PlanckStatusRendererBuilder.ResetClickListener,
-              handshakeResultListener: PlanckStatusRendererBuilder.HandshakeResultListener,
-              myself: String
+    fun setUp(
+        handshakeResultListener: PlanckStatusRendererBuilder.HandshakeResultListener,
+        myself: String
     ) {
-        setUp(resetClickListener)
         this.myself = myself
         this.handshakeResultListener = handshakeResultListener
     }

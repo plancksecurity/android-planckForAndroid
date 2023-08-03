@@ -131,16 +131,6 @@ class PlanckStatusPresenter @Inject internal constructor(
         emptyList()
     )
 
-    private suspend fun onTrustReset(rating: Rating) {
-        updateIdentitiesSuspend()
-        trustWasReset(identities, rating)
-    }
-
-    private suspend fun trustWasReset(newIdentities: List<PlanckIdentity>, rating: Rating) {
-        onRatingChanged(rating)
-        view.updateIdentities(newIdentities)
-    }
-
     private fun resetIncomingMessageTrust(
         id: Identity
     ): ResultCompat<Rating> = planckProvider.loadMessageRatingAfterResetTrust(
@@ -183,20 +173,6 @@ class PlanckStatusPresenter @Inject internal constructor(
                 .onSuccessSuspend {
                     showTrustFeedback(trust)
                     updateIdentitiesAndNotify()
-                }
-        }
-    }
-
-    fun resetPlanckData(id: Identity) {
-        uiScope.launch {
-            ResultCompat.of { planckProvider.keyResetIdentity(id, null) }
-                .flatMapSuspend {
-                    refreshRating()
-                }.onSuccessSuspend {
-                    onTrustReset(it)
-                    view.showResetPartnerKeySuccessFeedback()
-                }.onFailure {
-                    view.showResetPartnerKeyErrorFeedback()
                 }
         }
     }

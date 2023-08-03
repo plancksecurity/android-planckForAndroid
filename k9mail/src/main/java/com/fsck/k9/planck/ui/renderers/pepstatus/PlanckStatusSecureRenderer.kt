@@ -50,10 +50,10 @@ class PlanckStatusSecureRenderer  @Inject constructor(contactsPictureLoader: Con
     @Bind(R.id.confirmHandshake)
     lateinit var confirmTrustwordsButton: Button
 
-    fun setUp(resetClickListener: PlanckStatusRendererBuilder.ResetClickListener,
-              handshakeResultListener: PlanckStatusRendererBuilder.HandshakeResultListener,
-              myself: String) {
-        setUp(resetClickListener)
+    fun setUp(
+        handshakeResultListener: PlanckStatusRendererBuilder.HandshakeResultListener,
+        myself: String
+    ) {
         this.myself = myself
         this.handshakeResultListener = handshakeResultListener
     }
@@ -144,7 +144,6 @@ class PlanckStatusSecureRenderer  @Inject constructor(contactsPictureLoader: Con
     override fun enableButtons(enabled: Boolean) {
         rejectTrustwordsButton.isEnabled = enabled
         confirmTrustwordsButton.isEnabled = enabled
-        resetDataButton.isEnabled = enabled
     }
 
 }

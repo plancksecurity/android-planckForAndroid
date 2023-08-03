@@ -23,7 +23,6 @@ import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.planck.models.PlanckIdentity;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
@@ -33,7 +32,6 @@ import com.pedrogomez.renderers.RVRendererAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -44,7 +42,7 @@ import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @AndroidEntryPoint
-public class PlanckStatus extends K9Activity implements PlanckStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
+public class PlanckStatus extends K9Activity implements PlanckStatusView {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String SENDER = "isComposedKey";
@@ -151,7 +149,6 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         rendererBuilder.setUp(
-                getOnResetClickListener(),
                 getOnHandshakeResultListener(),
                 myself
         );
@@ -159,89 +156,6 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
-
-    }
-
-    @NonNull
-    private PlanckStatusRendererBuilder.ResetClickListener getOnResetClickListener() {
-        return showResetDialog();
-    }
-
-    private PlanckIdentity planckIdentity;
-
-    private PlanckStatusRendererBuilder.ResetClickListener showResetDialog() {
-        return this::showResetPartnerKeyRequestDialog;
-    }
-
-    private void showDialogFragment(int dialogId, PlanckIdentity identity) {
-        if (isDestroyed()) return;
-
-        findViewById(R.id.resetDataLayout).setVisibility(identity == null ? View.GONE : View.VISIBLE);
-
-        ConfirmationDialogFragment fragment;
-        switch (dialogId) {
-            case R.id.dialog_reset_partner_key_confirmation:
-                planckIdentity = identity;
-                fragment = ConfirmationDialogFragment.newInstance(
-                        dialogId,
-                        getString(R.string.reset_partner_keys_title),
-                        getString(R.string.reset_partner_keys_description),
-                        getString(R.string.reset_partner_keys_confirmation_action),
-                        getString(R.string.pep_dialog_confirm_forward_weaker_trust_level_cancel_button)
-                );
-                fragment.setCancelable(false);
-                break;
-            case R.id.dialog_reset_partner_key_success:
-                fragment = ConfirmationDialogFragment.newInstance(
-                        dialogId,
-                        getString(R.string.reset_partner_keys_title),
-                        getString(R.string.reset_partner_keys_successful_result),
-                        getString(R.string.reset_partner_keys_close_action)
-                );
-                break;
-            case R.id.dialog_reset_partner_key_error:
-                fragment = ConfirmationDialogFragment.newInstance(
-                        dialogId,
-                        getString(R.string.reset_partner_keys_title),
-                        getString(R.string.reset_partner_keys_failure),
-                        getString(R.string.reset_partner_keys_try_again_action),
-                        getString(R.string.reset_partner_keys_close_action)
-                );
-                break;
-            default:
-                return;
-        }
-
-        getSupportFragmentManager().beginTransaction()
-                .add(fragment, getDialogTag(dialogId))
-                .commitAllowingStateLoss();
-    }
-
-    private String getDialogTag(int dialogId) {
-        return String.format(Locale.US, "dialog-%d", dialogId);
-    }
-
-    @Override
-    public void doPositiveClick(int dialogId) {
-        switch (dialogId) {
-            case R.id.dialog_reset_partner_key_confirmation:
-                presenter.resetPlanckData(planckIdentity);
-                break;
-            case R.id.dialog_reset_partner_key_error:
-                rendererBuilder.getResetClickListener().keyReset(planckIdentity);
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void doNegativeClick(int dialogId) {
-
-    }
-
-    @Override
-    public void dialogCancelled(int dialogId) {
 
     }
 
@@ -274,7 +188,7 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
     public void showTrustFeedback(String username) {
         FeedbackTools.showLongFeedback(
                 getRootView(),
-                getString(R.string.trust_identity_feedback)
+                getString(R.string.trust_identity_feedback, username)
         );
     }
 
@@ -367,20 +281,4 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView, Confir
         recipientsView.setVisibility(View.GONE);
         itsOwnMessageTV.setVisibility(View.VISIBLE);
     }
-
-    @Override
-    public void showResetPartnerKeyErrorFeedback() {
-        showDialogFragment(R.id.dialog_reset_partner_key_error, null);
-    }
-
-    @Override
-    public void showResetPartnerKeySuccessFeedback() {
-        showDialogFragment(R.id.dialog_reset_partner_key_success, null);
-    }
-
-    @Override
-    public void showResetPartnerKeyRequestDialog(PlanckIdentity identity) {
-        showDialogFragment(R.id.dialog_reset_partner_key_confirmation, identity);
-    }
-
 }
