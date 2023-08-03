@@ -84,11 +84,6 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    private suspend fun updateIdentitiesAndNotify() {
-        updateIdentitiesSuspend()
-        view.updateIdentities(identities)
-    }
-
     private suspend fun updateIdentitiesSuspend() = withContext(planckDispatcher) {
         updateIdentities()
     }
@@ -170,9 +165,9 @@ class PlanckStatusPresenter @Inject internal constructor(
         uiScope.launch {
             latestHandshakeId = id
             refreshRating()
-                .onSuccessSuspend {
+                .onSuccess {
                     showTrustFeedback(trust)
-                    updateIdentitiesAndNotify()
+                    view.finish()
                 }
         }
     }
