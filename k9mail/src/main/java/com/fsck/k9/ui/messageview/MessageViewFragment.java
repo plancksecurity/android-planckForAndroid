@@ -364,18 +364,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
         if (resultCode == RESULT_OK && requestCode == PlanckStatus.REQUEST_STATUS) {
-            if (requestCode == PlanckStatus.REQUEST_STATUS) {
-                Rating rating = (Rating) data.getSerializableExtra(PlanckStatus.CURRENT_RATING);
-                refreshRating(rating);
-            } else {
-                ((K9) getApplicationContext()).getPlanckProvider()
-                        .incomingMessageRating(mMessage, new PlanckProvider.SimpleResultCallback<Rating>() {
-                            @Override
-                            public void onLoaded(Rating rating) {
-                                refreshRating(rating);
-                            }
-                        });
-            }
+            Rating rating = (Rating) data.getSerializableExtra(PlanckStatus.CURRENT_RATING);
+            refreshRating(rating);
         }
     }
 
