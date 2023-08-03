@@ -21,4 +21,6 @@ public interface PlanckStatusView {
     void showMistrustFeedback(String username);
 
     void showItsOnlyOwnMsg();
+
+    void showTrustConfirmationView(String email, boolean trust);
 }

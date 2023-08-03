@@ -161,7 +161,7 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView {
 
     @NonNull
     private PlanckStatusRendererBuilder.HandshakeResultListener getOnHandshakeResultListener() {
-        return (identity, trust) -> presenter.onHandshakeResult(identity, trust);
+        return (identity, trust) -> presenter.startSettingTrust(identity, trust);
     }
 
     @Override

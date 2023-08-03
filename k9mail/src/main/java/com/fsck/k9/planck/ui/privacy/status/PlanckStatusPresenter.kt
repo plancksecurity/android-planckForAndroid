@@ -26,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.dialog.BackgroundTaskDialogView
+import security.planck.dialog.BackgroundTaskDialogView.State
 import javax.inject.Inject
 
 class PlanckStatusPresenter @Inject internal constructor(
@@ -45,7 +47,8 @@ class PlanckStatusPresenter @Inject internal constructor(
     private var latestHandshakeId: Identity? = null
     private var forceUnencrypted = false
     private var isAlwaysSecure = false
-
+    private var trustConfirmationState = State.CONFIRMATION
+    private var trustConfirmationView: BackgroundTaskDialogView? = null
     private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val planckDispatcher: CoroutineDispatcher
         get() = dispatcherProvider.planckDispatcher()
@@ -65,6 +68,11 @@ class PlanckStatusPresenter @Inject internal constructor(
         this.senderAddress = senderAddress
         this.forceUnencrypted = forceUnencrypted
         isAlwaysSecure = alwaysSecure
+    }
+
+    fun initializeTrustConfirmationView(trustConfirmationView: BackgroundTaskDialogView) {
+        this.trustConfirmationView = trustConfirmationView
+        trustConfirmationView.showState(trustConfirmationState)
     }
 
     fun loadMessage(messageReference: MessageReference?) {
@@ -161,15 +169,27 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    fun onHandshakeResult(id: Identity?, trust: Boolean) {
+    fun startSettingTrust(identity: PlanckIdentity, trust: Boolean) {
+        latestHandshakeId = identity
+        view.showTrustConfirmationView(identity.address, trust)
+    }
+
+    fun onHandshakeResult(id: Identity?) {
         uiScope.launch {
+            setTrustConfimationState(State.LOADING)
             latestHandshakeId = id
             refreshRating()
                 .onSuccess {
-                    showTrustFeedback(trust)
-                    view.finish()
+                    setTrustConfimationState(State.SUCCESS)
+                }.onFailure {
+                    setTrustConfimationState(State.ERROR)
                 }
         }
+    }
+
+    private fun setTrustConfimationState(state: State) {
+        trustConfirmationState = state
+        trustConfirmationView?.showState(state)
     }
 
     private suspend fun refreshRating(): ResultCompat<Rating> = withContext(planckDispatcher) {
