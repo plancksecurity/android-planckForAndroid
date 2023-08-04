@@ -121,12 +121,18 @@ class PlanckStatusPresenter @Inject internal constructor(
             setTrustConfimationState(State.LOADING)
             changePartnerTrust().flatMapSuspend {
                 refreshRating()
-            }.onSuccess {
+            }.onSuccessSuspend {
                 setTrustConfimationState(State.SUCCESS)
+                updateIdentitiesAndNotify()
             }.onFailure {
                 setTrustConfimationState(State.ERROR)
             }
         }
+    }
+
+    private suspend fun updateIdentitiesAndNotify() {
+        updateIdentitiesSuspend()
+        view.updateIdentities(displayableIdentities)
     }
 
     private suspend fun updateIdentitiesSuspend() = withContext(planckDispatcher) {
