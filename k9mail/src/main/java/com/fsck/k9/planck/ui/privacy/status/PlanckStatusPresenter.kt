@@ -45,6 +45,7 @@ class PlanckStatusPresenter @Inject internal constructor(
     private lateinit var senderAddress: Address
     private var currentRating: Rating? = null
     private var latestHandshakeId: Identity? = null
+    private var latestTrust = false
     private var forceUnencrypted = false
     private var isAlwaysSecure = false
     private var trustConfirmationState = State.CONFIRMATION
@@ -75,6 +76,11 @@ class PlanckStatusPresenter @Inject internal constructor(
         trustConfirmationView.showState(trustConfirmationState)
     }
 
+    fun handshakeFinished() {
+        trustConfirmationState = State.CONFIRMATION
+        trustConfirmationView = null
+    }
+
     fun loadMessage(messageReference: MessageReference?) {
         messageReference?.let {
             simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(
@@ -89,6 +95,25 @@ class PlanckStatusPresenter @Inject internal constructor(
         uiScope.launch {
             updateIdentitiesSuspend()
             recipientsLoaded()
+        }
+    }
+
+    fun startHandshake(identity: PlanckIdentity, trust: Boolean) {
+        latestHandshakeId = identity
+        latestTrust = trust
+        showTrustConfirmation(trust, identity)
+    }
+
+    fun performHandshake() {
+        uiScope.launch {
+            setTrustConfimationState(State.LOADING)
+            changePartnerTrust().flatMapSuspend {
+                refreshRating()
+            }.onSuccess {
+                setTrustConfimationState(State.SUCCESS)
+            }.onFailure {
+                setTrustConfimationState(State.ERROR)
+            }
         }
     }
 
@@ -169,21 +194,15 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    fun startSettingTrust(identity: PlanckIdentity, trust: Boolean) {
-        latestHandshakeId = identity
-        view.showTrustConfirmationView(identity.address, trust)
+    private fun showTrustConfirmation(trust: Boolean, identity: PlanckIdentity) {
+        if (trust) view.showTrustConfirmationView(identity.address)
+        else view.showMistrustConfirmationView(identity.address)
     }
 
-    fun onHandshakeResult(id: Identity?) {
-        uiScope.launch {
-            setTrustConfimationState(State.LOADING)
-            latestHandshakeId = id
-            refreshRating()
-                .onSuccess {
-                    setTrustConfimationState(State.SUCCESS)
-                }.onFailure {
-                    setTrustConfimationState(State.ERROR)
-                }
+    private suspend fun changePartnerTrust(): ResultCompat<Unit> = withContext(planckDispatcher) {
+        ResultCompat.of {
+            if (latestTrust) planckProvider.trustPersonaKey(latestHandshakeId)
+            else planckProvider.keyMistrusted(latestHandshakeId)
         }
     }
 
@@ -192,20 +211,14 @@ class PlanckStatusPresenter @Inject internal constructor(
         trustConfirmationView?.showState(state)
     }
 
-    private suspend fun refreshRating(): ResultCompat<Rating> = withContext(planckDispatcher) {
+    private suspend fun refreshRating(): ResultCompat<Rating> =
+        retrieveNewRating().alsoDoFlatSuspend { onRatingChanged(it) }
+
+    private suspend fun retrieveNewRating(): ResultCompat<Rating> = withContext(planckDispatcher) {
         if (isMessageIncoming) {
             planckProvider.incomingMessageRating(localMessage)
         } else {
             setupOutgoingMessageRating()
-        }
-    }.alsoDoFlatSuspend {
-        onRatingChanged(it)
-    }
-
-    private fun showTrustFeedback(trust: Boolean) {
-        when (trust) {
-            true -> view.showTrustFeedback(latestHandshakeId?.username)
-            false -> view.showMistrustFeedback(latestHandshakeId?.username)
         }
     }
 

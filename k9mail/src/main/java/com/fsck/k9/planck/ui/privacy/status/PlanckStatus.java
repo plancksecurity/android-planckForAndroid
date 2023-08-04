@@ -160,8 +160,8 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView {
     }
 
     @NonNull
-    private PlanckStatusRendererBuilder.HandshakeResultListener getOnHandshakeResultListener() {
-        return (identity, trust) -> presenter.startSettingTrust(identity, trust);
+    private PlanckStatusRendererBuilder.HandshakeListener getOnHandshakeResultListener() {
+        return (identity, trust) -> presenter.startHandshake(identity, trust);
     }
 
     @Override
@@ -280,5 +280,15 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView {
     public void showItsOnlyOwnMsg() {
         recipientsView.setVisibility(View.GONE);
         itsOwnMessageTV.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showTrustConfirmationView(String email) {
+
+    }
+
+    @Override
+    public void showMistrustConfirmationView(String email) {
+
     }
 }

@@ -13,15 +13,15 @@ class PlanckStatusRendererBuilder @Inject constructor(
     private val secureRenderer: PlanckStatusSecureRenderer,
 ) : RendererBuilder<PlanckIdentity>() {
 
-    private lateinit var handshakeResultListener: HandshakeResultListener
+    private lateinit var handshakeListener: HandshakeListener
     private lateinit var myself: String
 
     fun setUp(
-        handshakeResultListener: HandshakeResultListener,
+        handshakeListener: HandshakeListener,
         myself: String
     ) {
         this.myself = myself
-        this.handshakeResultListener = handshakeResultListener
+        this.handshakeListener = handshakeListener
 
         val prototypes = getPlanckIdentityRendererTypes()
         setPrototypes(prototypes)
@@ -38,8 +38,8 @@ class PlanckStatusRendererBuilder @Inject constructor(
     }
 
     private fun getPlanckIdentityRendererTypes(): List<Renderer<PlanckIdentity>> {
-        pgpRenderer.setUp(handshakeResultListener, myself)
-        secureRenderer.setUp(handshakeResultListener, myself)
+        pgpRenderer.setUp(handshakeListener, myself)
+        secureRenderer.setUp(handshakeListener, myself)
 
         return listOf(
                 pgpRenderer,
@@ -47,11 +47,7 @@ class PlanckStatusRendererBuilder @Inject constructor(
         )
     }
 
-    interface ResetClickListener {
-        fun keyReset(identity: PlanckIdentity)
-    }
-
-    interface HandshakeResultListener {
-        fun onHandshakeResult(id: PlanckIdentity, trust: Boolean)
+    interface HandshakeListener {
+        fun startHandshake(id: PlanckIdentity, trust: Boolean)
     }
 }

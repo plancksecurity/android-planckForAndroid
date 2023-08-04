@@ -1,7 +1,6 @@
 package com.fsck.k9.planck.ui.privacy.status
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.fsck.k9.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,11 +40,11 @@ class EstablishTrustConfirmationDialog : SimpleBackgroundTaskDialog() {
 
 
     override fun dialogFinished() {
-
+        presenter.handshakeFinished()
     }
 
     override fun taskTriggered() {
-        TODO("Not yet implemented")
+        presenter.performHandshake()
     }
 
     override fun dialogInitialized() {
