@@ -267,12 +267,16 @@ class PlanckStatusPresenter @Inject internal constructor(
     fun saveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted)
         outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure)
+        outState.putSerializable(STATE_HANDSHAKE_ID, latestHandshakeId)
+        outState.putBoolean(STATE_HANDSHAKE_TRUST, latestTrust)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED)
             isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE)
+            latestHandshakeId = savedInstanceState.getSerializable(STATE_HANDSHAKE_ID) as? Identity
+            latestTrust = savedInstanceState.getBoolean(STATE_HANDSHAKE_TRUST)
         }
     }
 
@@ -297,5 +301,7 @@ class PlanckStatusPresenter @Inject internal constructor(
     companion object {
         private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
         private const val STATE_ALWAYS_SECURE = "alwaysSecure"
+        private const val STATE_HANDSHAKE_ID = "handshakeId"
+        private const val STATE_HANDSHAKE_TRUST = "handshakeTrust"
     }
 }
