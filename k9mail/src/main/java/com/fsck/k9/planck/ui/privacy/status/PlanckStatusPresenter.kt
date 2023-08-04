@@ -18,6 +18,7 @@ import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.models.PlanckIdentity
 import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper
+import dagger.hilt.android.scopes.ActivityScoped
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,6 +31,7 @@ import security.planck.dialog.BackgroundTaskDialogView
 import security.planck.dialog.BackgroundTaskDialogView.State
 import javax.inject.Inject
 
+@ActivityScoped
 class PlanckStatusPresenter @Inject internal constructor(
     private val planckProvider: PlanckProvider,
     private val cache: PlanckUIArtefactCache,
