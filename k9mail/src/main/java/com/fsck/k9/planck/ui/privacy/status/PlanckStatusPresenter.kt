@@ -79,6 +79,7 @@ class PlanckStatusPresenter @Inject internal constructor(
     fun handshakeFinished() {
         trustConfirmationState = State.CONFIRMATION
         trustConfirmationView = null
+        view.finish()
     }
 
     fun loadMessage(messageReference: MessageReference?) {
