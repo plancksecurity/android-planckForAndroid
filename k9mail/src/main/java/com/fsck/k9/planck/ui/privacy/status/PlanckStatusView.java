@@ -16,9 +16,6 @@ public interface PlanckStatusView {
     void showDataLoadError();
 
     void finish();
-    void showTrustFeedback(String username);
-
-    void showMistrustFeedback(String username);
 
     void showItsOnlyOwnMsg();
 

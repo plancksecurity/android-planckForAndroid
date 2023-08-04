@@ -184,19 +184,6 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView {
         FeedbackTools.showLongFeedback(getRootView(), getResources().getString(R.string.status_loading_error));
     }
 
-    @Override
-    public void showTrustFeedback(String username) {
-        FeedbackTools.showLongFeedback(
-                getRootView(),
-                getString(R.string.trust_identity_feedback, username)
-        );
-    }
-
-    @Override
-    public void showMistrustFeedback(String username) {
-        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.mistrust_identity_feedback, username));
-    }
-
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
         private Drawable mDivider;
 
