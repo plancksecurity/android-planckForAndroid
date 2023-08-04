@@ -186,4 +186,9 @@ public abstract class SimpleMessagingListener implements MessagingListener {
     public void updateProgress(int progress) {
 
     }
+
+    @Override
+    public void messagesMovedOrCopied() {
+
+    }
 }

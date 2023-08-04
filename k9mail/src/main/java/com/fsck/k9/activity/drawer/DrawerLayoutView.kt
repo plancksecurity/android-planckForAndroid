@@ -454,6 +454,10 @@ class DrawerLayoutView @Inject constructor(
         drawerLayoutPresenter.populateDrawerGroup()
     }
 
+    override fun refreshFolders() {
+        drawerLayoutPresenter.populateDrawerGroup(true)
+    }
+
     override fun refreshMessages(search: LocalSearch) {
         messageListView.refreshMessages(search)
     }

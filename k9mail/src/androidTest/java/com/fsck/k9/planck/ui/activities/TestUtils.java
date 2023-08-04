@@ -181,7 +181,7 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
     private String emailForDevice;
-    private static final String HOST = "@sq.pep.security";
+    private static final String HOST = "@sq.planck.security";
     private Connection connection;
 
 
@@ -2221,13 +2221,18 @@ public class TestUtils {
     }
 
     public void assertStatus(Rating rating) {
-        while (!viewIsDisplayed(R.id.toolbar)) {
+        waitForIdle();
+        while (!viewIsDisplayed(R.id.securityStatusIcon)) {
             waitForIdle();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         int value = rating.value;
         int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
         assertsIconColor("securityStatusIcon", color);
-        viewIsDisplayed(R.id.securityStatusIcon);
         assertSecurityStatusText(rating);
     }
     public void assertMessageStatus(Rating rating, String status){
@@ -2378,9 +2383,9 @@ public class TestUtils {
             color = -10;
         } else if (rating.value == pEpRatingMistrust.value) {
             color = R.color.planck_red;
-        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+        } else if (rating.value >= Rating.pEpRatingReliable.value) {
             color = R.color.planck_green;
-        } else if (rating.value == Rating.pEpRatingReliable.value) {
+        } else if (rating.value < Rating.pEpRatingReliable.value) {
             color = R.color.planck_yellow;
         } else {
             color = -10;
@@ -2472,19 +2477,26 @@ public class TestUtils {
 
     public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
-        waitForIdle();
+        for (int i = 0; i < 500; i ++) {
+            waitForIdle();
+        }
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
-                int x = (object.getVisibleBounds().right - object.getVisibleBounds().left)/4 + object.getVisibleBounds().left;
-                int iconColor = getPixelColor(x, object.getVisibleCenter().y);
+                int iconColor = iconColor(object);
                 expectedColor = ContextCompat.getColor(context, expectedColor);
                 if (iconColor != expectedColor) {
-                        fail("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
+                        fail("Wrong icon color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
                     break;
                 }
             }
         }
+    }
+
+    private int iconColor (UiObject2 object) {
+        int x = (object.getVisibleBounds().right - object.getVisibleBounds().left)*2/5 + object.getVisibleBounds().left;
+        int color = getPixelColor(x, object.getVisibleCenter().y);
+        return color;
     }
     public void setWifi (boolean enable) throws IOException {
         if (enable) {
@@ -2562,28 +2574,28 @@ public class TestUtils {
 
     public String getStatusRating(Rating [] statusRating, String status) {
         switch (status){
-            case "pEpRatingUndefined":
+            case "Undefined":
                 statusRating[0] = Rating.pEpRatingUndefined;
                 break;
-            case "pEpRatingCannotDecrypt":
+            case "CannotDecrypt":
                 statusRating[0] = Rating.pEpRatingCannotDecrypt;
                 break;
             case "pEpRatingHaveNoKey":
                 statusRating[0] = Rating.pEpRatingHaveNoKey;
                 break;
-            case "pEpRatingUnencrypted":
+            case "NotEncrypted":
                 statusRating[0] = Rating.pEpRatingUnencrypted;
                 break;
-            case "pEpRatingUnreliable":
+            case "WeaklyEncrypted":
                 statusRating[0] = Rating.pEpRatingUnreliable;
                 break;
-            case "pEpRatingMediaKeyProtected":
+            case "MediaKey":
                 statusRating[0] = Rating.pEpRatingMediaKeyProtected;
                 break;
-            case "pEpRatingReliable":
+            case "Encrypted":
                 statusRating[0] = Rating.pEpRatingReliable;
                 break;
-            case "pEpRatingTrusted":
+            case "Trusted":
                 statusRating[0] = Rating.pEpRatingTrusted;
                 break;
             case "pEpRatingTrustedAndAnonymized":
@@ -2592,21 +2604,21 @@ public class TestUtils {
             case "pEpRatingFullyAnonymous":
                 statusRating[0] = Rating.pEpRatingFullyAnonymous;
                 break;
-            case "pEpRatingMistrust":
+            case "Dangerous":
                 statusRating[0] = Rating.pEpRatingMistrust;
                 break;
-            case "pEpRatingB0rken":
+            case "Broken":
                 statusRating[0] = Rating.pEpRatingB0rken;
                 break;
-            case "pEpRatingUnderAttack":
+            case "UnderAttack":
                 statusRating[0] = Rating.pEpRatingUnderAttack;
                 break;
         }
         return status;
     }
 
-    public void checkBadgeStatus(String status, int messageFromList){
-        Rating [] statusRating = new Rating[1];
+    public void checkBadgeStatus(String status, int messageFromList) {
+        Rating[] statusRating = new Rating[1];
         int currentMessage = 1;
         waitForIdle();
         getStatusRating(statusRating, status);
@@ -2619,17 +2631,17 @@ public class TestUtils {
                     if (object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/privacyBadge")) {
                         if (currentMessage != messageFromList) {
                             currentMessage++;
-                        }
-                        else {
-                            int pixel = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                            if (pixel != resources.getColor(statusColor)) {
-                                fail("Badge status colors are different");
+                        } else {
+                            int pixel = iconColor(object);
+                            if (pixel != ContextCompat.getColor(context, statusColor)) {
+                                //ContextCompat.getColor(context, statusColor)
+                                fail("Wrong color: Expected badge color is " + String.format("#%06X", (0xFFFFFF & statusColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & pixel)));
                             }
                             assertedBadgeColor = true;
                             break;
                         }
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     Timber.i("Cannot find text on screen: " + ex);
                 }
             }
@@ -3766,6 +3778,7 @@ public class TestUtils {
                         waitForIdle();
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                         waitForIdle();
+                        readAttachedJSONFile();
                     }
             } catch (Exception ex){
                 Timber.i("Cannot find list: " + ex);
@@ -3897,12 +3910,13 @@ public class TestUtils {
     }
 
     private void compareTextWithWebViewText(String textToCompare) {
+        boolean bodyRead = false;
         UiObject2 wb;
         String[] webViewText = new String[1];
         waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
-        while (true) {
+        while (!bodyRead) {
             try {
                 waitForIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
@@ -3916,16 +3930,14 @@ public class TestUtils {
                     } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
                         webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
                     }
+                    bodyRead = true;
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
-            if (webViewText[0].contains(textToCompare)) {
-                waitForIdle();
-                return;
-            } else {
-                fail("Message Body text is different");
-            }
+        }
+        if (!webViewText[0].contains(textToCompare)) {
+            fail("Message Body text is different");
         }
     }
 
@@ -4961,6 +4973,7 @@ public class TestUtils {
                     e.printStackTrace();
                 }
                 break;
+            case "messageSubject":
             case "messageBody":
                 try {
                     while (json == null) {

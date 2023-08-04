@@ -239,7 +239,7 @@ class PlanckStatusPresenterTest : RobolectricTest() {
             advanceUntilIdle()
 
 
-            verify { planckStatusView.showUndoTrust(USER_NAME) }
+            verify { planckStatusView.showTrustFeedback(USER_NAME) }
         }
 
     @Test
