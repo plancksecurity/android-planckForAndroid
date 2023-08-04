@@ -13,6 +13,7 @@ import com.fsck.k9.planck.DefaultDispatcherProvider
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUIArtefactCache
+import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.MessageView
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.models.PlanckIdentity
@@ -58,6 +59,9 @@ class PlanckStatusPresenter @Inject internal constructor(
 
     private val recipientAddresses: List<Address>
         get() = identities.map { Address(it.address) }
+
+    private val displayableIdentities: List<PlanckIdentity>
+        get() = identities.filter { PlanckUtils.isHandshakeRating(it.rating) }
 
     fun initialize(
         planckStatusView: PlanckStatusView,
@@ -130,7 +134,7 @@ class PlanckStatusPresenter @Inject internal constructor(
 
     private fun recipientsLoaded() {
         if (identities.isNotEmpty()) {
-            view.setupRecipients(identities)
+            view.setupRecipients(displayableIdentities)
         } else {
             view.showItsOnlyOwnMsg()
         }
