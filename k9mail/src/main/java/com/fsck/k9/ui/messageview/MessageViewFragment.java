@@ -85,7 +85,7 @@ import timber.log.Timber;
 
 @AndroidEntryPoint
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderPlanckHelperView {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -177,7 +177,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @MessageView
     DisplayHtml displayHtml;
     @Inject
-    SenderKeyResetHelper senderKeyResetHelper;
+    SenderPlanckHelper senderPlanckHelper;
 
     @Override
     public void onAttach(Context context) {
@@ -255,9 +255,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                 displayHtml);
         displayMessage();
-        if (K9.isUsingTrustwords()) {
-            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
-        }
     }
 
     @Override
@@ -290,8 +287,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         return mMessage != null
                 && messageLoaderHelper != null
                 && !messageLoaderHelper.hasToBeDecrypted(mMessage)
-                && senderKeyResetHelper.isInitialized()
-                && senderKeyResetHelper.canResetSenderKeys(mMessage);
+                && senderPlanckHelper.isInitialized()
+                && senderPlanckHelper.canResetSenderKeys(mMessage);
     }
 
     public void resetSenderKey() {
@@ -378,9 +375,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void setToolbar() {
         if (isAdded()) {
-            if (K9.isUsingTrustwords()) {
-                planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
-            }
             planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setMessageToolbarColor();
             toolBarCustomizer.setMessageStatusBarColor();
@@ -876,6 +870,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
+    @Override
+    public void allowKeyResetWithSender() {
+        if (isAdded() && K9.isUsingTrustwords()) {
+            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
+        }
+    }
+
     public interface MessageViewFragmentListener {
         void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
                        Rating pEpRating);
@@ -937,8 +938,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             boolean alreadyDecrypted = !messageLoaderHelper.hasToBeDecrypted(mMessage);
             if (alreadyDecrypted) {
-                senderKeyResetHelper.initialize(message);
+                senderPlanckHelper.initialize(message, MessageViewFragment.this);
                 mMessageView.displayViewOnLoadFinished(true);
+                senderPlanckHelper.checkCanHandshakeSender();
                 mFragmentListener.updateMenu();
             }
 

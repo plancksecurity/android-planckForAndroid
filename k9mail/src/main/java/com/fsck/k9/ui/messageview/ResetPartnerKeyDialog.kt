@@ -11,7 +11,7 @@ private const val DIALOG_TAG = "PARTNER_KEY_RESET"
 @AndroidEntryPoint
 class ResetPartnerKeyDialog : SimpleBackgroundTaskDialog() {
     @Inject
-    lateinit var helper: SenderKeyResetHelper
+    lateinit var helper: SenderPlanckHelper
 
     override val title: String
         get() = getString(R.string.reset_partner_keys_title)
