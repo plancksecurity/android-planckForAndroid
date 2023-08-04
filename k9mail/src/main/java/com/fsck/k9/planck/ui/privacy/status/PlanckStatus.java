@@ -270,12 +270,12 @@ public class PlanckStatus extends K9Activity implements PlanckStatusView {
     }
 
     @Override
-    public void showTrustConfirmationView(String email) {
-        EstablishTrustConfirmationDialog.showTrustConfirmationDialog(this, email);
+    public void showTrustConfirmationView(String user) {
+        EstablishTrustConfirmationDialog.showTrustConfirmationDialog(this, user);
     }
 
     @Override
-    public void showMistrustConfirmationView(String email) {
-        EstablishTrustConfirmationDialog.showMistrustConfirmationDialog(this, email);
+    public void showMistrustConfirmationView(String user) {
+        EstablishTrustConfirmationDialog.showMistrustConfirmationDialog(this, user);
     }
 }

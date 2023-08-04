@@ -110,7 +110,7 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    fun startHandshake(identity: PlanckIdentity, trust: Boolean) {
+    fun startHandshake(identity: Identity, trust: Boolean) {
         latestHandshakeId = identity
         latestTrust = trust
         showTrustConfirmation(trust, identity)
@@ -212,9 +212,9 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    private fun showTrustConfirmation(trust: Boolean, identity: PlanckIdentity) {
-        if (trust) view.showTrustConfirmationView(identity.address)
-        else view.showMistrustConfirmationView(identity.address)
+    private fun showTrustConfirmation(trust: Boolean, identity: Identity) {
+        if (trust) view.showTrustConfirmationView(identity.username)
+        else view.showMistrustConfirmationView(identity.username)
     }
 
     private suspend fun changePartnerTrust(): ResultCompat<Unit> = withContext(planckDispatcher) {

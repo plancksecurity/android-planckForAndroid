@@ -19,7 +19,7 @@ public interface PlanckStatusView {
 
     void showItsOnlyOwnMsg();
 
-    void showTrustConfirmationView(String email);
+    void showTrustConfirmationView(String user);
 
-    void showMistrustConfirmationView(String email);
+    void showMistrustConfirmationView(String user);
 }

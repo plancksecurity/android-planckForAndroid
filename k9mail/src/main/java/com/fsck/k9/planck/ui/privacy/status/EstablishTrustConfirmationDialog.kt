@@ -10,8 +10,8 @@ private const val DIALOG_TAG = "EstablishTrustConfirmationDialog"
 abstract class EstablishTrustConfirmationDialog : SimpleBackgroundTaskDialog() {
     @Inject
     lateinit var presenter: PlanckStatusPresenter
-    protected val email: String by lazy {
-        requireArguments().getString(EMAIL)!!
+    protected val user: String by lazy {
+        requireArguments().getString(USER)!!
     }
 
     override fun dialogFinished() {
@@ -31,16 +31,16 @@ abstract class EstablishTrustConfirmationDialog : SimpleBackgroundTaskDialog() {
     }
 
     companion object {
-        private const val EMAIL = "EstablishTrustConfirmationDialog.email"
+        private const val USER = "EstablishTrustConfirmationDialog.email"
 
         @JvmStatic
         fun showTrustConfirmationDialog(
             activity: AppCompatActivity,
-            email: String,
+            user: String,
         ) {
             val fragment = TrustConfirmationDialog().apply {
                 arguments = Bundle().apply {
-                    putString(EMAIL, email)
+                    putString(USER, user)
                 }
             }
             showDialog(activity, fragment)
@@ -49,11 +49,11 @@ abstract class EstablishTrustConfirmationDialog : SimpleBackgroundTaskDialog() {
         @JvmStatic
         fun showMistrustConfirmationDialog(
             activity: AppCompatActivity,
-            email: String,
+            user: String,
         ) {
             val fragment = MistrustConfirmationDialog().apply {
                 arguments = Bundle().apply {
-                    putString(EMAIL, email)
+                    putString(USER, user)
                 }
             }
             showDialog(activity, fragment)
