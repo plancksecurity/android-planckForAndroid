@@ -88,6 +88,11 @@ class PlanckStatusPresenter @Inject internal constructor(
         view.finish()
     }
 
+    fun handshakeCancelled() {
+        trustConfirmationState = State.CONFIRMATION
+        trustConfirmationView = null
+    }
+
     fun loadMessage(messageReference: MessageReference?) {
         messageReference?.let {
             simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(

@@ -26,6 +26,10 @@ abstract class EstablishTrustConfirmationDialog : SimpleBackgroundTaskDialog() {
         presenter.initializeTrustConfirmationView(this)
     }
 
+    override fun dialogCancelled() {
+        presenter.handshakeCancelled()
+    }
+
     companion object {
         private const val EMAIL = "EstablishTrustConfirmationDialog.email"
 
