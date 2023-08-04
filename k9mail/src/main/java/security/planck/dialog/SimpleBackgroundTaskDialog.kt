@@ -33,6 +33,7 @@ abstract class SimpleBackgroundTaskDialog : DialogFragment(), BackgroundTaskDial
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dialog?.setCancelable(false)
         binding.title.text = title
         (requireView() as ViewGroup).layoutTransition = LayoutTransition().apply {
             enableTransitionType(LayoutTransition.CHANGING)
