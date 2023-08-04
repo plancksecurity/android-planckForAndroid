@@ -45,61 +45,77 @@ abstract class SimpleBackgroundTaskDialog : DialogFragment(), BackgroundTaskDial
     ) {
         when (state) {
             BackgroundTaskDialogView.State.CONFIRMATION -> {
-                binding.acceptButton.isVisible = true
-                binding.acceptButton.text = actionText
-                binding.acceptButton.setOnClickListener {
-                    taskTriggered()
-                }
-                binding.cancelButton.isVisible = true
-                binding.cancelButton.setText(R.string.cancel_action)
-                binding.cancelButton.setOnClickListener {
-                    dialogFinished()
-                    dismissAllowingStateLoss()
-                }
-
-                binding.loading.isVisible = false
-                binding.loadingMessage.isVisible = false
-                binding.description.isVisible = true
-                binding.description.text = confirmationMessage
+                showConfirmationState()
             }
 
             BackgroundTaskDialogView.State.ERROR -> {
-                binding.loading.isVisible = false
-                binding.loadingMessage.isVisible = false
-                binding.description.isVisible = true
-                binding.description.text = failureMessage
-                binding.acceptButton.isVisible = false
-                binding.cancelButton.isVisible = true
-                binding.cancelButton.setOnClickListener {
-                    dialogFinished()
-                    dismissAllowingStateLoss()
-                }
-                binding.cancelButton.setText(R.string.close)
+                showErrorState()
             }
 
             BackgroundTaskDialogView.State.LOADING -> {
-                binding.loading.isVisible = true
-                binding.description.visibility = View.INVISIBLE
-                binding.loadingMessage.isVisible = true
-                binding.loadingMessage.text = progressMessage
-                binding.acceptButton.isVisible = false
-                binding.cancelButton.isVisible = false
+                showLoadingState()
             }
 
             BackgroundTaskDialogView.State.SUCCESS -> {
-                binding.loading.isVisible = false
-                binding.loadingMessage.isVisible = false
-                binding.description.isVisible = true
-                binding.description.text = successMessage
-                binding.acceptButton.isVisible = false
-                binding.cancelButton.isVisible = true
-                binding.cancelButton.setOnClickListener {
-                    dialogFinished()
-                    dismissAllowingStateLoss()
-                }
-                binding.cancelButton.setText(R.string.close)
+                showSuccessState()
             }
         }
+    }
+
+    open fun showSuccessState() {
+        binding.loading.isVisible = false
+        binding.loadingMessage.isVisible = false
+        binding.description.isVisible = true
+        binding.description.text = successMessage
+        binding.acceptButton.isVisible = false
+        binding.cancelButton.isVisible = true
+        binding.cancelButton.setOnClickListener {
+            dialogFinished()
+            dismissAllowingStateLoss()
+        }
+        binding.cancelButton.setText(R.string.close)
+    }
+
+    open fun showLoadingState() {
+        binding.loading.isVisible = true
+        binding.description.visibility = View.INVISIBLE
+        binding.loadingMessage.isVisible = true
+        binding.loadingMessage.text = progressMessage
+        binding.acceptButton.isVisible = false
+        binding.cancelButton.isVisible = false
+    }
+
+    open fun showErrorState() {
+        binding.loading.isVisible = false
+        binding.loadingMessage.isVisible = false
+        binding.description.isVisible = true
+        binding.description.text = failureMessage
+        binding.acceptButton.isVisible = false
+        binding.cancelButton.isVisible = true
+        binding.cancelButton.setOnClickListener {
+            dialogFinished()
+            dismissAllowingStateLoss()
+        }
+        binding.cancelButton.setText(R.string.close)
+    }
+
+    open fun showConfirmationState() {
+        binding.acceptButton.isVisible = true
+        binding.acceptButton.text = actionText
+        binding.acceptButton.setOnClickListener {
+            taskTriggered()
+        }
+        binding.cancelButton.isVisible = true
+        binding.cancelButton.setText(R.string.cancel_action)
+        binding.cancelButton.setOnClickListener {
+            dialogCancelled()
+            dismissAllowingStateLoss()
+        }
+
+        binding.loading.isVisible = false
+        binding.loadingMessage.isVisible = false
+        binding.description.isVisible = true
+        binding.description.text = confirmationMessage
     }
 
     override fun onDestroyView() {
@@ -108,6 +124,9 @@ abstract class SimpleBackgroundTaskDialog : DialogFragment(), BackgroundTaskDial
     }
 
     abstract fun dialogFinished()
+    open fun dialogCancelled() {
+        dialogFinished()
+    }
     abstract fun taskTriggered()
     abstract fun dialogInitialized()
 }
