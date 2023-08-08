@@ -988,13 +988,8 @@ class PlanckProviderImplKotlin(
         engine.get().trustOwnKey(id)
     }
 
+    @WorkerThread
     override fun keyMistrusted(id: Identity) {
-        engineScope.launch {
-            keyMistrustedSuspend(id)
-        }
-    }
-
-    private fun keyMistrustedSuspend(id: Identity) {
         engine.get().keyMistrusted(id)
     }
 

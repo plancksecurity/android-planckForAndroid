@@ -39,6 +39,7 @@ import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
@@ -84,7 +85,7 @@ import timber.log.Timber;
 
 @AndroidEntryPoint
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderPlanckHelperView {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -175,6 +176,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Inject
     @MessageView
     DisplayHtml displayHtml;
+    @Inject
+    SenderPlanckHelper senderPlanckHelper;
 
     @Override
     public void onAttach(Context context) {
@@ -252,9 +255,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                 displayHtml);
         displayMessage();
-        if (K9.isUsingTrustwords()) {
-            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
-        }
     }
 
     @Override
@@ -281,6 +281,20 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageLoaderHelper.onDestroy();
         }
         getActivity().setResult(RESULT_CANCELED);
+    }
+
+    public boolean shouldDisplayResetSenderKeyOption() {
+        return mMessage != null
+                && messageLoaderHelper != null
+                && !messageLoaderHelper.hasToBeDecrypted(mMessage)
+                && senderPlanckHelper.isInitialized()
+                && senderPlanckHelper.canResetSenderKeys(mMessage);
+    }
+
+    public void resetSenderKey() {
+        if (shouldDisplayResetSenderKeyOption()) {
+            ResetPartnerKeyDialog.showResetPartnerKeyDialog(this);
+        }
     }
 
     private void setupSwipeDetector() {
@@ -347,18 +361,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
         if (resultCode == RESULT_OK && requestCode == PlanckStatus.REQUEST_STATUS) {
-            if (requestCode == PlanckStatus.REQUEST_STATUS) {
-                Rating rating = (Rating) data.getSerializableExtra(PlanckStatus.CURRENT_RATING);
-                refreshRating(rating);
-            } else {
-                ((K9) getApplicationContext()).getPlanckProvider()
-                        .incomingMessageRating(mMessage, new PlanckProvider.SimpleResultCallback<Rating>() {
-                            @Override
-                            public void onLoaded(Rating rating) {
-                                refreshRating(rating);
-                            }
-                        });
-            }
+            Rating rating = (Rating) data.getSerializableExtra(PlanckStatus.CURRENT_RATING);
+            refreshRating(rating);
         }
     }
 
@@ -371,9 +375,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void setToolbar() {
         if (isAdded()) {
-            if (K9.isUsingTrustwords()) {
-                planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
-            }
             planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setMessageToolbarColor();
             toolBarCustomizer.setMessageStatusBarColor();
@@ -861,11 +862,18 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         planckUIArtefactCache.setRecipients(mAccount, addresses);
     }
 
-    public void onPEpPrivacyStatus(boolean force) {
+    public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        if (force || PlanckUtils.isPepStatusClickable(planckUIArtefactCache.getRecipients(), pEpRating)) {
+        if (MessageKt.isValidForHandshake(mMessage)) {
             String myAddress = mAccount.getEmail();
             PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
+        }
+    }
+
+    @Override
+    public void allowKeyResetWithSender() {
+        if (isAdded() && K9.isUsingTrustwords()) {
+            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
         }
     }
 
@@ -928,9 +936,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 pEpRating = pEpRatingUndefined;
             }
 
-            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
-            if (shouldStopProgressDialog)
+            boolean alreadyDecrypted = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            if (alreadyDecrypted) {
+                senderPlanckHelper.initialize(message, MessageViewFragment.this);
                 mMessageView.displayViewOnLoadFinished(true);
+                senderPlanckHelper.checkCanHandshakeSender();
+                mFragmentListener.updateMenu();
+            }
 
             setToolbar();
         }

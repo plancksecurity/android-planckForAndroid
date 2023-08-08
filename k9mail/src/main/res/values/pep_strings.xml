@@ -226,6 +226,7 @@
     <string name="reset_partner_keys_failure">An error has occurred resetting the partner key.\n\nTry again or if the problem persist cancel and please contact with an IT Member.</string>
     <string name="reset_partner_keys_title">Reset Partner Keys</string>
     <string name="reset_partner_keys_description">Resetting the public key of a recipient will clear the link between that key and the recipient\'s key from your database.\n\nAfter resetting and as soon as you start composing an email to the recipient, planck will automatically get the correct public key. Are you sure you want to reset?</string>
+    <string name="reset_partner_keys_progress">Resetting partner keys…</string>
 
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>
@@ -409,5 +410,30 @@
     <string name="group_mail_notification_summary">You were added to mail group %1$s by %2$s</string>
     <string name="sync_dialog_awaiting_other_device">Waiting for the other device…</string>
     <string name="sync_dialog_sync_start_timeout">Key sync could not be started. Please try again.</string>
+    <string name="reset_sender_key_action">Reset sender keys</string>
+    <string name="confirm_trust_dialog_title">Confirm trust</string>
+    <string name="reject_trust_dialog_title">Reject trust</string>
+    <string name="confirm_trust_dialog_progress">Confirming trust with %s…</string>
+    <string name="reject_trust_dialog_progress">Rejecting trust with %s…</string>
+    <string name="confirm_trust_dialog_confirmation">
+        Trustwords or fingerprints are matching, this means that it is secure to communicate with "%1$s" identity.\n\n
+        We recommend to press "Yes, Confirm", marking "%1$s" as Trusted.
+    </string>
+    <string name="reject_trust_dialog_confirmation">
+        Trustwords or fingerprints are not matching, this could indicate that someone is trying to imitate yours or "%1$s" identity.\n\n
+        We recommend to press "Yes, Reject", marking "%1$s" as Dangerous, and to contact your IT support or your operational security team to investigate.
+    </string>
+    <string name="confirm_trust_dialog_success">%s is now trusted.</string>
+    <string name="reject_trust_dialog_success">%s is now mistrusted.</string>
+    <string name="confirm_trust_dialog_failure">
+        An error has occurred while marking %s as Trusted.\n\n
+        Please contact your IT support or your operational security team.
+    </string>
+    <string name="reject_trust_dialog_failure">
+        An error has occurred while marking %s as Dangerous.\n\n
+        Please contact your IT support or your operational security team.
+    </string>
+    <string name="confirm_trust_dialog_positive_action">Yes, Confirm</string>
+    <string name="reject_trust_dialog_positive_action">Yes, Reject</string>
 
 </resources>

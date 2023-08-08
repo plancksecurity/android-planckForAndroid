@@ -17,13 +17,9 @@ public interface PlanckStatusView {
 
     void finish();
 
-    void showTrustFeedback(String username);
-
-    void showMistrustFeedback(String username);
-
     void showItsOnlyOwnMsg();
 
-    void showResetPartnerKeyErrorFeedback();
-    void showResetPartnerKeySuccessFeedback();
-    void showResetPartnerKeyRequestDialog(PlanckIdentity identity);
+    void showTrustConfirmationView(String user);
+
+    void showMistrustConfirmationView(String user);
 }

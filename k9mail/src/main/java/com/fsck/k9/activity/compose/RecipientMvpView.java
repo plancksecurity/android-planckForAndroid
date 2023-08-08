@@ -349,11 +349,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.hideSingleRecipientHandshakeBanner();
     }
 
-        void onPEpPrivacyStatus() {
-            PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
-            launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
-
-        //FIXME P4A-934: "Caused by: android.os.TransactionTooLargeException: data parcel size 1064328 bytes", not always reproducible.
+    void onPlanckPrivacyStatus() {
+        PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+        launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
     }
 
     public void setMessageReference(MessageReference reference) {

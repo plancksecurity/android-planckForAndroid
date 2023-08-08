@@ -28,9 +28,4 @@
         android:alphabeticShortcut="q"
         android:icon="?attr/iconActionCancel"
         android:title="@string/discard_action" />
-
-    <item
-        android:id="@+id/privacyStatus"
-        android:title="@string/pep_title_activity_privacy_status"
-        app:showAsAction="never" />
 </menu>

@@ -20,7 +20,7 @@ class PlanckStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader:
     override fun getLayout() = R.layout.planck_recipient_row_with_fingerprints
     //FIXME Abstract between this and PEPStatusSecureRenderer
 
-    private lateinit var handshakeResultListener: PlanckStatusRendererBuilder.HandshakeResultListener
+    private lateinit var handshakeListener: PlanckStatusRendererBuilder.HandshakeListener
     private lateinit var myself: String
     private lateinit var trustwordsPresenter: PlanckStatusTrustwordsPresenter
 
@@ -43,13 +43,12 @@ class PlanckStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader:
     internal lateinit var myselfFpr: TextView
 
 
-    fun setUp(resetClickListener: PlanckStatusRendererBuilder.ResetClickListener,
-              handshakeResultListener: PlanckStatusRendererBuilder.HandshakeResultListener,
-              myself: String
+    fun setUp(
+        handshakeListener: PlanckStatusRendererBuilder.HandshakeListener,
+        myself: String
     ) {
-        setUp(resetClickListener)
         this.myself = myself
-        this.handshakeResultListener = handshakeResultListener
+        this.handshakeListener = handshakeListener
     }
 
     override fun render() {
@@ -69,14 +68,12 @@ class PlanckStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader:
 
     @OnClick(R.id.rejectHandshake)
     fun onRejectTrustwordsClicked() {
-        trustwordsPresenter.rejectHandshake(content)
-        handshakeResultListener.onHandshakeResult(content, false)
+        handshakeListener.startHandshake(content, false)
     }
 
     @OnClick(R.id.confirmHandshake)
     fun onConfirmTrustwordsClicked() {
-        trustwordsPresenter.confirmHandshake(content)
-        handshakeResultListener.onHandshakeResult(content, true)
+        handshakeListener.startHandshake(content, true)
     }
 
 

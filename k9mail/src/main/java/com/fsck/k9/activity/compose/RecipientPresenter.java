@@ -183,7 +183,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 getBccAddresses()
         )) {
             recipientMvpView.setMessageReference(relatedMessageReference);
-            onPEpPrivacyStatus();
+            recipientMvpView.onPlanckPrivacyStatus();
         }
     }
 
@@ -331,37 +331,10 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     public void onPrepareOptionsMenu(Menu menu) {
-  /*
-            boolean isCryptoConfigured = false;
-            menu.findItem(R.id.openpgp_inline_enable).setVisible(isCryptoConfigured && !cryptoEnablePgpInline);
-            menu.findItem(R.id.openpgp_inline_disable).setVisible(isCryptoConfigured && cryptoEnablePgpInline);
-            boolean showSignOnly = !account.getOpenPgpHideSignOnly();
-            boolean isSignOnly = currentCryptoStatus.isSignOnly();
-            menu.findItem(R.id.openpgp_sign_only).setVisible(showSignOnly && !isSignOnly);
-            menu.findItem(R.id.openpgp_sign_only_disable).setVisible(showSignOnly && isSignOnly);
-
-            boolean pgpInlineModeEnabled = currentCryptoStatus.isPgpInlineModeEnabled();
-            boolean showPgpInlineEnable = (isEncrypting || isSignOnly) && !pgpInlineModeEnabled;
-            menu.findItem(R.id.openpgp_inline_enable).setVisible(showPgpInlineEnable);
-            menu.findItem(R.id.openpgp_inline_disable).setVisible(pgpInlineModeEnabled);
-        } else {
-            menu.findItem(R.id.openpgp_inline_enable).setVisible(false);
-            menu.findItem(R.id.openpgp_inline_disable).setVisible(false);
-            menu.findItem(R.id.openpgp_encrypt_enable).setVisible(false);
-            menu.findItem(R.id.openpgp_encrypt_disable).setVisible(false);
-            menu.findItem(R.id.openpgp_sign_only).setVisible(false);
-            menu.findItem(R.id.openpgp_sign_only_disable).setVisible(false);
-        }*/
-
-        menu.findItem(R.id.privacyStatus).setVisible(
-                K9.isUsingTrustwords() && getAllRecipients().size() > 0
-        );
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
         }
-
-
     }
 
     public void onSwitchAccount(Account account) {
@@ -817,10 +790,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     public void onResume() {
         notifyRecipientsChanged();
         updateCryptoStatus();
-    }
-
-    public void onPEpPrivacyStatus() {
-        recipientMvpView.onPEpPrivacyStatus();
     }
 
     public void handlepEpState() {
