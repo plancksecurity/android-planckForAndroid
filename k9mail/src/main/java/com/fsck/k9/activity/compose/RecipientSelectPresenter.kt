@@ -23,7 +23,7 @@ class RecipientSelectPresenter @Inject constructor(
         get() = unsecureAddresses.size
 
     val addresses: List<Address>
-        get() = recipients.map { it.address }
+        get() = recipients.map { it.address }.distinct()
 
     val recipients: List<Recipient>
         get() = view.recipients
