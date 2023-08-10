@@ -848,12 +848,22 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
      */
     @Override
     protected TokenImageSpan buildSpanForObject(Recipient obj) {
-        if (obj == null) {
+        if (obj == null || isRecipientDuplicate(obj)) {
             return null;
         }
 
         View tokenView = getViewForObject(obj);
         return new RecipientTokenSpan(tokenView, obj, (int) maxTextWidth());
+    }
+
+    private boolean isRecipientDuplicate(Recipient newRecipient) {
+        String newAddress = newRecipient.getAddress().getAddress();
+        for (Recipient recipient : getObjects()) {
+            if (recipient.getAddress().getAddress().equalsIgnoreCase(newAddress)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
