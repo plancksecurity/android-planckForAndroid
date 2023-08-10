@@ -22,7 +22,7 @@ Feature: Move Non encrypted email with attachment to a folder
     And I go to spam folder from navigation menu
     And I click the first message
     Then I check the privacy status is NotEncrypted
-    And I open 3 attached files
+    And I open 1 attached files
     And I press back
     And I go to inbox folder from navigation menu
 

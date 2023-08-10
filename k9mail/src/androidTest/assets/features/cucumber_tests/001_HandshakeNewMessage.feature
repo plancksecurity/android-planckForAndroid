@@ -15,4 +15,5 @@ Feature: Handshake in new Message
     Then I check if the privacy status is Encrypted
     And I confirm trust words match
     When I click confirm trust words
+    Then I discard the message
  

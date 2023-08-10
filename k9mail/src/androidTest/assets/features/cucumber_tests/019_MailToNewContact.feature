@@ -1,5 +1,6 @@
 Feature: Mail to new contact
   Background:
+    Given I created an account
 
 
 #Summary: This Cucumber test involves testing the privacy status and message sending functionality of a mail application. The test includes sending messages to existing and new contacts, checking the privacy status of messages, and verifying the message body of sent messages.
@@ -25,9 +26,11 @@ Feature: Mail to new contact
     When I enter bodyMailToNewContact2 in the messageBody field
     And I click the send message button
     And I wait for the new message
-    And I go to the sent folder
     And I click the first message
     Then I check the privacy status is Encrypted
+    And I go to the sent folder
+    And I click the first message
+    Then I check the privacy status is NotEncrypted
     And I compare messageBody with bodyMailToNewContact2
 
 

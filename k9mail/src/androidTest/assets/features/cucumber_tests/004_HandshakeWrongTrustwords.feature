@@ -8,7 +8,7 @@ Feature: Handshake wrong trustwords
   Scenario: Cucumber Handshake wrong trustwords
     When I send 1 message to bot1 with subject TM-19 and body handshakeWrongTrustwords
     And I click the last message received
-    And I click stop trusting words
+    Then I click mistrust words
     Then I check if the privacy status is Dangerous
     When I go back to the Inbox
     And I send 1 message to bot1 with subject TM-19A and body handshakeWrongTrustwordsA

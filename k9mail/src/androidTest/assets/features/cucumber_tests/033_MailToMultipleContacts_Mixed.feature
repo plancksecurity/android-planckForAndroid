@@ -28,10 +28,10 @@ Feature: Mail to multiple contacts (mixed)
     When I enter bot5 in the messageTo field
     Then I check the privacy status is NotEncrypted
      When I click the send message button
-    And I wait for the new message
+    And I wait for the message and click it
+    Then I check the privacy status is Encrypted
+    And I compare rating_string from json file with unencrypted
     And I go to the sent folder
     And I click the last message received
     Then I check the privacy status is NotEncrypted
     And I compare messageBody with TM-12B
-
-
