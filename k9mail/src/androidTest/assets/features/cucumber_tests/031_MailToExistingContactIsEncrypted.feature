@@ -26,4 +26,5 @@ Feature: Mail to existing contact is encrypted
     And I click the last message received
     Then I check the privacy status is Encrypted
     And I compare messageBody with TM-10Abody
+    And I go back to the Inbox
 
