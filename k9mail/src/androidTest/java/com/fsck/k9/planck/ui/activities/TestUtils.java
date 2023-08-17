@@ -337,6 +337,7 @@ public class TestUtils {
 
     public void composeMessageButton() {
         waitForIdle();
+        getMessageListSize();
         clickView(R.id.fab_button_compose_message);
         waitForIdle();
         onView(withId(R.id.to)).perform(closeSoftKeyboard());
@@ -2322,6 +2323,7 @@ public class TestUtils {
     }
 
     public void assertSecurityStatusText(Rating status) {
+        int value = status.value;
         String firstLineText = getTextFromView(onView(withId(R.id.securityStatusText)));
         ViewInteraction secondLine = onView(withId(R.id.securityStatusSecondLine));
         String emptySpace = "";
@@ -2331,8 +2333,11 @@ public class TestUtils {
         if (!secondLineText.equals("")) {
             emptySpace = " ";
         }
+        if (value == -1) {
+            value = 10;
+        }
         assertEquals(
-                getResourceString(R.array.pep_title, status.value),
+                getResourceString(R.array.pep_title, value),
                 firstLineText + emptySpace + secondLineText
         );
     }
@@ -3225,7 +3230,8 @@ public class TestUtils {
     }
 
     public void clickMessageStatus() {
-        clickView(R.id.securityStatusText);
+        selectFromMenu((stringToID("pep_title_activity_privacy_status")));
+        //clickView(R.id.securityStatusText);
     }
 
     public void goBackToMessageList(){
