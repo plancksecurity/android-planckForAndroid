@@ -539,11 +539,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     @Override
-    protected CharSequence convertSelectionToString(Object object) {
-        return super.convertSelectionToString(object).toString().toLowerCase();
-    }
-
-    @Override
     protected void performFiltering(@NonNull CharSequence text, int start, int end, int keyCode) {
         if (loaderManager == null) {
             return;
@@ -848,22 +843,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
      */
     @Override
     protected TokenImageSpan buildSpanForObject(Recipient obj) {
-        if (obj == null || isRecipientDuplicate(obj)) {
+        if (obj == null) {
             return null;
         }
 
         View tokenView = getViewForObject(obj);
         return new RecipientTokenSpan(tokenView, obj, (int) maxTextWidth());
-    }
-
-    private boolean isRecipientDuplicate(Recipient newRecipient) {
-        String newAddress = newRecipient.getAddress().getAddress();
-        for (Recipient recipient : getObjects()) {
-            if (recipient.getAddress().getAddress().equalsIgnoreCase(newAddress)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
