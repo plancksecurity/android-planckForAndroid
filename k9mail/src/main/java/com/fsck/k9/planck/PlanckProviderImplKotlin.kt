@@ -1212,7 +1212,7 @@ class PlanckProviderImplKotlin(
     override fun queryGroupMailManager(group: Identity): Identity = engine.get().adapter_group_query_manager(group)
 
     @WorkerThread
-    override fun queryGroupMailMembers(group: Identity): Vector<Identity> =
+    override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
         engine.get().adapter_group_query_members(group)
 
     @WorkerThread
@@ -1222,7 +1222,9 @@ class PlanckProviderImplKotlin(
     @WorkerThread
     override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
         return ResultCompat.of {
-            queryGroupMailMembers(group).apply { add(queryGroupMailManager(group)) }
+            Vector(listOf(queryGroupMailManager(group))).apply {
+                queryGroupMailMembers(group)?.let { addAll(it) }
+            }
         }
     }
 
