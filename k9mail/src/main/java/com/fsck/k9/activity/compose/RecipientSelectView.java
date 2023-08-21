@@ -846,6 +846,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         if (obj == null) {
             return null;
         }
+        String email = obj.getAddress().getAddress().toLowerCase();
+        String personal = obj.getAddress().getPersonal();
+        obj.setAddress(new Address(email, personal));
 
         View tokenView = getViewForObject(obj);
         return new RecipientTokenSpan(tokenView, obj, (int) maxTextWidth());
