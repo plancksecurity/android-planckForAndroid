@@ -240,7 +240,7 @@ public class MessageLoaderHelper {
 
         callback.onMessageDataLoadFinished(localMessage);
 
-        boolean messageIncomplete = isMessageIncomplete();
+        boolean messageIncomplete = isMessageIncomplete(localMessage);
         if (messageIncomplete) {
             startDownloadingMessageBody(false);
             return;
@@ -262,14 +262,14 @@ public class MessageLoaderHelper {
     }
 
     public boolean hasToBeDecrypted(LocalMessage localMessage) {
-        return EncryptionVerifier.isEncrypted(localMessage) && isMessageFullDownloaded();
+        return EncryptionVerifier.isEncrypted(localMessage) && isMessageFullDownloaded(localMessage);
     }
 
-    private boolean isMessageIncomplete() {
+    private boolean isMessageIncomplete(LocalMessage localMessage) {
         return !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
     }
 
-    private boolean isMessageFullDownloaded() {
+    private boolean isMessageFullDownloaded(LocalMessage localMessage) {
         return localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !MessageExtractor.hasMissingParts(localMessage);
     }
 
