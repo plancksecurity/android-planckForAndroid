@@ -238,6 +238,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     public void setUpToolbarHomeIcon() {
         if (messageViewVisible) {
             setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        } else {
+            setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(android.R.attr.homeAsUpIndicator));
         }
     }
 
