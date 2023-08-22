@@ -466,7 +466,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
         val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
             kotlin.runCatching {
-                val ids = planck.importKey(mdmExtraKey.material.toByteArray())
+                val ids = planck.importExtraKey(mdmExtraKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from extra key import"

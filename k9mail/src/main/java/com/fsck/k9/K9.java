@@ -12,6 +12,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -671,7 +672,7 @@ public class K9 extends MultiDexApplication {
         }
 
         super.onCreate();
-        //Debug.waitForDebugger();
+        Debug.waitForDebugger();
         app = this;
         Globals.setContext(this);
 
