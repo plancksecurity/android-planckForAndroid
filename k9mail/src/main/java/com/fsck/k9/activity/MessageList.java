@@ -1747,7 +1747,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             }
         } else {
             if (isThreadDisplayed) {
-                updateToolbarColorToOriginal();
                 isThreadDisplayed = false;
             }
             super.onBackPressed();
@@ -1857,6 +1856,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
+        updateToolbarColorToOriginal();
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();
