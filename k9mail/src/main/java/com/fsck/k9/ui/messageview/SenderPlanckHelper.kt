@@ -5,10 +5,10 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import dagger.hilt.android.scopes.ActivityScoped
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +25,7 @@ class SenderPlanckHelper @Inject constructor(
     private val context: Application,
     private val planckProvider: PlanckProvider,
     private val preferences: Preferences,
+    private val dispatcherProvider: DispatcherProvider,
 ) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private lateinit var message: LocalMessage
@@ -68,20 +69,22 @@ class SenderPlanckHelper @Inject constructor(
     fun resetPlanckData() {
         uiScope.launch {
             waitForInitialization()
-            resetState = BackgroundTaskDialogView.State.LOADING
-            resetPartnerKeyView?.showState(resetState)
+            setAndShowResetState(BackgroundTaskDialogView.State.LOADING)
             ResultCompat.of {
                 val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
                 planckProvider.keyResetIdentity(resetIdentity, null)
             }.onSuccess {
-                resetState = BackgroundTaskDialogView.State.SUCCESS
-                resetPartnerKeyView?.showState(resetState)
+                setAndShowResetState(BackgroundTaskDialogView.State.SUCCESS)
             }.onFailure {
                 Timber.e(it)
-                resetState = BackgroundTaskDialogView.State.ERROR
-                resetPartnerKeyView?.showState(resetState)
+                setAndShowResetState(BackgroundTaskDialogView.State.ERROR)
             }
         }
+    }
+
+    private fun setAndShowResetState(state: BackgroundTaskDialogView.State) {
+        resetState = state
+        resetPartnerKeyView?.showState(resetState)
     }
 
     private suspend fun waitForInitialization() {
@@ -96,9 +99,10 @@ class SenderPlanckHelper @Inject constructor(
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
-    private suspend fun getSenderRating(): Rating = withContext(PlanckDispatcher) {
-        planckProvider.getRating(message.from.first())
-    }.getOrDefault(Rating.pEpRatingUndefined)
+    private suspend fun getSenderRating(): Rating =
+        withContext(dispatcherProvider.planckDispatcher()) {
+            planckProvider.getRating(message.from.first())
+        }.getOrDefault(Rating.pEpRatingUndefined)
 
     private fun messageConditionsForSenderHandshake(message: LocalMessage): Boolean =
         message.from != null // sender not null
