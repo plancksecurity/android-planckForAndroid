@@ -2,6 +2,7 @@ package com.fsck.k9.ui.messageview
 
 import android.app.Application
 import com.fsck.k9.Preferences
+import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.planck.PlanckProvider
@@ -36,22 +37,24 @@ class SenderPlanckHelper @Inject constructor(
         this.view = view
     }
 
-    fun isInitialized(): Boolean = ::message.isInitialized
+    private fun isInitialized(): Boolean = ::message.isInitialized
 
     fun initializeResetPartnerKeyView(resetPartnerKeyView: BackgroundTaskDialogView) {
         this.resetPartnerKeyView = resetPartnerKeyView
         resetPartnerKeyView.showState(resetState)
     }
 
-    fun canResetSenderKeys(message: LocalMessage): Boolean {
-        return messageConditionsForSenderKeyReset(message) &&
+    fun canResetSenderKeys(message: LocalMessage?): Boolean {
+        message ?: return false
+        return isInitialized() && messageConditionsForSenderKeyReset(message) &&
                 ratingConditionsForSenderKeyReset(message.planckRating)
     }
 
     fun checkCanHandshakeSender() {
         uiScope.launch {
             if (messageConditionsForSenderHandshake(message)
-                && PlanckUtils.isHandshakeRating(getSenderRating())) {
+                && PlanckUtils.isHandshakeRating(getSenderRating())
+            ) {
                 view.allowKeyResetWithSender()
             }
         }
@@ -108,7 +111,8 @@ class SenderPlanckHelper @Inject constructor(
             .isNullOrEmpty() // no recipients in BCC
 
     private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
-        message.from != null // sender not null
+        !message.hasToBeDecrypted()
+                && message.from != null // sender not null
                 && message.from.size == 1 // only one sender
                 && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
                 && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
