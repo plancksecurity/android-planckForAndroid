@@ -26,17 +26,16 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.extensions.LocalMessageKt;
 import com.fsck.k9.helper.RetainFragment;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfoExtractor;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
-import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
@@ -234,13 +233,13 @@ public class MessageLoaderHelper {
             throw new IllegalStateException("unexpected call when callback is already detached");
         }
 
-        if (hasToBeDecrypted(localMessage)) {
+        if (LocalMessageKt.hasToBeDecrypted(localMessage)) {
             decryptMessage(localMessage);
         }
 
         callback.onMessageDataLoadFinished(localMessage);
 
-        boolean messageIncomplete = isMessageIncomplete(localMessage);
+        boolean messageIncomplete = LocalMessageKt.isMessageIncomplete(localMessage);
         if (messageIncomplete) {
             startDownloadingMessageBody(false);
             return;
@@ -259,18 +258,6 @@ public class MessageLoaderHelper {
         }*/
 
         startOrResumeDecodeMessage();
-    }
-
-    public boolean hasToBeDecrypted(LocalMessage localMessage) {
-        return EncryptionVerifier.isEncrypted(localMessage) && isMessageFullDownloaded(localMessage);
-    }
-
-    private boolean isMessageIncomplete(LocalMessage localMessage) {
-        return !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
-    }
-
-    private boolean isMessageFullDownloaded(LocalMessage localMessage) {
-        return localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !MessageExtractor.hasMissingParts(localMessage);
     }
 
     private void onLoadMessageFromDatabaseFailed() {

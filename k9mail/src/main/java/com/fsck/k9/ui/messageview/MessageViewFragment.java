@@ -39,6 +39,7 @@ import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.extensions.LocalMessageKt;
 import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
@@ -284,11 +285,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean shouldDisplayResetSenderKeyOption() {
-        return mMessage != null
-                && messageLoaderHelper != null
-                && !messageLoaderHelper.hasToBeDecrypted(mMessage)
-                && senderPlanckHelper.isInitialized()
-                && senderPlanckHelper.canResetSenderKeys(mMessage);
+        return senderPlanckHelper.canResetSenderKeys(mMessage);
     }
 
     public void resetSenderKey() {
@@ -936,7 +933,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 pEpRating = pEpRatingUndefined;
             }
 
-            boolean alreadyDecrypted = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            boolean alreadyDecrypted = !LocalMessageKt.hasToBeDecrypted(mMessage);
             if (alreadyDecrypted) {
                 senderPlanckHelper.initialize(message, MessageViewFragment.this);
                 mMessageView.displayViewOnLoadFinished(true);
@@ -955,7 +952,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         @Override
         public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
             //At this point MessageTopView is ready, but the message may be going through decryption
-            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
             showMessage(messageViewInfo, shouldStopProgressDialog);
 
         }
@@ -963,7 +960,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         @Override
         public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
             //At this point MessageTopView is ready, but the message may be going through decryption
-            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
             showMessage(messageViewInfo, shouldStopProgressDialog);
         }
 
