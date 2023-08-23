@@ -69,20 +69,22 @@ class SenderPlanckHelper @Inject constructor(
     fun resetPlanckData() {
         uiScope.launch {
             waitForInitialization()
-            resetState = BackgroundTaskDialogView.State.LOADING
-            resetPartnerKeyView?.showState(resetState)
+            setAndShowResetState(BackgroundTaskDialogView.State.LOADING)
             ResultCompat.of {
                 val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
                 planckProvider.keyResetIdentity(resetIdentity, null)
             }.onSuccess {
-                resetState = BackgroundTaskDialogView.State.SUCCESS
-                resetPartnerKeyView?.showState(resetState)
+                setAndShowResetState(BackgroundTaskDialogView.State.SUCCESS)
             }.onFailure {
                 Timber.e(it)
-                resetState = BackgroundTaskDialogView.State.ERROR
-                resetPartnerKeyView?.showState(resetState)
+                setAndShowResetState(BackgroundTaskDialogView.State.ERROR)
             }
         }
+    }
+
+    private fun setAndShowResetState(state: BackgroundTaskDialogView.State) {
+        resetState = state
+        resetPartnerKeyView?.showState(resetState)
     }
 
     private suspend fun waitForInitialization() {
