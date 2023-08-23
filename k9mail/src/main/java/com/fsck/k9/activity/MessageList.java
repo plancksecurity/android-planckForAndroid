@@ -238,6 +238,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     public void setUpToolbarHomeIcon() {
         if (messageViewVisible) {
             setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        } else {
+            setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(android.R.attr.homeAsUpIndicator));
         }
     }
 
@@ -1747,7 +1749,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             }
         } else {
             if (isThreadDisplayed) {
-                updateToolbarColorToOriginal();
                 isThreadDisplayed = false;
             }
             super.onBackPressed();
@@ -1857,6 +1858,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
+        updateToolbarColorToOriginal();
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();
