@@ -31,16 +31,35 @@ import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import com.fsck.k9.planck.ui.ConnectionSettings
-import io.mockk.*
-import junit.framework.TestCase.*
+import io.mockk.called
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.openid.appauth.*
+import net.openid.appauth.AuthState
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenRequest.GRANT_TYPE_PASSWORD
+import net.openid.appauth.TokenResponse
 import net.openid.appauth.browser.BrowserSelector
 import org.junit.After
 import org.junit.Before
@@ -1208,7 +1227,7 @@ class AuthViewModelTest : RobolectricTest() {
         viewModel.connectionSettings.observeForever {
             receivedDiscoveredSettings.add(it)
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(UnconfinedTestDispatcher()).launch {
             viewModel.uiState.collect {
                 receivedUiStates.add(it)
             }
