@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -16,6 +17,9 @@ import com.fsck.k9.R
 import com.fsck.k9.databinding.ActivityImportWizzardFromPgpBinding
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
+
+
+private const val EMPTY_SPACE = 0
 
 private const val NO_RESOURCE = 0
 private const val ENGLISH_POSITION = 0
@@ -174,6 +178,7 @@ class PlanckSyncWizard : WizardActivity() {
             loadingAnimation = getLoadingAnimationDrawable(),
             dismissButtonVisible = true,
         )
+        binding.trustwordsContainer.layoutParams = LinearLayout.LayoutParams(EMPTY_SPACE, EMPTY_SPACE)
     }
 
     private fun showAwaitingUserToStartHandshake() {
