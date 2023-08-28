@@ -244,6 +244,8 @@ public interface PlanckProvider {
 
     Vector<Identity> importKey(byte[] key);
 
+    Vector<String> importExtraKey(byte[] key);
+
     void keyResetIdentity(Identity ident, String fpr);
 
     void keyResetUser(String userId, String fpr);
