@@ -79,7 +79,7 @@ class GroupTestScreen : K9Activity() {
                     inputType = InputType.TYPE_CLASS_TEXT
                 ),
             ),
-            actionText = "Query members and manager (manager is last)",
+            actionText = "Query members and manager (manager is first)",
             action = ::queryManagerAndMembersOfGivenGroup,
             progressText = "Querying...",
             successText = { it.joinToString("\n") },

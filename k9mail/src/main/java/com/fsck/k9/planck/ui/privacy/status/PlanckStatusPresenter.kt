@@ -13,11 +13,13 @@ import com.fsck.k9.planck.DefaultDispatcherProvider
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUIArtefactCache
+import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.MessageView
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.models.PlanckIdentity
 import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper
 import com.fsck.k9.planck.ui.SimpleMessageLoaderHelper
+import dagger.hilt.android.scopes.ActivityScoped
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,8 +28,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.dialog.BackgroundTaskDialogView
+import security.planck.dialog.BackgroundTaskDialogView.State
 import javax.inject.Inject
 
+@ActivityScoped
 class PlanckStatusPresenter @Inject internal constructor(
     private val planckProvider: PlanckProvider,
     private val cache: PlanckUIArtefactCache,
@@ -43,15 +48,20 @@ class PlanckStatusPresenter @Inject internal constructor(
     private lateinit var senderAddress: Address
     private var currentRating: Rating? = null
     private var latestHandshakeId: Identity? = null
+    private var latestTrust = false
     private var forceUnencrypted = false
     private var isAlwaysSecure = false
-
+    private var trustConfirmationState = State.CONFIRMATION
+    private var trustConfirmationView: BackgroundTaskDialogView? = null
     private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val planckDispatcher: CoroutineDispatcher
         get() = dispatcherProvider.planckDispatcher()
 
     private val recipientAddresses: List<Address>
         get() = identities.map { Address(it.address) }
+
+    private val displayableIdentities: List<PlanckIdentity>
+        get() = identities.filter { PlanckUtils.isHandshakeRating(it.rating) }
 
     fun initialize(
         planckStatusView: PlanckStatusView,
@@ -65,6 +75,22 @@ class PlanckStatusPresenter @Inject internal constructor(
         this.senderAddress = senderAddress
         this.forceUnencrypted = forceUnencrypted
         isAlwaysSecure = alwaysSecure
+    }
+
+    fun initializeTrustConfirmationView(trustConfirmationView: BackgroundTaskDialogView) {
+        this.trustConfirmationView = trustConfirmationView
+        trustConfirmationView.showState(trustConfirmationState)
+    }
+
+    fun handshakeFinished() {
+        trustConfirmationState = State.CONFIRMATION
+        trustConfirmationView = null
+        view.finish()
+    }
+
+    fun handshakeCancelled() {
+        trustConfirmationState = State.CONFIRMATION
+        trustConfirmationView = null
     }
 
     fun loadMessage(messageReference: MessageReference?) {
@@ -84,9 +110,29 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
+    fun startHandshake(identity: Identity, trust: Boolean) {
+        latestHandshakeId = identity
+        latestTrust = trust
+        showTrustConfirmation(trust, identity)
+    }
+
+    fun performHandshake() {
+        uiScope.launch {
+            setTrustConfimationState(State.LOADING)
+            changePartnerTrust().flatMapSuspend {
+                refreshRating()
+            }.onSuccessSuspend {
+                setTrustConfimationState(State.SUCCESS)
+                updateIdentitiesAndNotify()
+            }.onFailure {
+                setTrustConfimationState(State.ERROR)
+            }
+        }
+    }
+
     private suspend fun updateIdentitiesAndNotify() {
         updateIdentitiesSuspend()
-        view.updateIdentities(identities)
+        view.updateIdentities(displayableIdentities)
     }
 
     private suspend fun updateIdentitiesSuspend() = withContext(planckDispatcher) {
@@ -99,7 +145,7 @@ class PlanckStatusPresenter @Inject internal constructor(
 
     private fun recipientsLoaded() {
         if (identities.isNotEmpty()) {
-            view.setupRecipients(identities)
+            view.setupRecipients(displayableIdentities)
         } else {
             view.showItsOnlyOwnMsg()
         }
@@ -130,16 +176,6 @@ class PlanckStatusPresenter @Inject internal constructor(
         emptyList(),
         emptyList()
     )
-
-    private suspend fun onTrustReset(rating: Rating) {
-        updateIdentitiesSuspend()
-        trustWasReset(identities, rating)
-    }
-
-    private suspend fun trustWasReset(newIdentities: List<PlanckIdentity>, rating: Rating) {
-        onRatingChanged(rating)
-        view.updateIdentities(newIdentities)
-    }
 
     private fun resetIncomingMessageTrust(
         id: Identity
@@ -176,45 +212,31 @@ class PlanckStatusPresenter @Inject internal constructor(
         }
     }
 
-    fun onHandshakeResult(id: Identity?, trust: Boolean) {
-        uiScope.launch {
-            latestHandshakeId = id
-            refreshRating()
-                .onSuccessSuspend {
-                    showTrustFeedback(trust)
-                    updateIdentitiesAndNotify()
-                }
+    private fun showTrustConfirmation(trust: Boolean, identity: Identity) {
+        if (trust) view.showTrustConfirmationView(identity.username)
+        else view.showMistrustConfirmationView(identity.username)
+    }
+
+    private suspend fun changePartnerTrust(): ResultCompat<Unit> = withContext(planckDispatcher) {
+        ResultCompat.of {
+            if (latestTrust) planckProvider.trustPersonaKey(latestHandshakeId)
+            else planckProvider.keyMistrusted(latestHandshakeId)
         }
     }
 
-    fun resetPlanckData(id: Identity) {
-        uiScope.launch {
-            ResultCompat.of { planckProvider.keyResetIdentity(id, null) }
-                .flatMapSuspend {
-                    refreshRating()
-                }.onSuccessSuspend {
-                    onTrustReset(it)
-                    view.showResetPartnerKeySuccessFeedback()
-                }.onFailure {
-                    view.showResetPartnerKeyErrorFeedback()
-                }
-        }
+    private fun setTrustConfimationState(state: State) {
+        trustConfirmationState = state
+        trustConfirmationView?.showState(state)
     }
 
-    private suspend fun refreshRating(): ResultCompat<Rating> = withContext(planckDispatcher) {
+    private suspend fun refreshRating(): ResultCompat<Rating> =
+        retrieveNewRating().alsoDoFlatSuspend { onRatingChanged(it) }
+
+    private suspend fun retrieveNewRating(): ResultCompat<Rating> = withContext(planckDispatcher) {
         if (isMessageIncoming) {
             planckProvider.incomingMessageRating(localMessage)
         } else {
             setupOutgoingMessageRating()
-        }
-    }.alsoDoFlatSuspend {
-        onRatingChanged(it)
-    }
-
-    private fun showTrustFeedback(trust: Boolean) {
-        when (trust) {
-            true -> view.showTrustFeedback(latestHandshakeId?.username)
-            false -> view.showMistrustFeedback(latestHandshakeId?.username)
         }
     }
 
@@ -251,12 +273,16 @@ class PlanckStatusPresenter @Inject internal constructor(
     fun saveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted)
         outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure)
+        outState.putSerializable(STATE_HANDSHAKE_ID, latestHandshakeId)
+        outState.putBoolean(STATE_HANDSHAKE_TRUST, latestTrust)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED)
             isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE)
+            latestHandshakeId = savedInstanceState.getSerializable(STATE_HANDSHAKE_ID) as? Identity
+            latestTrust = savedInstanceState.getBoolean(STATE_HANDSHAKE_TRUST)
         }
     }
 
@@ -281,5 +307,7 @@ class PlanckStatusPresenter @Inject internal constructor(
     companion object {
         private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
         private const val STATE_ALWAYS_SECURE = "alwaysSecure"
+        private const val STATE_HANDSHAKE_ID = "handshakeId"
+        private const val STATE_HANDSHAKE_TRUST = "handshakeTrust"
     }
 }

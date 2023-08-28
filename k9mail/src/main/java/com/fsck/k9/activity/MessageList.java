@@ -124,7 +124,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     // used for remote search
     public static final String EXTRA_SEARCH_ACCOUNT = "com.fsck.k9.search_account";
     private static final String EXTRA_SEARCH_FOLDER = "com.fsck.k9.search_folder";
-    private static final String TUTORIAL_ABOUT_LINK = "https://userguide.planck.security/planck_for_Android_User_Guide.pdf";
+    private static final String TUTORIAL_ABOUT_LINK = "https://help.planck.security/articles/#!user-guides-for-android-publication/versions";
     public static final String TERMS_AND_CONDITIONS_LINK = "https://www.planck.security/conditions-of-use/";
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
@@ -238,6 +238,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     public void setUpToolbarHomeIcon() {
         if (messageViewVisible) {
             setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        } else {
+            setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(android.R.attr.homeAsUpIndicator));
         }
     }
 
@@ -305,6 +307,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private ProgressBar mActionBarProgress;
     private MenuItem mMenuButtonCheckMail;
     private MenuItem flaggedCheckbox;
+    private MenuItem resetSenderKey;
     private View mActionButtonIndeterminateProgress;
     private int mLastDirection = (K9.messageViewShowNext()) ? NEXT : PREVIOUS;
 
@@ -1092,6 +1095,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 GroupTestScreen.start(this);
                 return true;
             }
+            case R.id.reset_sender_keys: {
+                mMessageViewFragment.resetSenderKey();
+                return true;
+            }
             case R.id.compose: {
                 MessageActions.actionCompose(this, mAccount);
                 return true;
@@ -1222,9 +1229,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 updateMenu();
                 return true;
             }
-            case R.id.privacyStatus:
-                mMessageViewFragment.onPEpPrivacyStatus(true);
-                return true;
             case R.id.flag:
                 mMessageViewFragment.onToggleFlagged();
                 return true;
@@ -1262,6 +1266,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
+        resetSenderKey = menu.findItem(R.id.reset_sender_keys);
 
         menu.findItem(R.id.tutorial).setVisible(
                 !BuildConfig.IS_ENTERPRISE
@@ -1331,6 +1336,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
+            menu.findItem(R.id.reset_sender_keys).setVisible(false);
         } else {
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
             checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
@@ -1354,6 +1360,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
+            menu.findItem(R.id.reset_sender_keys).setVisible(mMessageViewFragment.shouldDisplayResetSenderKeyOption());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {
@@ -1420,10 +1427,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.send_messages).setVisible(false);
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
-            menu.findItem(R.id.privacyStatus).setVisible(K9.isUsingTrustwords());
             drawerLayoutView.setDrawerEnabled(false);
         } else {
-            menu.findItem(R.id.privacyStatus).setVisible(false);
             menu.findItem(R.id.set_sort).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(true);
             menu.findItem(R.id.compose).setVisible(true);
@@ -1744,7 +1749,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             }
         } else {
             if (isThreadDisplayed) {
-                updateToolbarColorToOriginal();
                 isThreadDisplayed = false;
             }
             super.onBackPressed();
@@ -1854,6 +1858,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
+        updateToolbarColorToOriginal();
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();

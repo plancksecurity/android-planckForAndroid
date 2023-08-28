@@ -561,7 +561,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (getToolbar() != null) {
             planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             if (K9.isUsingTrustwords()) {
-                planckSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+                planckSecurityStatusLayout.setOnClickListener(v -> onPlanckPrivacyStatus());
             }
             if (!BuildConfig.IS_ENTERPRISE) {
                 planckSecurityStatusLayout.setOnLongClickListener(view -> {
@@ -1131,25 +1131,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             case R.id.add_from_contacts:
                 recipientPresenter.onMenuAddFromContacts();
                 break;
-            //case R.id.openpgp_inline_enable:
-            //    recipientPresenter.onMenuSetPgpInline(true);
-            //    updateMessageFormat();
-            //    break;
-            //case R.id.openpgp_inline_disable:
-            //    recipientPresenter.onMenuSetPgpInline(false);
-            //    updateMessageFormat();
-            //    break;
-            //case R.id.openpgp_sign_only:
-            //    recipientPresenter.onMenuSetSignOnly(true);
-            //    break;
-            //case R.id.openpgp_sign_only_disable:
-            //    recipientPresenter.onMenuSetSignOnly(false);
-            //    break;
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
-                break;
-            case R.id.privacyStatus:
-                onPEpPrivacyStatus(true);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1159,13 +1142,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.handlepEpState();
     }
 
-    private void onPEpPrivacyStatus(boolean force) {
-        recipientPresenter.refreshRecipients();
-        if (force || PlanckUtils.isPepStatusClickable(uiCache.getRecipients(), recipientMvpView.getPlanckRating())) {
-            recipientMvpView.setMessageReference(relatedMessageReference);
-            handlePEpState();
-            recipientPresenter.onPEpPrivacyStatus();
-        }
+    private void onPlanckPrivacyStatus() {
+        recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference);
     }
 
     private void goBack() {

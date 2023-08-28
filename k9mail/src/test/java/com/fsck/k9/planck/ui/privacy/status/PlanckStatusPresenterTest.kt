@@ -25,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import security.planck.dialog.BackgroundTaskDialogView
 
 private const val RECIPIENT_ADDRESS = "ignacioxplanck@hello.ch"
 private const val USER_NAME = "user"
@@ -41,6 +42,7 @@ class PlanckStatusPresenterTest : RobolectricTest() {
 
     private val simpleMessageLoaderHelper: SimpleMessageLoaderHelper = mockk()
     private val planckStatusView: PlanckStatusView = mockk(relaxed = true)
+    private val handshakeDialogView: BackgroundTaskDialogView = mockk(relaxed = true)
     private val uiCache: PlanckUIArtefactCache = mockk()
     private val provider: PlanckProvider = mockk(relaxed = true)
     private val senderAddress: Address = mockk()
@@ -148,14 +150,55 @@ class PlanckStatusPresenterTest : RobolectricTest() {
     }
 
     @Test
-    fun `onHandshakeResult() for an incoming message updates recipients with PlanckProvider_incomingMessageRating`() =
+    fun `view calls setupRecipients() with 0 recipients when the recipient does not have the right rating`() =
+        runTest {
+            mappedRecipients.first().rating = Rating.pEpRatingUnreliable
+            initializePresenter()
+
+
+            presenter.loadRecipients()
+            advanceUntilIdle()
+
+
+            coVerify { planckStatusView.setupRecipients(emptyList()) }
+        }
+
+    @Test
+    fun `startHandshake() calls view to show mistrust confirmation`() {
+        stubIncomingMessageRating()
+        initializePresenter(incoming = true)
+
+
+        val identity = Identity().apply { username = USER_NAME }
+        presenter.startHandshake(identity, false)
+
+
+        verify { planckStatusView.showMistrustConfirmationView(USER_NAME) }
+    }
+
+    @Test
+    fun `startHandshake() calls view to show trust confirmation`() {
+        stubIncomingMessageRating()
+        initializePresenter(incoming = true)
+
+
+        val identity = Identity().apply { username = USER_NAME }
+        presenter.startHandshake(identity, true)
+
+
+        verify { planckStatusView.showTrustConfirmationView(USER_NAME) }
+    }
+
+    @Test
+    fun `performHandshake() for an incoming message updates recipients with PlanckProvider_incomingMessageRating`() =
         runTest {
             stubIncomingMessageRating()
             initializePresenter(incoming = true)
 
 
             val identity = Identity()
-            presenter.onHandshakeResult(identity, false)
+            presenter.startHandshake(identity, false)
+            presenter.performHandshake()
             advanceUntilIdle()
 
 
@@ -165,7 +208,39 @@ class PlanckStatusPresenterTest : RobolectricTest() {
         }
 
     @Test
-    fun `onHandshakeResult() for an incoming message updates message rating in database`() =
+    fun `negative handshake calls PlanckProvider_keyMistrusted()`() =
+        runTest {
+            stubIncomingMessageRating()
+            initializePresenter(incoming = true)
+
+
+            val identity = Identity()
+            presenter.startHandshake(identity, false)
+            presenter.performHandshake()
+            advanceUntilIdle()
+
+
+            verify { provider.keyMistrusted(identity) }
+        }
+
+    @Test
+    fun `positive handshake calls PlanckProvider_trustPersonalKey()`() =
+        runTest {
+            stubIncomingMessageRating()
+            initializePresenter(incoming = true)
+
+
+            val identity = Identity()
+            presenter.startHandshake(identity, true)
+            presenter.performHandshake()
+            advanceUntilIdle()
+
+
+            verify { provider.trustPersonaKey(identity) }
+        }
+
+    @Test
+    fun `performHandshake() for an incoming message updates message rating in database`() =
         runTest {
             stubIncomingMessageRating()
             initializePresenter(incoming = true)
@@ -173,15 +248,16 @@ class PlanckStatusPresenterTest : RobolectricTest() {
 
 
             val identity = Identity()
-            presenter.onHandshakeResult(identity, false)
+            presenter.startHandshake(identity, false)
+            presenter.performHandshake()
             advanceUntilIdle()
 
 
-            verify { localMessage.planckRating = Rating.pEpRatingUndefined }
+            verify { localMessage.planckRating = Rating.pEpRatingReliable }
         }
 
     @Test
-    fun `onHandshakeResult() for an outgoing message does not update message rating in database`() =
+    fun `performHandshake() for an outgoing message does not update message rating in database`() =
         runTest {
             stubOutgoingMessageRating()
             initializePresenter(incoming = false)
@@ -189,7 +265,8 @@ class PlanckStatusPresenterTest : RobolectricTest() {
 
 
             val identity = Identity()
-            presenter.onHandshakeResult(identity, false)
+            presenter.startHandshake(identity, false)
+            presenter.performHandshake()
             advanceUntilIdle()
 
 
@@ -197,14 +274,15 @@ class PlanckStatusPresenterTest : RobolectricTest() {
         }
 
     @Test
-    fun `onHandshakeResult() for an outgoing message updates recipients with PlanckProvider_incomingMessageRating`() =
+    fun `performHandshake() for an outgoing message updates recipients with PlanckProvider_incomingMessageRating`() =
         runTest {
             stubOutgoingMessageRating()
             initializePresenter(incoming = false)
 
 
             val identity = Identity()
-            presenter.onHandshakeResult(identity, false)
+            presenter.startHandshake(identity, false)
+            presenter.performHandshake()
             advanceUntilIdle()
 
 
@@ -214,47 +292,124 @@ class PlanckStatusPresenterTest : RobolectricTest() {
         }
 
     @Test
-    fun `on negative handshake result, view displays mistrusted recipient feedback`() = runTest {
+    fun `handshakeFinished() finishes the view`() = runTest {
+        initializePresenter()
+
+
+        presenter.initializeTrustConfirmationView(handshakeDialogView)
+        presenter.handshakeFinished()
+
+
+        verify { planckStatusView.finish() }
+    }
+
+    @Test
+    fun `handshakeCancelled() does not finish the view`() = runTest {
+        initializePresenter()
+
+
+        presenter.initializeTrustConfirmationView(handshakeDialogView)
+        presenter.handshakeCancelled()
+
+
+        verify(exactly = 0) { planckStatusView.finish() }
+    }
+
+    @Test
+    fun `initialized presenter sets current state in dialog`() = runTest {
         stubIncomingMessageRating()
         initializePresenter()
 
 
         val identity = Identity().apply { username = USER_NAME }
-        presenter.onHandshakeResult(identity, false)
-        advanceUntilIdle()
+        presenter.startHandshake(identity, false)
+        presenter.initializeTrustConfirmationView(handshakeDialogView)
 
 
-        verify { planckStatusView.showMistrustFeedback(USER_NAME) }
+        verify { handshakeDialogView.showState(BackgroundTaskDialogView.State.CONFIRMATION) }
     }
 
     @Test
-    fun `on positive handshake result, view displays trusted recipient feedback and undo trust`() =
+    fun `performHandshake sets loading state in dialog`() = runTest {
+        stubIncomingMessageRating()
+        initializePresenter()
+
+
+        val identity = Identity().apply { username = USER_NAME }
+        presenter.startHandshake(identity, false)
+        presenter.initializeTrustConfirmationView(handshakeDialogView)
+        presenter.performHandshake()
+        advanceUntilIdle()
+
+
+        verify { handshakeDialogView.showState(BackgroundTaskDialogView.State.LOADING) }
+    }
+
+    @Test
+    fun `on negative handshake click, dialog displays mistrusted recipient feedback`() = runTest {
+        stubIncomingMessageRating()
+        initializePresenter()
+
+
+        val identity = Identity().apply { username = USER_NAME }
+        presenter.startHandshake(identity, false)
+        presenter.initializeTrustConfirmationView(handshakeDialogView)
+        presenter.performHandshake()
+        advanceUntilIdle()
+
+
+        verify { handshakeDialogView.showState(BackgroundTaskDialogView.State.SUCCESS) }
+    }
+
+    @Test
+    fun `on positive handshake click, dialog displays trusted recipient feedback`() =
         runTest {
             stubIncomingMessageRating()
             initializePresenter()
 
 
             val identity = Identity().apply { username = USER_NAME }
-            presenter.onHandshakeResult(identity, true)
+            presenter.startHandshake(identity, true)
+            presenter.initializeTrustConfirmationView(handshakeDialogView)
+            presenter.performHandshake()
             advanceUntilIdle()
 
 
-            verify { planckStatusView.showTrustFeedback(USER_NAME) }
+            verify { handshakeDialogView.showState(BackgroundTaskDialogView.State.SUCCESS) }
         }
 
     @Test
-    fun `onHandshakeResult() uses view to update recipients and set back intent`() = runTest {
+    fun `if performHandshake() fails, dialog displays error state`() =
+        runTest {
+            stubIncomingMessageRating()
+            every { provider.trustPersonaKey(any()) }.throws(RuntimeException("test"))
+            initializePresenter()
+
+
+            val identity = Identity().apply { username = USER_NAME }
+            presenter.startHandshake(identity, true)
+            presenter.initializeTrustConfirmationView(handshakeDialogView)
+            presenter.performHandshake()
+            advanceUntilIdle()
+
+
+            verify { handshakeDialogView.showState(BackgroundTaskDialogView.State.ERROR) }
+        }
+
+    @Test
+    fun `performHandshake() uses view to update recipients and set back intent`() = runTest {
         stubIncomingMessageRating()
         initializePresenter()
 
 
         val identity = Identity()
-        presenter.onHandshakeResult(identity, false)
+        presenter.startHandshake(identity, false)
+        presenter.performHandshake()
         advanceUntilIdle()
 
 
         verify { planckStatusView.updateIdentities(mappedRecipients) }
-        verify { planckStatusView.setupBackIntent(Rating.pEpRatingUndefined, false, false) }
+        verify { planckStatusView.setupBackIntent(Rating.pEpRatingReliable, false, false) }
     }
 
     @Test
@@ -281,236 +436,10 @@ class PlanckStatusPresenterTest : RobolectricTest() {
         }
     }
 
-    @Test
-    fun `resetPlanckData() resets identity key`() = runTest {
-        initializePresenter()
-
-
-        val identity = Identity()
-        presenter.resetPlanckData(identity)
-        advanceUntilIdle()
-
-
-        verify { provider.keyResetIdentity(identity, null) }
-    }
-
-    @Test
-    fun `resetPlanckData() for an incoming message updates recipients with PlanckProvider_incomingMessageRating`() =
-        runTest {
-            stubIncomingMessageRating()
-            initializePresenter(incoming = true)
-
-
-            val identity = Identity()
-            presenter.resetPlanckData(identity)
-            advanceUntilIdle()
-
-
-            verify { provider.incomingMessageRating(any()) }
-            verify { uiCache.recipients }
-            verify { identityMapper.mapRecipients(recipients) }
-        }
-
-    @Test
-    fun `resetPlanckData() for an incoming message updates message rating in database`() = runTest {
-        stubIncomingMessageRating()
-        initializePresenter(incoming = true)
-        presenter.loadMessage(mockk())
-
-
-        val identity = Identity()
-        presenter.resetPlanckData(identity)
-        advanceUntilIdle()
-
-
-        verify { localMessage.planckRating = Rating.pEpRatingUndefined }
-    }
-
-    @Test
-    fun `resetPlanckData() for an outgoing message does not update message rating in database`() =
-        runTest {
-            stubOutgoingMessageRating()
-            initializePresenter(incoming = false)
-            presenter.loadMessage(mockk())
-
-
-            val identity = Identity()
-            presenter.resetPlanckData(identity)
-            advanceUntilIdle()
-
-
-            verify(exactly = 0) { localMessage.planckRating = any() }
-        }
-
-    @Test
-    fun `resetPlanckData() for an outgoing message updates recipients with PlanckProvider_incomingMessageRating`() =
-        runTest {
-            stubOutgoingMessageRating()
-            initializePresenter(incoming = false)
-
-
-            val identity = Identity()
-            presenter.resetPlanckData(identity)
-            advanceUntilIdle()
-
-
-            verify { provider.getRatingResult(senderAddress, any(), any(), any()) }
-            verify { uiCache.recipients }
-            verify { identityMapper.mapRecipients(recipients) }
-        }
-
-    private fun stubOutgoingMessageRating(rating: Rating = Rating.pEpRatingUndefined) {
+    private fun stubOutgoingMessageRating(rating: Rating = Rating.pEpRatingReliable) {
         every {
             provider.getRatingResult(
                 any(),
-                any(),
-                any(),
-                any()
-            )
-        }.returns(ResultCompat.success(rating))
-    }
-
-    @Test
-    fun `resetPlanckData() uses view to update recipients and set back intent`() = runTest {
-        stubIncomingMessageRating()
-        initializePresenter()
-
-
-        val identity = Identity()
-        presenter.resetPlanckData(identity)
-        advanceUntilIdle()
-
-
-        verify { planckStatusView.updateIdentities(mappedRecipients) }
-        verify { planckStatusView.setupBackIntent(Rating.pEpRatingUndefined, false, false) }
-    }
-
-    @Test
-    fun `undoTrust() on incoming message resets identity trust`() = runTest {
-        stubIncomingMessageRating()
-        stubIncomingMessageRatingAfterResetTrust()
-        initializePresenter()
-        val identity = Identity()
-        presenter.onHandshakeResult(identity, true)
-        advanceUntilIdle()
-
-
-        presenter.undoTrust()
-        advanceUntilIdle()
-
-
-        verify { provider.loadMessageRatingAfterResetTrust(any(), true, identity) }
-    }
-
-    @Test
-    fun `undoTrust() on outgoing message resets identity trust`() = runTest {
-        stubOutgoingMessageRating()
-        stubOutgoingMessageRatingAfterResetTrust()
-        initializePresenter(incoming = false)
-        val identity = Identity()
-        presenter.onHandshakeResult(identity, true)
-        advanceUntilIdle()
-
-
-        presenter.undoTrust()
-        advanceUntilIdle()
-
-
-        verify {
-            provider.loadOutgoingMessageRatingAfterResetTrust(
-                identity,
-                senderAddress,
-                any(),
-                any(),
-                any()
-            )
-        }
-    }
-
-    @Test
-    fun `undoTrust() for an incoming message updates recipients with PlanckProvider_incomingMessageRating`() =
-        runTest {
-            stubIncomingMessageRating()
-            stubIncomingMessageRatingAfterResetTrust()
-            initializePresenter(incoming = true)
-            val identity = Identity()
-            presenter.onHandshakeResult(identity, true)
-            advanceUntilIdle()
-
-
-            presenter.undoTrust()
-            advanceUntilIdle()
-
-
-            verify { provider.incomingMessageRating(any()) }
-            verify { uiCache.recipients }
-            verify { identityMapper.mapRecipients(recipients) }
-        }
-
-    @Test
-    fun `undoTrust() for an incoming message updates message rating in database`() = runTest {
-        stubIncomingMessageRating()
-        stubIncomingMessageRatingAfterResetTrust()
-        initializePresenter(incoming = true)
-        presenter.loadMessage(mockk())
-        val identity = Identity()
-        presenter.onHandshakeResult(identity, true)
-        advanceUntilIdle()
-
-
-        presenter.undoTrust()
-        advanceUntilIdle()
-
-
-        verify { localMessage.planckRating = Rating.pEpRatingUndefined }
-    }
-
-    @Test
-    fun `undoTrust() for an outgoing message does not update message rating in database`() =
-        runTest {
-            stubOutgoingMessageRating()
-            stubOutgoingMessageRatingAfterResetTrust()
-            initializePresenter(incoming = false)
-            presenter.loadMessage(mockk())
-            val identity = Identity()
-            presenter.onHandshakeResult(identity, true)
-            advanceUntilIdle()
-
-
-            presenter.undoTrust()
-            advanceUntilIdle()
-
-
-            verify(exactly = 0) { localMessage.planckRating = any() }
-        }
-
-    @Test
-    fun `undoTrust() for an outgoing message updates recipients with PlanckProvider_incomingMessageRating`() =
-        runTest {
-            stubOutgoingMessageRating()
-            stubOutgoingMessageRatingAfterResetTrust()
-            initializePresenter(incoming = false)
-            val identity = Identity()
-            presenter.onHandshakeResult(identity, true)
-            advanceUntilIdle()
-
-
-            presenter.undoTrust()
-            advanceUntilIdle()
-
-
-            verify { provider.getRatingResult(senderAddress, any(), any(), any()) }
-            verify { uiCache.recipients }
-            verify { identityMapper.mapRecipients(recipients) }
-        }
-
-    private fun stubOutgoingMessageRatingAfterResetTrust(
-        rating: Rating = Rating.pEpRatingUndefined
-    ) {
-        every {
-            provider.loadOutgoingMessageRatingAfterResetTrust(
-                any(),
-                senderAddress,
                 any(),
                 any(),
                 any()
@@ -524,7 +453,8 @@ class PlanckStatusPresenterTest : RobolectricTest() {
         stubIncomingMessageRatingAfterResetTrust()
         initializePresenter()
         val identity = Identity()
-        presenter.onHandshakeResult(identity, true)
+        presenter.startHandshake(identity, true)
+        presenter.performHandshake()
         advanceUntilIdle()
 
 
@@ -533,17 +463,17 @@ class PlanckStatusPresenterTest : RobolectricTest() {
 
 
         verify { planckStatusView.updateIdentities(mappedRecipients) }
-        verify { planckStatusView.setupBackIntent(Rating.pEpRatingUndefined, false, false) }
+        verify { planckStatusView.setupBackIntent(Rating.pEpRatingReliable, false, false) }
     }
 
     private fun stubIncomingMessageRatingAfterResetTrust(
-        rating: Rating = Rating.pEpRatingUndefined
+        rating: Rating = Rating.pEpRatingReliable
     ) {
         every { provider.loadMessageRatingAfterResetTrust(any(), true, any()) }
             .returns(ResultCompat.success(rating))
     }
 
-    private fun stubIncomingMessageRating(rating: Rating = Rating.pEpRatingUndefined) {
+    private fun stubIncomingMessageRating(rating: Rating = Rating.pEpRatingReliable) {
         every { provider.incomingMessageRating(any()) }
             .returns(ResultCompat.success(rating))
     }

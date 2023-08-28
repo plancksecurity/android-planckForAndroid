@@ -31,30 +31,14 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_contact_picture" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingLeft="4dp">
-
-            <TextView
-                android:id="@+id/tvUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="User name" />
-
-            <TextView
-                android:id="@+id/tvRatingStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Secure" />
-
-        </LinearLayout>
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="User name" />
 
     </LinearLayout>
 
@@ -74,8 +58,6 @@
             android:text="@string/pep_ask_trustwords"/>
 
         <include layout="@layout/planck_status_trustwords_view" />
-
-        <include layout="@layout/reset_data_layout"/>
 
     </LinearLayout>
 

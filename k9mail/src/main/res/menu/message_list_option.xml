@@ -72,6 +72,14 @@
         android:icon="?attr/iconActionDelete"
         app:showAsAction="ifRoom"
         android:title="@string/delete_action"/>
+
+    <!-- MessageView -->
+    <item
+        android:id="@+id/reset_sender_keys"
+        app:showAsAction="never"
+        android:title="@string/reset_sender_key_action"
+        android:visible="false"/>
+
     <!-- MessageView -->
     <item
         android:id="@+id/archive"
@@ -243,12 +251,6 @@
         android:icon="?attr/iconActionSettings"
         app:showAsAction="never"
         android:title="@string/action_settings"/>
-
-    <!-- MessageView -->
-    <item
-        android:id="@+id/privacyStatus"
-        app:showAsAction="never"
-        android:title="@string/pep_title_activity_privacy_status"/>
 
     <item
         android:id="@+id/tutorial"

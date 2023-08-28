@@ -598,6 +598,11 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
+    override fun importExtraKey(key: ByteArray): Vector<String> {
+        return engine.get().importExtraKey(key)
+    }
+
+    @WorkerThread
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
         return try {
             val sanitizedFpr = PlanckUtils.sanitizeFpr(fpr)
@@ -988,13 +993,8 @@ class PlanckProviderImplKotlin(
         engine.get().trustOwnKey(id)
     }
 
+    @WorkerThread
     override fun keyMistrusted(id: Identity) {
-        engineScope.launch {
-            keyMistrustedSuspend(id)
-        }
-    }
-
-    private fun keyMistrustedSuspend(id: Identity) {
         engine.get().keyMistrusted(id)
     }
 
@@ -1210,45 +1210,42 @@ class PlanckProviderImplKotlin(
         manager: Identity,
         members: Vector<Identity>,
     ) {
-        val group: Group = Group().apply {
-            this.group_identity = groupIdentity
-            this.manager = manager
-            this.members = Vector()
-        }
-        engine.get().group_create(groupIdentity, manager, members, group)
+        engine.get().adapter_group_create(groupIdentity, manager, members)
     }
 
     @WorkerThread
-    override fun queryGroupMailManager(group: Identity): Identity = engine.get().get_group_manager(group)
+    override fun queryGroupMailManager(group: Identity): Identity = engine.get().adapter_group_query_manager(group)
 
     @WorkerThread
     override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
-        engine.get().retrieve_full_group_membership(group)?.map { it.ident }?.let { Vector(it) }
+        engine.get().adapter_group_query_members(group)
 
     @WorkerThread
     override fun joinGroupMail(group: Identity, member: Identity) =
-        engine.get().group_join(group, member)
+        engine.get().adapter_group_join(group, member)
 
     @WorkerThread
     override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {
         return ResultCompat.of {
-            queryGroupMailMembers(group)?.apply { add(queryGroupMailManager(group)) } ?: Vector(listOf(queryGroupMailManager(group)))
+            Vector(listOf(queryGroupMailManager(group))).apply {
+                queryGroupMailMembers(group)?.let { addAll(it) }
+            }
         }
     }
 
     @WorkerThread
     override fun dissolveGroup(group: Identity, managerOrMember: Identity) {
-        engine.get().group_dissolve(group, managerOrMember)
+        engine.get().adapter_group_dissolve(group, managerOrMember)
     }
 
     @WorkerThread
     override fun inviteMemberToGroup(group: Identity, member: Identity) {
-        engine.get().group_invite_member(group, member)
+        engine.get().adapter_group_invite_member(group, member)
     }
 
     @WorkerThread
     override fun removeMemberFromGroup(group: Identity, member: Identity) {
-        engine.get().group_remove_member(group, member)
+        engine.get().adapter_group_remove_member(group, member)
     }
 
     @WorkerThread
