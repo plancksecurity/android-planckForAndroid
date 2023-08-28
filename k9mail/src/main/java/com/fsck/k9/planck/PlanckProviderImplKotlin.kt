@@ -598,6 +598,11 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
+    override fun importExtraKey(key: ByteArray): Vector<String> {
+        return engine.get().importExtraKey(key)
+    }
+
+    @WorkerThread
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
         return try {
             val sanitizedFpr = PlanckUtils.sanitizeFpr(fpr)
