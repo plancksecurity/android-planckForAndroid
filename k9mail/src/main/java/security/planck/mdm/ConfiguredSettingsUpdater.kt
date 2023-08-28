@@ -466,18 +466,22 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
         val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
             kotlin.runCatching {
-                val fprs = planck.importExtraKey(mdmExtraKey.material.toByteArray())
+                val fprs = planck.importExtraKey(mdmExtraKey.material.trim().toByteArray())
                 val errorMsg = when {
                     fprs == null ->
                         "Error: got null from extra key import"
+
                     fprs.isEmpty() ->
                         "Error: got empty fpr vector from extra key import"
+
                     fprs.size != 1 ->
                         "Error: got too many or too few fprs from extra key import: " +
                                 "${fprs.size}, expected: 1"
+
                     fprs.first() != mdmExtraKey.fpr ->
                         "Error: got an unexpected fpr from extra key import: " +
                                 "${fprs.first()}, expected: ${mdmExtraKey.fpr}"
+
                     else -> null
                 }
                 errorMsg?.let { error(it) }
