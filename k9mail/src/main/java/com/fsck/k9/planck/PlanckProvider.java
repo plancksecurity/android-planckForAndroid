@@ -277,7 +277,7 @@ public interface PlanckProvider {
     Identity queryGroupMailManager(Identity group);
     Vector<Identity> queryGroupMailMembers(Identity group);
 
-    void joinGroupMail(Identity group, Identity member);
+    void joinGroupMail(Identity group, Identity member, Identity manager);
 
     ResultCompat<Vector<Identity>> queryGroupMailManagerAndMembers(Identity group);
 
