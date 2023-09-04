@@ -79,26 +79,16 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             ),
         )
 
-    private val defaultImportExtraKeyBehaviors: MutableMap<String, ReturnBehavior<Vector<Identity?>>> =
+    private val defaultImportExtraKeyBehaviors: MutableMap<String, ReturnBehavior<Vector<String>>> =
         mutableMapOf(
             KEY_MATERIAL_1 to ReturnBehavior.Return(
-                Vector<Identity?>(2).apply {
-                    add(
-                        Identity().apply {
-                            this.fpr = KEY_FPR_1
-                            this.address = MEDIA_KEY_PATTERN_1
-                        }
-                    )
+                Vector<String>(2).apply {
+                    add(KEY_FPR_1)
                 }
             ),
             KEY_MATERIAL_2 to ReturnBehavior.Return(
-                Vector<Identity?>(2).apply {
-                    add(
-                        Identity().apply {
-                            this.fpr = KEY_FPR_2
-                            this.address = MEDIA_KEY_PATTERN_2
-                        }
-                    )
+                Vector<String>(2).apply {
+                    add(KEY_FPR_2)
                 }
             ),
         )
@@ -225,7 +215,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     @Test
     fun `update() takes the value for extra keys from the provided restrictions`() {
         val planck: PlanckProvider = mockk()
-        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
         every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
@@ -235,8 +225,8 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            planck.importKey(KEY_MATERIAL_1.toByteArray())
-            planck.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_1.toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_1,
@@ -275,7 +265,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     @Test
     fun `update() ignores extra keys with blank or missing fields`() {
         val planck: PlanckProvider = mockk()
-        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
         every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(fpr1 = " ")
         val entry = getExtraKeysRestrictionEntry()
@@ -285,7 +275,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            planck.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -297,7 +287,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     @Test
     fun `update() ignores extra keys with badly formatted fingerprints`() {
         val planck: PlanckProvider = mockk()
-        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
         every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(fpr1 = WRONG_FPR)
         val entry = getExtraKeysRestrictionEntry()
@@ -307,7 +297,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            planck.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -319,7 +309,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     @Test
     fun `update() does not set extra keys if all keys are blank or have errors`() {
         val planck: PlanckProvider = mockk()
-        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
         every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(
             fpr1 = " ",
@@ -332,7 +322,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify(exactly = 0) {
-            planck.importKey(any())
+            planck.importExtraKey(any())
             K9.setMasterKeys(any())
         }
     }
@@ -340,7 +330,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     @Test
     fun `update() ignores extra keys for which PEpProvider returns bad key import result`() {
         val planck: PlanckProvider = mockk()
-        stubImportKeyBehavior(
+        stubImportExtraKeyBehavior(
             planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
@@ -355,7 +345,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            planck.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -367,7 +357,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     @Test
     fun `update() ignores extra keys for which PEpProvider throws an exception`() {
         val planck: PlanckProvider = mockk()
-        stubImportKeyBehavior(
+        stubImportExtraKeyBehavior(
             planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
@@ -382,7 +372,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            planck.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -682,6 +672,22 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     ) {
         val keySlot = mutableListOf<ByteArray>()
         every { planck.importKey(capture(keySlot)) }.answers {
+            val material = keySlot.last()
+            behaviors[material.decodeToString()]!!.let { behavior ->
+                when (behavior) {
+                    is ReturnBehavior.Return -> behavior.value
+                    is ReturnBehavior.Throw -> throw behavior.e
+                }
+            }
+        }
+    }
+
+    private fun stubImportExtraKeyBehavior(
+        planck: PlanckProvider,
+        behaviors: MutableMap<String, ReturnBehavior<Vector<String>>> = defaultImportExtraKeyBehaviors
+    ) {
+        val keySlot = mutableListOf<ByteArray>()
+        every { planck.importExtraKey(capture(keySlot)) }.answers {
             val material = keySlot.last()
             behaviors[material.decodeToString()]!!.let { behavior ->
                 when (behavior) {
