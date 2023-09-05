@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.mdm.ManageableSetting
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
@@ -47,6 +48,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
+
+    private var mdmDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -70,6 +73,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
         initializeManualSync()
+        initializeUnsecureDeliveryWarning()
+        initializeDebugLogging()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -247,6 +252,46 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         pEpProvider.keyResetAllOwnKeys()
     }
 
+    private fun initializeUnsecureDeliveryWarning() {
+        initializeManagedSettingLockedFeedback(
+            K9.getPlanckForwardWarningEnabled(),
+            PREFERENCE_UNSECURE_DELIVERY_WARNING
+        )
+    }
+
+    private fun initializeDebugLogging() {
+        initializeManagedSettingLockedFeedback(K9.getDebug(), PREFERENCE_DEBUG_LOGGING)
+    }
+
+    private fun <T> initializeManagedSettingLockedFeedback(
+        setting: ManageableSetting<T>,
+        prefKey: String,
+    ) {
+        if (setting.locked) {
+            (findPreference(prefKey) as? Preference)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+                    showMDMDialog(this.title)
+                    false
+                }
+            }
+        }
+    }
+
+    private fun showMDMDialog(title: CharSequence) {
+        if (mdmDialog == null) {
+            mdmDialog = AlertDialog.Builder(
+                view?.context,
+                ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle)
+            )
+                .setTitle(title)
+                .setMessage(R.string.mdm_controlled_dialog_explanation)
+                .setCancelable(true)
+                .setPositiveButton(R.string.ok) { _, _ -> }
+                .create()
+        }
+        mdmDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
         if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             result?.let { intent ->
@@ -267,6 +312,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
+        private const val PREFERENCE_UNSECURE_DELIVERY_WARNING = "pep_forward_warning"
+        private const val PREFERENCE_DEBUG_LOGGING = "debug_logging"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
