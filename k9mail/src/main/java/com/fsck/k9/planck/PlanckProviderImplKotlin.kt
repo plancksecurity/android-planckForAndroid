@@ -509,7 +509,7 @@ class PlanckProviderImplKotlin(
 
             if (PlanckUtils.isAutoConsumeMessage(decMsg)) {
                 Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                if (K9.DEBUG) {
+                if (K9.isDebug()) {
                     // Using Log.e on purpose
                     try {
                         Log.e(TAG, message.attachments[0].toString())
