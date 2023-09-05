@@ -8,9 +8,9 @@ import kotlinx.serialization.json.Json
 
 
 @Serializable
-data class ManageableSetting<SETTING_TYPE>(
-        @SerialName("value") var value: SETTING_TYPE,
-        @SerialName("locked") val locked: Boolean,
+data class ManageableSetting<SETTING_TYPE> @JvmOverloads constructor(
+    @SerialName("value") var value: SETTING_TYPE,
+    @SerialName("locked") val locked: Boolean = false,
 )
 
 fun deserializeBooleanManageableSetting(json: String?): ManageableSetting<Boolean>? {
