@@ -611,7 +611,7 @@ public class Account implements BaseAccount, StoreConfig {
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
         planckUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
 
-        planckPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
+        planckPrivacyProtected = ManageableSettingKt.deserializeBooleanManageableSetting(
                 storage.getString(accountUuid + ".pEpPrivacyProtected", null)
         );
         planckSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
@@ -907,7 +907,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", planckUntrustedServer);
-        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(planckPrivacyProtected));
+        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.serializeBooleanManageableSetting(planckPrivacyProtected));
         editor.putBoolean(accountUuid + ".pEpSync", planckSyncEnabled);
         editor.putString(accountUuid + ".oAuthState", oAuthState);
         editor.putString(

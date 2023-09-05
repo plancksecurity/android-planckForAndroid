@@ -652,7 +652,7 @@ public class K9 extends MultiDexApplication {
         editor.putPassphrase(planckNewKeysPassphrase);
         editor.putString(
                 "pEpUseTrustwords",
-                ManageableSettingKt.encodeBooleanToString(planckUseTrustwords)
+                ManageableSettingKt.serializeBooleanManageableSetting(planckUseTrustwords)
         );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
@@ -1073,10 +1073,10 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
         planckNewKeysPassphrase = storage.getPassphrase();
-        planckUseTrustwords = ManageableSettingKt.decodeBooleanFromString(
+        planckUseTrustwords = ManageableSettingKt.deserializeBooleanManageableSetting(
                 storage.getString(
                         "pEpUseTrustwords",
-                        ManageableSettingKt.encodeBooleanToString(
+                        ManageableSettingKt.serializeBooleanManageableSetting(
                                 new ManageableSetting<>(
                                         !((K9) app).isRunningOnWorkProfile(),
                                         true
