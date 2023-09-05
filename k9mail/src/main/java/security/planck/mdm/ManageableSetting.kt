@@ -8,13 +8,12 @@ import kotlinx.serialization.json.Json
 
 
 @Serializable
-@Deprecated("Only left in case we need to lock managed settings visible in UI")
 data class ManageableSetting<SETTING_TYPE>(
         @SerialName("value") var value: SETTING_TYPE,
         @SerialName("locked") val locked: Boolean,
 )
 
-fun decodeBooleanFromString(json: String?): ManageableSetting<Boolean>? {
+fun deserializeBooleanManageableSetting(json: String?): ManageableSetting<Boolean>? {
     return when (json) {
         "true" -> ManageableSetting(value = true, locked = false)
         "false" -> ManageableSetting(value = false, locked = false)
@@ -23,8 +22,14 @@ fun decodeBooleanFromString(json: String?): ManageableSetting<Boolean>? {
     }
 }
 
-fun encodeBooleanToString(json: ManageableSetting<Boolean>?): String? {
-    return if (json != null) {
-        Json.encodeToString(json)
-    } else null
+fun serializeBooleanManageableSetting(setting: ManageableSetting<Boolean>?): String? {
+    return setting?.let { Json.encodeToString(setting) }
+}
+
+fun deserializeStringManageableSetting(json: String?): ManageableSetting<String>? {
+    return json?.let { Json.decodeFromString(json) }
+}
+
+fun serializeStringManageableSetting(setting: ManageableSetting<String>?): String? {
+    return setting?.let { Json.encodeToString(setting) }
 }

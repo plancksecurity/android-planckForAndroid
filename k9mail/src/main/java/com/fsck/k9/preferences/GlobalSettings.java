@@ -319,7 +319,7 @@ public class GlobalSettings {
         ));
         s.put("pEpUseTrustwords", Settings.versions(
                 new V(54, new StringSetting(
-                        ManageableSettingKt.encodeBooleanToString(
+                        ManageableSettingKt.serializeBooleanManageableSetting(
                                 new ManageableSetting<>(
                                         !BuildConfig.IS_ENTERPRISE,
                                         true
