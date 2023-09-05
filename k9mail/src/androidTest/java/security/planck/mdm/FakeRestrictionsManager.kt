@@ -415,7 +415,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RESTRICTION_ENABLE_ECHO_PROTOCOL,
                     DEFAULT_ENABLE_ECHO_PROTOCOL
                 ),
-                RestrictionEntry(RESTRICTION_PLANCK_USE_TRUSTWORDS, DEFAULT_USE_TRUSTWORDS),
                 RestrictionEntry(
                     RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
                     DEFAULT_UNSECURE_DELIVERY_WARNING

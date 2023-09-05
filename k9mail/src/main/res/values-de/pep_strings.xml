@@ -315,8 +315,6 @@
     <string name="export_pep_support_data_dialog_success_msg">Datenbanken erfolgreich exportiert.</string>
     <string name="export_pep_support_data_dialog_image_success_content_desc">Erfolg</string>
     <string name="export_pep_support_data_dialog_image_failure_content_desc">Fehler</string>
-    <string name="use_trustwords_setting_title">Mit Trustwords</string>
-    <string name="use_trustwords_setting_description">Mit Trustwords das Vertrauen zum Kommunikationspartner bestätigen</string>
     <string name="account_setup_choose_auth_sign_in_with_microsoft">Mit Microsoft anmelden</string>
     <string name="account_setup_choose_auth_sign_in_with_password">Mit Passwort anmelden</string>
     <string name="account_setup_oauth_title_retry_login">Erneut anmelden</string>
