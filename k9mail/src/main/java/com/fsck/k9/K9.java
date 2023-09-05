@@ -1065,7 +1065,7 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
         planckNewKeysPassphrase = storage.getPassphrase();
-        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
+        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
         auditLogDataTimeRetention = storage.getLong("auditLogDataTimeRetention", THIRTY_DAYS_IN_SECONDS);
