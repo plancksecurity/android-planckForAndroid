@@ -85,8 +85,6 @@ import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.planck.appalive.AppAliveMonitor;
 import security.planck.audit.AuditLogger;
 import security.planck.file.PlanckSystemFileLocator;
-import security.planck.mdm.ManageableSetting;
-import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
@@ -375,8 +373,6 @@ public class K9 extends MultiDexApplication {
     private static int sPgpSignOnlyDialogCounter;
 
     private static String planckNewKeysPassphrase;
-    private static ManageableSetting<Boolean> planckUseTrustwords =
-            new ManageableSetting<>(!BuildConfig.IS_ENTERPRISE, true);
 
     /**
      * @see #areDatabasesUpToDate()
@@ -650,10 +646,6 @@ public class K9 extends MultiDexApplication {
         editor.putLong("appVersionCode", appVersionCode);
         editor.putBoolean("pEpUsePassphraseForNewKeys", planckUsePassphraseForNewKeys);
         editor.putPassphrase(planckNewKeysPassphrase);
-        editor.putString(
-                "pEpUseTrustwords",
-                ManageableSettingKt.serializeBooleanManageableSetting(planckUseTrustwords)
-        );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -1073,17 +1065,6 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
         planckNewKeysPassphrase = storage.getPassphrase();
-        planckUseTrustwords = ManageableSettingKt.deserializeBooleanManageableSetting(
-                storage.getString(
-                        "pEpUseTrustwords",
-                        ManageableSettingKt.serializeBooleanManageableSetting(
-                                new ManageableSetting<>(
-                                        !((K9) app).isRunningOnWorkProfile(),
-                                        true
-                                )
-                        )
-                )
-        );
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1568,22 +1549,6 @@ public class K9 extends MultiDexApplication {
 
     public static void setPlanckNewKeysPassphrase(String passphrase){
         K9.planckNewKeysPassphrase = passphrase;
-    }
-
-    public static ManageableSetting<Boolean> getPlanckUseTrustwords() {
-        return planckUseTrustwords;
-    }
-
-    public static void setPlanckUseTrustwords(ManageableSetting<Boolean> useTrustwords) {
-        planckUseTrustwords = useTrustwords;
-    }
-
-    public static boolean isUsingTrustwords() {
-        return planckUseTrustwords.getValue();
-    }
-
-    public static void setPlanckUseTrustwords(boolean useTrustwords) {
-        planckUseTrustwords.setValue(useTrustwords);
     }
 
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {

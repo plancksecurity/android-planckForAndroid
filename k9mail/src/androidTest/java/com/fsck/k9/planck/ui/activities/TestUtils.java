@@ -2312,7 +2312,7 @@ public class TestUtils {
 
         if (visible) {
             clickStatus();
-            if(K9.isUsingTrustwords() && clickableExpected) {
+            if(clickableExpected) {
                 waitForIdle();
                 waitForToolbar();
                 checkToolbarColor(getPlanckStatusDueColor(status));

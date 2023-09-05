@@ -58,8 +58,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
             RESTRICTION_PLANCK_MEDIA_KEYS ->
                 saveMediaKeys(restrictions, entry)
 
-            RESTRICTION_PLANCK_USE_TRUSTWORDS ->
-                K9.setPlanckUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
                 k9.setPlanckForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PLANCK_SYNC_FOLDER ->

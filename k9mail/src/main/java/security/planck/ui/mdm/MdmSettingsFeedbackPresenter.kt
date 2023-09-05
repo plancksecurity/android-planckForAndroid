@@ -57,7 +57,6 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
                 }.joinToString("\n")
         }
             <br/>
-            <p><b>Use trustwords:</b> ${K9.getPlanckUseTrustwords().value}</p>
             <p><b>Unsecure delivery warning:</b> ${K9.isPlanckForwardWarningEnabled()}</p>
             <p><b>PlanckProvider sync folder:</b> ${K9.isUsingpEpSyncFolder()}</p>
             <p><b>Enable debug logging:</b> ${K9.isDebug()}</p>
