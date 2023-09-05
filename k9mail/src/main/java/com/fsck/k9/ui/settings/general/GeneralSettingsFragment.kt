@@ -49,7 +49,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
 
-    private var mdmDialog: AlertDialog? = null
+    private var settingLockedDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -270,16 +270,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (setting.locked) {
             (findPreference(prefKey) as? Preference)?.apply {
                 this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
-                    showMDMDialog(this.title)
+                    showSettingLockedDialog(this.title)
                     false
                 }
             }
         }
     }
 
-    private fun showMDMDialog(title: CharSequence) {
-        if (mdmDialog == null) {
-            mdmDialog = AlertDialog.Builder(
+    private fun showSettingLockedDialog(title: CharSequence) {
+        if (settingLockedDialog == null) {
+            settingLockedDialog = AlertDialog.Builder(
                 view?.context,
                 ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle)
             )
@@ -289,7 +289,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 .setPositiveButton(R.string.ok) { _, _ -> }
                 .create()
         }
-        mdmDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
+        settingLockedDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
