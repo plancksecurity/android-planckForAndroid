@@ -85,6 +85,8 @@ import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.planck.appalive.AppAliveMonitor;
 import security.planck.audit.AuditLogger;
 import security.planck.file.PlanckSystemFileLocator;
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
@@ -245,7 +247,7 @@ public class K9 extends MultiDexApplication {
      * Log.d, including protocol dumps.
      * Controlled by Preferences at run-time
      */
-    public static boolean DEBUG = false;
+    public static ManageableSetting<Boolean> DEBUG = new ManageableSetting<>(false);
 
     /**
      * If this is enabled than logging that normally hides sensitive information
@@ -359,7 +361,8 @@ public class K9 extends MultiDexApplication {
     //private static boolean pEpUseKeyserver = false;
     private static boolean planckPassiveMode = false;
     private static boolean planckSubjectProtection = true;
-    private static boolean planckForwardWarningEnabled = BuildConfig.IS_ENTERPRISE;
+    private static ManageableSetting<Boolean> planckForwardWarningEnabled =
+            new ManageableSetting<>(BuildConfig.IS_ENTERPRISE);
     private static boolean planckSyncEnabled = true;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
@@ -638,7 +641,10 @@ public class K9 extends MultiDexApplication {
         //editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", planckPassiveMode);
         editor.putBoolean("pEpSubjectProtection", planckSubjectProtection);
-        editor.putBoolean("pEpForwardWarningEnabled", planckForwardWarningEnabled);
+        editor.putString(
+                "pEpForwardWarningEnabled",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckForwardWarningEnabled)
+        );
         editor.putBoolean("pEpEnableSync", planckSyncEnabled);
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
@@ -687,7 +693,7 @@ public class K9 extends MultiDexApplication {
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
-                return DEBUG;
+                return isDebug();
             }
 
             @Override
@@ -942,7 +948,19 @@ public class K9 extends MultiDexApplication {
      */
     public static void loadPrefs(Preferences prefs) {
         Storage storage = prefs.getStorage();
-        setDebug(storage.getBoolean("enableDebugLogging", BuildConfig.DEVELOPER_MODE));
+        setDebug(
+                ManageableSettingKt.deserializeBooleanManageableSetting(
+                        storage.getString(
+                                "enableDebugLogging",
+                                ManageableSettingKt.serializeBooleanManageableSetting(
+                                        new ManageableSetting<>(
+                                                BuildConfig.DEVELOPER_MODE,
+                                                false
+                                        )
+                                )
+                        )
+                )
+        );
         DEBUG_SENSITIVE = storage.getBoolean("enableSensitiveLogging", false);
         mAnimations = storage.getBoolean("animations", true);
         mGesturesEnabled = storage.getBoolean("gesturesEnabled", false);
@@ -1024,8 +1042,17 @@ public class K9 extends MultiDexApplication {
         //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         planckPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         planckSubjectProtection = getValuePlanckSubjectProtection(storage);
-        planckForwardWarningEnabled = storage.getBoolean(
-                "pEpForwardWarningEnabled", BuildConfig.IS_ENTERPRISE);
+        planckForwardWarningEnabled = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        "pEpForwardWarningEnabled",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(
+                                        BuildConfig.IS_ENTERPRISE,
+                                        false
+                                )
+                        )
+                )
+        );
         planckSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", planckSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
@@ -1305,13 +1332,22 @@ public class K9 extends MultiDexApplication {
 
     }
 
-    public static void setDebug(boolean debug) {
+    public static void setDebug(ManageableSetting<Boolean> debug) {
         K9.DEBUG = debug;
         updateLoggingStatus();
     }
 
-    public static boolean isDebug() {
+    public static ManageableSetting<Boolean> getDebug() {
         return DEBUG;
+    }
+
+    public static void setDebug(boolean debug) {
+        K9.DEBUG.setValue(debug);
+        updateLoggingStatus();
+    }
+
+    public static boolean isDebug() {
+        return DEBUG.getValue();
     }
 
     public static boolean startIntegratedInbox() {
@@ -1758,7 +1794,7 @@ public class K9 extends MultiDexApplication {
 
     private static void updateLoggingStatus() {
         Timber.uprootAll();
-        boolean enableDebugLogging = BuildConfig.DEBUG || DEBUG;
+        boolean enableDebugLogging = BuildConfig.DEBUG || isDebug();
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }
@@ -1866,13 +1902,20 @@ public class K9 extends MultiDexApplication {
         MessagingController.getInstance(this).setSubjectProtected(planckSubjectProtection);
     }
 
-
-    public static boolean isPlanckForwardWarningEnabled() {
+    public static ManageableSetting<Boolean> getPlanckForwardWarningEnabled() {
         return planckForwardWarningEnabled;
     }
 
-    public void setPlanckForwardWarningEnabled(boolean planckForwardWarningEnabled) {
+    public void setPlanckForwardWarningEnabled(ManageableSetting<Boolean> planckForwardWarningEnabled) {
         K9.planckForwardWarningEnabled = planckForwardWarningEnabled;
+    }
+
+    public static boolean isPlanckForwardWarningEnabled() {
+        return planckForwardWarningEnabled.getValue();
+    }
+
+    public void setPlanckForwardWarningEnabled(boolean planckForwardWarningEnabled) {
+        K9.planckForwardWarningEnabled.setValue(planckForwardWarningEnabled);
     }
 
     private void setupFastPoller() {
