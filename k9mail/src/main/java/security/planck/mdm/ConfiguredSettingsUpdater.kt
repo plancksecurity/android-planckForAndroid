@@ -102,39 +102,52 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveDebugLogging(restrictions: Bundle, entry: RestrictionEntry) {
-        val bundle = restrictions.getBundle(entry.key)
-        var managedEntry = K9.getDebug()
-            .toManageableMdmEntry()
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_PLANCK_DEBUG_LOG_VALUE ->
-                    managedEntry =
-                        managedEntry.copy(value = getBooleanOrDefault(bundle, restriction))
-
-                RESTRICTION_PLANCK_DEBUG_LOG_LOCKED ->
-                    managedEntry =
-                        managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
-            }
+        saveBooleanManagedSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_PLANCK_DEBUG_LOG_VALUE,
+            lockedKey = RESTRICTION_PLANCK_DEBUG_LOG_LOCKED,
+            initialSettingValue = K9.getDebug()
+        ) {
+            K9.setDebug(it)
         }
-        K9.setDebug(managedEntry.toManageableSetting())
     }
 
     private fun saveUnsecureDeliveryWarning(restrictions: Bundle, entry: RestrictionEntry) {
+        saveBooleanManagedSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE,
+            lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED,
+            initialSettingValue = K9.getPlanckForwardWarningEnabled()
+        ) {
+            K9.setPlanckForwardWarningEnabled(it)
+        }
+    }
+
+    private fun saveBooleanManagedSetting(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        valueKey: String,
+        lockedKey: String,
+        initialSettingValue: ManageableSetting<Boolean>,
+        updateSetting: (ManageableSetting<Boolean>) -> Unit,
+    ) {
         val bundle = restrictions.getBundle(entry.key)
-        var managedEntry = K9.getPlanckForwardWarningEnabled()
+        var managedEntry = initialSettingValue
             .toManageableMdmEntry()
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
-                RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE ->
+                valueKey ->
                     managedEntry =
                         managedEntry.copy(value = getBooleanOrDefault(bundle, restriction))
 
-                RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED ->
+                lockedKey ->
                     managedEntry =
                         managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
             }
         }
-        K9.setPlanckForwardWarningEnabled(managedEntry.toManageableSetting())
+        updateSetting(managedEntry.toManageableSetting())
     }
 
     private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
