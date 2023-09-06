@@ -354,12 +354,24 @@
     </restriction>
 
     <restriction
-        android:defaultValue="@string/default_audit_log_data_time_retention"
         android:description="@string/audit_log_data_time_retention_description"
         android:key="audit_log_data_time_retention"
-        android:restrictionType="choice"
-        android:entries="@array/audit_log_data_time_retention_entries"
-        android:entryValues="@array/audit_log_data_time_retention_values"
-        android:title="@string/audit_log_data_time_retention_title"/>
+        android:restrictionType="bundle"
+        android:title="@string/audit_log_data_time_retention_title">
+        <restriction
+            android:defaultValue="@string/default_audit_log_data_time_retention"
+            android:description="@string/value_restriction_description"
+            android:key="audit_log_data_time_retention_value"
+            android:restrictionType="choice"
+            android:entries="@array/audit_log_data_time_retention_entries"
+            android:entryValues="@array/audit_log_data_time_retention_values"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="audit_log_data_time_retention_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
 </restrictions>
