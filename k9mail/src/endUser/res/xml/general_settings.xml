@@ -449,4 +449,12 @@
         android:summary="@string/pep_key_reset_all_own_ids_summary"
         android:title="@string/reset" />
 
+    <ListPreference
+        android:dialogTitle="@string/audit_log_data_time_retention_title"
+        android:entries="@array/audit_log_data_time_retention_entries"
+        android:entryValues="@array/audit_log_data_time_retention_values"
+        android:key="audit_log_data_time_retention"
+        android:summary="%s"
+        android:title="@string/audit_log_data_time_retention_title" />
+
 </PreferenceScreen>

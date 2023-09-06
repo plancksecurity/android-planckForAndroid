@@ -75,6 +75,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeManualSync()
         initializeUnsecureDeliveryWarning()
         initializeDebugLogging()
+        initializeAuditLogDataTimeRetention()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -263,6 +264,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeManagedSettingLockedFeedback(K9.getDebug(), PREFERENCE_DEBUG_LOGGING)
     }
 
+    private fun initializeAuditLogDataTimeRetention() {
+        initializeManagedSettingLockedFeedback(
+            k9.auditLogDataTimeRetention,
+            PREFERENCE_AUDIT_LOG_TIME_RETENTION
+        )
+    }
+
     private fun <T> initializeManagedSettingLockedFeedback(
         setting: ManageableSetting<T>,
         prefKey: String,
@@ -314,6 +322,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
         private const val PREFERENCE_UNSECURE_DELIVERY_WARNING = "pep_forward_warning"
         private const val PREFERENCE_DEBUG_LOGGING = "debug_logging"
+        private const val PREFERENCE_AUDIT_LOG_TIME_RETENTION = "audit_log_data_time_retention"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

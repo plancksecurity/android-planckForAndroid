@@ -1,19 +1,17 @@
 package com.fsck.k9.ui.settings.general
 
-import android.content.Context
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.ui.tools.ThemeManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
 
 class GeneralSettingsDataStore @Inject constructor(
-        @ApplicationContext private val context: Context,
-        private val preferences: Preferences,
-        private val executorService: ExecutorService
+    private val app: K9,
+    private val preferences: Preferences,
+    private val executorService: ExecutorService
 ) : PreferenceDataStore() {
     var activity: androidx.fragment.app.FragmentActivity? = null
 
@@ -58,7 +56,6 @@ class GeneralSettingsDataStore @Inject constructor(
     }
 
     override fun putBoolean(key: String, value: Boolean) {
-        val app = context.applicationContext as K9
         when (key) {
             "fixed_message_view_theme" -> ThemeManager.setUseFixedMessageViewTheme(value)
             "animations" -> K9.setAnimations(value)
@@ -131,6 +128,7 @@ class GeneralSettingsDataStore @Inject constructor(
             "notification_hide_subject" -> K9.getNotificationHideSubject().name
             "quiet_time_starts" -> K9.getQuietTimeStarts()
             "quiet_time_ends" -> K9.getQuietTimeEnds()
+            "audit_log_data_time_retention" -> app.auditLogDataTimeRetentionValue.toString()
             else -> defValue
         }
     }
@@ -155,6 +153,7 @@ class GeneralSettingsDataStore @Inject constructor(
             "notification_hide_subject" -> K9.setNotificationHideSubject(K9.NotificationHideSubject.valueOf(value))
             "quiet_time_starts" -> K9.setQuietTimeStarts(value)
             "quiet_time_ends" -> K9.setQuietTimeEnds(value)
+            "audit_log_data_time_retention" -> app.setAuditLogDataTimeRetention(value.toLong())
             else -> return
         }
 
