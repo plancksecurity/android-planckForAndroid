@@ -119,7 +119,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
             lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED,
             initialSettingValue = K9.getPlanckForwardWarningEnabled()
         ) {
-            K9.setPlanckForwardWarningEnabled(it)
+            k9.setPlanckForwardWarningEnabled(it)
         }
     }
 
@@ -132,20 +132,20 @@ class ConfiguredSettingsUpdater @Inject constructor(
         updateSetting: (ManageableSetting<Boolean>) -> Unit,
     ) {
         val bundle = restrictions.getBundle(entry.key)
-        var managedEntry = initialSettingValue
+        var currentSettingEntry = initialSettingValue
             .toManageableMdmEntry()
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                valueKey ->
-                    managedEntry =
-                        managedEntry.copy(value = getBooleanOrDefault(bundle, restriction))
+        entry.restrictions.find { it.key == lockedKey }?.let { lockedEntry ->
+            currentSettingEntry =
+                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
+        }
 
-                lockedKey ->
-                    managedEntry =
-                        managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
+        if (currentSettingEntry.locked) {
+            entry.restrictions.find { it.key == valueKey }?.let { valueEntry ->
+                currentSettingEntry =
+                    currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
             }
         }
-        updateSetting(managedEntry.toManageableSetting())
+        updateSetting(currentSettingEntry.toManageableSetting())
     }
 
     private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
@@ -614,34 +614,37 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
     private fun saveAuditLogDataTimeRetention(restrictions: Bundle, entry: RestrictionEntry) {
         val bundle = restrictions.getBundle(entry.key)
-        var managedEntry = k9.auditLogDataTimeRetention
+        var currentSettingEntry = k9.auditLogDataTimeRetention
             .toManageableMdmEntry()
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            val acceptedValues = k9.resources.getStringArray(
-                                R.array.audit_log_data_time_retention_values
-                            )
-                            acceptedValues.contains(newValue)
-                        }
-                    ) { newValue ->
-                        try {
-                            managedEntry = managedEntry.copy(value = newValue.toLong())
-                        } catch (nfe: NumberFormatException) {
-                            Timber.e(nfe)
-                        }
+        entry.restrictions.find {
+            it.key == RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED
+        }?.let {lockedEntry ->
+            currentSettingEntry =
+                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
+        }
+        if (currentSettingEntry.locked) {
+            entry.restrictions.find {
+                it.key == RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE
+            }?.let { valueEntry ->
+                updateString(
+                    bundle,
+                    valueEntry,
+                    accepted = { newValue ->
+                        val acceptedValues = k9.resources.getStringArray(
+                            R.array.audit_log_data_time_retention_values
+                        )
+                        acceptedValues.contains(newValue)
                     }
-
-                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED ->
-                    managedEntry =
-                        managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
+                ) { newValue ->
+                    try {
+                        currentSettingEntry = currentSettingEntry.copy(value = newValue.toLong())
+                    } catch (nfe: NumberFormatException) {
+                        Timber.e(nfe)
+                    }
+                }
             }
         }
-        k9.auditLogDataTimeRetention = managedEntry.toManageableSetting()
+        k9.auditLogDataTimeRetention = currentSettingEntry.toManageableSetting()
     }
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
