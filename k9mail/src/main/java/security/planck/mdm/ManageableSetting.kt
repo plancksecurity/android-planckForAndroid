@@ -11,7 +11,10 @@ import kotlinx.serialization.json.Json
 data class ManageableSetting<SETTING_TYPE> @JvmOverloads constructor(
     @SerialName("value") var value: SETTING_TYPE,
     @SerialName("locked") val locked: Boolean = false,
-)
+) {
+    fun toManageableMdmEntry(): ManageableSettingMdmEntry<SETTING_TYPE> =
+        ManageableSettingMdmEntry(value = value, locked = locked)
+}
 
 fun deserializeBooleanManageableSetting(json: String?): ManageableSetting<Boolean>? {
     return when (json) {

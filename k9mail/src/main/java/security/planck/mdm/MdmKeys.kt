@@ -12,8 +12,12 @@ const val RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN = "media_key_address_patt
 const val RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT = "media_key_fingerprint"
 const val RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL = "media_key_material"
 const val RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING = "unsecure_delivery_warning"
+const val RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE = "unsecure_delivery_warning_value"
+const val RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED = "unsecure_delivery_warning_locked"
 const val RESTRICTION_PLANCK_SYNC_FOLDER = "planck_sync_folder"
 const val RESTRICTION_PLANCK_DEBUG_LOG = "debug_logging"
+const val RESTRICTION_PLANCK_DEBUG_LOG_VALUE = "debug_logging_value"
+const val RESTRICTION_PLANCK_DEBUG_LOG_LOCKED = "debug_logging_locked"
 const val RESTRICTION_ENABLE_ECHO_PROTOCOL = "planck_enable_echo_protocol"
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION = "audit_log_data_time_retention"
 

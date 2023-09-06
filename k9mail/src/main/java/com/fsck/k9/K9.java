@@ -1906,7 +1906,7 @@ public class K9 extends MultiDexApplication {
         return planckForwardWarningEnabled;
     }
 
-    public void setPlanckForwardWarningEnabled(ManageableSetting<Boolean> planckForwardWarningEnabled) {
+    public static void setPlanckForwardWarningEnabled(ManageableSetting<Boolean> planckForwardWarningEnabled) {
         K9.planckForwardWarningEnabled = planckForwardWarningEnabled;
     }
 

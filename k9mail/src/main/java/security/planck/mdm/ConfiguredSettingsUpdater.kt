@@ -102,15 +102,39 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveDebugLogging(restrictions: Bundle, entry: RestrictionEntry) {
-        updateManageableSetting<Boolean>(restrictions, entry) {
-            K9.setDebug(it)
+        val bundle = restrictions.getBundle(entry.key)
+        var managedEntry = K9.getDebug()
+            .toManageableMdmEntry()
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_PLANCK_DEBUG_LOG_VALUE ->
+                    managedEntry =
+                        managedEntry.copy(value = getBooleanOrDefault(bundle, restriction))
+
+                RESTRICTION_PLANCK_DEBUG_LOG_LOCKED ->
+                    managedEntry =
+                        managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
+            }
         }
+        K9.setDebug(managedEntry.toManageableSetting())
     }
 
     private fun saveUnsecureDeliveryWarning(restrictions: Bundle, entry: RestrictionEntry) {
-        updateManageableSetting<Boolean>(restrictions, entry) {
-            k9.setPlanckForwardWarningEnabled(it)
+        val bundle = restrictions.getBundle(entry.key)
+        var managedEntry = K9.getPlanckForwardWarningEnabled()
+            .toManageableMdmEntry()
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE ->
+                    managedEntry =
+                        managedEntry.copy(value = getBooleanOrDefault(bundle, restriction))
+
+                RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED ->
+                    managedEntry =
+                        managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
+            }
         }
+        K9.setPlanckForwardWarningEnabled(managedEntry.toManageableSetting())
     }
 
     private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
