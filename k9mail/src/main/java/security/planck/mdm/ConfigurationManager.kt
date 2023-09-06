@@ -1,6 +1,5 @@
 package security.planck.mdm
 
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.RestrictionEntry
@@ -9,7 +8,11 @@ import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningStage
 import timber.log.Timber
