@@ -25,4 +25,7 @@
     <string name="default_audit_log_data_time_retention" translatable="false">2592000</string>
     <string name="account_oauth_provider_default" translatable="false">MICROSOFT</string>
     <string name="account_authentication_type_default" translatable="false">PLAIN</string>
+
+    <!-- Manageable (lockable) restrictions -->
+    <bool name="managed_settings_locked_by_default">true</bool>
 </resources>
