@@ -20,6 +20,8 @@ const val RESTRICTION_PLANCK_DEBUG_LOG_VALUE = "debug_logging_value"
 const val RESTRICTION_PLANCK_DEBUG_LOG_LOCKED = "debug_logging_locked"
 const val RESTRICTION_ENABLE_ECHO_PROTOCOL = "planck_enable_echo_protocol"
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION = "audit_log_data_time_retention"
+const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE = "audit_log_data_time_retention_value"
+const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED = "audit_log_data_time_retention_locked"
 
 const val RESTRICTION_ACCOUNT_DESCRIPTION = "account_description"
 const val RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE = "account_display_count"

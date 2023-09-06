@@ -613,20 +613,35 @@ class ConfiguredSettingsUpdater @Inject constructor(
         .uppercase()
 
     private fun saveAuditLogDataTimeRetention(restrictions: Bundle, entry: RestrictionEntry) {
-        updateString(
-            restrictions,
-            entry,
-            accepted = { newValue ->
-                val acceptedValues = k9.resources.getStringArray(R.array.audit_log_data_time_retention_values)
-                acceptedValues.contains(newValue)
-            }
-        ) { newValue ->
-            try {
-                k9.auditLogDataTimeRetention = newValue.toLong()
-            } catch (nfe: NumberFormatException) {
-                Timber.e(nfe)
+        val bundle = restrictions.getBundle(entry.key)
+        var managedEntry = k9.auditLogDataTimeRetention
+            .toManageableMdmEntry()
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            val acceptedValues = k9.resources.getStringArray(
+                                R.array.audit_log_data_time_retention_values
+                            )
+                            acceptedValues.contains(newValue)
+                        }
+                    ) { newValue ->
+                        try {
+                            managedEntry = managedEntry.copy(value = newValue.toLong())
+                        } catch (nfe: NumberFormatException) {
+                            Timber.e(nfe)
+                        }
+                    }
+
+                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED ->
+                    managedEntry =
+                        managedEntry.copy(locked = getBooleanOrDefault(bundle, restriction))
             }
         }
+        k9.auditLogDataTimeRetention = managedEntry.toManageableSetting()
     }
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
