@@ -15,8 +15,6 @@ import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings
@@ -920,19 +918,5 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
     ): Int {
         return restrictions?.getInt(entry.key, entry.intValue) ?: entry.intValue
-    }
-
-    private inline fun <T> updateManageableSetting(
-        restrictions: Bundle?,
-        entry: RestrictionEntry,
-        crossinline default: () -> String = { entry.selectedString },
-        crossinline block: (newValue: ManageableSetting<T>) -> Unit
-    ) {
-        kotlin.runCatching {
-            val newValue = restrictions?.getString(entry.key) ?: default()
-            Json.decodeFromString<ManageableSettingMdmEntry<T>>(newValue)
-                .toManageableSetting()
-                .also { block(it) }
-        }.onFailure { Timber.e(it) }
     }
 }
