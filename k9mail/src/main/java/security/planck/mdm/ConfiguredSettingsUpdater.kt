@@ -15,6 +15,8 @@ import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings
@@ -59,11 +61,11 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 saveMediaKeys(restrictions, entry)
 
             RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
-                k9.setPlanckForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
+                saveUnsecureDeliveryWarning(restrictions, entry)
             RESTRICTION_PLANCK_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PLANCK_DEBUG_LOG ->
-                K9.setDebug(getBooleanOrDefault(restrictions, entry))
+                saveDebugLogging(restrictions, entry)
             RESTRICTION_ENABLE_ECHO_PROTOCOL ->
                 K9.setEchoProtocolEnabled(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION ->
@@ -96,6 +98,18 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
                 saveAccountMailSettings(restrictions, entry)
+        }
+    }
+
+    private fun saveDebugLogging(restrictions: Bundle, entry: RestrictionEntry) {
+        updateManageableSetting<Boolean>(restrictions, entry) {
+            K9.setDebug(it)
+        }
+    }
+
+    private fun saveUnsecureDeliveryWarning(restrictions: Bundle, entry: RestrictionEntry) {
+        updateManageableSetting<Boolean>(restrictions, entry) {
+            k9.setPlanckForwardWarningEnabled(it)
         }
     }
 
@@ -869,5 +883,19 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
     ): Int {
         return restrictions?.getInt(entry.key, entry.intValue) ?: entry.intValue
+    }
+
+    private inline fun <T> updateManageableSetting(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+        crossinline default: () -> String = { entry.selectedString },
+        crossinline block: (newValue: ManageableSetting<T>) -> Unit
+    ) {
+        kotlin.runCatching {
+            val newValue = restrictions?.getString(entry.key) ?: default()
+            Json.decodeFromString<ManageableSettingMdmEntry<T>>(newValue)
+                .toManageableSetting()
+                .also { block(it) }
+        }.onFailure { Timber.e(it) }
     }
 }
