@@ -447,6 +447,7 @@ public class Account implements BaseAccount, StoreConfig {
         messageFormatAuto = DEFAULT_MESSAGE_FORMAT_AUTO;
         quoteStyle = DEFAULT_QUOTE_STYLE;
         quotePrefix = DEFAULT_QUOTE_PREFIX;
+        description = new ManageableSetting<>(null);
         defaultQuotedTextShown = new ManageableSetting<>(DEFAULT_QUOTED_TEXT_SHOWN);
         replyAfterQuote = DEFAULT_REPLY_AFTER_QUOTE;
         stripSignature = DEFAULT_STRIP_SIGNATURE;
@@ -527,7 +528,7 @@ public class Account implements BaseAccount, StoreConfig {
         String descriptionText = storage.getString(accountUuid + ".description", null);
         description = descriptionText != null
                 ? ManageableSettingKt.deserializeStringManageableSetting(descriptionText)
-                : null;
+                : new ManageableSetting<>(null);
         alwaysBcc = storage.getString(accountUuid + ".alwaysBcc", alwaysBcc);
         automaticCheckIntervalMinutes = storage.getInt(accountUuid + ".automaticCheckIntervalMinutes", INTERVAL_MINUTES_NEVER);
         idleRefreshMinutes = storage.getInt(accountUuid + ".idleRefreshMinutes", 24);
@@ -667,8 +668,8 @@ public class Account implements BaseAccount, StoreConfig {
         );
 
         // Use email address as account description if necessary
-        if (description == null) {
-            description = new ManageableSetting<>(getEmail());
+        if (description.getValue() == null) {
+            description.setValue(getEmail());
         }
         oAuthState = storage.getString(accountUuid + ".oAuthState", null);
         String oAuthProvider = storage.getString(accountUuid + ".oAuthProviderType", null);
@@ -886,7 +887,9 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".transportUri", Base64.encode(transportUri));
         editor.putString(
                 accountUuid + ".description",
-                ManageableSettingKt.serializeStringManageableSetting(description)
+                description.getValue() != null
+                        ? ManageableSettingKt.serializeStringManageableSetting(description)
+                        : null
         );
         editor.putString(accountUuid + ".alwaysBcc", alwaysBcc);
         editor.putInt(accountUuid + ".automaticCheckIntervalMinutes", automaticCheckIntervalMinutes);
