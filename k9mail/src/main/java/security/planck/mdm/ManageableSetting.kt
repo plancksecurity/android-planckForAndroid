@@ -36,3 +36,11 @@ fun deserializeStringManageableSetting(json: String?): ManageableSetting<String>
 fun serializeStringManageableSetting(setting: ManageableSetting<String>?): String? {
     return setting?.let { Json.encodeToString(setting) }
 }
+
+fun deserializeLongManageableSetting(json: String?): ManageableSetting<Long>? {
+    return json?.let { Json.decodeFromString(json) }
+}
+
+fun serializeLongManageableSetting(setting: ManageableSetting<Long>?): String? {
+    return setting?.let { Json.encodeToString(setting) }
+}
