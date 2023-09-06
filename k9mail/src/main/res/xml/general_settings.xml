@@ -51,4 +51,12 @@
         android:summary="@string/debug_enable_debug_logging_summary"
         android:title="@string/debug_enable_debug_logging_title" />
 
+    <ListPreference
+        android:dialogTitle="@string/audit_log_data_time_retention_title"
+        android:entries="@array/audit_log_data_time_retention_entries"
+        android:entryValues="@array/audit_log_data_time_retention_values"
+        android:key="audit_log_data_time_retention"
+        android:summary="%s"
+        android:title="@string/audit_log_data_time_retention_title" />
+
 </PreferenceScreen>

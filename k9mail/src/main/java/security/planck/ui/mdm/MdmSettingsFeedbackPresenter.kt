@@ -101,7 +101,7 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
                     <p><b>&emsp;&emsp;Username:</b> ${outgoingMailSettings?.userName}</p>
                     <p><b>&emsp;&emsp;Authentication type:</b> ${outgoingMailSettings?.authType}</p>
             <br/>
-            <p><b>Audit log data time retention:</b> ${k9.auditLogDataTimeRetention / 24 / 3600} days</p>
+            <p><b>Audit log data time retention:</b> ${k9.auditLogDataTimeRetention.value / 24 / 3600} days</p>
         """.trimIndent()
     }
 }
