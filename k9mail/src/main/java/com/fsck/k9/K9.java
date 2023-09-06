@@ -112,7 +112,8 @@ public class K9 extends MultiDexApplication {
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
-    private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
+    private static ManageableSetting<Long> auditLogDataTimeRetention =
+            new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
     private AuditLogger auditLogger;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
     private SyncAppState syncState = SyncState.Idle.INSTANCE;
@@ -655,7 +656,10 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
-        editor.putLong("auditLogDataTimeRetention", auditLogDataTimeRetention);
+        editor.putString(
+                "auditLogDataTimeRetention",
+                ManageableSettingKt.serializeLongManageableSetting(auditLogDataTimeRetention)
+        );
 
         fontSizes.save(editor);
     }
@@ -681,7 +685,7 @@ public class K9 extends MultiDexApplication {
     private void initializeAuditLog() {
         auditLogger = new AuditLogger(
                 new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
-                auditLogDataTimeRetention
+                auditLogDataTimeRetention.getValue()
         );
         auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
         auditLogger.addStartEventLog();
@@ -953,10 +957,7 @@ public class K9 extends MultiDexApplication {
                         storage.getString(
                                 "enableDebugLogging",
                                 ManageableSettingKt.serializeBooleanManageableSetting(
-                                        new ManageableSetting<>(
-                                                BuildConfig.DEVELOPER_MODE,
-                                                false
-                                        )
+                                        new ManageableSetting<>(BuildConfig.DEVELOPER_MODE)
                                 )
                         )
                 )
@@ -1046,10 +1047,7 @@ public class K9 extends MultiDexApplication {
                 storage.getString(
                         "pEpForwardWarningEnabled",
                         ManageableSettingKt.serializeBooleanManageableSetting(
-                                new ManageableSetting<>(
-                                        BuildConfig.IS_ENTERPRISE,
-                                        false
-                                )
+                                new ManageableSetting<>(BuildConfig.IS_ENTERPRISE)
                         )
                 )
         );
@@ -1095,7 +1093,14 @@ public class K9 extends MultiDexApplication {
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
-        auditLogDataTimeRetention = storage.getLong("auditLogDataTimeRetention", THIRTY_DAYS_IN_SECONDS);
+        auditLogDataTimeRetention = ManageableSettingKt.deserializeLongManageableSetting(
+                storage.getString(
+                        "auditLogDataTimeRetention",
+                        ManageableSettingKt.serializeLongManageableSetting(
+                                new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS)
+                        )
+                )
+        );
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1605,10 +1610,19 @@ public class K9 extends MultiDexApplication {
 
     public void setAuditLogDataTimeRetention(Long auditLogDataTimeRetention) {
         auditLogger.setLogAgeLimit(auditLogDataTimeRetention);
+        K9.auditLogDataTimeRetention.setValue(auditLogDataTimeRetention);
+    }
+
+    public Long getAuditLogDataTimeRetentionValue() {
+        return auditLogDataTimeRetention.getValue();
+    }
+
+    public void setAuditLogDataTimeRetention(ManageableSetting<Long> auditLogDataTimeRetention) {
+        auditLogger.setLogAgeLimit(auditLogDataTimeRetention.getValue());
         K9.auditLogDataTimeRetention = auditLogDataTimeRetention;
     }
 
-    public Long getAuditLogDataTimeRetention() {
+    public ManageableSetting<Long> getAuditLogDataTimeRetention() {
         return auditLogDataTimeRetention;
     }
 
