@@ -160,30 +160,64 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the provided restrictions`() {
-
-        val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, false) }
-        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
+        every { K9.getPlanckForwardWarningEnabled() }.returns(ManageableSetting(value = true, locked = false))
+        val restrictions = getUnsecureDeliveryWarningBundle(value = false)
+        val entry = getUnsecureDeliveryWarningEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.setPlanckForwardWarningEnabled(false) }
+        verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = false, locked = true)) }
     }
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the restriction entry if not provided in bundle`() {
-
+        every { K9.getPlanckForwardWarningEnabled() }.returns(ManageableSetting(value = true, locked = false))
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
+        val entry = getUnsecureDeliveryWarningEntry(true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.setPlanckForwardWarningEnabled(true) }
+        verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = true, locked = true)) }
     }
+
+    @Test
+    fun `update() does not change unsecure delivery warning value if the setting is unlocked`() {
+        every { K9.getPlanckForwardWarningEnabled() }.returns(ManageableSetting(value = true, locked = true))
+        val restrictions = getUnsecureDeliveryWarningBundle(value = false, locked = false)
+        val entry = getUnsecureDeliveryWarningEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = true, locked = false)) }
+    }
+
+    private fun getUnsecureDeliveryWarningBundle(
+        value: Boolean = true,
+        locked: Boolean = true
+    ): Bundle = Bundle().apply {
+        putBundle(
+            RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
+            Bundle().apply {
+                putBoolean(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE, value)
+                putBoolean(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED, locked)
+            }
+        )
+    }
+
+    private fun getUnsecureDeliveryWarningEntry(locked: Boolean = false): RestrictionEntry =
+        RestrictionEntry.createBundleEntry(
+            RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
+            arrayOf(
+                RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE, true),
+                RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED, locked)
+            )
+        )
 
     @Test
     fun `update() takes the value for enable pEp privacy protection from the provided restrictions`() {
@@ -1382,7 +1416,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     @Test
-    fun `update() keeps last value if provided value is not valid`() {
+    fun `update() keeps last value for local folder size if provided value is not valid`() {
         val resources: Resources = mockk()
         every { resources.getStringArray(R.array.display_count_values) }
             .returns(arrayOf("10", "250"))
@@ -1401,55 +1435,88 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for audit logs retention time from the provided restrictions`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
-            .returns(arrayOf("30", "90"))
-        every { k9.resources }.returns(resources)
-        val restrictions = Bundle().apply {
-            putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "90")
-        }
-        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+        stubAuditLogRetentionValues()
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(30L, false))
+        val restrictions = getAuditLogRetentionBundle()
+        val entry = getAuditLogRetentionEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.auditLogDataTimeRetention = 90 }
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(90L, true) }
     }
 
     @Test
     fun `update() takes the value for audit logs retention time from the restrictions entry if not provided in restrictions`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
-            .returns(arrayOf("30", "90"))
-        every { k9.resources }.returns(resources)
+        stubAuditLogRetentionValues()
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(60L, true))
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+        val entry = getAuditLogRetentionEntry(true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.auditLogDataTimeRetention = 30 }
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, true) }
     }
 
     @Test
     fun `update() keeps last value for audit logs retention time if provided value is not valid`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
-            .returns(arrayOf("30", "90"))
-        every { k9.resources }.returns(resources)
-        val restrictions = Bundle().apply {
-            putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "hello")
-        }
-        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+        stubAuditLogRetentionValues()
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(30L, false))
+        val restrictions = getAuditLogRetentionBundle(value = "hello")
+        val entry = getAuditLogRetentionEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify(exactly = 0) { k9.auditLogDataTimeRetention = any() }
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, true) }
     }
+
+    @Test
+    fun `update() does not change the value for audit logs retention time if setting is not locked`() {
+        stubAuditLogRetentionValues()
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(30L, false))
+        val restrictions = getAuditLogRetentionBundle(locked = false)
+        val entry = getAuditLogRetentionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, false) }
+    }
+
+    private fun stubAuditLogRetentionValues() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
+            .returns(arrayOf("30", "60", "90"))
+        every { k9.resources }.returns(resources)
+    }
+
+    private fun getAuditLogRetentionBundle(
+        value: String = "90",
+        locked: Boolean = true
+    ): Bundle = Bundle().apply {
+        putBundle(
+            RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION,
+            Bundle().apply {
+                putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE, value)
+                putBoolean(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED, locked)
+            }
+        )
+    }
+
+    private fun getAuditLogRetentionEntry(locked: Boolean = false): RestrictionEntry =
+        RestrictionEntry.createBundleEntry(
+            RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION,
+            arrayOf(
+                RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE, "30"),
+                RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED, locked)
+            )
+        )
 
     private fun stubAccountSettersAndGetters() {
         val oAuthProviderSlot = slot<OAuthProviderType>()
