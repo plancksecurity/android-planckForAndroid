@@ -11,7 +11,6 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.*
@@ -288,14 +287,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         }
 
         setupAddAccountButton()
-        setupAvailableAccounts()
-    }
-
-    private fun setupAvailableAccounts() {
-        if (BuildConfig.IS_ENTERPRISE) {
-            accountsList?.visibility = View.GONE
-            findViewById<View>(R.id.available_accounts_title)?.visibility = View.GONE
-        }
     }
 
     private fun startOnBoarding() {
