@@ -52,6 +52,7 @@ import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
+import security.planck.mdm.RestrictionsListener
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
 import security.planck.ui.about.AboutActivity
@@ -66,7 +67,8 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback,
+    RestrictionsListener {
 
     private var controller: MessagingController? = null
 
@@ -261,6 +263,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
 
         initializeActionBar()
+        setConfigurationManagerListener(this)
 
         if (savedInstanceState == null) {
             fragmentTransaction {
@@ -1174,5 +1177,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     private fun removeComposeDynamicShortcut() {
         val shortcutManager = getSystemService(ShortcutManager::class.java)
         shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
+    }
+
+    override fun updatedRestrictions() {
+        val fragment = supportFragmentManager
+            .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
+        fragment?.refreshPreferences()
     }
 }
