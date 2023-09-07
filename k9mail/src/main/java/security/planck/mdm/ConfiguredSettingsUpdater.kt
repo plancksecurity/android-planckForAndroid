@@ -53,6 +53,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 updateString(restrictions, entry, accepted = { it.isNotBlank() }) {
                     provisioningSettings.provisioningUrl = it
                 }
+
             RESTRICTION_PLANCK_EXTRA_KEYS ->
                 saveExtraKeys(restrictions, entry)
 
@@ -61,37 +62,49 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
             RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
                 saveUnsecureDeliveryWarning(restrictions, entry)
+
             RESTRICTION_PLANCK_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
+
             RESTRICTION_PLANCK_DEBUG_LOG ->
                 saveDebugLogging(restrictions, entry)
+
             RESTRICTION_ENABLE_ECHO_PROTOCOL ->
                 K9.setEchoProtocolEnabled(getBooleanOrDefault(restrictions, entry))
+
             RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION ->
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
                 saveAccountDescription(restrictions, entry)
+
             RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION ->
                 savePrivacyProtection(restrictions, entry)
+
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
                 saveAccountLocalFolderSize(restrictions, entry)
+
             RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
                 saveAccountMaxPushFolders(restrictions, entry)
+
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
                 saveAccountCompositionDefaults(restrictions, entry)
 
             RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
                 saveAccountQuoteMessagesWhenReply(restrictions, entry)
+
             RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
                 saveAccountDefaultFolders(restrictions, entry)
 
             RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
                 saveAccountEnableServerSearch(restrictions, entry)
+
             RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
                 saveAccountSeverSearchLimit(restrictions, entry)
+
             RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
                 saveAccountSaveMessagesSecurely(restrictions, entry)
+
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
                 saveAccountEnableSync(restrictions, entry)
 
@@ -212,6 +225,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         true
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
+
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
                     outgoing = saveAccountMailSettings(
                         bundle,
@@ -300,7 +314,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun getCurrentOAuthProvider(): OAuthProviderType? =
-        preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType ?: provisioningSettings.oAuthType
+        preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType
+            ?: provisioningSettings.oAuthType
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
         updateNullableString(
@@ -350,12 +365,15 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
                         updatePort(bundle, restriction, simpleSettings)
+
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
                         updateServer(bundle, restriction, simpleSettings)
+
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
                         updateSecurityType(bundle, restriction, simpleSettings)
+
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
                         updateUsername(bundle, restriction, simpleSettings)
@@ -575,7 +593,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
             val newMdmMediaKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
-                    val addressPattern = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
+                    val addressPattern =
+                        bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
                     val fingerprint = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT)
                     val keyMaterial = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL)
                     if (addressPattern != null && fingerprint != null && keyMaterial != null) {
@@ -607,14 +626,18 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from media key import"
+
                     ids.isEmpty() ->
                         "Error: got empty identity vector from media key import"
+
                     ids.size != 2 ->
                         "Error: got too many or too few identities from media key import: " +
                                 "${ids.size}, expected: 2"
+
                     ids.first().fpr != mdmMediaKey.fpr ->
                         "Error: got an unexpected fpr from media key import: " +
                                 "${ids.first().fpr}, expected: ${mdmMediaKey.fpr}"
+
                     else -> null
                 }
                 errorMsg?.let { error(it) }
@@ -643,7 +666,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
             .toManageableMdmEntry()
         entry.restrictions.find {
             it.key == RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED
-        }?.let {lockedEntry ->
+        }?.let { lockedEntry ->
             currentSettingEntry =
                 currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
         }
@@ -732,10 +755,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME ->
                     saveAccountSenderName(bundle, restriction)
+
                 RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
                     saveAccountUseSignature(bundle, restriction)
+
                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
                     saveAccountSignature(bundle, restriction)
+
                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE ->
                     saveAccountSignatureBeforeQuotedMessage(bundle, restriction)
             }
@@ -817,12 +843,16 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     when (restriction.key) {
                         RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
                             saveFolder { account, newValue -> account.archiveFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
                             saveFolder { account, newValue -> account.draftsFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_SENT_FOLDER ->
                             saveFolder { account, newValue -> account.sentFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_SPAM_FOLDER ->
                             saveFolder { account, newValue -> account.spamFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_TRASH_FOLDER ->
                             saveFolder { account, newValue -> account.trashFolderName = newValue }
                     }
