@@ -42,6 +42,7 @@ import security.planck.provisioning.CONNECTION_SECURITY_SSL_TLS
 import security.planck.provisioning.CONNECTION_SECURITY_STARTTLS
 import security.planck.provisioning.ProvisioningSettings
 import java.util.Vector
+import javax.inject.Provider
 
 class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
@@ -51,9 +52,14 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     private val folderRepositoryManager: FolderRepositoryManager = mockk()
     private val folderRepository: FolderRepository = mockk()
     private val urlChecker: UrlChecker = mockk()
+    private val planck: PlanckProvider = mockk()
+    private val planckProviderProvider: Provider<PlanckProvider> = mockk {
+        every { get() }.returns(planck)
+    }
     private var updater = ConfiguredSettingsUpdater(
         k9,
         preferences,
+        planckProviderProvider,
         urlChecker,
         folderRepositoryManager,
         provisioningSettings
@@ -394,9 +400,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() takes the value for extra keys from the provided restrictions`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -444,9 +448,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys with blank or missing fields`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(fpr1 = " ")
         val entry = getExtraKeysRestrictionEntry()
 
@@ -466,9 +468,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys with badly formatted fingerprints`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(fpr1 = WRONG_FPR)
         val entry = getExtraKeysRestrictionEntry()
 
@@ -488,9 +488,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() does not set extra keys if all keys are blank or have errors`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(
             fpr1 = " ",
             fpr2 = WRONG_FPR
@@ -509,14 +507,12 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys for which PlanckProvider returns bad key import result`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(
             planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -536,14 +532,12 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys for which PlanckProvider throws an exception`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(
             planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -563,9 +557,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() takes the value for media keys from the provided restrictions`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -620,9 +612,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores media keys with blank or missing fields`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle(pattern1 = " ")
         val entry = getMediaKeysRestrictionEntry()
 
@@ -645,9 +635,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores media keys with badly formated fingerprints`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle(fpr1 = WRONG_FPR)
         val entry = getMediaKeysRestrictionEntry()
 
@@ -670,9 +658,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() does not set media keys if all keys are blank or have errors`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle(
             pattern1 = " ",
             fpr2 = WRONG_FPR
@@ -691,14 +677,12 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores media keys for which PlanckProvider returns bad key import result`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(
             planck,
             defaultImportMediaKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -721,14 +705,12 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() ignores media keys for which PlanckProvider throws an exception`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(
             planck,
             defaultImportMediaKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
