@@ -203,12 +203,8 @@ public class CucumberTestSteps {
         } catch (Exception exception) {
             Timber.i("App could be closed");
         }
-        if (BuildConfig.IS_ENTERPRISE) {
-            testUtils.clearAllRecentApps();
-        }
         try {
             testUtils.clearAllRecentApps();
-            Intents.release();
         } catch (Exception exception) {
             Timber.i("Intents.init was not called before Intents.release");
         }
