@@ -3,6 +3,7 @@ package security.planck.mdm
 import android.content.RestrictionEntry
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.ArrayRes
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -672,65 +673,27 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
-        val bundle = restrictions.getBundle(entry.key)
-        val firstAccount = preferences.accounts.firstOrNull() ?: return
-
-        var currentSettingEntry = firstAccount.planckPrivacyProtected
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE
-            }?.let { valueEntry ->
-                currentSettingEntry =
-                    currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
-            }
-        }
-        preferences.accounts.forEach {
-            it.setPlanckPrivacyProtection(currentSettingEntry.toManageableSetting())
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
+            lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
+            initialSettingValue = { planckPrivacyProtected }
+        ) {
+            setPlanckPrivacyProtection(it)
         }
     }
 
     private fun saveAccountLocalFolderSize(restrictions: Bundle, entry: RestrictionEntry) {
-        val bundle = restrictions.getBundle(entry.key)
-        val firstAccount = preferences.accounts.firstOrNull() ?: return
-
-        var currentSettingEntry = firstAccount.lockableDisplayCount
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_LOCKED
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_VALUE
-            }?.let { valueEntry ->
-                updateString(
-                    bundle,
-                    valueEntry,
-                    accepted = { newValue ->
-                        val acceptedValues =
-                            k9.resources.getStringArray(R.array.display_count_values)
-                        acceptedValues.contains(newValue)
-                    }
-                ) { newValue ->
-                    try {
-                        currentSettingEntry = currentSettingEntry.copy(value = newValue.toInt())
-                    } catch (nfe: NumberFormatException) {
-                        Timber.e(nfe)
-                    }
-                }
-            }
-        }
-        preferences.accounts.forEach {
-            it.setDisplayCount(currentSettingEntry.toManageableSetting())
+        saveAccountIntChoiceLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_LOCKED,
+            acceptedValues = R.array.display_count_values,
+            initialSettingValue = { lockableDisplayCount }
+        ) {
+            setDisplayCount(it)
         }
     }
 
@@ -752,27 +715,14 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountQuoteMessagesWhenReply(restrictions: Bundle, entry: RestrictionEntry) {
-        val bundle = restrictions.getBundle(entry.key)
-        val firstAccount = preferences.accounts.firstOrNull() ?: return
-
-        var currentSettingEntry = firstAccount.defaultQuotedTextShown
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_LOCKED
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_VALUE
-            }?.let { valueEntry ->
-                currentSettingEntry =
-                    currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
-            }
-        }
-        preferences.accounts.forEach {
-            it.defaultQuotedTextShown = currentSettingEntry.toManageableSetting()
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_LOCKED,
+            initialSettingValue = { allowRemoteSearch }
+        ) {
+            defaultQuotedTextShown = it
         }
     }
 
@@ -882,54 +832,59 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountEnableServerSearch(restrictions: Bundle, entry: RestrictionEntry) {
-        val bundle = restrictions.getBundle(entry.key)
-        val firstAccount = preferences.accounts.firstOrNull() ?: return
-
-        var currentSettingEntry = firstAccount.allowRemoteSearch
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_LOCKED
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_VALUE
-            }?.let { valueEntry ->
-                currentSettingEntry =
-                    currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
-            }
-        }
-        preferences.accounts.forEach {
-            it.allowRemoteSearch = currentSettingEntry.toManageableSetting()
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_LOCKED,
+            initialSettingValue = { allowRemoteSearch }
+        ) {
+            allowRemoteSearch = it
         }
     }
 
     private fun saveAccountSeverSearchLimit(restrictions: Bundle, entry: RestrictionEntry) {
+        saveAccountIntChoiceLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_LOCKED,
+            acceptedValues = R.array.remote_search_num_results_values,
+            initialSettingValue = { lockableRemoteSearchNumResults }
+        ) {
+            setRemoteSearchNumResults(it)
+        }
+    }
+
+    private fun saveAccountIntChoiceLockableSetting(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        valueKey: String,
+        lockedKey: String,
+        @ArrayRes acceptedValues: Int,
+        initialSettingValue: Account.() -> ManageableSetting<Int>,
+        updateSetting: Account.(ManageableSetting<Int>) -> Unit,
+    ) {
         val bundle = restrictions.getBundle(entry.key)
         val firstAccount = preferences.accounts.firstOrNull() ?: return
 
-        var currentSettingEntry = firstAccount.lockableRemoteSearchNumResults
+        var currentSettingEntry = firstAccount.initialSettingValue()
             .toManageableMdmEntry()
         entry.restrictions.find {
-            it.key == RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_LOCKED
+            it.key == lockedKey
         }?.let { lockedEntry ->
             currentSettingEntry =
                 currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
         }
         if (currentSettingEntry.locked) {
             entry.restrictions.find {
-                it.key == RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_VALUE
+                it.key == valueKey
             }?.let { valueEntry ->
                 updateString(
                     bundle,
                     valueEntry,
                     accepted = { newValue ->
-                        val acceptedValues = k9.resources.getStringArray(
-                            R.array.remote_search_num_results_values
-                        )
-                        acceptedValues.contains(newValue)
+                        k9.resources.getStringArray(acceptedValues).contains(newValue)
                     }
                 ) { newValue ->
                     try {
@@ -941,7 +896,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
             }
         }
         preferences.accounts.forEach {
-            it.setRemoteSearchNumResults(currentSettingEntry.toManageableSetting())
+            it.updateSetting(currentSettingEntry.toManageableSetting())
         }
     }
 
@@ -955,27 +910,46 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountEnableSync(restrictions: Bundle, entry: RestrictionEntry) {
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_LOCKED,
+            initialSettingValue = { planckSyncEnabled }
+        ) {
+            setPlanckSyncAccount(it)
+        }
+    }
+
+    private fun saveAccountBooleanLockableSetting(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        valueKey: String,
+        lockedKey: String,
+        initialSettingValue: Account.() -> ManageableSetting<Boolean>,
+        updateSetting: Account.(ManageableSetting<Boolean>) -> Unit,
+    ) {
         val bundle = restrictions.getBundle(entry.key)
         val firstAccount = preferences.accounts.firstOrNull() ?: return
 
-        var currentSettingEntry = firstAccount.planckSyncEnabled
+        var currentSettingEntry = firstAccount.initialSettingValue()
             .toManageableMdmEntry()
         entry.restrictions.find {
-            it.key == RESTRICTION_ACCOUNT_ENABLE_SYNC_LOCKED
+            it.key == lockedKey
         }?.let { lockedEntry ->
             currentSettingEntry =
                 currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
         }
         if (currentSettingEntry.locked) {
             entry.restrictions.find {
-                it.key == RESTRICTION_ACCOUNT_ENABLE_SYNC_VALUE
+                it.key == valueKey
             }?.let { valueEntry ->
                 currentSettingEntry =
                     currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
             }
         }
         preferences.accounts.forEach {
-            it.setPlanckSyncAccount(currentSettingEntry.toManageableSetting())
+            it.updateSetting(currentSettingEntry.toManageableSetting())
         }
     }
 
