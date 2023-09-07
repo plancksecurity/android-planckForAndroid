@@ -43,7 +43,7 @@ import security.planck.provisioning.CONNECTION_SECURITY_STARTTLS
 import security.planck.provisioning.ProvisioningSettings
 import java.util.Vector
 
-class ConfiguredSettingsUpdaterTest: RobolectricTest() {
+class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
     private val account: Account = mockk(relaxed = true)
@@ -176,7 +176,12 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the provided restrictions`() {
-        every { K9.getPlanckForwardWarningEnabled() }.returns(ManageableSetting(value = true, locked = false))
+        every { K9.getPlanckForwardWarningEnabled() }.returns(
+            ManageableSetting(
+                value = true,
+                locked = false
+            )
+        )
         val restrictions = getUnsecureDeliveryWarningBundle(value = false)
         val entry = getUnsecureDeliveryWarningEntry()
 
@@ -184,12 +189,24 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         updater.update(restrictions, entry)
 
 
-        verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = false, locked = true)) }
+        verify {
+            k9.setPlanckForwardWarningEnabled(
+                ManageableSetting(
+                    value = false,
+                    locked = true
+                )
+            )
+        }
     }
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the restriction entry if not provided in bundle`() {
-        every { K9.getPlanckForwardWarningEnabled() }.returns(ManageableSetting(value = true, locked = false))
+        every { K9.getPlanckForwardWarningEnabled() }.returns(
+            ManageableSetting(
+                value = true,
+                locked = false
+            )
+        )
         val restrictions = Bundle()
         val entry = getUnsecureDeliveryWarningEntry()
 
@@ -202,7 +219,12 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() does not change unsecure delivery warning value if the setting is unlocked`() {
-        every { K9.getPlanckForwardWarningEnabled() }.returns(ManageableSetting(value = true, locked = true))
+        every { K9.getPlanckForwardWarningEnabled() }.returns(
+            ManageableSetting(
+                value = true,
+                locked = true
+            )
+        )
         val restrictions = getUnsecureDeliveryWarningBundle(value = false, locked = false)
         val entry = getUnsecureDeliveryWarningEntry()
 
@@ -210,7 +232,14 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         updater.update(restrictions, entry)
 
 
-        verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = true, locked = false)) }
+        verify {
+            k9.setPlanckForwardWarningEnabled(
+                ManageableSetting(
+                    value = true,
+                    locked = false
+                )
+            )
+        }
     }
 
     private fun getUnsecureDeliveryWarningBundle(
@@ -237,7 +266,12 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for enable planck privacy protection from the provided restrictions`() {
-        every { account.planckPrivacyProtected }.returns(ManageableSetting(value = true, locked = false))
+        every { account.planckPrivacyProtected }.returns(
+            ManageableSetting(
+                value = true,
+                locked = false
+            )
+        )
         val restrictions = getEnablePlanckProtectionBundle(value = false)
         val entry = getEnablePlanckProtectionEntry()
 
@@ -245,12 +279,24 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         updater.update(restrictions, entry)
 
 
-        verify { account.setPlanckPrivacyProtection(ManageableSetting(value = false, locked = true)) }
+        verify {
+            account.setPlanckPrivacyProtection(
+                ManageableSetting(
+                    value = false,
+                    locked = true
+                )
+            )
+        }
     }
 
     @Test
     fun `update() takes the value for enable planck privacy protection from the restriction entry if not provided in bundle`() {
-        every { account.planckPrivacyProtected }.returns(ManageableSetting(value = false, locked = false))
+        every { account.planckPrivacyProtected }.returns(
+            ManageableSetting(
+                value = false,
+                locked = false
+            )
+        )
         val restrictions = Bundle()
         val entry = getEnablePlanckProtectionEntry(value = true)
 
@@ -258,12 +304,24 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         updater.update(restrictions, entry)
 
 
-        verify { account.setPlanckPrivacyProtection(ManageableSetting(value = true, locked = true)) }
+        verify {
+            account.setPlanckPrivacyProtection(
+                ManageableSetting(
+                    value = true,
+                    locked = true
+                )
+            )
+        }
     }
 
     @Test
     fun `update() does not change the value for enable planck privacy protection if setting is not locked`() {
-        every { account.planckPrivacyProtected }.returns(ManageableSetting(value = true, locked = false))
+        every { account.planckPrivacyProtected }.returns(
+            ManageableSetting(
+                value = true,
+                locked = false
+            )
+        )
         val restrictions = getEnablePlanckProtectionBundle(locked = false)
         val entry = getEnablePlanckProtectionEntry()
 
@@ -271,7 +329,14 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         updater.update(restrictions, entry)
 
 
-        verify { account.setPlanckPrivacyProtection(ManageableSetting(value = true, locked = false)) }
+        verify {
+            account.setPlanckPrivacyProtection(
+                ManageableSetting(
+                    value = true,
+                    locked = false
+                )
+            )
+        }
     }
 
     private fun getEnablePlanckProtectionBundle(
@@ -318,7 +383,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         lockedKey: String,
         value: Boolean,
         locked: Boolean,
-    ) :  RestrictionEntry =
+    ): RestrictionEntry =
         RestrictionEntry.createBundleEntry(
             mainKey,
             arrayOf(
