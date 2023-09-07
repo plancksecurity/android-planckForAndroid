@@ -118,8 +118,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_PLANCK_DEBUG_LOG_VALUE,
-            lockedKey = RESTRICTION_PLANCK_DEBUG_LOG_LOCKED,
-            initialSettingValue = K9.getDebug()
+            lockedKey = RESTRICTION_PLANCK_DEBUG_LOG_LOCKED
         ) {
             K9.setDebug(it)
         }
@@ -130,8 +129,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE,
-            lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED,
-            initialSettingValue = K9.getPlanckForwardWarningEnabled()
+            lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED
         ) {
             k9.setPlanckForwardWarningEnabled(it)
         }
@@ -142,24 +140,21 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
         valueKey: String,
         lockedKey: String,
-        initialSettingValue: ManageableSetting<Boolean>,
         updateSetting: (ManageableSetting<Boolean>) -> Unit,
     ) {
         val bundle = restrictions.getBundle(entry.key)
-        var currentSettingEntry = initialSettingValue
-            .toManageableMdmEntry()
-        entry.restrictions.find { it.key == lockedKey }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
+        var value = false
+        var locked = true
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                valueKey ->
+                    value = getBooleanOrDefault(bundle, restriction)
 
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find { it.key == valueKey }?.let { valueEntry ->
-                currentSettingEntry =
-                    currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
+                lockedKey ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
         }
-        updateSetting(currentSettingEntry.toManageableSetting())
+        updateSetting(ManageableSetting(value = value, locked = locked))
     }
 
     private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
@@ -176,30 +171,25 @@ class ConfiguredSettingsUpdater @Inject constructor(
             }
         }
         val firstAccount = preferences.accounts.firstOrNull() ?: return
+        var (value: String?, locked: Boolean) = firstAccount.lockableDescription
 
-        var currentSettingEntry = firstAccount.lockableDescription
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == RESTRICTION_ACCOUNT_DESCRIPTION_VALUE
-            }?.let { valueEntry ->
-                updateString(
-                    bundle,
-                    valueEntry,
-                    default = { firstAccount.email }
-                ) { newValue ->
-                    currentSettingEntry = currentSettingEntry.copy(value = newValue)
-                }
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_ACCOUNT_DESCRIPTION_VALUE ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        default = { firstAccount.email }
+                    ) {
+                        value = it
+                    }
+
+                RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
         }
         preferences.accounts.forEach {
-            it.setDescription(currentSettingEntry.toManageableSetting())
+            it.setDescription(ManageableSetting(value = value, locked = locked))
         }
     }
 
@@ -662,37 +652,32 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
     private fun saveAuditLogDataTimeRetention(restrictions: Bundle, entry: RestrictionEntry) {
         val bundle = restrictions.getBundle(entry.key)
-        var currentSettingEntry = k9.auditLogDataTimeRetention
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE
-            }?.let { valueEntry ->
-                updateString(
-                    bundle,
-                    valueEntry,
-                    accepted = { newValue ->
-                        val acceptedValues = k9.resources.getStringArray(
-                            R.array.audit_log_data_time_retention_values
-                        )
-                        acceptedValues.contains(newValue)
+        var (value, locked) = k9.auditLogDataTimeRetention
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            val acceptedValues = k9.resources.getStringArray(
+                                R.array.audit_log_data_time_retention_values
+                            )
+                            acceptedValues.contains(newValue)
+                        }
+                    ) {
+                        try {
+                            value = it.toLong()
+                        } catch (nfe: NumberFormatException) {
+                            Timber.e(nfe)
+                        }
                     }
-                ) { newValue ->
-                    try {
-                        currentSettingEntry = currentSettingEntry.copy(value = newValue.toLong())
-                    } catch (nfe: NumberFormatException) {
-                        Timber.e(nfe)
-                    }
-                }
+
+                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
         }
-        k9.auditLogDataTimeRetention = currentSettingEntry.toManageableSetting()
+        k9.auditLogDataTimeRetention = ManageableSetting(value = value, locked = locked)
     }
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
@@ -701,7 +686,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
             entry = entry,
             valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
             lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
-            initialSettingValue = { planckPrivacyProtected }
         ) {
             setPlanckPrivacyProtection(it)
         }
@@ -743,7 +727,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_VALUE,
             lockedKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_LOCKED,
-            initialSettingValue = { allowRemoteSearch }
         ) {
             defaultQuotedTextShown = it
         }
@@ -867,7 +850,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_VALUE,
             lockedKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_LOCKED,
-            initialSettingValue = { allowRemoteSearch }
         ) {
             allowRemoteSearch = it
         }
@@ -898,35 +880,30 @@ class ConfiguredSettingsUpdater @Inject constructor(
         val bundle = restrictions.getBundle(entry.key)
         val firstAccount = preferences.accounts.firstOrNull() ?: return
 
-        var currentSettingEntry = firstAccount.initialSettingValue()
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == lockedKey
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == valueKey
-            }?.let { valueEntry ->
-                updateString(
-                    bundle,
-                    valueEntry,
-                    accepted = { newValue ->
-                        k9.resources.getStringArray(acceptedValues).contains(newValue)
+        var (value, locked) = firstAccount.initialSettingValue()
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                valueKey ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            k9.resources.getStringArray(acceptedValues).contains(newValue)
+                        }
+                    ) {
+                        try {
+                            value = it.toInt()
+                        } catch (nfe: NumberFormatException) {
+                            Timber.e(nfe)
+                        }
                     }
-                ) { newValue ->
-                    try {
-                        currentSettingEntry = currentSettingEntry.copy(value = newValue.toInt())
-                    } catch (nfe: NumberFormatException) {
-                        Timber.e(nfe)
-                    }
-                }
+
+                lockedKey ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
         }
         preferences.accounts.forEach {
-            it.updateSetting(currentSettingEntry.toManageableSetting())
+            it.updateSetting(ManageableSetting(value = value, locked = locked))
         }
     }
 
@@ -945,7 +922,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_VALUE,
             lockedKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_LOCKED,
-            initialSettingValue = { planckSyncEnabled }
         ) {
             setPlanckSyncAccount(it)
         }
@@ -956,30 +932,25 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
         valueKey: String,
         lockedKey: String,
-        initialSettingValue: Account.() -> ManageableSetting<Boolean>,
         updateSetting: Account.(ManageableSetting<Boolean>) -> Unit,
     ) {
+        if (preferences.accounts.isEmpty()) return
         val bundle = restrictions.getBundle(entry.key)
-        val firstAccount = preferences.accounts.firstOrNull() ?: return
+        var value = false
+        var locked = true
 
-        var currentSettingEntry = firstAccount.initialSettingValue()
-            .toManageableMdmEntry()
-        entry.restrictions.find {
-            it.key == lockedKey
-        }?.let { lockedEntry ->
-            currentSettingEntry =
-                currentSettingEntry.copy(locked = getBooleanOrDefault(bundle, lockedEntry))
-        }
-        if (currentSettingEntry.locked) {
-            entry.restrictions.find {
-                it.key == valueKey
-            }?.let { valueEntry ->
-                currentSettingEntry =
-                    currentSettingEntry.copy(value = getBooleanOrDefault(bundle, valueEntry))
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                valueKey ->
+                    value = getBooleanOrDefault(bundle, restriction)
+
+                lockedKey ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
         }
+
         preferences.accounts.forEach {
-            it.updateSetting(currentSettingEntry.toManageableSetting())
+            it.updateSetting(ManageableSetting(value = value, locked = locked))
         }
     }
 
