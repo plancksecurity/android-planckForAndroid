@@ -100,7 +100,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveDebugLogging(restrictions: Bundle, entry: RestrictionEntry) {
-        saveBooleanManagedSetting(
+        saveBooleanLockableSetting(
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_PLANCK_DEBUG_LOG_VALUE,
@@ -112,7 +112,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveUnsecureDeliveryWarning(restrictions: Bundle, entry: RestrictionEntry) {
-        saveBooleanManagedSetting(
+        saveBooleanLockableSetting(
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE,
@@ -123,7 +123,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveBooleanManagedSetting(
+    private fun saveBooleanLockableSetting(
         restrictions: Bundle,
         entry: RestrictionEntry,
         valueKey: String,
