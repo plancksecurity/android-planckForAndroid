@@ -27,6 +27,7 @@ import security.planck.provisioning.toConnectionSecurity
 import security.planck.provisioning.toSimpleMailSettings
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Provider
 
 const val GMAIL_INCOMING_PORT = 993
 const val GMAIL_OUTGOING_PORT = 465
@@ -37,12 +38,11 @@ private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 class ConfiguredSettingsUpdater @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
+    private val planck: Provider<PlanckProvider>,
     private val urlChecker: UrlChecker = UrlChecker(),
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings,
 ) {
-    private val planck: PlanckProvider
-        get() = k9.planckProvider
 
     fun update(
         restrictions: Bundle,
@@ -556,7 +556,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
         val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
             kotlin.runCatching {
-                val fprs = planck.importExtraKey(mdmExtraKey.material.trim().toByteArray())
+                val fprs = planck.get().importExtraKey(mdmExtraKey.material.trim().toByteArray())
                 val errorMsg = when {
                     fprs == null ->
                         "Error: got null from extra key import"
@@ -622,7 +622,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun saveFilteredMediaKeys(newMdmMediaKeys: List<MdmMediaKey>) {
         val newMediaKeys = newMdmMediaKeys.mapSuccess { mdmMediaKey ->
             kotlin.runCatching {
-                val ids = planck.importKey(mdmMediaKey.material.toByteArray())
+                val ids = planck.get().importKey(mdmMediaKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from media key import"
