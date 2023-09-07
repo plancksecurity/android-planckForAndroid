@@ -49,7 +49,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
 
-    private var settingLockedDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -286,18 +285,15 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showSettingLockedDialog(title: CharSequence) {
-        if (settingLockedDialog == null) {
-            settingLockedDialog = AlertDialog.Builder(
-                view?.context,
-                ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle)
-            )
-                .setTitle(title)
-                .setMessage(R.string.mdm_controlled_dialog_explanation)
-                .setCancelable(true)
-                .setPositiveButton(R.string.ok) { _, _ -> }
-                .create()
-        }
-        settingLockedDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
+        AlertDialog.Builder(
+            view?.context,
+            ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle)
+        )
+            .setTitle(title)
+            .setMessage(R.string.mdm_controlled_dialog_explanation)
+            .setCancelable(true)
+            .setPositiveButton(R.string.ok) { _, _ -> }
+            .show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
