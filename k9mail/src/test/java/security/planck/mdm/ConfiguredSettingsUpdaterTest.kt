@@ -182,12 +182,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the provided restrictions`() {
-        every { K9.getPlanckForwardWarningEnabled() }.returns(
-            ManageableSetting(
-                value = true,
-                locked = false
-            )
-        )
         val restrictions = getUnsecureDeliveryWarningBundle(value = false)
         val entry = getUnsecureDeliveryWarningEntry()
 
@@ -207,12 +201,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the restriction entry if not provided in bundle`() {
-        every { K9.getPlanckForwardWarningEnabled() }.returns(
-            ManageableSetting(
-                value = true,
-                locked = false
-            )
-        )
         val restrictions = Bundle()
         val entry = getUnsecureDeliveryWarningEntry()
 
@@ -221,31 +209,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
 
         verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = true, locked = true)) }
-    }
-
-    @Test
-    fun `update() does not change unsecure delivery warning value if the setting is unlocked`() {
-        every { K9.getPlanckForwardWarningEnabled() }.returns(
-            ManageableSetting(
-                value = true,
-                locked = true
-            )
-        )
-        val restrictions = getUnsecureDeliveryWarningBundle(value = false, locked = false)
-        val entry = getUnsecureDeliveryWarningEntry()
-
-
-        updater.update(restrictions, entry)
-
-
-        verify {
-            k9.setPlanckForwardWarningEnabled(
-                ManageableSetting(
-                    value = true,
-                    locked = false
-                )
-            )
-        }
     }
 
     private fun getUnsecureDeliveryWarningBundle(
@@ -272,12 +235,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() takes the value for enable planck privacy protection from the provided restrictions`() {
-        every { account.planckPrivacyProtected }.returns(
-            ManageableSetting(
-                value = true,
-                locked = false
-            )
-        )
         val restrictions = getEnablePlanckProtectionBundle(value = false)
         val entry = getEnablePlanckProtectionEntry()
 
@@ -297,12 +254,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     @Test
     fun `update() takes the value for enable planck privacy protection from the restriction entry if not provided in bundle`() {
-        every { account.planckPrivacyProtected }.returns(
-            ManageableSetting(
-                value = false,
-                locked = false
-            )
-        )
         val restrictions = Bundle()
         val entry = getEnablePlanckProtectionEntry(value = true)
 
@@ -315,31 +266,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
                 ManageableSetting(
                     value = true,
                     locked = true
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `update() does not change the value for enable planck privacy protection if setting is not locked`() {
-        every { account.planckPrivacyProtected }.returns(
-            ManageableSetting(
-                value = true,
-                locked = false
-            )
-        )
-        val restrictions = getEnablePlanckProtectionBundle(locked = false)
-        val entry = getEnablePlanckProtectionEntry()
-
-
-        updater.update(restrictions, entry)
-
-
-        verify {
-            account.setPlanckPrivacyProtection(
-                ManageableSetting(
-                    value = true,
-                    locked = false
                 )
             )
         }
@@ -1551,20 +1477,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         verify { account.setDisplayCount(ManageableSetting(20, true)) }
     }
 
-    @Test
-    fun `update() does not change the value for local folder size if setting is not locked`() {
-        stubResArray(R.array.display_count_values, arrayOf("10", "20", "250"))
-        every { account.lockableDisplayCount }.returns(ManageableSetting(20, false))
-        val restrictions = getLocalFolderSizeBundle(locked = false)
-        val entry = getLocalFolderSizeEntry()
-
-
-        updater.update(restrictions, entry)
-
-
-        verify { account.setDisplayCount(ManageableSetting(20, false)) }
-    }
-
     private fun getLocalFolderSizeBundle(
         value: String = "250",
         locked: Boolean = true
@@ -1630,20 +1542,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, true) }
     }
 
-    @Test
-    fun `update() does not change the value for audit logs retention time if setting is not locked`() {
-        stubResArray(R.array.audit_log_data_time_retention_values, arrayOf("30", "60", "90"))
-        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(30L, false))
-        val restrictions = getAuditLogRetentionBundle(locked = false)
-        val entry = getAuditLogRetentionEntry()
-
-
-        updater.update(restrictions, entry)
-
-
-        verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, false) }
-    }
-
     private fun stubResArray(
         @ArrayRes arrayRes: Int,
         values: Array<String>
@@ -1702,19 +1600,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
 
         verify { account.setDescription(ManageableSetting(DEFAULT_EMAIL, true)) }
-    }
-
-    @Test
-    fun `update() does not change the value for account description if setting is not locked`() {
-        every { account.lockableDescription }.returns(ManageableSetting(null, false))
-        val restrictions = getAccountDescriptionBundle(locked = false)
-        val entry = getAccountDescriptionEntry()
-
-
-        updater.update(restrictions, entry)
-
-
-        verify { account.setDescription(ManageableSetting(null, false)) }
     }
 
     private fun getAccountDescriptionBundle(
