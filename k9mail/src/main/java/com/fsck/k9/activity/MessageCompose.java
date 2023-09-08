@@ -672,7 +672,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         messageRatingIsBeingLoaded();
         recipientPresenter.onResume();
         invalidateOptionsMenu();
-        setConfigurationManagerListener(this);
     }
 
     @Override

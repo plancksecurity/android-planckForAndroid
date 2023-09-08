@@ -1,7 +1,5 @@
 package security.planck.mdm
 
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.RestrictionEntry
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
@@ -17,16 +15,16 @@ import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningStage
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ConfigurationManager @Inject constructor(
-    private val k9: K9,
     private val preferences: Preferences,
     private val restrictionsManager: RestrictionsProvider,
     private val settingsUpdater: ConfiguredSettingsUpdater,
 ) {
 
-    private var listener: RestrictionsListener? = null
-    private var restrictionsReceiver: RestrictionsReceiver? = null
+    private val listeners = mutableListOf<RestrictionsListener>()
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -114,26 +112,16 @@ class ConfigurationManager @Inject constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun sendRemoteConfig() {
-        listener?.updatedRestrictions()
-    }
-
-    fun unregisterReceiver() {
-        if (restrictionsReceiver != null) {
-            k9.unregisterReceiver(restrictionsReceiver)
-            restrictionsReceiver = null
+        listeners.forEach {
+            it.updatedRestrictions()
         }
     }
 
-    fun registerReceiver() {
-        if (restrictionsReceiver == null) {
-            restrictionsReceiver = RestrictionsReceiver(this)
-        }
-        k9.registerReceiver(
-            restrictionsReceiver, IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
-        )
+    fun addListener(listener: RestrictionsListener) {
+        listeners.add(listener)
     }
 
-    fun setListener(listener: RestrictionsListener) {
-        this.listener = listener
+    fun removeListener(listener: RestrictionsListener) {
+        listeners.remove(listener)
     }
 }

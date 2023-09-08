@@ -263,7 +263,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
 
         initializeActionBar()
-        setConfigurationManagerListener(this)
 
         if (savedInstanceState == null) {
             fragmentTransaction {

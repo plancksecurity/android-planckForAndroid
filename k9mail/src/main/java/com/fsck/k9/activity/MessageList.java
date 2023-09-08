@@ -810,7 +810,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
         setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
-        setConfigurationManagerListener(this);
     }
 
     private void setDefaultFolderNameIfNeeded() {

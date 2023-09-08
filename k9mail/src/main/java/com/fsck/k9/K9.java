@@ -88,6 +88,7 @@ import security.planck.file.PlanckSystemFileLocator;
 import security.planck.mdm.ManageableSetting;
 import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
+import security.planck.mdm.RestrictionsReceiver;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
 import security.planck.notification.GroupMailSignal;
@@ -127,6 +128,8 @@ public class K9 extends MultiDexApplication {
     PlanckSystemFileLocator planckSystemFileLocator;
     @Inject
     AppAliveMonitor appAliveMonitor;
+    @Inject
+    RestrictionsReceiver restrictionsReceiver;
 
     public static K9JobManager jobManager;
 
@@ -529,6 +532,12 @@ public class K9 extends MultiDexApplication {
      * sequence isn't safe while some events occur (SD card unmount).
      */
     protected void registerReceivers() {
+        if (isRunningOnWorkProfile()) {
+            registerReceiver(
+                    restrictionsReceiver,
+                    new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
+            );
+        }
         final StorageGoneReceiver receiver = new StorageGoneReceiver();
         final IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_MEDIA_EJECT);

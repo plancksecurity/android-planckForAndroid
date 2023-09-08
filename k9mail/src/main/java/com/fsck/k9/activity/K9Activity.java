@@ -103,8 +103,20 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onDestroy();
     }
 
-    public void setConfigurationManagerListener(RestrictionsListener listener) {
-        mBase.setConfigurationManagerListener(listener);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (this instanceof RestrictionsListener) {
+            mBase.setConfigurationManagerListener((RestrictionsListener) this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (this instanceof RestrictionsListener) {
+            mBase.unsetConfigurationManagerListener((RestrictionsListener) this);
+        }
     }
 
     public void setUpToolbar(boolean showUpButton) {
@@ -264,9 +276,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
 
         mBase.registerPassphraseReceiver();
-        if (getK9().isRunningOnWorkProfile()) {
-            mBase.registerConfigurationManager();
-        }
         mBase.registerOAuthTokenRevokedReceiver();
         if(isShowingSearchView) {
             showSearchView();
@@ -287,9 +296,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onPause() {
         super.onPause();
         mBase.unregisterPassphraseReceiver();
-        if (getK9().isRunningOnWorkProfile()) {
-            mBase.unregisterConfigurationManager();
-        }
         mBase.unregisterOAuthTokenRevokedReceiver();
         if(isShowingSearchView) {
             searchText = searchInput.getText().toString();
