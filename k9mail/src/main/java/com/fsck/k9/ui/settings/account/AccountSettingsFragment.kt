@@ -20,12 +20,12 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.ui.tools.FeedbackTools
-import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
+import com.takisoft.preferencex.AutoSummaryEditTextPreference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.exceptions.pEpException
@@ -223,10 +223,12 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAccountDescription() {
-        initializeManagedSettingLockedFeedback(
-            account.lockableDescription,
-            PREFERENCE_ACCOUNT_DESCRIPTION
-        )
+        if (account.lockableDescription.locked) {
+            (findPreference(PREFERENCE_ACCOUNT_DESCRIPTION) as? AutoSummaryEditTextPreference)?.apply {
+                isEnabled = false
+                summaryHasText = getString(R.string.preference_summary_locked_by_it_manager, text)
+            }
+        }
     }
 
     private fun initializeLocalFolderSize() {
@@ -263,22 +265,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     ) {
         if (setting.locked) {
             (findPreference(prefKey) as? Preference)?.apply {
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
-                    showSettingLockedDialog(this.title)
-                    false
-                }
+                isEnabled = false
+                summary = getString(R.string.preference_summary_locked_by_it_manager, summary)
             }
         }
-    }
-
-    private fun showSettingLockedDialog(title: CharSequence) {
-        AlertDialog.Builder(view?.context,
-            ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
-            .setTitle(title)
-            .setMessage(R.string.mdm_controlled_dialog_explanation)
-            .setCancelable(true)
-            .setPositiveButton(R.string.ok) { _, _ -> }
-            .show()
     }
 
     private fun onKeyImportClicked() {

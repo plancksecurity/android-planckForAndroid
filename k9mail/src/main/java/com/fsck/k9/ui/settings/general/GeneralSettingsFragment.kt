@@ -276,24 +276,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     ) {
         if (setting.locked) {
             (findPreference(prefKey) as? Preference)?.apply {
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
-                    showSettingLockedDialog(this.title)
-                    false
-                }
+                isEnabled = false
+                summary = getString(R.string.preference_summary_locked_by_it_manager, summary)
             }
         }
-    }
-
-    private fun showSettingLockedDialog(title: CharSequence) {
-        AlertDialog.Builder(
-            view?.context,
-            ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle)
-        )
-            .setTitle(title)
-            .setMessage(R.string.mdm_controlled_dialog_explanation)
-            .setCancelable(true)
-            .setPositiveButton(R.string.ok) { _, _ -> }
-            .show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
