@@ -75,7 +75,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.Startup(true)) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup(true)) }
     }
 
     @Test
@@ -201,7 +201,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.Startup(true)) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup(true)) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
         }
@@ -218,7 +218,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.Startup(false)) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup(false)) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
         }
@@ -232,7 +232,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.performInitializedEngineProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.InitializedEngine) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine) }
     }
 
     @Test

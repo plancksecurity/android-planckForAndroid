@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import security.planck.provisioning.ProvisioningFailedException
-import security.planck.provisioning.ProvisioningStage
+import security.planck.provisioning.ProvisioningScope
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,9 +39,9 @@ class ConfigurationManager @Inject constructor(
         }
     }
 
-    fun loadConfigurationsBlocking() {
+    fun loadConfigurationsBlocking(provisioningScope: ProvisioningScope) {
         runBlocking {
-            loadConfigurationsSuspend()
+            loadConfigurationsSuspend(provisioningScope)
                 .onFailure {
                     Timber.e(
                         it,
@@ -52,25 +52,30 @@ class ConfigurationManager @Inject constructor(
     }
 
     suspend fun loadConfigurationsSuspend(
-        provisioningStage: ProvisioningStage = ProvisioningStage.ProvisioningDone,
+        provisioningScope: ProvisioningScope = ProvisioningScope.AllSettings,
     ): Result<Unit> = withContext(PlanckDispatcher) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
             val entries: List<RestrictionEntry>
-            when (provisioningStage) {
-                is ProvisioningStage.Startup -> {
-                    if (provisioningStage.firstStartup && !isProvisionAvailable(restrictions)) {
+            when (provisioningScope) {
+                is ProvisioningScope.Startup -> {
+                    if (provisioningScope.firstStartup && !isProvisionAvailable(restrictions)) {
                         throw ProvisioningFailedException("Provisioning data is missing")
                     }
                     entries = restrictionsManager.manifestRestrictions
-                        // ignore media keys from MDM before PEpProvider has been initialized
-                        .filterNot { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
+                        // ignore media keys from MDM before PlanckProvider has been initialized
+                        .filter { it.key in PROVISIONING_RESTRICTIONS }
                 }
-                is ProvisioningStage.InitializedEngine -> {
+                ProvisioningScope.InitializedEngine -> {
                     entries = restrictionsManager.manifestRestrictions
                         .filter{ it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
-                is ProvisioningStage.ProvisioningDone -> {
+                ProvisioningScope.AllAccountSettings -> {
+                    entries = restrictionsManager.manifestRestrictions.filter {
+                        it.key in ALL_ACCOUNT_RESTRICTIONS
+                    }
+                }
+                ProvisioningScope.AllSettings -> {
                     entries = restrictionsManager.manifestRestrictions
                 }
             }

@@ -57,7 +57,7 @@ class ProvisioningManager @Inject constructor(
             else -> {
                 val hasAccounts = preferences.accounts.isNotEmpty()
                 configurationManager.loadConfigurationsSuspend(
-                    ProvisioningStage.Startup(!hasAccounts)
+                    ProvisioningScope.Startup(!hasAccounts)
                 ).flatMapSuspend {
                     if(!hasAccounts) {
                         finalizeSetupAfterChecks()
@@ -72,7 +72,7 @@ class ProvisioningManager @Inject constructor(
     fun performInitializedEngineProvisioning() = runBlocking<Unit> {
         if (k9.isRunningOnWorkProfile) {
             configurationManager
-                .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine)
+                .loadConfigurationsSuspend(ProvisioningScope.InitializedEngine)
                 .onFailure { throw it }
         }
     }
