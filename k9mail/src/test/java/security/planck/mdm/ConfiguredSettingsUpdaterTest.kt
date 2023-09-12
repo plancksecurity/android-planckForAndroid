@@ -3,8 +3,13 @@ package security.planck.mdm
 import android.content.RestrictionEntry
 import android.content.res.Resources
 import android.os.Bundle
+import androidx.annotation.ArrayRes
 import androidx.core.os.bundleOf
-import com.fsck.k9.*
+import com.fsck.k9.Account
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
+import com.fsck.k9.R
+import com.fsck.k9.RobolectricTest
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
@@ -18,16 +23,28 @@ import com.fsck.k9.mailstore.FolderType
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.testutils.ReturnBehavior
 import foundation.pEp.jniadapter.Identity
-import io.mockk.*
+import io.mockk.called
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import security.planck.network.UrlChecker
-import security.planck.provisioning.*
-import java.util.*
+import security.planck.provisioning.AccountMailSettingsProvision
+import security.planck.provisioning.CONNECTION_SECURITY_NONE
+import security.planck.provisioning.CONNECTION_SECURITY_SSL_TLS
+import security.planck.provisioning.CONNECTION_SECURITY_STARTTLS
+import security.planck.provisioning.ProvisioningSettings
+import java.util.Vector
+import javax.inject.Provider
 
-class ConfiguredSettingsUpdaterTest: RobolectricTest() {
+class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
     private val account: Account = mockk(relaxed = true)
@@ -35,9 +52,14 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     private val folderRepositoryManager: FolderRepositoryManager = mockk()
     private val folderRepository: FolderRepository = mockk()
     private val urlChecker: UrlChecker = mockk()
+    private val planck: PlanckProvider = mockk()
+    private val planckProviderProvider: Provider<PlanckProvider> = mockk {
+        every { get() }.returns(planck)
+    }
     private var updater = ConfiguredSettingsUpdater(
         k9,
         preferences,
+        planckProviderProvider,
         urlChecker,
         folderRepositoryManager,
         provisioningSettings
@@ -160,63 +182,151 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the provided restrictions`() {
-
-        val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, false) }
-        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
+        val restrictions = getUnsecureDeliveryWarningBundle(value = false)
+        val entry = getUnsecureDeliveryWarningEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.setPlanckForwardWarningEnabled(false) }
+        verify {
+            k9.setPlanckForwardWarningEnabled(
+                ManageableSetting(
+                    value = false,
+                    locked = true
+                )
+            )
+        }
     }
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the restriction entry if not provided in bundle`() {
-
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
+        val entry = getUnsecureDeliveryWarningEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.setPlanckForwardWarningEnabled(true) }
+        verify { k9.setPlanckForwardWarningEnabled(ManageableSetting(value = true, locked = true)) }
+    }
+
+    private fun getUnsecureDeliveryWarningBundle(
+        value: Boolean = true,
+        locked: Boolean = true
+    ): Bundle = getSimpleBooleanLockedSettingBundle(
+        mainKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
+        valueKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE,
+        lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    private fun getUnsecureDeliveryWarningEntry(
+        value: Boolean = true,
+        locked: Boolean = true
+    ): RestrictionEntry = getSimpleBooleanLockedSettingEntry(
+        mainKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
+        valueKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE,
+        lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    @Test
+    fun `update() takes the value for enable planck privacy protection from the provided restrictions`() {
+        val restrictions = getEnablePlanckProtectionBundle(value = false)
+        val entry = getEnablePlanckProtectionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            account.setPlanckPrivacyProtection(
+                ManageableSetting(
+                    value = false,
+                    locked = true
+                )
+            )
+        }
     }
 
     @Test
-    fun `update() takes the value for enable pEp privacy protection from the provided restrictions`() {
-
-        val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, false) }
-        val entry = RestrictionEntry(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, true)
-
-
-        updater.update(restrictions, entry)
-
-
-        verify { account.setPlanckPrivacyProtection(false) }
-    }
-
-    @Test
-    fun `update() takes the value for enable pEp privacy protection from the restriction entry if not provided in bundle`() {
-
+    fun `update() takes the value for enable planck privacy protection from the restriction entry if not provided in bundle`() {
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, true)
+        val entry = getEnablePlanckProtectionEntry(value = true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { account.setPlanckPrivacyProtection(true) }
+        verify {
+            account.setPlanckPrivacyProtection(
+                ManageableSetting(
+                    value = true,
+                    locked = true
+                )
+            )
+        }
     }
+
+    private fun getEnablePlanckProtectionBundle(
+        value: Boolean = true,
+        locked: Boolean = true
+    ): Bundle = getSimpleBooleanLockedSettingBundle(
+        mainKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION,
+        valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
+        lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    private fun getEnablePlanckProtectionEntry(
+        value: Boolean = true,
+        locked: Boolean = true
+    ): RestrictionEntry = getSimpleBooleanLockedSettingEntry(
+        mainKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION,
+        valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
+        lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    private fun getSimpleBooleanLockedSettingBundle(
+        mainKey: String,
+        valueKey: String,
+        lockedKey: String,
+        value: Boolean,
+        locked: Boolean,
+    ): Bundle = Bundle().apply {
+        putBundle(
+            mainKey,
+            Bundle().apply {
+                putBoolean(valueKey, value)
+                putBoolean(lockedKey, locked)
+            }
+        )
+    }
+
+    private fun getSimpleBooleanLockedSettingEntry(
+        mainKey: String,
+        valueKey: String,
+        lockedKey: String,
+        value: Boolean,
+        locked: Boolean,
+    ): RestrictionEntry =
+        RestrictionEntry.createBundleEntry(
+            mainKey,
+            arrayOf(
+                RestrictionEntry(valueKey, value),
+                RestrictionEntry(lockedKey, locked)
+            )
+        )
 
     @Test
     fun `update() takes the value for extra keys from the provided restrictions`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -264,9 +374,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys with blank or missing fields`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(fpr1 = " ")
         val entry = getExtraKeysRestrictionEntry()
 
@@ -286,9 +394,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys with badly formatted fingerprints`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(fpr1 = WRONG_FPR)
         val entry = getExtraKeysRestrictionEntry()
 
@@ -308,9 +414,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() does not set extra keys if all keys are blank or have errors`() {
-        val planck: PlanckProvider = mockk()
         stubImportExtraKeyBehavior(planck, defaultImportExtraKeyBehaviors)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle(
             fpr1 = " ",
             fpr2 = WRONG_FPR
@@ -328,15 +432,13 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     @Test
-    fun `update() ignores extra keys for which PEpProvider returns bad key import result`() {
-        val planck: PlanckProvider = mockk()
+    fun `update() ignores extra keys for which PlanckProvider returns bad key import result`() {
         stubImportExtraKeyBehavior(
             planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -355,15 +457,13 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     @Test
-    fun `update() ignores extra keys for which PEpProvider throws an exception`() {
-        val planck: PlanckProvider = mockk()
+    fun `update() ignores extra keys for which PlanckProvider throws an exception`() {
         stubImportExtraKeyBehavior(
             planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -383,9 +483,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for media keys from the provided restrictions`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -440,9 +538,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores media keys with blank or missing fields`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle(pattern1 = " ")
         val entry = getMediaKeysRestrictionEntry()
 
@@ -465,9 +561,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores media keys with badly formated fingerprints`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle(fpr1 = WRONG_FPR)
         val entry = getMediaKeysRestrictionEntry()
 
@@ -490,9 +584,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() does not set media keys if all keys are blank or have errors`() {
-        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(planck)
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle(
             pattern1 = " ",
             fpr2 = WRONG_FPR
@@ -510,15 +602,13 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     @Test
-    fun `update() ignores media keys for which PEpProvider returns bad key import result`() {
-        val planck: PlanckProvider = mockk()
+    fun `update() ignores media keys for which PlanckProvider returns bad key import result`() {
         stubImportKeyBehavior(
             planck,
             defaultImportMediaKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -540,15 +630,13 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     @Test
-    fun `update() ignores media keys for which PEpProvider throws an exception`() {
-        val planck: PlanckProvider = mockk()
+    fun `update() ignores media keys for which PlanckProvider throws an exception`() {
         stubImportKeyBehavior(
             planck,
             defaultImportMediaKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
             }
         )
-        every { k9.getPlanckProvider() }.returns(planck)
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -1349,107 +1437,224 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for local folder size from the provided restrictions`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.display_count_values) }
-            .returns(arrayOf("10", "250"))
-        every { k9.resources }.returns(resources)
-        val restrictions = Bundle().apply {
-            putString(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "10")
-        }
-        val entry = RestrictionEntry(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "250")
+        stubResArray(R.array.display_count_values, arrayOf("10", "20", "250"))
+        every { account.lockableDisplayCount }.returns(ManageableSetting(20, false))
+        val restrictions = getLocalFolderSizeBundle(value = "10")
+        val entry = getLocalFolderSizeEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { account.displayCount = 10 }
+        verify { account.setDisplayCount(ManageableSetting(10, true)) }
     }
 
     @Test
     fun `update() takes the value for local folder size from the restrictions entry if not provided in restrictions`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.display_count_values) }
-            .returns(arrayOf("10", "250"))
-        every { k9.resources }.returns(resources)
+        stubResArray(R.array.display_count_values, arrayOf("10", "20", "250"))
+        every { account.lockableDisplayCount }.returns(ManageableSetting(20, false))
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "250")
+        val entry = getLocalFolderSizeEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { account.displayCount = 250 }
+        verify { account.setDisplayCount(ManageableSetting(250, true)) }
     }
 
     @Test
-    fun `update() keeps last value if provided value is not valid`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.display_count_values) }
-            .returns(arrayOf("10", "250"))
-        every { k9.resources }.returns(resources)
-        val restrictions = Bundle().apply {
-            putString(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "hello")
-        }
-        val entry = RestrictionEntry(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "250")
+    fun `update() keeps last value for local folder size if provided value is not valid`() {
+        stubResArray(R.array.display_count_values, arrayOf("10", "20", "250"))
+        every { account.lockableDisplayCount }.returns(ManageableSetting(20, false))
+        val restrictions = getLocalFolderSizeBundle(value = "hello")
+        val entry = getLocalFolderSizeEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { account.wasNot(called) }
+        verify { account.setDisplayCount(ManageableSetting(20, true)) }
     }
+
+    private fun getLocalFolderSizeBundle(
+        value: String = "250",
+        locked: Boolean = true
+    ) = getSimpleStringLockedSettingBundle(
+        mainKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE,
+        valueKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_VALUE,
+        lockedKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    private fun getLocalFolderSizeEntry(
+        value: String = "250",
+        locked: Boolean = true
+    ): RestrictionEntry =
+        getSimpleStringLockedSettingEntry(
+            mainKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE,
+            valueKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_LOCKED,
+            value = value,
+            locked = locked
+        )
 
     @Test
     fun `update() takes the value for audit logs retention time from the provided restrictions`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
-            .returns(arrayOf("30", "90"))
-        every { k9.resources }.returns(resources)
-        val restrictions = Bundle().apply {
-            putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "90")
-        }
-        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+        stubResArray(R.array.audit_log_data_time_retention_values, arrayOf("30", "60", "90"))
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(30L, false))
+        val restrictions = getAuditLogRetentionBundle()
+        val entry = getAuditLogRetentionEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.auditLogDataTimeRetention = 90 }
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(90L, true) }
     }
 
     @Test
     fun `update() takes the value for audit logs retention time from the restrictions entry if not provided in restrictions`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
-            .returns(arrayOf("30", "90"))
-        every { k9.resources }.returns(resources)
+        stubResArray(R.array.audit_log_data_time_retention_values, arrayOf("30", "60", "90"))
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(60L, true))
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+        val entry = getAuditLogRetentionEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.auditLogDataTimeRetention = 30 }
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, true) }
     }
 
     @Test
     fun `update() keeps last value for audit logs retention time if provided value is not valid`() {
-        val resources: Resources = mockk()
-        every { resources.getStringArray(R.array.audit_log_data_time_retention_values) }
-            .returns(arrayOf("30", "90"))
-        every { k9.resources }.returns(resources)
-        val restrictions = Bundle().apply {
-            putString(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "hello")
-        }
-        val entry = RestrictionEntry(RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION, "30")
+        stubResArray(R.array.audit_log_data_time_retention_values, arrayOf("30", "60", "90"))
+        every { k9.auditLogDataTimeRetention }.returns(ManageableSetting(30L, false))
+        val restrictions = getAuditLogRetentionBundle(value = "hello")
+        val entry = getAuditLogRetentionEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        verify(exactly = 0) { k9.auditLogDataTimeRetention = any() }
+        verify { k9.auditLogDataTimeRetention = ManageableSetting(30L, true) }
     }
+
+    private fun stubResArray(
+        @ArrayRes arrayRes: Int,
+        values: Array<String>
+    ) {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(arrayRes) }
+            .returns(values)
+        every { k9.resources }.returns(resources)
+    }
+
+    private fun getAuditLogRetentionBundle(
+        value: String = "90",
+        locked: Boolean = true
+    ): Bundle = getSimpleStringLockedSettingBundle(
+        mainKey = RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION,
+        valueKey = RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE,
+        lockedKey = RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    private fun getAuditLogRetentionEntry(
+        value: String = "30",
+        locked: Boolean = true
+    ): RestrictionEntry =
+        getSimpleStringLockedSettingEntry(
+            mainKey = RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION,
+            valueKey = RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE,
+            lockedKey = RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED,
+            value = value,
+            locked = locked
+        )
+
+    @Test
+    fun `update() takes the value for account description from the provided restrictions`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountDescriptionBundle()
+        val entry = getAccountDescriptionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { account.setDescription(ManageableSetting(NEW_ACCOUNT_DESCRIPTION, true)) }
+    }
+
+    @Test
+    fun `update() takes the value for account description from the account email if not provided in restrictions`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        every { account.email }.returns(DEFAULT_EMAIL)
+        val restrictions = Bundle()
+        val entry = getAccountDescriptionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { account.setDescription(ManageableSetting(DEFAULT_EMAIL, true)) }
+    }
+
+    private fun getAccountDescriptionBundle(
+        value: String = NEW_ACCOUNT_DESCRIPTION,
+        locked: Boolean = true
+    ) = getSimpleStringLockedSettingBundle(
+        mainKey = RESTRICTION_ACCOUNT_DESCRIPTION,
+        valueKey = RESTRICTION_ACCOUNT_DESCRIPTION_VALUE,
+        lockedKey = RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED,
+        value = value,
+        locked = locked
+    )
+
+    private fun getAccountDescriptionEntry(
+        value: String = "",
+        locked: Boolean = true
+    ): RestrictionEntry =
+        getSimpleStringLockedSettingEntry(
+            mainKey = RESTRICTION_ACCOUNT_DESCRIPTION,
+            valueKey = RESTRICTION_ACCOUNT_DESCRIPTION_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED,
+            value = value,
+            locked = locked
+        )
+
+    private fun getSimpleStringLockedSettingBundle(
+        mainKey: String,
+        valueKey: String,
+        lockedKey: String,
+        value: String,
+        locked: Boolean,
+    ): Bundle = Bundle().apply {
+        putBundle(
+            mainKey,
+            Bundle().apply {
+                putString(valueKey, value)
+                putBoolean(lockedKey, locked)
+            }
+        )
+    }
+
+    private fun getSimpleStringLockedSettingEntry(
+        mainKey: String,
+        valueKey: String,
+        lockedKey: String,
+        value: String,
+        locked: Boolean,
+    ): RestrictionEntry =
+        RestrictionEntry.createBundleEntry(
+            mainKey,
+            arrayOf(
+                RestrictionEntry(valueKey, value),
+                RestrictionEntry(lockedKey, locked)
+            )
+        )
 
     private fun stubAccountSettersAndGetters() {
         val oAuthProviderSlot = slot<OAuthProviderType>()
@@ -1715,5 +1920,6 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         private const val KEY_MATERIAL_1 = "keymaterial1"
         private const val KEY_MATERIAL_2 = "keymaterial2"
         private const val WRONG_FPR = "WRONG_FPR"
+        private const val NEW_ACCOUNT_DESCRIPTION = "newAccountDescription"
     }
 }

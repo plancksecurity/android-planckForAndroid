@@ -8,7 +8,6 @@ const val DEFAULT_EXTRA_KEY = ""
 const val DEFAULT_MEDIA_KEY_PATTERN = ""
 const val DEFAULT_MEDIA_KEY_FPR = ""
 const val DEFAULT_MEDIA_KEY_MATERIAL = ""
-const val DEFAULT_USE_TRUSTWORDS = true
 const val DEFAULT_UNSECURE_DELIVERY_WARNING = true
 const val DEFAULT_PLANCK_SYNC_FOLDER = true
 const val DEFAULT_PLANCK_DEBUG_LOG = false

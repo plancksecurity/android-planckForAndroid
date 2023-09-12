@@ -560,9 +560,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
             planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
-            if (K9.isUsingTrustwords()) {
-                planckSecurityStatusLayout.setOnClickListener(v -> onPlanckPrivacyStatus());
-            }
+            planckSecurityStatusLayout.setOnClickListener(v -> onPlanckPrivacyStatus());
             if (!BuildConfig.IS_ENTERPRISE) {
                 planckSecurityStatusLayout.setOnLongClickListener(view -> {
                     PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,

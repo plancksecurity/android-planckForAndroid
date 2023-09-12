@@ -317,16 +317,7 @@ public class GlobalSettings {
         s.put("pEpSyncFolder", Settings.versions(
                 new V(51, new BooleanSetting(true))
         ));
-        s.put("pEpUseTrustwords", Settings.versions(
-                new V(54, new StringSetting(
-                        ManageableSettingKt.encodeBooleanToString(
-                                new ManageableSetting<>(
-                                        !BuildConfig.IS_ENTERPRISE,
-                                        true
-                                )
-                        )
-                ))
-        ));
+
         SETTINGS = Collections.unmodifiableMap(s);
 
         Map<Integer, SettingsUpgrader> u = new HashMap<>();

@@ -57,7 +57,6 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
                 }.joinToString("\n")
         }
             <br/>
-            <p><b>Use trustwords:</b> ${K9.getPlanckUseTrustwords().value}</p>
             <p><b>Unsecure delivery warning:</b> ${K9.isPlanckForwardWarningEnabled()}</p>
             <p><b>PlanckProvider sync folder:</b> ${K9.isUsingpEpSyncFolder()}</p>
             <p><b>Enable debug logging:</b> ${K9.isDebug()}</p>
@@ -102,7 +101,7 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
                     <p><b>&emsp;&emsp;Username:</b> ${outgoingMailSettings?.userName}</p>
                     <p><b>&emsp;&emsp;Authentication type:</b> ${outgoingMailSettings?.authType}</p>
             <br/>
-            <p><b>Audit log data time retention:</b> ${k9.auditLogDataTimeRetention / 24 / 3600} days</p>
+            <p><b>Audit log data time retention:</b> ${k9.auditLogDataTimeRetention.value / 24 / 3600} days</p>
         """.trimIndent()
     }
 }

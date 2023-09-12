@@ -39,9 +39,7 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
         sendMessageToBot();
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
-        if (K9.isUsingTrustwords()) {
-            acceptHandshakeWithPartner();
-        }
+        acceptHandshakeWithPartner();
         testUtils.pressBack();
         assertPartnerIsGreenAndSendMessage();
         assertIncomingTrustedPartnerMessageIsGreen();
@@ -90,9 +88,7 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
         TestUtils.waitForIdle();
         fillMessage();
         testUtils.assertSecurityStatusText(
-                K9.isUsingTrustwords()
-                        ? Rating.pEpRatingTrustedAndAnonymized
-                        : Rating.pEpRatingReliable
+                Rating.pEpRatingTrustedAndAnonymized
         );
 
         testUtils.sendMessage();
@@ -103,13 +99,11 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
         testUtils.clickFirstMessage();
 
         testUtils.clickStatus();
-        if (K9.isUsingTrustwords()) {
-            checkToolbarColor(R.color.planck_green);
-            onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
-            onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
-                    .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
-            testUtils.pressBack();
-        }
+        checkToolbarColor(R.color.planck_green);
+        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
+        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
+                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
+        testUtils.pressBack();
     }
 
     private void fillMessage() {
