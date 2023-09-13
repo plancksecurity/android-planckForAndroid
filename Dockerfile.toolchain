@@ -8,10 +8,9 @@ RUN apt-get install -yqq dialog apt-utils git clang libclang-dev make pkg-config
     ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales
 
 RUN apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
-RUN apt-get install -yqq asn1c
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq asn1c
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
 RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
-RUN echo "deb [arch=amd64] https://some.repository.url focal main" | tee /etc/apt/sources.list.d/adoptium.list > /dev/null
 
 # Install Java 11
 RUN apt-get update -yqq && \
@@ -20,7 +19,7 @@ RUN apt-get update -yqq && \
     wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
     echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
     apt-get update -yqq && \
-    apt-get install -yqq adoptopenjdk-11-hotspot && \
+    apt-get install -yqq temurin-11-jdk && \
     rm -rf /var/lib/apt/lists/*
 RUN update-java-alternatives -s adoptopenjdk-11-hotspot-amd64
 
