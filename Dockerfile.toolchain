@@ -11,7 +11,7 @@ RUN apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils
 RUN apt-get install -yqq asn1c
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
 RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
-RUN echo "deb [arch=amd64] https://some.repository.url focal main" | sudo tee /etc/apt/sources.list.d/adoptium.list > /dev/null
+RUN echo "deb [arch=amd64] https://some.repository.url focal main" | tee /etc/apt/sources.list.d/adoptium.list > /dev/null
 
 # Install Java 11
 RUN apt-get update -yqq && \
