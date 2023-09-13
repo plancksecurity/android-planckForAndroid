@@ -5,18 +5,20 @@ RUN apt-get update && apt-get upgrade -yqq
 # RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
 RUN apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
     capnproto libsqlite3-dev build-essential curl wget software-properties-common libtool patch \
-    ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales
+    ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales dialog
 
 RUN apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
 RUN apt-get install -yqq asn1c
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
 RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
+RUN echo "deb [arch=amd64] https://some.repository.url focal main" | sudo tee /etc/apt/sources.list.d/adoptium.list > /dev/null
 
 # Install Java 11
 RUN apt-get update -yqq && \
     apt-get install -yqq apt-transport-https ca-certificates wget dirmngr gnupg2 software-properties-common && \
-    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
-    add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ && \
+    mkdir -p /etc/apt/keyrings && \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
     apt-get update -yqq && \
     apt-get install -yqq adoptopenjdk-11-hotspot && \
     rm -rf /var/lib/apt/lists/*
