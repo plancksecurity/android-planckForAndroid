@@ -2,12 +2,11 @@
 <resources>
     <!-- Bool restriction -->
     <bool name="default_enable_privacy_protection">true</bool>
-    <bool name="default_use_trustwords">false</bool>
     <bool name="default_unsecure_delivery_warning">true</bool>
     <bool name="default_use_pep_sync_folder">true</bool>
     <bool name="default_quoted_text_shown">true</bool>
     <bool name="default_debug_logging">false</bool>
-    <bool name="default_enable_echo_protocol">true</bool>
+    <bool name="default_enable_echo_protocol">false</bool>
     <bool name="default_remote_search_enabled">true</bool>
     <bool name="default_pep_save_encrypted">true</bool>
     <bool name="default_pep_enable_sync_account">true</bool>
@@ -26,4 +25,7 @@
     <string name="default_audit_log_data_time_retention" translatable="false">2592000</string>
     <string name="account_oauth_provider_default" translatable="false">MICROSOFT</string>
     <string name="account_authentication_type_default" translatable="false">PLAIN</string>
+
+    <!-- Manageable (lockable) restrictions -->
+    <bool name="managed_settings_locked_by_default">true</bool>
 </resources>

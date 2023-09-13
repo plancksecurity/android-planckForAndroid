@@ -3,6 +3,7 @@ package security.planck.mdm
 import android.content.RestrictionEntry
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.ArrayRes
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -26,6 +27,7 @@ import security.planck.provisioning.toConnectionSecurity
 import security.planck.provisioning.toSimpleMailSettings
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Provider
 
 const val GMAIL_INCOMING_PORT = 993
 const val GMAIL_OUTGOING_PORT = 465
@@ -36,12 +38,11 @@ private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 class ConfiguredSettingsUpdater @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
+    private val planck: Provider<PlanckProvider>,
     private val urlChecker: UrlChecker = UrlChecker(),
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings,
 ) {
-    private val planck: PlanckProvider
-        get() = k9.planckProvider
 
     fun update(
         restrictions: Bundle,
@@ -52,47 +53,58 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 updateString(restrictions, entry, accepted = { it.isNotBlank() }) {
                     provisioningSettings.provisioningUrl = it
                 }
+
             RESTRICTION_PLANCK_EXTRA_KEYS ->
                 saveExtraKeys(restrictions, entry)
 
             RESTRICTION_PLANCK_MEDIA_KEYS ->
                 saveMediaKeys(restrictions, entry)
 
-            RESTRICTION_PLANCK_USE_TRUSTWORDS ->
-                K9.setPlanckUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
-                k9.setPlanckForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
+                saveUnsecureDeliveryWarning(restrictions, entry)
+
             RESTRICTION_PLANCK_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
+
             RESTRICTION_PLANCK_DEBUG_LOG ->
-                K9.setDebug(getBooleanOrDefault(restrictions, entry))
+                saveDebugLogging(restrictions, entry)
+
             RESTRICTION_ENABLE_ECHO_PROTOCOL ->
                 K9.setEchoProtocolEnabled(getBooleanOrDefault(restrictions, entry))
+
             RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION ->
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
                 saveAccountDescription(restrictions, entry)
+
             RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION ->
                 savePrivacyProtection(restrictions, entry)
+
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
                 saveAccountLocalFolderSize(restrictions, entry)
+
             RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
                 saveAccountMaxPushFolders(restrictions, entry)
+
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
                 saveAccountCompositionDefaults(restrictions, entry)
 
             RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
                 saveAccountQuoteMessagesWhenReply(restrictions, entry)
+
             RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
                 saveAccountDefaultFolders(restrictions, entry)
 
             RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
                 saveAccountEnableServerSearch(restrictions, entry)
+
             RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
                 saveAccountSeverSearchLimit(restrictions, entry)
+
             RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
                 saveAccountSaveMessagesSecurely(restrictions, entry)
+
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
                 saveAccountEnableSync(restrictions, entry)
 
@@ -101,20 +113,83 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
-        updateNullableString(
-            restrictions,
-            entry,
-            default = { null }
+    private fun saveDebugLogging(restrictions: Bundle, entry: RestrictionEntry) {
+        saveBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_PLANCK_DEBUG_LOG_VALUE,
+            lockedKey = RESTRICTION_PLANCK_DEBUG_LOG_LOCKED
         ) {
-            provisioningSettings.accountDescription = it
+            K9.setDebug(it)
         }
-        updateAccountString(
-            restrictions,
-            entry,
-            default = { it.email }
-        ) { account, newValue ->
-            account.description = newValue
+    }
+
+    private fun saveUnsecureDeliveryWarning(restrictions: Bundle, entry: RestrictionEntry) {
+        saveBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_VALUE,
+            lockedKey = RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING_LOCKED
+        ) {
+            k9.setPlanckForwardWarningEnabled(it)
+        }
+    }
+
+    private fun saveBooleanLockableSetting(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        valueKey: String,
+        lockedKey: String,
+        updateSetting: (ManageableSetting<Boolean>) -> Unit,
+    ) {
+        val bundle = restrictions.getBundle(entry.key)
+        var value = false
+        var locked = true
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                valueKey ->
+                    value = getBooleanOrDefault(bundle, restriction)
+
+                lockedKey ->
+                    locked = getBooleanOrDefault(bundle, restriction)
+            }
+        }
+        updateSetting(ManageableSetting(value = value, locked = locked))
+    }
+
+    private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
+        val bundle = restrictions.getBundle(entry.key)
+        entry.restrictions.find {
+            it.key == RESTRICTION_ACCOUNT_DESCRIPTION_VALUE
+        }?.let { valueEntry ->
+            updateNullableString(
+                bundle,
+                valueEntry,
+                default = { null }
+            ) {
+                provisioningSettings.accountDescription = it
+            }
+        }
+        val firstAccount = preferences.accounts.firstOrNull() ?: return
+        var (value: String?, locked: Boolean) = firstAccount.lockableDescription
+
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_ACCOUNT_DESCRIPTION_VALUE ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        default = { firstAccount.email }
+                    ) {
+                        value = it
+                    }
+
+                RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED ->
+                    locked = getBooleanOrDefault(bundle, restriction)
+            }
+        }
+        preferences.accounts.forEach {
+            it.setDescription(ManageableSetting(value = value, locked = locked))
         }
     }
 
@@ -140,6 +215,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         true
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
+
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
                     outgoing = saveAccountMailSettings(
                         bundle,
@@ -228,7 +304,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun getCurrentOAuthProvider(): OAuthProviderType? =
-        preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType ?: provisioningSettings.oAuthType
+        preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType
+            ?: provisioningSettings.oAuthType
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
         updateNullableString(
@@ -278,12 +355,15 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
                         updatePort(bundle, restriction, simpleSettings)
+
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
                         updateServer(bundle, restriction, simpleSettings)
+
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
                         updateSecurityType(bundle, restriction, simpleSettings)
+
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
                         updateUsername(bundle, restriction, simpleSettings)
@@ -466,7 +546,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
         val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
             kotlin.runCatching {
-                val fprs = planck.importExtraKey(mdmExtraKey.material.trim().toByteArray())
+                val fprs = planck.get().importExtraKey(mdmExtraKey.material.trim().toByteArray())
                 val errorMsg = when {
                     fprs == null ->
                         "Error: got null from extra key import"
@@ -503,7 +583,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
             val newMdmMediaKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
-                    val addressPattern = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
+                    val addressPattern =
+                        bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
                     val fingerprint = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT)
                     val keyMaterial = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL)
                     if (addressPattern != null && fingerprint != null && keyMaterial != null) {
@@ -531,18 +612,22 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun saveFilteredMediaKeys(newMdmMediaKeys: List<MdmMediaKey>) {
         val newMediaKeys = newMdmMediaKeys.mapSuccess { mdmMediaKey ->
             kotlin.runCatching {
-                val ids = planck.importKey(mdmMediaKey.material.toByteArray())
+                val ids = planck.get().importKey(mdmMediaKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from media key import"
+
                     ids.isEmpty() ->
                         "Error: got empty identity vector from media key import"
+
                     ids.size != 2 ->
                         "Error: got too many or too few identities from media key import: " +
                                 "${ids.size}, expected: 2"
+
                     ids.first().fpr != mdmMediaKey.fpr ->
                         "Error: got an unexpected fpr from media key import: " +
                                 "${ids.first().fpr}, expected: ${mdmMediaKey.fpr}"
+
                     else -> null
                 }
                 errorMsg?.let { error(it) }
@@ -566,45 +651,56 @@ class ConfiguredSettingsUpdater @Inject constructor(
         .uppercase()
 
     private fun saveAuditLogDataTimeRetention(restrictions: Bundle, entry: RestrictionEntry) {
-        updateString(
-            restrictions,
-            entry,
-            accepted = { newValue ->
-                val acceptedValues = k9.resources.getStringArray(R.array.audit_log_data_time_retention_values)
-                acceptedValues.contains(newValue)
-            }
-        ) { newValue ->
-            try {
-                k9.auditLogDataTimeRetention = newValue.toLong()
-            } catch (nfe: NumberFormatException) {
-                Timber.e(nfe)
+        val bundle = restrictions.getBundle(entry.key)
+        var (value, locked) = k9.auditLogDataTimeRetention
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            val acceptedValues = k9.resources.getStringArray(
+                                R.array.audit_log_data_time_retention_values
+                            )
+                            acceptedValues.contains(newValue)
+                        }
+                    ) {
+                        try {
+                            value = it.toLong()
+                        } catch (nfe: NumberFormatException) {
+                            Timber.e(nfe)
+                        }
+                    }
+
+                RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
         }
+        k9.auditLogDataTimeRetention = ManageableSetting(value = value, locked = locked)
     }
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
-        updateAccountBoolean(
-            restrictions,
-            entry
-        ) { account, newValue ->
-            account.setPlanckPrivacyProtection(newValue)
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
+            lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
+        ) {
+            setPlanckPrivacyProtection(it)
         }
     }
 
     private fun saveAccountLocalFolderSize(restrictions: Bundle, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry,
-            accepted = { newValue ->
-                val acceptedValues = k9.resources.getStringArray(R.array.display_count_values)
-                acceptedValues.contains(newValue)
-            }
-        ) { account, newValue ->
-            try {
-                newValue?.let { account.displayCount = newValue.toInt() }
-            } catch (nfe: NumberFormatException) {
-                Timber.e(nfe)
-            }
+        saveAccountIntChoiceLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_LOCKED,
+            acceptedValues = R.array.display_count_values,
+            initialSettingValue = { lockableDisplayCount }
+        ) {
+            setDisplayCount(it)
         }
     }
 
@@ -626,11 +722,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountQuoteMessagesWhenReply(restrictions: Bundle, entry: RestrictionEntry) {
-        updateAccountBoolean(
-            restrictions,
-            entry
-        ) { account, newValue ->
-            account.isDefaultQuotedTextShown = newValue
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_LOCKED,
+        ) {
+            defaultQuotedTextShown = it
         }
     }
 
@@ -640,10 +738,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME ->
                     saveAccountSenderName(bundle, restriction)
+
                 RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
                     saveAccountUseSignature(bundle, restriction)
+
                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
                     saveAccountSignature(bundle, restriction)
+
                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE ->
                     saveAccountSignatureBeforeQuotedMessage(bundle, restriction)
             }
@@ -725,12 +826,16 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     when (restriction.key) {
                         RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
                             saveFolder { account, newValue -> account.archiveFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
                             saveFolder { account, newValue -> account.draftsFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_SENT_FOLDER ->
                             saveFolder { account, newValue -> account.sentFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_SPAM_FOLDER ->
                             saveFolder { account, newValue -> account.spamFolderName = newValue }
+
                         RESTRICTION_ACCOUNT_TRASH_FOLDER ->
                             saveFolder { account, newValue -> account.trashFolderName = newValue }
                     }
@@ -740,30 +845,65 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountEnableServerSearch(restrictions: Bundle, entry: RestrictionEntry) {
-        updateAccountBoolean(
-            restrictions,
-            entry,
-        ) { account, newValue ->
-            account.setAllowRemoteSearch(newValue)
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_LOCKED,
+        ) {
+            allowRemoteSearch = it
         }
     }
 
     private fun saveAccountSeverSearchLimit(restrictions: Bundle, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry,
-            accepted = { newValue ->
-                val acceptedValues = k9.resources.getStringArray(
-                    R.array.remote_search_num_results_values
-                )
-                acceptedValues.contains(newValue)
+        saveAccountIntChoiceLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_LOCKED,
+            acceptedValues = R.array.remote_search_num_results_values,
+            initialSettingValue = { lockableRemoteSearchNumResults }
+        ) {
+            setRemoteSearchNumResults(it)
+        }
+    }
+
+    private fun saveAccountIntChoiceLockableSetting(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        valueKey: String,
+        lockedKey: String,
+        @ArrayRes acceptedValues: Int,
+        initialSettingValue: Account.() -> ManageableSetting<Int>,
+        updateSetting: Account.(ManageableSetting<Int>) -> Unit,
+    ) {
+        val bundle = restrictions.getBundle(entry.key)
+        val firstAccount = preferences.accounts.firstOrNull() ?: return
+
+        var (value, locked) = firstAccount.initialSettingValue()
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                valueKey ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            k9.resources.getStringArray(acceptedValues).contains(newValue)
+                        }
+                    ) {
+                        try {
+                            value = it.toInt()
+                        } catch (nfe: NumberFormatException) {
+                            Timber.e(nfe)
+                        }
+                    }
+
+                lockedKey ->
+                    locked = getBooleanOrDefault(bundle, restriction)
             }
-        ) { account, newValue ->
-            try {
-                newValue?.let { account.remoteSearchNumResults = newValue.toInt() }
-            } catch (nfe: NumberFormatException) {
-                Timber.e(nfe)
-            }
+        }
+        preferences.accounts.forEach {
+            it.updateSetting(ManageableSetting(value = value, locked = locked))
         }
     }
 
@@ -777,11 +917,40 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountEnableSync(restrictions: Bundle, entry: RestrictionEntry) {
-        updateAccountBoolean(
-            restrictions,
-            entry,
-        ) { account, newValue ->
-            account.setPlanckSyncAccount(newValue)
+        saveAccountBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_LOCKED,
+        ) {
+            setPlanckSyncAccount(it)
+        }
+    }
+
+    private fun saveAccountBooleanLockableSetting(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        valueKey: String,
+        lockedKey: String,
+        updateSetting: Account.(ManageableSetting<Boolean>) -> Unit,
+    ) {
+        if (preferences.accounts.isEmpty()) return
+        val bundle = restrictions.getBundle(entry.key)
+        var value = false
+        var locked = true
+
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                valueKey ->
+                    value = getBooleanOrDefault(bundle, restriction)
+
+                lockedKey ->
+                    locked = getBooleanOrDefault(bundle, restriction)
+            }
+        }
+
+        preferences.accounts.forEach {
+            it.updateSetting(ManageableSetting(value = value, locked = locked))
         }
     }
 

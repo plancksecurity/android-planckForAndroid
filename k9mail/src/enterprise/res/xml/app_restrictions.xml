@@ -2,11 +2,23 @@
 <restrictions xmlns:android="http://schemas.android.com/apk/res/android">
 
     <restriction
-        android:defaultValue="@bool/default_enable_privacy_protection"
         android:description="@string/enable_privacy_protection_description"
         android:key="planck_enable_privacy_protection"
-        android:restrictionType="bool"
-        android:title="@string/enable_privacy_protection_title"/>
+        android:restrictionType="bundle"
+        android:title="@string/enable_privacy_protection_title">
+        <restriction
+            android:defaultValue="@bool/default_enable_privacy_protection"
+            android:description="@string/value_restriction_description"
+            android:key="planck_enable_privacy_protection_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="planck_enable_privacy_protection_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:description="@string/extra_keys_description"
@@ -67,18 +79,23 @@
     </restriction>
 
     <restriction
-        android:defaultValue="@bool/default_use_trustwords"
-        android:description="@string/use_trustwords_setting_description"
-        android:key="planck_use_trustwords"
-        android:restrictionType="bool"
-        android:title="@string/use_trustwords_setting_title"/>
-
-    <restriction
-        android:defaultValue="@bool/default_unsecure_delivery_warning"
         android:description="@string/pep_forward_warning_description"
         android:key="unsecure_delivery_warning"
-        android:restrictionType="bool"
-        android:title="@string/pep_forward_warning"/>
+        android:restrictionType="bundle"
+        android:title="@string/pep_forward_warning">
+        <restriction
+            android:defaultValue="@bool/default_unsecure_delivery_warning"
+            android:description="@string/value_restriction_description"
+            android:key="unsecure_delivery_warning_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="unsecure_delivery_warning_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:defaultValue="@bool/default_use_pep_sync_folder"
@@ -88,11 +105,23 @@
         android:title="@string/pep_sync_folder"/>
 
     <restriction
-        android:defaultValue="@bool/default_debug_logging"
         android:description="@string/debug_enable_debug_logging_summary"
         android:key="debug_logging"
-        android:restrictionType="bool"
-        android:title="@string/debug_enable_debug_logging_title"/>
+        android:restrictionType="bundle"
+        android:title="@string/debug_enable_debug_logging_title">
+        <restriction
+            android:defaultValue="@bool/default_debug_logging"
+            android:description="@string/value_restriction_description"
+            android:key="debug_logging_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="debug_logging_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:defaultValue="@bool/default_enable_echo_protocol"
@@ -101,13 +130,25 @@
         android:title="@string/enable_echo_protocol_title"/>
 
     <restriction
-        android:defaultValue="@string/default_account_display_count"
         android:description="@string/account_display_count_description"
         android:key="account_display_count"
-        android:restrictionType="choice"
-        android:entries="@array/display_count_entries"
-        android:entryValues="@array/display_count_values"
-        android:title="@string/account_settings_mail_display_count_label"/>
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_mail_display_count_label">
+        <restriction
+            android:defaultValue="@string/default_account_display_count"
+            android:description="@string/value_restriction_description"
+            android:key="account_display_count_value"
+            android:restrictionType="choice"
+            android:entries="@array/display_count_entries"
+            android:entryValues="@array/display_count_values"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="account_display_count_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:defaultValue="@string/default_max_push_folders"
@@ -119,11 +160,23 @@
         android:title="@string/account_setup_push_limit_label"/>
 
     <restriction
-        android:defaultValue=""
         android:description="@string/account_description_description"
         android:key="account_description"
-        android:restrictionType="string"
-        android:title="@string/account_settings_description_label"/>
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_description_label">
+        <restriction
+            android:defaultValue=""
+            android:description="@string/value_restriction_description"
+            android:key="account_description_value"
+            android:restrictionType="string"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="account_description_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:description="@string/composition_description"
@@ -153,11 +206,23 @@
     </restriction>
 
     <restriction
-        android:defaultValue="@bool/default_quoted_text_shown"
         android:description="@string/default_quoted_text_shown_description"
         android:key="default_quoted_text_shown"
-        android:restrictionType="bool"
-        android:title="@string/account_settings_default_quoted_text_shown_label"/>
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_default_quoted_text_shown_label">
+        <restriction
+            android:defaultValue="@bool/default_quoted_text_shown"
+            android:description="@string/value_restriction_description"
+            android:key="default_quoted_text_shown_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="default_quoted_text_shown_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:key="account_default_folders"
@@ -195,20 +260,44 @@
     </restriction>
 
     <restriction
-        android:defaultValue="@bool/default_remote_search_enabled"
         android:description="@string/remote_search_enabled_description"
         android:key="remote_search_enabled"
-        android:restrictionType="bool"
-        android:title="@string/account_settings_remote_search_enabled"/>
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_remote_search_enabled">
+        <restriction
+            android:defaultValue="@bool/default_remote_search_enabled"
+            android:description="@string/value_restriction_description"
+            android:key="remote_search_enabled_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="remote_search_enabled_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
-        android:defaultValue="@string/default_account_remote_search_num_results"
         android:description="@string/account_remote_search_num_results_description"
         android:key="account_remote_search_num_results"
-        android:restrictionType="choice"
-        android:entries="@array/remote_search_num_results_entries"
-        android:entryValues="@array/remote_search_num_results_values"
-        android:title="@string/account_settings_remote_search_num_label"/>
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_remote_search_num_label">
+        <restriction
+            android:defaultValue="@string/default_account_remote_search_num_results"
+            android:description="@string/value_restriction_description"
+            android:key="account_remote_search_num_results_value"
+            android:restrictionType="choice"
+            android:entries="@array/remote_search_num_results_entries"
+            android:entryValues="@array/remote_search_num_results_values"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="account_remote_search_num_results_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <restriction
         android:defaultValue="@bool/default_pep_save_encrypted"
@@ -218,11 +307,23 @@
         android:title="@string/pep_mistrust_server_and_store_mails_encrypted"/>
 
     <restriction
-        android:defaultValue="@bool/default_pep_enable_sync_account"
         android:description="@string/pep_sync_enable_account"
         android:key="planck_enable_sync_account"
-        android:restrictionType="bool"
-        android:title="@string/pep_sync_enable_account"/>
+        android:restrictionType="bundle"
+        android:title="@string/pep_sync_enable_account">
+        <restriction
+            android:defaultValue="@bool/default_pep_enable_sync_account"
+            android:description="@string/value_restriction_description"
+            android:key="planck_enable_sync_account_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="planck_enable_sync_account_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
     <!--restriction
         android:defaultValue=""
@@ -337,12 +438,24 @@
     </restriction>
 
     <restriction
-        android:defaultValue="@string/default_audit_log_data_time_retention"
         android:description="@string/audit_log_data_time_retention_description"
         android:key="audit_log_data_time_retention"
-        android:restrictionType="choice"
-        android:entries="@array/audit_log_data_time_retention_entries"
-        android:entryValues="@array/audit_log_data_time_retention_values"
-        android:title="@string/audit_log_data_time_retention_title"/>
+        android:restrictionType="bundle"
+        android:title="@string/audit_log_data_time_retention_title">
+        <restriction
+            android:defaultValue="@string/default_audit_log_data_time_retention"
+            android:description="@string/value_restriction_description"
+            android:key="audit_log_data_time_retention_value"
+            android:restrictionType="choice"
+            android:entries="@array/audit_log_data_time_retention_entries"
+            android:entryValues="@array/audit_log_data_time_retention_values"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="audit_log_data_time_retention_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
 
 </restrictions>

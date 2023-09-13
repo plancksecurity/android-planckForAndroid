@@ -509,7 +509,7 @@ class PlanckProviderImplKotlin(
 
             if (PlanckUtils.isAutoConsumeMessage(decMsg)) {
                 Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                if (K9.DEBUG) {
+                if (K9.isDebug()) {
                     // Using Log.e on purpose
                     try {
                         Log.e(TAG, message.attachments[0].toString())
@@ -1221,8 +1221,8 @@ class PlanckProviderImplKotlin(
         engine.get().adapter_group_query_members(group)
 
     @WorkerThread
-    override fun joinGroupMail(group: Identity, member: Identity) =
-        engine.get().adapter_group_join(group, member)
+    override fun joinGroupMail(group: Identity, member: Identity, manager: Identity) =
+        engine.get().adapter_group_join(group, member, manager)
 
     @WorkerThread
     override fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>> {

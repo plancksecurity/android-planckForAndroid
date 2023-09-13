@@ -75,7 +75,7 @@ public class Account implements BaseAccount, StoreConfig {
      */
     public static final String OUTBOX = "PEP_INTERNAL_OUTBOX";
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
-    private boolean planckSyncEnabled;
+    private ManageableSetting<Boolean> planckSyncEnabled;
     private String oAuthState;
     private OAuthProviderType mandatoryOAuthProviderType;
 
@@ -105,6 +105,10 @@ public class Account implements BaseAccount, StoreConfig {
 
     public boolean isPlanckPrivacyProtected() {
         return planckPrivacyProtected.getValue();
+    }
+
+    public void setPlanckPrivacyProtection(boolean privacyProtection) {
+        this.planckPrivacyProtected.setValue(privacyProtection);
     }
 
     public ManageableSetting<Boolean> getPlanckPrivacyProtected() {
@@ -155,15 +159,19 @@ public class Account implements BaseAccount, StoreConfig {
         }
     }
 
-    public void setPlanckPrivacyProtection(boolean privacyProtection) {
-        this.planckPrivacyProtected.setValue(privacyProtection);
-    }
-
     public Boolean isPlanckSyncEnabled() {
-        return planckSyncEnabled;
+        return planckSyncEnabled.getValue();
     }
 
     public void setPlanckSyncAccount(Boolean planckSyncEnabled) {
+        this.planckSyncEnabled.setValue(planckSyncEnabled);
+    }
+
+    public ManageableSetting<Boolean> getPlanckSyncEnabled() {
+        return planckSyncEnabled;
+    }
+
+    public void setPlanckSyncAccount(ManageableSetting<Boolean> planckSyncEnabled) {
         this.planckSyncEnabled = planckSyncEnabled;
     }
 
@@ -301,10 +309,10 @@ public class Account implements BaseAccount, StoreConfig {
      */
     private String localStorageProviderId;
     private String transportUri;
-    private String description;
+    private ManageableSetting<String> description;
     private String alwaysBcc;
     private int automaticCheckIntervalMinutes;
-    private int displayCount;
+    private ManageableSetting<Integer> displayCount;
     private int chipColor;
     private long latestOldMessageSeenTime;
     private boolean notifyNewMail;
@@ -345,7 +353,7 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean messageFormatAuto;
     private QuoteStyle quoteStyle;
     private String quotePrefix;
-    private boolean defaultQuotedTextShown;
+    private ManageableSetting<Boolean> defaultQuotedTextShown;
     private boolean replyAfterQuote;
     private boolean stripSignature;
     private boolean syncRemoteDeletions;
@@ -355,9 +363,9 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean openPgpHideSignOnly;
     private boolean markMessageAsReadOnView;
     private boolean alwaysShowCcBcc;
-    private boolean allowRemoteSearch;
+    private ManageableSetting<Boolean> allowRemoteSearch;
     private boolean remoteSearchFullText;
-    private int remoteSearchNumResults;
+    private ManageableSetting<Integer> remoteSearchNumResults;
 
     private boolean planckUntrustedServer;
     private ManageableSetting<Boolean> planckPrivacyProtected;
@@ -411,7 +419,7 @@ public class Account implements BaseAccount, StoreConfig {
         automaticCheckIntervalMinutes = INTERVAL_MINUTES_NEVER;
         idleRefreshMinutes = 24;
         pushPollOnConnect = true;
-        displayCount = K9.DEFAULT_VISIBLE_LIMIT;
+        displayCount = new ManageableSetting<>(K9.DEFAULT_VISIBLE_LIMIT);
         accountNumber = -1;
         notifyNewMail = true;
         folderNotifyNewMailMode = FolderMode.ALL;
@@ -439,14 +447,15 @@ public class Account implements BaseAccount, StoreConfig {
         messageFormatAuto = DEFAULT_MESSAGE_FORMAT_AUTO;
         quoteStyle = DEFAULT_QUOTE_STYLE;
         quotePrefix = DEFAULT_QUOTE_PREFIX;
-        defaultQuotedTextShown = DEFAULT_QUOTED_TEXT_SHOWN;
+        description = new ManageableSetting<>(null);
+        defaultQuotedTextShown = new ManageableSetting<>(DEFAULT_QUOTED_TEXT_SHOWN);
         replyAfterQuote = DEFAULT_REPLY_AFTER_QUOTE;
         stripSignature = DEFAULT_STRIP_SIGNATURE;
         syncRemoteDeletions = true;
         openPgpKey = NO_OPENPGP_KEY;
-        allowRemoteSearch = true;
+        allowRemoteSearch = new ManageableSetting<>(true);
         remoteSearchFullText = false;
-        remoteSearchNumResults = DEFAULT_REMOTE_SEARCH_NUM_RESULTS;
+        remoteSearchNumResults = new ManageableSetting<>(DEFAULT_REMOTE_SEARCH_NUM_RESULTS);
         isEnabled = true;
         markMessageAsReadOnView = true;
         alwaysShowCcBcc = false;
@@ -471,10 +480,9 @@ public class Account implements BaseAccount, StoreConfig {
 
         planckUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         planckPrivacyProtected = new ManageableSetting<>(
-                DEFAULT_PEP_PRIVACY_PROTECTED,
-                BuildConfig.IS_ENTERPRISE
+                DEFAULT_PEP_PRIVACY_PROTECTED
         );
-        planckSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
+        planckSyncEnabled = new ManageableSetting<>(DEFAULT_PEP_SYNC_ENABLED);
     }
 
     /*
@@ -517,14 +525,24 @@ public class Account implements BaseAccount, StoreConfig {
         localStorageProviderId = storage.getString(
                 accountUuid + ".localStorageProvider", StorageManager.getInstance(K9.app).getDefaultProviderId());
         transportUri = Base64.decode(storage.getString(accountUuid + ".transportUri", null));
-        description = storage.getString(accountUuid + ".description", null);
+        String descriptionText = storage.getString(accountUuid + ".description", null);
+        description = descriptionText != null
+                ? ManageableSettingKt.deserializeStringManageableSetting(descriptionText)
+                : new ManageableSetting<>(null);
         alwaysBcc = storage.getString(accountUuid + ".alwaysBcc", alwaysBcc);
         automaticCheckIntervalMinutes = storage.getInt(accountUuid + ".automaticCheckIntervalMinutes", INTERVAL_MINUTES_NEVER);
         idleRefreshMinutes = storage.getInt(accountUuid + ".idleRefreshMinutes", 24);
         pushPollOnConnect = storage.getBoolean(accountUuid + ".pushPollOnConnect", true);
-        displayCount = storage.getInt(accountUuid + ".displayCount", K9.DEFAULT_VISIBLE_LIMIT);
-        if (displayCount < 0) {
-            displayCount = K9.DEFAULT_VISIBLE_LIMIT;
+        displayCount = ManageableSettingKt.deserializeIntManageableSetting(
+                storage.getString(
+                        accountUuid + ".displayCount",
+                        ManageableSettingKt.serializeIntManageableSetting(
+                                new ManageableSetting<>(K9.DEFAULT_VISIBLE_LIMIT)
+                        )
+                )
+        );
+        if (displayCount.getValue() < 0) {
+            displayCount.setValue(K9.DEFAULT_VISIBLE_LIMIT);
         }
         latestOldMessageSeenTime = storage.getLong(accountUuid + ".latestOldMessageSeenTime", 0);
         notifyNewMail = storage.getBoolean(accountUuid + ".notifyNewMail", false);
@@ -555,7 +573,14 @@ public class Account implements BaseAccount, StoreConfig {
         }
         quoteStyle = getEnumStringPref(storage, accountUuid + ".quoteStyle", DEFAULT_QUOTE_STYLE);
         quotePrefix = storage.getString(accountUuid + ".quotePrefix", DEFAULT_QUOTE_PREFIX);
-        defaultQuotedTextShown = storage.getBoolean(accountUuid + ".defaultQuotedTextShown", DEFAULT_QUOTED_TEXT_SHOWN);
+        defaultQuotedTextShown = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        accountUuid + ".defaultQuotedTextShown",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(DEFAULT_QUOTED_TEXT_SHOWN)
+                        )
+                )
+        );
         replyAfterQuote = storage.getBoolean(accountUuid + ".replyAfterQuote", DEFAULT_REPLY_AFTER_QUOTE);
         stripSignature = storage.getBoolean(accountUuid + ".stripSignature", DEFAULT_STRIP_SIGNATURE);
         for (NetworkType type : NetworkType.values()) {
@@ -602,23 +627,49 @@ public class Account implements BaseAccount, StoreConfig {
         openPgpKey = storage.getLong(accountUuid + ".cryptoKey", NO_OPENPGP_KEY);
         openPgpHideSignOnly = storage.getBoolean(accountUuid + ".openPgpHideSignOnly", true);
         autocryptPreferEncryptMutual = storage.getBoolean(accountUuid + ".autocryptMutualMode", false);
-        allowRemoteSearch = storage.getBoolean(accountUuid + ".allowRemoteSearch", true);
+        allowRemoteSearch = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        accountUuid + ".allowRemoteSearch",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(true)
+                        )
+                )
+        );
         remoteSearchFullText = storage.getBoolean(accountUuid + ".remoteSearchFullText", false);
-        remoteSearchNumResults = storage.getInt(accountUuid + ".remoteSearchNumResults", DEFAULT_REMOTE_SEARCH_NUM_RESULTS);
+        remoteSearchNumResults = ManageableSettingKt.deserializeIntManageableSetting(
+                storage.getString(
+                        accountUuid + ".remoteSearchNumResults",
+                        ManageableSettingKt.serializeIntManageableSetting(
+                                new ManageableSetting<>(DEFAULT_REMOTE_SEARCH_NUM_RESULTS)
+                        )
+                )
+        );
 
         isEnabled = storage.getBoolean(accountUuid + ".enabled", true);
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
         planckUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
 
-        planckPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
-                storage.getString(accountUuid + ".pEpPrivacyProtected", null)
+        planckPrivacyProtected = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        accountUuid + ".pEpPrivacyProtected",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(DEFAULT_PEP_PRIVACY_PROTECTED)
+                        )
+                )
         );
-        planckSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
+        planckSyncEnabled = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        accountUuid + ".pEpSync",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(DEFAULT_PEP_SYNC_ENABLED)
+                        )
+                )
+        );
 
         // Use email address as account description if necessary
-        if (description == null) {
-            description = getEmail();
+        if (description.getValue() == null) {
+            description.setValue(getEmail());
         }
         oAuthState = storage.getString(accountUuid + ".oAuthState", null);
         String oAuthProvider = storage.getString(accountUuid + ".oAuthProviderType", null);
@@ -834,12 +885,20 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".storeUri", Base64.encode(storeUri));
         editor.putString(accountUuid + ".localStorageProvider", localStorageProviderId);
         editor.putString(accountUuid + ".transportUri", Base64.encode(transportUri));
-        editor.putString(accountUuid + ".description", description);
+        editor.putString(
+                accountUuid + ".description",
+                description.getValue() != null
+                        ? ManageableSettingKt.serializeStringManageableSetting(description)
+                        : null
+        );
         editor.putString(accountUuid + ".alwaysBcc", alwaysBcc);
         editor.putInt(accountUuid + ".automaticCheckIntervalMinutes", automaticCheckIntervalMinutes);
         editor.putInt(accountUuid + ".idleRefreshMinutes", idleRefreshMinutes);
         editor.putBoolean(accountUuid + ".pushPollOnConnect", pushPollOnConnect);
-        editor.putInt(accountUuid + ".displayCount", displayCount);
+        editor.putString(
+                accountUuid + ".displayCount",
+                ManageableSettingKt.serializeIntManageableSetting(displayCount)
+        );
         editor.putLong(accountUuid + ".latestOldMessageSeenTime", latestOldMessageSeenTime);
         editor.putBoolean(accountUuid + ".notifyNewMail", notifyNewMail);
         editor.putString(accountUuid + ".folderNotifyNewMailMode", folderNotifyNewMailMode.name());
@@ -884,16 +943,25 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".messageFormatAuto", messageFormatAuto);
         editor.putString(accountUuid + ".quoteStyle", quoteStyle.name());
         editor.putString(accountUuid + ".quotePrefix", quotePrefix);
-        editor.putBoolean(accountUuid + ".defaultQuotedTextShown", defaultQuotedTextShown);
+        editor.putString(
+                accountUuid + ".defaultQuotedTextShown",
+                ManageableSettingKt.serializeBooleanManageableSetting(defaultQuotedTextShown)
+        );
         editor.putBoolean(accountUuid + ".replyAfterQuote", replyAfterQuote);
         editor.putBoolean(accountUuid + ".stripSignature", stripSignature);
         editor.putLong(accountUuid + ".cryptoKey", openPgpKey);
         editor.putBoolean(accountUuid + ".openPgpHideSignOnly", openPgpHideSignOnly);
         editor.putString(accountUuid + ".openPgpProvider", openPgpProvider);
         editor.putBoolean(accountUuid + ".autocryptMutualMode", autocryptPreferEncryptMutual);
-        editor.putBoolean(accountUuid + ".allowRemoteSearch", allowRemoteSearch);
+        editor.putString(
+                accountUuid + ".allowRemoteSearch",
+                ManageableSettingKt.serializeBooleanManageableSetting(allowRemoteSearch)
+        );
         editor.putBoolean(accountUuid + ".remoteSearchFullText", remoteSearchFullText);
-        editor.putInt(accountUuid + ".remoteSearchNumResults", remoteSearchNumResults);
+        editor.putString(
+                accountUuid + ".remoteSearchNumResults",
+                ManageableSettingKt.serializeIntManageableSetting(remoteSearchNumResults)
+        );
         editor.putBoolean(accountUuid + ".enabled", isEnabled);
         editor.putBoolean(accountUuid + ".markMessageAsReadOnView", markMessageAsReadOnView);
         editor.putBoolean(accountUuid + ".alwaysShowCcBcc", alwaysShowCcBcc);
@@ -907,8 +975,14 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", planckUntrustedServer);
-        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(planckPrivacyProtected));
-        editor.putBoolean(accountUuid + ".pEpSync", planckSyncEnabled);
+        editor.putString(
+                accountUuid + ".pEpPrivacyProtected",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckPrivacyProtected)
+        );
+        editor.putString(
+                accountUuid + ".pEpSync",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckSyncEnabled)
+        );
         editor.putString(accountUuid + ".oAuthState", oAuthState);
         editor.putString(
                 accountUuid + ".oAuthProviderType",
@@ -1028,11 +1102,19 @@ public class Account implements BaseAccount, StoreConfig {
 
     @Override
     public synchronized String getDescription() {
-        return description;
+        return description.getValue();
     }
 
     @Override
     public synchronized void setDescription(String description) {
+        this.description.setValue(description);
+    }
+
+    public synchronized ManageableSetting<String> getLockableDescription() {
+        return description;
+    }
+
+    public synchronized void setDescription(ManageableSetting<String> description) {
         this.description = description;
     }
 
@@ -1133,14 +1215,28 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized int getDisplayCount() {
-        return displayCount;
+        return displayCount.getValue();
     }
 
     public synchronized void setDisplayCount(int displayCount) {
         if (displayCount != -1) {
-            this.displayCount = displayCount;
+            this.displayCount.setValue(displayCount);
         } else {
-            this.displayCount = K9.DEFAULT_VISIBLE_LIMIT;
+            this.displayCount.setValue(K9.DEFAULT_VISIBLE_LIMIT);
+        }
+        if(setupState == SetupState.READY) {
+            resetVisibleLimits();
+        }
+    }
+
+    public synchronized ManageableSetting<Integer> getLockableDisplayCount() {
+        return displayCount;
+    }
+
+    public synchronized void setDisplayCount(ManageableSetting<Integer> displayCount) {
+        this.displayCount = displayCount;
+        if (displayCount.getValue() == -1) {
+            displayCount.setValue(K9.DEFAULT_VISIBLE_LIMIT);
         }
         if(setupState == SetupState.READY) {
             resetVisibleLimits();
@@ -1447,9 +1543,10 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
 
+    @NonNull
     @Override
     public synchronized String toString() {
-        return description;
+        return description.getValue();
     }
 
     public synchronized void setCompression(NetworkType networkType, boolean useCompression) {
@@ -1729,10 +1826,18 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized boolean isDefaultQuotedTextShown() {
-        return defaultQuotedTextShown;
+        return defaultQuotedTextShown.getValue();
     }
 
     public synchronized void setDefaultQuotedTextShown(boolean shown) {
+        defaultQuotedTextShown.setValue(shown);
+    }
+
+    public synchronized ManageableSetting<Boolean> getDefaultQuotedTextShown() {
+        return defaultQuotedTextShown;
+    }
+
+    public synchronized void setDefaultQuotedTextShown(ManageableSetting<Boolean> shown) {
         defaultQuotedTextShown = shown;
     }
 
@@ -1782,19 +1887,36 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public boolean allowRemoteSearch() {
-        return allowRemoteSearch;
+        return allowRemoteSearch.getValue();
     }
 
     public void setAllowRemoteSearch(boolean val) {
+        allowRemoteSearch.setValue(val);
+    }
+
+    public ManageableSetting<Boolean> getAllowRemoteSearch() {
+        return allowRemoteSearch;
+    }
+
+    public void setAllowRemoteSearch(ManageableSetting<Boolean> val) {
         allowRemoteSearch = val;
     }
 
     public int getRemoteSearchNumResults() {
-        return remoteSearchNumResults;
+        return remoteSearchNumResults.getValue();
     }
 
     public void setRemoteSearchNumResults(int val) {
-        remoteSearchNumResults = (val >= 0 ? val : 0);
+        remoteSearchNumResults.setValue(Math.max(val, 0));
+    }
+
+    public ManageableSetting<Integer> getLockableRemoteSearchNumResults() {
+        return remoteSearchNumResults;
+    }
+
+    public void setRemoteSearchNumResults(ManageableSetting<Integer> val) {
+        remoteSearchNumResults = val;
+        remoteSearchNumResults.setValue(Math.max(val.getValue(), 0));
     }
 
     public String getInboxFolderName() {

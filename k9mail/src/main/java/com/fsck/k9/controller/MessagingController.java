@@ -4931,7 +4931,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         put("join groupmail", null, () -> {
             Address myAddress = new Address(account.getEmail(), account.getName());
             foundation.pEp.jniadapter.Identity myIdentity = PlanckUtils.createIdentity(myAddress, context);
-            planckProvider.joinGroupMail(groupMailSignal.getGroupIdentity(), planckProvider.myself(myIdentity));
+            planckProvider.joinGroupMail(
+                    groupMailSignal.getGroupIdentity(),
+                    planckProvider.myself(myIdentity),
+                    groupMailSignal.getSenderIdentity()
+            );
         });
     }
 

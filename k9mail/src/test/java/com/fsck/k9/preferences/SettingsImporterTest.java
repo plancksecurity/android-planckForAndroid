@@ -16,6 +16,7 @@ import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
+@Ignore("Settings import not used nor maintained on enterprise variant")
 public class SettingsImporterTest extends RobolectricTest {
 
 

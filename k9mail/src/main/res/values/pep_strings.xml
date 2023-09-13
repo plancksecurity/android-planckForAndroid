@@ -359,8 +359,6 @@
         <item quantity="other">%1$d unsecure recipients. Tap here to remove them.</item>
     </plurals>
 
-    <string name="use_trustwords_setting_title">Use trustwords</string>
-    <string name="use_trustwords_setting_description">Use trustwords to stablish trust with a partner</string>
     <string name="waiting_for_provisioning">Waiting for provisioning</string>
     <string name="provisioning_in_progress">Provisioning in progress</string>
     <string name="initializing_application">Initializing application</string>
@@ -435,5 +433,6 @@
     </string>
     <string name="confirm_trust_dialog_positive_action">Yes, Confirm</string>
     <string name="reject_trust_dialog_positive_action">Yes, Reject</string>
+    <string name="preference_summary_locked_by_it_manager">%1$s\n(Locked by IT manager)</string>
 
 </resources>

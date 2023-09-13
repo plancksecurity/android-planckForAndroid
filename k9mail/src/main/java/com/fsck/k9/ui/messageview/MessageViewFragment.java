@@ -869,7 +869,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void allowKeyResetWithSender() {
-        if (isAdded() && K9.isUsingTrustwords()) {
+        if (isAdded()) {
             planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
         }
     }

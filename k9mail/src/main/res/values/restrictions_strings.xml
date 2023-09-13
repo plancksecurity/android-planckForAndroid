@@ -97,4 +97,8 @@
         <item>15552000</item>
         <item>31536000</item>
     </string-array>
+    <string name="value_restriction_title">Value</string>
+    <string name="value_restriction_description">Value for this setting</string>
+    <string name="locked_restriction_title">Locked</string>
+    <string name="locked_restriction_description">Whether this setting is locked so user cannot manually change it on the app.</string>
 </resources>

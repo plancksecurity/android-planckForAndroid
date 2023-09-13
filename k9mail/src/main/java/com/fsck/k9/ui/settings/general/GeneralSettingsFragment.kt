@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.mdm.ManageableSetting
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
@@ -47,6 +48,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
+
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -70,6 +72,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
         initializeManualSync()
+        initializeUnsecureDeliveryWarning()
+        initializeDebugLogging()
+        initializeAuditLogDataTimeRetention()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -247,6 +252,36 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         pEpProvider.keyResetAllOwnKeys()
     }
 
+    private fun initializeUnsecureDeliveryWarning() {
+        initializeManagedSettingLockedFeedback(
+            K9.getPlanckForwardWarningEnabled(),
+            PREFERENCE_UNSECURE_DELIVERY_WARNING
+        )
+    }
+
+    private fun initializeDebugLogging() {
+        initializeManagedSettingLockedFeedback(K9.getDebug(), PREFERENCE_DEBUG_LOGGING)
+    }
+
+    private fun initializeAuditLogDataTimeRetention() {
+        initializeManagedSettingLockedFeedback(
+            k9.auditLogDataTimeRetention,
+            PREFERENCE_AUDIT_LOG_TIME_RETENTION
+        )
+    }
+
+    private fun <T> initializeManagedSettingLockedFeedback(
+        setting: ManageableSetting<T>,
+        prefKey: String,
+    ) {
+        if (setting.locked) {
+            (findPreference(prefKey) as? Preference)?.apply {
+                isEnabled = false
+                summary = getString(R.string.preference_summary_locked_by_it_manager, summary)
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
         if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             result?.let { intent ->
@@ -267,6 +302,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
+        private const val PREFERENCE_UNSECURE_DELIVERY_WARNING = "pep_forward_warning"
+        private const val PREFERENCE_DEBUG_LOGGING = "debug_logging"
+        private const val PREFERENCE_AUDIT_LOG_TIME_RETENTION = "audit_log_data_time_retention"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

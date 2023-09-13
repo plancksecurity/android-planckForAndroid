@@ -235,7 +235,7 @@ public class AccountSettings {
         s.put("pEpPrivacyProtected", Settings.versions(
                 new V(45, new BooleanSetting(true)),
                 new V(52, new StringSetting(
-                        ManageableSettingKt.encodeBooleanToString(
+                        ManageableSettingKt.serializeBooleanManageableSetting(
                                 new ManageableSetting<>(true, BuildConfig.IS_ENTERPRISE)
                         ))
                 )
@@ -273,7 +273,7 @@ public class AccountSettings {
             Boolean oldValue = (Boolean) settings.get(settingId);
 
             if (oldValue != null) {
-                String newValue = ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(oldValue, false));
+                String newValue = ManageableSettingKt.serializeBooleanManageableSetting(new ManageableSetting<>(oldValue, false));
                 settings.put(settingId, newValue);
             }
             return null;

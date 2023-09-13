@@ -112,7 +112,8 @@ public class K9 extends MultiDexApplication {
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
-    private static Long auditLogDataTimeRetention = THIRTY_DAYS_IN_SECONDS;
+    private static ManageableSetting<Long> auditLogDataTimeRetention =
+            new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
     private AuditLogger auditLogger;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
     private SyncAppState syncState = SyncState.Idle.INSTANCE;
@@ -247,7 +248,7 @@ public class K9 extends MultiDexApplication {
      * Log.d, including protocol dumps.
      * Controlled by Preferences at run-time
      */
-    public static boolean DEBUG = false;
+    public static ManageableSetting<Boolean> DEBUG = new ManageableSetting<>(false);
 
     /**
      * If this is enabled than logging that normally hides sensitive information
@@ -361,7 +362,8 @@ public class K9 extends MultiDexApplication {
     //private static boolean pEpUseKeyserver = false;
     private static boolean planckPassiveMode = false;
     private static boolean planckSubjectProtection = true;
-    private static boolean planckForwardWarningEnabled = BuildConfig.IS_ENTERPRISE;
+    private static ManageableSetting<Boolean> planckForwardWarningEnabled =
+            new ManageableSetting<>(BuildConfig.IS_ENTERPRISE);
     private static boolean planckSyncEnabled = true;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
@@ -375,8 +377,6 @@ public class K9 extends MultiDexApplication {
     private static int sPgpSignOnlyDialogCounter;
 
     private static String planckNewKeysPassphrase;
-    private static ManageableSetting<Boolean> planckUseTrustwords =
-            new ManageableSetting<>(!BuildConfig.IS_ENTERPRISE, true);
 
     /**
      * @see #areDatabasesUpToDate()
@@ -642,7 +642,10 @@ public class K9 extends MultiDexApplication {
         //editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", planckPassiveMode);
         editor.putBoolean("pEpSubjectProtection", planckSubjectProtection);
-        editor.putBoolean("pEpForwardWarningEnabled", planckForwardWarningEnabled);
+        editor.putString(
+                "pEpForwardWarningEnabled",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckForwardWarningEnabled)
+        );
         editor.putBoolean("pEpEnableSync", planckSyncEnabled);
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
@@ -650,14 +653,13 @@ public class K9 extends MultiDexApplication {
         editor.putLong("appVersionCode", appVersionCode);
         editor.putBoolean("pEpUsePassphraseForNewKeys", planckUsePassphraseForNewKeys);
         editor.putPassphrase(planckNewKeysPassphrase);
-        editor.putString(
-                "pEpUseTrustwords",
-                ManageableSettingKt.encodeBooleanToString(planckUseTrustwords)
-        );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
-        editor.putLong("auditLogDataTimeRetention", auditLogDataTimeRetention);
+        editor.putString(
+                "auditLogDataTimeRetention",
+                ManageableSettingKt.serializeLongManageableSetting(auditLogDataTimeRetention)
+        );
 
         fontSizes.save(editor);
     }
@@ -683,7 +685,7 @@ public class K9 extends MultiDexApplication {
     private void initializeAuditLog() {
         auditLogger = new AuditLogger(
                 new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
-                auditLogDataTimeRetention
+                auditLogDataTimeRetention.getValue()
         );
         auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
         auditLogger.addStartEventLog();
@@ -695,7 +697,7 @@ public class K9 extends MultiDexApplication {
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
-                return DEBUG;
+                return isDebug();
             }
 
             @Override
@@ -950,7 +952,16 @@ public class K9 extends MultiDexApplication {
      */
     public static void loadPrefs(Preferences prefs) {
         Storage storage = prefs.getStorage();
-        setDebug(storage.getBoolean("enableDebugLogging", BuildConfig.DEVELOPER_MODE));
+        setDebug(
+                ManageableSettingKt.deserializeBooleanManageableSetting(
+                        storage.getString(
+                                "enableDebugLogging",
+                                ManageableSettingKt.serializeBooleanManageableSetting(
+                                        new ManageableSetting<>(BuildConfig.DEVELOPER_MODE)
+                                )
+                        )
+                )
+        );
         DEBUG_SENSITIVE = storage.getBoolean("enableSensitiveLogging", false);
         mAnimations = storage.getBoolean("animations", true);
         mGesturesEnabled = storage.getBoolean("gesturesEnabled", false);
@@ -1032,8 +1043,14 @@ public class K9 extends MultiDexApplication {
         //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         planckPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         planckSubjectProtection = getValuePlanckSubjectProtection(storage);
-        planckForwardWarningEnabled = storage.getBoolean(
-                "pEpForwardWarningEnabled", BuildConfig.IS_ENTERPRISE);
+        planckForwardWarningEnabled = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        "pEpForwardWarningEnabled",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(BuildConfig.IS_ENTERPRISE)
+                        )
+                )
+        );
         planckSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", planckSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
@@ -1073,21 +1090,17 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
         planckNewKeysPassphrase = storage.getPassphrase();
-        planckUseTrustwords = ManageableSettingKt.decodeBooleanFromString(
+        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
+        mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
+        pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
+        auditLogDataTimeRetention = ManageableSettingKt.deserializeLongManageableSetting(
                 storage.getString(
-                        "pEpUseTrustwords",
-                        ManageableSettingKt.encodeBooleanToString(
-                                new ManageableSetting<>(
-                                        !((K9) app).isRunningOnWorkProfile(),
-                                        true
-                                )
+                        "auditLogDataTimeRetention",
+                        ManageableSettingKt.serializeLongManageableSetting(
+                                new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS)
                         )
                 )
         );
-        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
-        mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
-        pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
-        auditLogDataTimeRetention = storage.getLong("auditLogDataTimeRetention", THIRTY_DAYS_IN_SECONDS);
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1324,13 +1337,22 @@ public class K9 extends MultiDexApplication {
 
     }
 
-    public static void setDebug(boolean debug) {
+    public static void setDebug(ManageableSetting<Boolean> debug) {
         K9.DEBUG = debug;
         updateLoggingStatus();
     }
 
-    public static boolean isDebug() {
+    public static ManageableSetting<Boolean> getDebug() {
         return DEBUG;
+    }
+
+    public static void setDebug(boolean debug) {
+        K9.DEBUG.setValue(debug);
+        updateLoggingStatus();
+    }
+
+    public static boolean isDebug() {
+        return DEBUG.getValue();
     }
 
     public static boolean startIntegratedInbox() {
@@ -1570,22 +1592,6 @@ public class K9 extends MultiDexApplication {
         K9.planckNewKeysPassphrase = passphrase;
     }
 
-    public static ManageableSetting<Boolean> getPlanckUseTrustwords() {
-        return planckUseTrustwords;
-    }
-
-    public static void setPlanckUseTrustwords(ManageableSetting<Boolean> useTrustwords) {
-        planckUseTrustwords = useTrustwords;
-    }
-
-    public static boolean isUsingTrustwords() {
-        return planckUseTrustwords.getValue();
-    }
-
-    public static void setPlanckUseTrustwords(boolean useTrustwords) {
-        planckUseTrustwords.setValue(useTrustwords);
-    }
-
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {
         K9.enableEchoProtocol = enableEchoProtocol;
     }
@@ -1604,10 +1610,19 @@ public class K9 extends MultiDexApplication {
 
     public void setAuditLogDataTimeRetention(Long auditLogDataTimeRetention) {
         auditLogger.setLogAgeLimit(auditLogDataTimeRetention);
+        K9.auditLogDataTimeRetention.setValue(auditLogDataTimeRetention);
+    }
+
+    public Long getAuditLogDataTimeRetentionValue() {
+        return auditLogDataTimeRetention.getValue();
+    }
+
+    public void setAuditLogDataTimeRetention(ManageableSetting<Long> auditLogDataTimeRetention) {
+        auditLogger.setLogAgeLimit(auditLogDataTimeRetention.getValue());
         K9.auditLogDataTimeRetention = auditLogDataTimeRetention;
     }
 
-    public Long getAuditLogDataTimeRetention() {
+    public ManageableSetting<Long> getAuditLogDataTimeRetention() {
         return auditLogDataTimeRetention;
     }
 
@@ -1793,7 +1808,7 @@ public class K9 extends MultiDexApplication {
 
     private static void updateLoggingStatus() {
         Timber.uprootAll();
-        boolean enableDebugLogging = BuildConfig.DEBUG || DEBUG;
+        boolean enableDebugLogging = BuildConfig.DEBUG || isDebug();
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }
@@ -1901,13 +1916,20 @@ public class K9 extends MultiDexApplication {
         MessagingController.getInstance(this).setSubjectProtected(planckSubjectProtection);
     }
 
-
-    public static boolean isPlanckForwardWarningEnabled() {
+    public static ManageableSetting<Boolean> getPlanckForwardWarningEnabled() {
         return planckForwardWarningEnabled;
     }
 
-    public void setPlanckForwardWarningEnabled(boolean planckForwardWarningEnabled) {
+    public void setPlanckForwardWarningEnabled(ManageableSetting<Boolean> planckForwardWarningEnabled) {
         K9.planckForwardWarningEnabled = planckForwardWarningEnabled;
+    }
+
+    public static boolean isPlanckForwardWarningEnabled() {
+        return planckForwardWarningEnabled.getValue();
+    }
+
+    public void setPlanckForwardWarningEnabled(boolean planckForwardWarningEnabled) {
+        K9.planckForwardWarningEnabled.setValue(planckForwardWarningEnabled);
     }
 
     private void setupFastPoller() {

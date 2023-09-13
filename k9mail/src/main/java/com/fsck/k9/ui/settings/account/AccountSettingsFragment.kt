@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.preference.ListPreference
 import androidx.preference.Preference
-import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -21,12 +20,12 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.ui.tools.FeedbackTools
-import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
+import com.takisoft.preferencex.AutoSummaryEditTextPreference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.exceptions.pEpException
@@ -38,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
+import security.planck.mdm.ManageableSetting
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 import javax.inject.Inject
@@ -53,7 +53,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     lateinit var openPgpApiManager: OpenPgpApiManager
 
     private var rootkey:String? = null
-    private var mdmDialog: AlertDialog? = null
     private lateinit var account:Account
     private val accountUuid: String by lazy {
         checkNotNull(arguments?.getString(ARG_ACCOUNT_UUID)) { "$ARG_ACCOUNT_UUID == null" }
@@ -91,6 +90,11 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializePgpImportKey()
         initializeNotifications()
         initializePepPrivacyProtection()
+        initializeAccountDescription()
+        initializeLocalFolderSize()
+        initializeDefaultQuotedTextShown()
+        initializeRemoteSearchEnabled()
+        initializeRemoteSearchLimit()
     }
 
     fun refreshPreferences() {
@@ -212,27 +216,59 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializePepPrivacyProtection() {
-        if (account.getPlanckPrivacyProtected().locked) {
-                (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as SwitchPreferenceCompat?)?.apply {
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
-                    showMDMDialog(this.title)
-                }
+        initializeManagedSettingLockedFeedback(
+            account.planckPrivacyProtected,
+            PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION
+        )
+    }
+
+    private fun initializeAccountDescription() {
+        if (account.lockableDescription.locked) {
+            (findPreference(PREFERENCE_ACCOUNT_DESCRIPTION) as? AutoSummaryEditTextPreference)?.apply {
+                isEnabled = false
+                summaryHasText = getString(R.string.preference_summary_locked_by_it_manager, text)
             }
         }
     }
 
-    private fun showMDMDialog(title: CharSequence): Boolean {
-        if (mdmDialog == null) {
-            mdmDialog = AlertDialog.Builder(view?.context,
-                    ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
-                    .setTitle(title)
-                    .setMessage(R.string.mdm_controlled_dialog_explanation)
-                    .setCancelable(true)
-                    .setPositiveButton(R.string.ok) { _, _ -> }
-                    .create()
+    private fun initializeLocalFolderSize() {
+        initializeManagedSettingLockedFeedback(
+            account.lockableDisplayCount,
+            PREFERENCE_LOCAL_FOLDER_SIZE
+        )
+    }
+
+    private fun initializeDefaultQuotedTextShown() {
+        initializeManagedSettingLockedFeedback(
+            account.defaultQuotedTextShown,
+            PREFERENCE_DEFAULT_QUOTED_TEXT_SHOWN
+        )
+    }
+
+    private fun initializeRemoteSearchEnabled() {
+        initializeManagedSettingLockedFeedback(
+            account.allowRemoteSearch,
+            PREFERENCE_REMOTE_SEARCH_ENABLED
+        )
+    }
+
+    private fun initializeRemoteSearchLimit() {
+        initializeManagedSettingLockedFeedback(
+            account.lockableRemoteSearchNumResults,
+            PREFERENCE_REMOTE_SEARCH_LIMIT
+        )
+    }
+
+    private fun <T> initializeManagedSettingLockedFeedback(
+        setting: ManageableSetting<T>,
+        prefKey: String,
+    ) {
+        if (setting.locked) {
+            (findPreference(prefKey) as? Preference)?.apply {
+                isEnabled = false
+                summary = getString(R.string.preference_summary_locked_by_it_manager, summary)
+            }
         }
-        mdmDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
-        return false
     }
 
     private fun onKeyImportClicked() {
@@ -253,6 +289,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         //if grouped sync per Account only can be disabled on setup
         preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
 
+        initializeManagedSettingLockedFeedback(
+            account.planckSyncEnabled,
+            PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT
+        )
     }
 
     private fun canSyncAccountBeModified(account: Account): Boolean {
@@ -411,6 +451,11 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
+        private const val PREFERENCE_ACCOUNT_DESCRIPTION = "account_description"
+        private const val PREFERENCE_LOCAL_FOLDER_SIZE = "account_display_count"
+        private const val PREFERENCE_DEFAULT_QUOTED_TEXT_SHOWN = "default_quoted_text_shown"
+        private const val PREFERENCE_REMOTE_SEARCH_ENABLED = "remote_search_enabled"
+        private const val PREFERENCE_REMOTE_SEARCH_LIMIT = "account_remote_search_num_results"
 
         private val FOLDER_LIST_PREFERENCES = listOf(
                 PREFERENCE_AUTO_EXPAND_FOLDER,
