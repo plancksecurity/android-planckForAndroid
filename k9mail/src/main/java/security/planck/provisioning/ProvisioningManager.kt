@@ -57,14 +57,14 @@ class ProvisioningManager @Inject constructor(
             }
             else -> {
                 firstStartup = preferences.accounts.isEmpty()
-                configurationManager.loadConfigurationsSuspend(
-                    ProvisioningScope.Startup(firstStartup)
-                ).flatMapSuspend {
-                    if (firstStartup) {
+                if (firstStartup) {
+                    configurationManager.loadConfigurationsSuspend(
+                        ProvisioningScope.FirstStartup
+                    ).flatMapSuspend {
                         finalizeSetupAfterChecks()
-                    } else {
-                        finalizeSetup()
                     }
+                } else {
+                    finalizeSetup()
                 }
             }
         }

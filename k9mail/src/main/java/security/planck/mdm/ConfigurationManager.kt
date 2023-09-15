@@ -59,17 +59,13 @@ class ConfigurationManager @Inject constructor(
             val restrictions = restrictionsManager.applicationRestrictions
             val entries: List<RestrictionEntry>
             when (provisioningScope) {
-                is ProvisioningScope.Startup -> {
-                    entries = if (provisioningScope.firstStartup) {
-                        if (!isProvisionAvailable(restrictions)) {
-                            throw ProvisioningFailedException("Provisioning data is missing")
-                        }
-                        restrictionsManager.manifestRestrictions
-                            // ignore media keys from MDM before PlanckProvider has been initialized
-                            .filter { it.key in PROVISIONING_RESTRICTIONS }
-                    } else {
-                        return@runCatching
+                ProvisioningScope.FirstStartup -> {
+                    if (!isProvisionAvailable(restrictions)) {
+                        throw ProvisioningFailedException("Provisioning data is missing")
                     }
+                    entries = restrictionsManager.manifestRestrictions
+                        // ignore media keys from MDM before PlanckProvider has been initialized
+                        .filter { it.key in PROVISIONING_RESTRICTIONS }
                 }
                 ProvisioningScope.InitializedEngine -> {
                     entries = restrictionsManager.manifestRestrictions

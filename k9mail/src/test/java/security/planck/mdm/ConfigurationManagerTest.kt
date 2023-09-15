@@ -110,7 +110,7 @@ class ConfigurationManagerTest : RobolectricTest() {
     @Test
     fun `loadConfigurationsSuspend() on first startup updates settings with provisioning restrictions`() =
         runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.Startup(true))
+            val result = manager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup)
 
 
             assertTrue(result.isSuccess)
@@ -120,17 +120,6 @@ class ConfigurationManagerTest : RobolectricTest() {
                 assertTrue(restrictionEntry.key in PROVISIONING_RESTRICTIONS)
             }
             verifySettingsSaved()
-        }
-
-    @Test
-    fun `loadConfigurationsSuspend() on startup does not update any settings if it's not first startup`() =
-        runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.Startup(false))
-
-
-            assertTrue(result.isSuccess)
-            coVerify { updater.wasNot(Called) }
-            coVerify(exactly = 0) { K9.save(any()) }
         }
 
     @Test
@@ -188,7 +177,7 @@ class ConfigurationManagerTest : RobolectricTest() {
             )
 
 
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.Startup(true))
+            val result = manager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup)
 
 
             assertTrue(result.isFailure)

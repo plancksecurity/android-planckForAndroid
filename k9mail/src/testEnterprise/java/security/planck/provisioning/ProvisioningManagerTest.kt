@@ -75,7 +75,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup(true)) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup) }
     }
 
     @Test
@@ -194,21 +194,21 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup and firsStartup true`() {
+    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup`() {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
 
 
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup(true)) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
         }
     }
 
     @Test
-    fun `if there are any accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup and firsStartup false`() {
+    fun `if there are any accounts setup, configurationManager_loadConfigurationsSuspend is not called`() {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
 
 
@@ -218,10 +218,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup(false)) }
-        assertListenerProvisionChangedWithState { state ->
-            assertEquals(ProvisionState.Initialized, state)
-        }
+        coVerify { configurationManager.wasNot(Called) }
     }
 
     @Test
