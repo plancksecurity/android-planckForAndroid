@@ -574,7 +574,10 @@ public class K9 extends MultiDexApplication {
     }
 
     public static void save(StorageEditor editor) {
-        editor.putBoolean("enableDebugLogging", K9.isDebug());
+        editor.putString(
+                "enableDebugLogging",
+                ManageableSettingKt.serializeBooleanManageableSetting(DEBUG)
+        );
         editor.putBoolean("enableSensitiveLogging", K9.DEBUG_SENSITIVE);
         editor.putString("backgroundOperations", K9.backgroundOps.name());
         editor.putBoolean("animations", mAnimations);
