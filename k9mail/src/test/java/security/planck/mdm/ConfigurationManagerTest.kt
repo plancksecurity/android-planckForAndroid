@@ -83,14 +83,6 @@ class ConfigurationManagerTest : RobolectricTest() {
         coVerify { restrictionsProvider.applicationRestrictions }
     }
 
-//    @Test
-//    fun `loadConfigurationsSuspend() updates settings using ConfiguredSettingsUpdater`() = runTest {
-//        manager.loadConfigurationsSuspend()
-//
-//
-//        coVerify { updater.update(sampleRestrictions, sampleEntries.first()) }
-//    }
-
     @Test
     fun `loadConfigurationsSuspend() saves settings using K9`() = runTest {
         manager.loadConfigurationsSuspend()
