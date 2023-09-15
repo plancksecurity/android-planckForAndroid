@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +22,7 @@ class ConfigurationManager @Inject constructor(
     private val preferences: Preferences,
     private val restrictionsManager: RestrictionsProvider,
     private val settingsUpdater: ConfiguredSettingsUpdater,
+    private val dispatcherProvider: DispatcherProvider,
 ) {
 
     private val listeners = mutableListOf<RestrictionsListener>()
@@ -53,7 +54,7 @@ class ConfigurationManager @Inject constructor(
 
     suspend fun loadConfigurationsSuspend(
         provisioningScope: ProvisioningScope = ProvisioningScope.AllSettings,
-    ): Result<Unit> = withContext(PlanckDispatcher) {
+    ): Result<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
             val entries: List<RestrictionEntry>
