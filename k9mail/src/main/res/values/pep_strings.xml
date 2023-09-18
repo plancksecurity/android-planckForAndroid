@@ -194,6 +194,7 @@
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="sync_title">planck sync wizard</string>
     <string name="sync_action">Sync</string>
+    <string name="leave_action">Leave</string>
     <string name="reset">Reset</string>
     <string name="offline">Device is offline. Please fix internet connection and try again.</string>
     <string name="reset_all">Yes, Reset</string>
@@ -301,6 +302,10 @@
     <string name="pgp_key_import_dialog_accept_button">Select and import key</string>
     <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
     <string name="pgp_key_import_dialog_empty_edittext">Fingerprint is mandatory</string>
+
+    <string name="device_group_leave_title">Leave device group</string>
+    <string name="device_group_leave_description">Please confirm that you want to leave the current device group. No worries, later you still can reconnect following the same manual sync procedure as before.</string>
+    <string name="device_group_leave_summary">Initiate leave device group</string>
 
     <string name="pep_sync_folder">planck sync folder</string>
     <string name="pep_sync_folder_is_enabled">planck sync folder is enabled</string>

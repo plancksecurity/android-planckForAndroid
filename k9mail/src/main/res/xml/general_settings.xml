@@ -36,6 +36,11 @@
         android:title="@string/sync_title" />
 
     <Preference
+        android:key="planck_key_leave_device_group"
+        android:summary="@string/device_group_leave_summary"
+        android:title="@string/device_group_leave_title" />
+
+    <Preference
         android:key="pep_key_reset"
         android:summary="@string/pep_key_reset_all_own_ids_summary"
         android:title="@string/reset" />

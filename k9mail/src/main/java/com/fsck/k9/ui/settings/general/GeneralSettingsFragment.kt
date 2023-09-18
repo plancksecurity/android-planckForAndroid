@@ -37,6 +37,7 @@ import security.planck.ui.support.export.ExportpEpSupportDataActivity
 import javax.inject.Inject
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
+private const val PREFERENCE_PLANCK_LEAVE_DEVICE_GROUP = "planck_key_leave_device_group"
 @AndroidEntryPoint
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     @Inject
@@ -72,6 +73,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
         initializeManualSync()
+        initializeLeaveDeviceGroup()
         initializeUnsecureDeliveryWarning()
         initializeDebugLogging()
         initializeAuditLogDataTimeRetention()
@@ -100,6 +102,37 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeLeaveDeviceGroup() {
+        val preference = findPreference<Preference>(PREFERENCE_PLANCK_LEAVE_DEVICE_GROUP)
+        if (!shouldDisplayManualSyncButton()) {
+            preference?.isVisible = false
+        } else {
+            configureLeaveDeviceGroup(preference)
+        }
+    }
+
+    private fun configureLeaveDeviceGroup(preference: Preference?) {
+        preference?.apply {
+            setOnPreferenceClickListener {
+                view?.let {
+                    //TODO: investigate should the device be online for this action
+                    if (isDeviceOnline()) {
+                        AlertDialog.Builder(it.context)
+                            .setTitle(getString(R.string.device_group_leave_title))
+                            .setMessage(R.string.device_group_leave_description)
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.leave_action) { _, _ ->
+                                startLeaveDeviceGroup()
+                            }.setNegativeButton(R.string.cancel_action, null).show()
+                    } else {
+                        Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+                true
+            }
+        }
+    }
+
     private fun configureManualSync(preference: Preference?) {
         preference?.apply {
             setOnPreferenceClickListener {
@@ -119,6 +152,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun startLeaveDeviceGroup() {
+        //TODO
     }
 
     private fun startManualSync() {
