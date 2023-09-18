@@ -38,6 +38,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import security.planck.mdm.ConfigurationManager;
+import security.planck.provisioning.ProvisioningScope;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @AndroidEntryPoint
@@ -171,7 +172,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     }
 
     private void loadConfigurations() {
-        configurationManager.loadConfigurationsBlocking();
+        configurationManager.loadConfigurationsBlocking(ProvisioningScope.AllAccountSettings.INSTANCE);
     }
 
     @VisibleForTesting

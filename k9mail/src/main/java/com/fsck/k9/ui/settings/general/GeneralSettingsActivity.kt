@@ -4,10 +4,10 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 import androidx.preference.PreferenceScreen
-import android.view.MenuItem
 import com.fsck.k9.R
 import com.fsck.k9.activity.ConfirmationDialog
 import com.fsck.k9.activity.K9Activity
@@ -30,8 +30,6 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
         bindViews(R.layout.general_settings)
 
         initializeActionBar()
-
-        setConfigurationManagerListener(this)
 
         if (savedInstanceState == null) {
             intent.getStringExtra(PREFERENCE_KEY)?.let {

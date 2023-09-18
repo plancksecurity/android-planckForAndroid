@@ -36,7 +36,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
             finish()
             return
         }
-        setConfigurationManagerListener(this)
 
         loadAccount()
     }

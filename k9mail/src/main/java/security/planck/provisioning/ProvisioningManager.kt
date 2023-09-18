@@ -27,6 +27,7 @@ class ProvisioningManager @Inject constructor(
         else ProvisionState.Initializing()
 
     private val listeners = mutableListOf<ProvisioningStateListener>()
+    private var firstStartup = false
 
     fun addListener(listener: ProvisioningStateListener) {
         listeners.add(listener)
@@ -55,15 +56,15 @@ class ProvisioningManager @Inject constructor(
                 finalizeSetup()
             }
             else -> {
-                val hasAccounts = preferences.accounts.isNotEmpty()
-                configurationManager.loadConfigurationsSuspend(
-                    ProvisioningStage.Startup(!hasAccounts)
-                ).flatMapSuspend {
-                    if(!hasAccounts) {
+                firstStartup = preferences.accounts.isEmpty()
+                if (firstStartup) {
+                    configurationManager.loadConfigurationsSuspend(
+                        ProvisioningScope.FirstStartup
+                    ).flatMapSuspend {
                         finalizeSetupAfterChecks()
-                    } else {
-                        finalizeSetup()
                     }
+                } else {
+                    finalizeSetup()
                 }
             }
         }
@@ -72,7 +73,10 @@ class ProvisioningManager @Inject constructor(
     fun performInitializedEngineProvisioning() = runBlocking<Unit> {
         if (k9.isRunningOnWorkProfile) {
             configurationManager
-                .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine)
+                .loadConfigurationsSuspend(
+                    if (firstStartup) ProvisioningScope.AllSettings
+                    else ProvisioningScope.InitializedEngine
+                )
                 .onFailure { throw it }
         }
     }
