@@ -129,7 +129,7 @@ public class CucumberTestSteps {
     private ActivityScenario<SplashActivity> scenario;
 
     @Before
-    public void setup() throws IOException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void setup() throws IOException {
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
