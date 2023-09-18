@@ -1559,11 +1559,12 @@ public class TestUtils {
         clickView(R.id.to_label);
         waitForIdle();
         int boxBottom = 0;
+        int rightX = 0;
         boolean clicked = false;
         while (!clicked) {
             for (UiObject2 multiTextView : device.findObjects(selector)) {
                 boxBottom = multiTextView.getVisibleBounds().bottom;
-                int rightX = multiTextView.getVisibleBounds().right;
+                rightX = multiTextView.getVisibleBounds().right;
                 int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
                 while (
                         0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green()
@@ -1591,7 +1592,7 @@ public class TestUtils {
             clickView(R.id.to_label);
             waitForIdle();
             for (UiObject2 multiTextView : device.findObjects(selector)) {
-                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
+                if (boxBottom != multiTextView.getVisibleBounds().bottom || rightX != multiTextView.getVisibleBounds().right) {
                     clicked = true;
                 }
             }
