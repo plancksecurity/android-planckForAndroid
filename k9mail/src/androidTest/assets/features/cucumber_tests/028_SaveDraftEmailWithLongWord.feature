@@ -16,7 +16,7 @@ Feature: Save Draft email with long word
     And I enter TM154A in the messageSubject field
     And I enter longWord in the messageBody field
     And I save as draft
-    And I go to the drafts folder
+    And I go to drafts folder from navigation menu
     And I click message at position 1
     Then I compare messageBody with longWord
     And I check the privacy status is Encrypted

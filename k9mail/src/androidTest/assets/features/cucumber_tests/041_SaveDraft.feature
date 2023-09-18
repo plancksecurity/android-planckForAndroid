@@ -27,16 +27,18 @@ Feature: Save Draft
     And I enter saveDraft2 in the messageBody field
     And I attach picture
     And I save as draft
-    And I go to the drafts folder
+    And I go to drafts folder from navigation menu
     And I click message at position 1
     Then I compare messageBody with saveDraft2
     And I check picture is attached in draft
     And I check the privacy status is Encrypted
-    When I go to the drafts folder
+    And I go back to the Inbox
+    And I go to drafts folder from navigation menu
     And I click message at position 1
     Then I compare messageBody with saveDraft1
     And I check MSoffice is attached in draft
     And I check the privacy status is Encrypted
-    And I go to the drafts folder
+    And I go back to the Inbox
+    And I go to drafts folder from navigation menu
 
 

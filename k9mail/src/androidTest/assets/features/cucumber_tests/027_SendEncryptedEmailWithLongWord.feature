@@ -20,7 +20,7 @@ Feature: Send Encrypted email with long word
     Then I compare messageBody with longWord
     Then I check the privacy status is Encrypted
     When I go back to the Inbox
-    And I go to the sent folder
+    And I go to sent folder from navigation menu
     And I click the first message
     Then I compare messageBody with longWord
 

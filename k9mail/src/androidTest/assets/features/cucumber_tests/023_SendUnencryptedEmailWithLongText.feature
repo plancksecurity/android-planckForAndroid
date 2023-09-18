@@ -13,9 +13,10 @@ Feature: Send Unencrypted email with long text
     And I enter TM152 in the messageSubject field
     And I enter longText in the messageBody field
     And I click the send message button
-    And I wait for the message and click it
+    And I click the first message
     Then I compare messageBody from json file with longText
-    And I go to the sent folder
+    When I go back to the Inbox
+    And I go to sent folder from navigation menu
     And I click the first message
     Then I compare messageBody with longText
 

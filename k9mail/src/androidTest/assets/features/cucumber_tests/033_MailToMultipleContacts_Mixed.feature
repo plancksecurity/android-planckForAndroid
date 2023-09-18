@@ -31,7 +31,8 @@ Feature: Mail to multiple contacts (mixed)
     And I wait for the message and click it
     Then I check the privacy status is Encrypted
     And I compare rating_string from json file with unencrypted
-    And I go to the sent folder
+    And I go back to the Inbox
+    And I go to sent folder from navigation menu
     And I click the last message received
     Then I check the privacy status is NotEncrypted
     And I compare messageBody with TM-12B

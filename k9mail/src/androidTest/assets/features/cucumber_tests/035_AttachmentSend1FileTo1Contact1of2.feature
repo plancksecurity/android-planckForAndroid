@@ -1,5 +1,6 @@
 Feature: Attachment Send 1 File To 1 Contact (1/2)
   Background:
+    Given I created an account
 
 
 
