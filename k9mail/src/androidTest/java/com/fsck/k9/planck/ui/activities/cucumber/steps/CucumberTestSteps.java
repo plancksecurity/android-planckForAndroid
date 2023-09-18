@@ -3275,7 +3275,7 @@ public class CucumberTestSteps {
                     if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/attachments")) {
                         int size = object.getChildren().size();
                         for (int attachment = 0; attachment < size; attachment++) {
-                            if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json")) {
+                            if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json") && !object.getChildren().get(attachment).getChildren().get(2).getText().contains("original.eml")) {
                                 attachments ++;
                                 object.getChildren().get(attachment).getChildren().get(0).click();
                             }

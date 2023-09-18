@@ -879,13 +879,12 @@ public class TestUtils {
             e.printStackTrace();
         }
         UiObject2 clear = device.findObject(By.res("com.sec.android.app.launcher:id/clear_all_button"));
-        {
-            try {
-                clear.click();
-                waitForIdle();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            clear.click();
+            waitForIdle();
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1536,6 +1535,7 @@ public class TestUtils {
             }
         }
         onView(withId(field)).perform(click(), closeSoftKeyboard());
+        waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
         waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
@@ -3268,7 +3268,6 @@ public class TestUtils {
     public void goToFolder(String folder) {
         openHamburgerMenu();
         waitForIdle();
-
         ViewInteraction folderInteraction = checkFolderInDrawerToFindName(
                 folder,
                 allOf(
