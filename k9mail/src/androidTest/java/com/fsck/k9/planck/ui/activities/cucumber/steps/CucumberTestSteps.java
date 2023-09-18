@@ -1747,7 +1747,7 @@ public class CucumberTestSteps {
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             waitForIdle();
             device.pressBack();
-            String text = "";
+            String text;
             switch (widgetToDrag) {
                 case 1:
                     text = brand + " Unread";
