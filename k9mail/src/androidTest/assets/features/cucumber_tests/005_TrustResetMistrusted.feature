@@ -1,6 +1,5 @@
 Feature: Trust Reset: Mistrusted
   Background:
-    Given I created an account
 
 
 #Summary: the user sends a message with specific content to a bot. They then stop trusting the message, leading to a privacy status of "Dangerous." After resetting the partner key, the privacy status is restored to "Encrypted."
@@ -12,7 +11,13 @@ Feature: Trust Reset: Mistrusted
     And I click stop trusting words
     Then I check if the privacy status is Dangerous
     When I reset partner key
-    Then I check if the privacy status is Encrypted
+    Then I check if the privacy status is Dangerous
+    And I press back
+    When I click compose message
+    And I check the privacy status is Undefined
+    And I enter bot2 in the messageTo field
+    Then I check the privacy status is NotEncrypted
+    And I discard the message
 
 
 

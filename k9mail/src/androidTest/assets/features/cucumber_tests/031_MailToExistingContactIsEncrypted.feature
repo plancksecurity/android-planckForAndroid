@@ -22,8 +22,9 @@ Feature: Mail to existing contact is encrypted
     When I enter empty in the messageTo field
     Then I check the privacy status is Undefined
     When I send 1 message to bot1 with subject TM-10A and body TM-10Abody
-    And I go to the sent folder
+    And I go to sent folder from navigation menu
     And I click the last message received
     Then I check the privacy status is Encrypted
     And I compare messageBody with TM-10Abody
+    And I go back to the Inbox
 

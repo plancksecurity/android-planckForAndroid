@@ -337,6 +337,7 @@ public class TestUtils {
 
     public void composeMessageButton() {
         waitForIdle();
+        getMessageListSize();
         clickView(R.id.fab_button_compose_message);
         waitForIdle();
         onView(withId(R.id.to)).perform(closeSoftKeyboard());
@@ -878,13 +879,12 @@ public class TestUtils {
             e.printStackTrace();
         }
         UiObject2 clear = device.findObject(By.res("com.sec.android.app.launcher:id/clear_all_button"));
-        {
-            try {
-                clear.click();
-                waitForIdle();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            clear.click();
+            waitForIdle();
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1535,6 +1535,7 @@ public class TestUtils {
             }
         }
         onView(withId(field)).perform(click(), closeSoftKeyboard());
+        waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
         waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
@@ -1558,11 +1559,12 @@ public class TestUtils {
         clickView(R.id.to_label);
         waitForIdle();
         int boxBottom = 0;
+        int rightX = 0;
         boolean clicked = false;
         while (!clicked) {
             for (UiObject2 multiTextView : device.findObjects(selector)) {
                 boxBottom = multiTextView.getVisibleBounds().bottom;
-                int rightX = multiTextView.getVisibleBounds().right;
+                rightX = multiTextView.getVisibleBounds().right;
                 int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
                 while (
                         0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green()
@@ -1590,7 +1592,7 @@ public class TestUtils {
             clickView(R.id.to_label);
             waitForIdle();
             for (UiObject2 multiTextView : device.findObjects(selector)) {
-                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
+                if (boxBottom != multiTextView.getVisibleBounds().bottom || rightX != multiTextView.getVisibleBounds().right) {
                     clicked = true;
                 }
             }
@@ -2322,6 +2324,7 @@ public class TestUtils {
     }
 
     public void assertSecurityStatusText(Rating status) {
+        int value = status.value;
         String firstLineText = getTextFromView(onView(withId(R.id.securityStatusText)));
         ViewInteraction secondLine = onView(withId(R.id.securityStatusSecondLine));
         String emptySpace = "";
@@ -2331,8 +2334,11 @@ public class TestUtils {
         if (!secondLineText.equals("")) {
             emptySpace = " ";
         }
+        if (value == -1) {
+            value = 10;
+        }
         assertEquals(
-                getResourceString(R.array.pep_title, status.value),
+                getResourceString(R.array.pep_title, value),
                 firstLineText + emptySpace + secondLineText
         );
     }
@@ -3225,7 +3231,8 @@ public class TestUtils {
     }
 
     public void clickMessageStatus() {
-        clickView(R.id.securityStatusText);
+        selectFromMenu((stringToID("pep_title_activity_privacy_status")));
+        //clickView(R.id.securityStatusText);
     }
 
     public void goBackToMessageList(){
@@ -3262,7 +3269,6 @@ public class TestUtils {
     public void goToFolder(String folder) {
         openHamburgerMenu();
         waitForIdle();
-
         ViewInteraction folderInteraction = checkFolderInDrawerToFindName(
                 folder,
                 allOf(

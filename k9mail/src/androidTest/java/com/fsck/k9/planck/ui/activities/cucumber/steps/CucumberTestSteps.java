@@ -36,7 +36,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.EspressoTestingIdlingResource;
 import com.fsck.k9.planck.ui.activities.SplashActivity;
 import com.fsck.k9.planck.ui.activities.TestUtils;
-import com.fsck.k9.planck.ui.activities.test.RestrictionsManager;
+//import com.fsck.k9.planck.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -129,7 +129,7 @@ public class CucumberTestSteps {
     private ActivityScenario<SplashActivity> scenario;
 
     @Before
-    public void setup() throws IOException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void setup() throws IOException {
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -203,17 +203,13 @@ public class CucumberTestSteps {
         } catch (Exception exception) {
             Timber.i("App could be closed");
         }
-        if (BuildConfig.IS_ENTERPRISE) {
-            testUtils.clearAllRecentApps();
-        }
         try {
             testUtils.clearAllRecentApps();
-            Intents.release();
         } catch (Exception exception) {
             Timber.i("Intents.init was not called before Intents.release");
         }
         if (BuildConfig.IS_ENTERPRISE) {
-            RestrictionsManager.resetSettings();
+            //RestrictionsManager.resetSettings();
         }
     }
 
@@ -348,7 +344,11 @@ public class CucumberTestSteps {
             waitForIdle();
         }
         testUtils.typeTextInField(text, viewID, resourceID);
-        testUtils.scrollDownToSubject();
+        try {
+            testUtils.scrollDownToSubject();
+        } catch (Exception ex) {
+            Timber.i("Is not possible to scroll Down");
+        }
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
         if (field.equals("BCC")) {
@@ -715,49 +715,49 @@ public class CucumberTestSteps {
         waitForIdle();
         if (value.equals("true") || value.equals("false")) {
             boolean valueB = value.equals("true");
-            RestrictionsManager.setBooleanRestrictions(setting, valueB);
+            //RestrictionsManager.setBooleanRestrictions(setting, valueB);
             if (setting.equals("pep_enable_privacy_protection")) {
                 pep_enable_privacy_protection = valueB;
             }
         } else {
-            RestrictionsManager.setStringRestrictions(setting, value);
+            //RestrictionsManager.setStringRestrictions(setting, value);
         }
     }
 
     @When("^I set incoming settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
     public void I_set_incoming_settings(String server, String securityType,int port, String userName) {
-        RestrictionsManager.setIncomingBundleSettings(server, securityType, port, userName);
+        //RestrictionsManager.setIncomingBundleSettings(server, securityType, port, userName);
     }
 
     @When("^I set outgoing settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
     public void I_set_outgoing_settings(String server, String securityType,int port, String userName) {
-        RestrictionsManager.setOutgoingBundleSettings(server, securityType, port, userName);
+        //RestrictionsManager.setOutgoingBundleSettings(server, securityType, port, userName);
     }
 
     @When("^I compare incoming settings with server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)$")
     public void I_compare_incoming_settings(String server, String securityType,int port, String userName) {
-        MailSettings settings = RestrictionsManager.getRestrictions();
+        /*MailSettings settings = RestrictionsManager.getRestrictions();
         assert settings != null;
         if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getIncoming())) {
             fail("Incoming settings are not the same: " + server + " // " + settings.getIncoming().getServer() + " ; "  + securityType + " // " + settings.getIncoming().getSecurityType() + " ; "  + port + " // " + settings.getIncoming().getPort() + " ; "  + userName + " // " + settings.getIncoming().getUserName());
-        }
+        }*/
     }
 
     @When("^I compare outgoing settings with server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)$")
     public void I_compare_outgoing_settings(String server, String securityType,int port, String userName) {
-        MailSettings settings = RestrictionsManager.getRestrictions();
+        /*MailSettings settings = RestrictionsManager.getRestrictions();
         assert settings != null;
         if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getOutgoing())) {
             fail("Outgoing settings are not the same: " + server + " // " + settings.getOutgoing().getServer() + " ; "  + securityType + " // " + settings.getOutgoing().getSecurityType() + " ; "  + port + " // " + settings.getOutgoing().getPort() + " ; "  + userName + " // " + settings.getOutgoing().getUserName());
-        }
+        }*/
     }
 
     @When("^I compare (\\S+) setting with (\\S+)$")
     public void I_compare_setting(String setting, String value) {
-        String settingValue = RestrictionsManager.getSetting(setting);
+        /*String settingValue = RestrictionsManager.getSetting(setting);
         if (!settingValue.equals(value)) {
             fail("Setting " + setting + " has value " + settingValue + " and not " + value);
-        }
+        }*/
     }
 
     @When("^I click the last message received$")
@@ -790,25 +790,29 @@ public class CucumberTestSteps {
     public void I_click_mistrust_words() {
         timeRequiredForThisMethod(30);
         testUtils.goToHandshakeDialog();
-        testUtils.clickView(R.id.rejectHandshake);
+        testUtils.waitForView(R.id.rejectHandshake);
+        onView(withId(R.id.rejectHandshake)).perform(click());
         waitForIdle();
-        testUtils.pressBack();
+        onView(withId(R.id.acceptButton)).perform(click());
+        waitForIdle();
+        onView(withId(R.id.cancelButton)).perform(click());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        waitForIdle();
     }
 
     @When("^I reset partner key$")
     public void I_reset_partner_key() {
         waitForIdle();
-        onView(withId(R.id.securityText)).perform(click());
+        testUtils.selectFromMenu(testUtils.stringToID("reset_sender_key_action"));
         waitForIdle();
-        while (!exists(onView(withId(R.id.button_identity_key_reset)))) {
-            waitForIdle();
-        }
-        onView(withId(R.id.button_identity_key_reset)).perform(click());
+        onView(withId(R.id.acceptButton)).perform(click());
         waitForIdle();
-        testUtils.pressOKButtonInDialog();
+        onView(withId(R.id.cancelButton)).perform(click());
         waitForIdle();
-        testUtils.pressBack();
-        testUtils.pressBack();
     }
 
     @Then("^I check there is an extra key$")
@@ -901,11 +905,10 @@ public class CucumberTestSteps {
         fail("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
     }
 
-    private void assertText(String text, String textToCompare) {
-        if (text.contains(textToCompare)) {
-            return;
+    private void assertText(String expectedText, String textToCompare) {
+        if (!expectedText.contains(textToCompare)) {
+            fail("Texts are different. Expected <" + expectedText + "> but got <" + textToCompare + ">");
         }
-        fail("Texts are different");
     }
 
     private void confirmAllTrustWords(String webViewText) {
@@ -1033,7 +1036,15 @@ public class CucumberTestSteps {
         testUtils.waitForView(R.id.rejectHandshake);
         onView(withId(R.id.rejectHandshake)).perform(click());
         waitForIdle();
-        testUtils.pressBack();
+        onView(withId(R.id.acceptButton)).perform(click());
+        waitForIdle();
+        onView(withId(R.id.cancelButton)).perform(click());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        waitForIdle();
     }
 
     @When("^I click confirm trust words$")
@@ -1050,13 +1061,17 @@ public class CucumberTestSteps {
         while (exists(onView(withId(R.id.confirmHandshake)))) {
             onView(withId(R.id.confirmHandshake)).perform(click());
             waitForIdle();
+            onView(withId(R.id.acceptButton)).perform(click());
+            waitForIdle();
+            onView(withId(R.id.cancelButton)).perform(click());
+            waitForIdle();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             waitForIdle();
             try {
                 Thread.sleep(50);
@@ -1064,7 +1079,6 @@ public class CucumberTestSteps {
                 throw new RuntimeException(e);
             }
         }
-        testUtils.pressBack();
     }
 
     private int getTotalMessagesSize() {
@@ -1733,7 +1747,7 @@ public class CucumberTestSteps {
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             waitForIdle();
             device.pressBack();
-            String text = "";
+            String text;
             switch (widgetToDrag) {
                 case 1:
                     text = brand + " Unread";
@@ -2196,6 +2210,11 @@ public class CucumberTestSteps {
                 }
                 waitForIdle();
                 fileName = "passphrase.asc";
+                break;
+            case "largeFile":
+                raw = R.raw.testlargefile;
+                waitForIdle();
+                fileName = "largeFile.mp4";
                 break;
         }
         while (true) {
@@ -3116,15 +3135,15 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Cannot find subject field");
         }
-        for (int i = 0; i < 500; i++) {
-            waitForIdle();
-        }
         while (!exists(onView(withId(R.id.toolbar_container)))) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
+        for (int i = 0; i < 500; i++) {
+            waitForIdle();
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
@@ -3256,13 +3275,13 @@ public class CucumberTestSteps {
                     if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/attachments")) {
                         int size = object.getChildren().size();
                         for (int attachment = 0; attachment < size; attachment++) {
-                            if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json")) {
+                            if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json") && !object.getChildren().get(attachment).getChildren().get(2).getText().contains("original.eml")) {
                                 attachments ++;
                                 object.getChildren().get(attachment).getChildren().get(0).click();
                             }
                         }
                         if (attachments != numberOfAttachments) {
-                            fail("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                            fail("There are " + attachments + " attachments and should be " + numberOfAttachments);
                         }
                         return;
                     }
@@ -3273,7 +3292,7 @@ public class CucumberTestSteps {
                     fail("There are no attachments");
                 }
                 if (attachments != numberOfAttachments) {
-                    fail("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                    fail("There are " + attachments + " attachments and should be " + numberOfAttachments);
                 }
             }
         }

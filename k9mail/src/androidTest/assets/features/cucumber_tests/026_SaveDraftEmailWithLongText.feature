@@ -19,7 +19,7 @@ Feature: Save Draft email with long text
     And I enter longText in the messageBody field
     Then I check the privacy status is Encrypted
     And I save as draft
-    And I go to the drafts folder
+    And I go to drafts folder from navigation menu
     And I click message at position 1
     Then I compare messageBody with longText
     And I check the privacy status is Encrypted
