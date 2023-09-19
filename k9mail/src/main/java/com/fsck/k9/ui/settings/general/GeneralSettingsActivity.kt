@@ -40,6 +40,16 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        startListeningConfigChanges()
+    }
+
+    override fun onStop() {
+        startListeningConfigChanges()
+        super.onStop()
+    }
+
     private fun initializeActionBar() {
         setUpToolbar(true)
         val actionBar = supportActionBar ?: throw RuntimeException("getSupportActionBar() == null")

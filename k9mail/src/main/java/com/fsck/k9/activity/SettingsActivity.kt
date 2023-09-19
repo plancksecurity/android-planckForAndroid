@@ -372,10 +372,12 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
         refresh()
         StorageManager.getInstance(application).addListener(storageListener)
+        startListeningConfigChanges()
     }
 
     public override fun onPause() {
         super.onPause()
+        stopListeningConfigChanges()
         StorageManager.getInstance(application).removeListener(storageListener)
     }
 

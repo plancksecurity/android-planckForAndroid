@@ -44,6 +44,16 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
        setUpToolbar(true)
     }
 
+    override fun onStart() {
+        super.onStart()
+        startListeningConfigChanges()
+    }
+
+    override fun onStop() {
+        startListeningConfigChanges()
+        super.onStop()
+    }
+
     private fun decodeArguments(): Boolean {
         accountUuid = intent.getStringExtra(ARG_ACCOUNT_UUID) ?: return false
         startScreenKey = intent.getStringExtra(ARG_START_SCREEN_KEY)
