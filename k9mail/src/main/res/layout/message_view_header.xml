@@ -13,6 +13,21 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/user_action_banner"
+            style="@style/UnsecureRecipientsWarning"
+            android:text="@string/compose_single_recipient_handshake_banner"
+            android:textColor="@color/planck_green"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/user_action_banner_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
             android:duplicateParentState="true"
             android:id="@+id/subject"
             android:layout_width="match_parent"

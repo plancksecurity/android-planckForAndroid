@@ -9,7 +9,8 @@ import com.fsck.k9.planck.PlanckUtils
 fun Message.getRatingFromHeader() =
     getHeader(MimeHeader.HEADER_PEP_RATING).firstOrNull()?.let { PlanckUtils.stringToRating(it) }
 
-fun LocalMessage.isValidForHandshake() = from != null
+fun LocalMessage?.isValidForHandshake() = this != null
+        && from != null
         && from.size == 1
         && PlanckUtils.isHandshakeRating(planckRating)
         && getRecipients(RecipientType.CC).isNullOrEmpty()
