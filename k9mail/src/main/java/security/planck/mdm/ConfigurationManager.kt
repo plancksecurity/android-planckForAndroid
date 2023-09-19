@@ -25,7 +25,7 @@ class ConfigurationManager @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
-    private val listeners = mutableListOf<RestrictionsListener>()
+    private val listeners = mutableSetOf<RestrictionsListener>()
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
