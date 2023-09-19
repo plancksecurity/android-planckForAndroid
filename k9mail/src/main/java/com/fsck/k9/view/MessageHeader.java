@@ -36,6 +36,7 @@ import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.PlanckContactBadge;
 import com.fsck.k9.planck.ui.infrastructure.MessageAction;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
+import com.fsck.k9.planck.ui.listeners.SimpleRecipientHandshakeClickListener;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
@@ -88,12 +89,23 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private Rating pEpRating;
 
     private OnMessageOptionsListener onMessageOptionsListener;
+    private SimpleRecipientHandshakeClickListener simpleRecipientHandshakeClickListener;
     private ImageView moreOptions;
+
+    private TextView userActionBanner;
+    private View userActionBannerSeparator;
+
     @Inject PermissionChecker permissionChecker;
     @Inject ContactPictureLoader contactsPictureLoader;
 
     public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
         this.onMessageOptionsListener = onMessageOptionsListener;
+    }
+
+    public void setSimpleRecipientHandshakeClickListener(
+            SimpleRecipientHandshakeClickListener listener
+    ) {
+        this.simpleRecipientHandshakeClickListener = listener;
     }
 
     /**
@@ -131,6 +143,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mCcLabel = findViewById(R.id.cc_label);
 
         moreOptions = findViewById(R.id.message_more_options);
+        userActionBanner = findViewById(R.id.user_action_banner);
+        userActionBannerSeparator = findViewById(R.id.user_action_banner_separator);
 
 
         moreOptions.setOnClickListener(view -> {
@@ -228,6 +242,19 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         }
 
         return true;
+    }
+
+    public void showSingleRecipientHandshakeBanner() {
+        userActionBanner.setOnClickListener(
+                v -> simpleRecipientHandshakeClickListener.simpleRecipientHandshakeClicked()
+        );
+        userActionBanner.setVisibility(View.VISIBLE);
+        userActionBannerSeparator.setVisibility(View.VISIBLE);
+    }
+
+    public void hideSingleRecipientHandshakeBanner() {
+        userActionBanner.setVisibility(View.GONE);
+        userActionBannerSeparator.setVisibility(View.GONE);
     }
 
     private void onAddSenderToContacts() {
