@@ -21,7 +21,7 @@ class ExportPlanckSupportDataPresenterTest : RobolectricTest() {
     var coroutinesTestRule = CoroutineTestRule()
 
     private val lifecycle: Lifecycle = mockk(relaxed = true)
-    private val view: ExportpEpSupportDataView = mockk(relaxed = true)
+    private val view: ExportPlanckSupportDataView = mockk(relaxed = true)
     private val exportPlanckSupportData: ExportPlanckSupportData = mockk()
     private val presenter: ExportPlanckSupportDataPresenter =
         ExportPlanckSupportDataPresenter(
@@ -46,21 +46,21 @@ class ExportPlanckSupportDataPresenterTest : RobolectricTest() {
 
     @Test
     fun `when presenter renders state Exporting, view shows loading screen`() {
-        presenter.renderState(ExportpEpDataState.Exporting)
+        presenter.renderState(ExportPlanckDataState.Exporting)
 
         verify { view.showLoading() }
     }
 
     @Test
     fun `when presenter renders state Failed, view shows failed screen`() {
-        presenter.renderState(ExportpEpDataState.Failed(RuntimeException()))
+        presenter.renderState(ExportPlanckDataState.Failed(RuntimeException()))
 
         verify { view.showFailed() }
     }
 
     @Test
     fun `when presenter renders state Succeeded, view shows successful screen`() {
-        presenter.renderState(ExportpEpDataState.Succeeded)
+        presenter.renderState(ExportPlanckDataState.Succeeded)
 
         verify { view.showSuccess() }
     }
@@ -69,7 +69,7 @@ class ExportPlanckSupportDataPresenterTest : RobolectricTest() {
     fun `when presenter renders state and current lifecycle state is NOT at least STARTED, view does nothing`() {
         every { lifecycle.currentState }.returns(Lifecycle.State.CREATED)
 
-        presenter.renderState(ExportpEpDataState.Failed(RuntimeException()))
+        presenter.renderState(ExportPlanckDataState.Failed(RuntimeException()))
 
         verify { view.wasNot(called) }
     }

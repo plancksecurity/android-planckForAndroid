@@ -578,7 +578,7 @@
             android:label="@string/passhphrase_title"
             android:theme="@style/OverlayTheme"
         />
-        <activity android:name="security.planck.ui.support.export.ExportpEpSupportDataActivity"
+        <activity android:name="security.planck.ui.support.export.ExportPlanckSupportDataActivity"
             android:launchMode="singleTask"
             android:label="@string/export_pep_support_data_dialog_title"
             android:theme="@style/OverlayTheme" />

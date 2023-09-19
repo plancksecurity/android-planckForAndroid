@@ -35,7 +35,7 @@ import security.planck.mdm.ManageableSetting
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
-import security.planck.ui.support.export.ExportpEpSupportDataActivity
+import security.planck.ui.support.export.ExportPlanckSupportDataActivity
 import javax.inject.Inject
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
@@ -188,7 +188,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.let { pref ->
             if (BuildConfig.DEBUG) {
                 pref.onClick {
-                    ExportpEpSupportDataActivity.showExportPEpSupportDataDialog(requireActivity())
+                    ExportPlanckSupportDataActivity.showExportPlanckSupportDataDialog(requireActivity())
                 }
             } else {
                 pref.remove()
