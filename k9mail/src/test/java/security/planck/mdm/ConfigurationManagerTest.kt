@@ -250,6 +250,6 @@ class ConfigurationManagerTest : RobolectricTest() {
             advanceUntilIdle()
 
 
-            coVerify { listener.wasNot(Called) }
+            coVerify(exactly = 0) { listener.updatedRestrictions() }
         }
 }

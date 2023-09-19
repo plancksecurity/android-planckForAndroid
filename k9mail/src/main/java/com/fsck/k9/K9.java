@@ -76,6 +76,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
@@ -129,7 +130,7 @@ public class K9 extends MultiDexApplication {
     @Inject
     AppAliveMonitor appAliveMonitor;
     @Inject
-    RestrictionsReceiver restrictionsReceiver;
+    Provider<RestrictionsReceiver> restrictionsReceiver;
 
     public static K9JobManager jobManager;
 
@@ -534,7 +535,7 @@ public class K9 extends MultiDexApplication {
     protected void registerReceivers() {
         if (isRunningOnWorkProfile()) {
             registerReceiver(
-                    restrictionsReceiver,
+                    restrictionsReceiver.get(),
                     new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
             );
         }

@@ -2,7 +2,6 @@ package security.planck.mdm
 
 import android.content.RestrictionEntry
 import android.os.Bundle
-import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.DispatcherProvider
@@ -25,7 +24,7 @@ class ConfigurationManager @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
-    private val listeners = mutableListOf<RestrictionsListener>()
+    private val listeners = mutableSetOf<RestrictionsListener>()
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -67,15 +66,18 @@ class ConfigurationManager @Inject constructor(
                         // ignore media keys from MDM before PlanckProvider has been initialized
                         .filter { it.key in PROVISIONING_RESTRICTIONS }
                 }
+
                 ProvisioningScope.InitializedEngine -> {
                     entries = restrictionsManager.manifestRestrictions
-                        .filter{ it.key in INITIALIZED_ENGINE_RESTRICTIONS }
+                        .filter { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
+
                 ProvisioningScope.AllAccountSettings -> {
                     entries = restrictionsManager.manifestRestrictions.filter {
                         it.key in ALL_ACCOUNT_RESTRICTIONS
                     }
                 }
+
                 ProvisioningScope.AllSettings -> {
                     entries = restrictionsManager.manifestRestrictions
                 }
@@ -116,8 +118,7 @@ class ConfigurationManager @Inject constructor(
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun sendRemoteConfig() {
+    private fun sendRemoteConfig() {
         listeners.forEach {
             it.updatedRestrictions()
         }

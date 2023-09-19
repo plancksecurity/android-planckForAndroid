@@ -103,20 +103,12 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onDestroy();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (this instanceof RestrictionsListener) {
-            mBase.setConfigurationManagerListener((RestrictionsListener) this);
-        }
+    protected void startListeningConfigChanges() {
+        mBase.setConfigurationManagerListener((RestrictionsListener) this);
     }
 
-    @Override
-    protected void onStop() {
-        if (this instanceof RestrictionsListener) {
-            mBase.unsetConfigurationManagerListener((RestrictionsListener) this);
-        }
-        super.onStop();
+    protected void stopListeningConfigChanges() {
+        mBase.unsetConfigurationManagerListener((RestrictionsListener) this);
     }
 
     public void setUpToolbar(boolean showUpButton) {

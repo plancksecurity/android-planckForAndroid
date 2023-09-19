@@ -672,11 +672,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         messageRatingIsBeingLoaded();
         recipientPresenter.onResume();
         invalidateOptionsMenu();
+        startListeningConfigChanges();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        stopListeningConfigChanges();
         hideUserActionBanner();
         MessagingController.getInstance(this).removeListener(messagingListener);
         MessagingController.getInstance(this).setEchoMessageReceivedListener(null);

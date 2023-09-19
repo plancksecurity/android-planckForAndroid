@@ -780,6 +780,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void onPause() {
         super.onPause();
+        stopListeningConfigChanges();
         overridePendingTransition(NO_ANIMATION, NO_ANIMATION);
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
     }
@@ -810,6 +811,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
         setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
+        startListeningConfigChanges();
     }
 
     private void setDefaultFolderNameIfNeeded() {
