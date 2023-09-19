@@ -870,7 +870,8 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         List<Address> newBccAdresses = getBccAddresses();
         if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
             showDefaultStatus();
-            handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
+            recipientMvpView.hideUnsecureDeliveryWarning();
+            recipientMvpView.hideSingleRecipientHandshakeBanner();
             recipientMvpView.messageRatingLoaded();
             return;
         }
@@ -885,7 +886,8 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 }
                 if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
                     showDefaultStatus();
-                    handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
+                    recipientMvpView.hideUnsecureDeliveryWarning();
+                    recipientMvpView.hideSingleRecipientHandshakeBanner();
                 } else {
                     privacyState = rating;
                     handleSingleAddressHandshakeFeedback(newToAdresses, newCcAdresses, newBccAdresses);
