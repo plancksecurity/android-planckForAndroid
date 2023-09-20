@@ -8,6 +8,7 @@ import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
@@ -19,6 +20,7 @@ import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
+import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
 import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
@@ -33,7 +35,7 @@ import security.planck.mdm.ManageableSetting
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
-import security.planck.ui.support.export.ExportpEpSupportDataActivity
+import security.planck.ui.support.export.ExportPlanckSupportDataActivity
 import javax.inject.Inject
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
@@ -183,8 +185,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeExportPEpSupportDataPreference() {
-        findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.onClick {
-            ExportpEpSupportDataActivity.showExportPEpSupportDataDialog(requireActivity())
+        findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.let { pref ->
+            if (BuildConfig.DEBUG) {
+                pref.onClick {
+                    ExportPlanckSupportDataActivity.showExportPlanckSupportDataDialog(requireActivity())
+                }
+            } else {
+                pref.remove()
+            }
         }
     }
 

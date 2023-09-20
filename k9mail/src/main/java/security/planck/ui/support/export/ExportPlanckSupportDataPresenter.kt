@@ -21,14 +21,14 @@ const val SUPPORT_EXPORT_TARGET_SUBFOLDER = "planck/db-export"
 class ExportPlanckSupportDataPresenter @Inject constructor(
     private val exportPlanckSupportData: ExportPlanckSupportData,
 ) : LifecycleObserver, NonConfigurationInstance {
-    private lateinit var view: ExportpEpSupportDataView
+    private lateinit var view: ExportPlanckSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val sdf = SimpleDateFormat("yyyyMMdd-HH_mm", Locale.getDefault())
-    private var state: ExportpEpDataState = ExportpEpDataState.Initial
+    private var state: ExportPlanckDataState = ExportPlanckDataState.Initial
     private lateinit var lifecycle: Lifecycle
 
     fun initialize(
-        view: ExportpEpSupportDataView,
+        view: ExportPlanckSupportDataView,
         lifecycle: Lifecycle,
     ) {
         this.view = view
@@ -42,21 +42,21 @@ class ExportPlanckSupportDataPresenter @Inject constructor(
         renderState()
     }
 
-    fun renderState(state: ExportpEpDataState = this.state) {
+    fun renderState(state: ExportPlanckDataState = this.state) {
         this.state = state
         runWithLifecycleSafety {
             when (state) {
-                is ExportpEpDataState.Initial -> {
+                is ExportPlanckDataState.Initial -> {
                     // NOP
                 }
-                is ExportpEpDataState.Exporting -> {
+                is ExportPlanckDataState.Exporting -> {
                     view.showLoading()
                 }
-                is ExportpEpDataState.Succeeded -> {
+                is ExportPlanckDataState.Succeeded -> {
                     view.hideLoading()
                     view.showSuccess()
                 }
-                is ExportpEpDataState.Failed -> {
+                is ExportPlanckDataState.Failed -> {
                     view.hideLoading()
                     Timber.e(state.cause)
                     if (state.cause is NotEnoughSpaceInDeviceException) {
@@ -71,12 +71,12 @@ class ExportPlanckSupportDataPresenter @Inject constructor(
 
     fun export() {
         scope.launch {
-            renderState(ExportpEpDataState.Exporting)
+            renderState(ExportPlanckDataState.Exporting)
             exportInternal()
                 .onSuccess {
-                    renderState(ExportpEpDataState.Succeeded)
+                    renderState(ExportPlanckDataState.Succeeded)
                 }.onFailure {
-                    renderState(ExportpEpDataState.Failed(it))
+                    renderState(ExportPlanckDataState.Failed(it))
                 }
         }
     }
@@ -106,9 +106,9 @@ class ExportPlanckSupportDataPresenter @Inject constructor(
     }
 }
 
-sealed class ExportpEpDataState {
-    object Initial : ExportpEpDataState()
-    object Exporting : ExportpEpDataState()
-    object Succeeded : ExportpEpDataState()
-    class Failed(val cause: Throwable) : ExportpEpDataState()
+sealed class ExportPlanckDataState {
+    object Initial : ExportPlanckDataState()
+    object Exporting : ExportPlanckDataState()
+    object Succeeded : ExportPlanckDataState()
+    class Failed(val cause: Throwable) : ExportPlanckDataState()
 }

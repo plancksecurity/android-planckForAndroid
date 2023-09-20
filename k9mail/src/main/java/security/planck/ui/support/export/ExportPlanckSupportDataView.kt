@@ -1,6 +1,6 @@
 package security.planck.ui.support.export
 
-interface ExportpEpSupportDataView {
+interface ExportPlanckSupportDataView {
     fun finish()
     fun showSuccess()
     fun showFailed()

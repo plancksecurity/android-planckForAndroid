@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView {
+class ExportPlanckSupportDataActivity : WizardActivity(), ExportPlanckSupportDataView {
     @Inject
     lateinit var presenter: ExportPlanckSupportDataPresenter
     private lateinit var exportButton: Button
@@ -110,8 +110,8 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     }
 
     companion object {
-        fun showExportPEpSupportDataDialog(activity: Activity) {
-            val intent = Intent(activity, ExportpEpSupportDataActivity::class.java)
+        fun showExportPlanckSupportDataDialog(activity: Activity) {
+            val intent = Intent(activity, ExportPlanckSupportDataActivity::class.java)
             activity.startActivity(intent)
         }
     }
