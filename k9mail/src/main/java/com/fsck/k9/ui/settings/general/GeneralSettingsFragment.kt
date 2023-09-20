@@ -98,19 +98,19 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (!shouldDisplayManualSyncButton()) {
             preference?.isVisible = false
         } else {
-            preference?.isVisible = true
             configureManualSync(preference)
         }
     }
 
     private fun initializeLeaveDeviceGroup() {
         val preference = findPreference<Preference>(PREFERENCE_PLANCK_LEAVE_DEVICE_GROUP)
-        if (shouldDisplayManualSyncButton()) {
-            preference?.isVisible = false
-        } else {
-            preference?.isVisible = true
-            configureLeaveDeviceGroup(preference)
-        }
+//        if (shouldDisplayManualSyncButton()) {
+//            preference?.isVisible = false
+//        } else {
+//            preference?.isVisible = true
+//            configureLeaveDeviceGroup(preference)
+//        }
+        configureLeaveDeviceGroup(preference)
     }
 
     private fun configureLeaveDeviceGroup(preference: Preference?) {
