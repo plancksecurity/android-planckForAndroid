@@ -1253,8 +1253,9 @@ class PlanckProviderImplKotlin(
         return engine.get().group_rating(group, manager)
     }
 
+    @WorkerThread
     override fun isDeviceGrouped(): Boolean {
-        return false
+        return engine.get().deviceGrouped() ?: false
     }
 
     companion object {
