@@ -23,6 +23,7 @@ import com.fsck.k9.ui.withArguments
 import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
+import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.android.synthetic.main.preference_loading_widget.loading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,7 @@ import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportpEpSupportDataActivity
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
@@ -157,11 +159,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun startLeaveDeviceGroup() {
-        //TODO
 
-        //finally
-        initializeLeaveDeviceGroup()
-        initializeManualSync()
+        try {
+            k9.leaveDeviceGroup()
+
+            //refresh ui states
+            initializeLeaveDeviceGroup()
+            initializeManualSync()
+        } catch (e: pEpException) {
+            Timber.e(e)
+        }
     }
 
     private fun startManualSync() {
