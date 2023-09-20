@@ -289,6 +289,8 @@ public interface PlanckProvider {
 
     Rating groupRating(Identity group, Identity manager);
 
+    boolean isDeviceGrouped();
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
