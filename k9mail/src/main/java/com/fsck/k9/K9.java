@@ -899,9 +899,28 @@ public class K9 extends MultiDexApplication {
     private void initSync() {
 
         planckProvider.updateSyncAccountsConfig();
+        updateDeviceGrouped();
         //if (!planckProvider.isSyncRunning()) {
         //    planckProvider.startSync();
         //}
+    }
+
+    private void updateDeviceGrouped() {
+        planckProvider.isDeviceGrouped()
+                .onSuccess(
+                        (isGrouped) -> {
+                            grouped = isGrouped;
+                            return null;
+                        }
+                )
+                .onFailure(
+                        (ex) -> {
+                            if (isDebug()) {
+                                Log.e("pEpSync", "errror in sync call", ex);
+                            }
+                            return null;
+                        }
+                );
     }
 
     private void pEpSetupUiEngineSession() {
@@ -2107,15 +2126,14 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyAcceptedGroupCreated:
                 case SyncNotifyAcceptedDeviceAccepted:
                     setSyncStateAndNotify(SyncState.Done.INSTANCE);
+                    updateDeviceGrouped();
                     break;
                 case SyncNotifySole:
-                    grouped = false;
                     if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
                     }
                     break;
                 case SyncNotifyInGroup:
-                    grouped = true;
                     planckSyncEnabled = true;
                     if (syncState.getAllowSyncNewDevices()) {
                         startOrResetManualSyncCountDownTimer();
@@ -2146,20 +2164,13 @@ public class K9 extends MultiDexApplication {
         return this.notifyHandshakeCallback;
     }
 
-    public void setGrouped(boolean value) {
-        this.grouped = value;
-    }
-
     public boolean isGrouped() {
         return this.grouped;
     }
 
     public void leaveDeviceGroup() {
-        grouped = false;
-        if (planckProvider.isSyncRunning()) {
-            planckProvider.leaveDeviceGroup();
-        }
-        planckSyncEnabled = false;
+        planckProvider.leaveDeviceGroup();
+        updateDeviceGrouped();
     }
 
     public void shutdownSync() {
