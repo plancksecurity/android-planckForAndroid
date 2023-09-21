@@ -1254,8 +1254,9 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun isDeviceGrouped(): ResultCompat<Boolean> = runBlocking(PlanckDispatcher) {
+    override fun isDeviceGrouped(): Boolean = runBlocking(PlanckDispatcher) {
         ResultCompat.of { engine.get().deviceGrouped() ?: false }
+            .onFailure { Timber.e(it) }.getOrDefault(false)
     }
 
     companion object {

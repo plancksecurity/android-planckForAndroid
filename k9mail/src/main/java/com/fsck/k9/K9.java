@@ -906,21 +906,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void updateDeviceGrouped() {
-        planckProvider.isDeviceGrouped()
-                .onSuccess(
-                        (isGrouped) -> {
-                            grouped = isGrouped;
-                            return null;
-                        }
-                )
-                .onFailure(
-                        (ex) -> {
-                            if (isDebug()) {
-                                Log.e("pEpSync", "errror in sync call", ex);
-                            }
-                            return null;
-                        }
-                );
+        grouped = planckProvider.isDeviceGrouped();
     }
 
     private void pEpSetupUiEngineSession() {
