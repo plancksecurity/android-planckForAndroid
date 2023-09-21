@@ -289,7 +289,7 @@ public interface PlanckProvider {
 
     Rating groupRating(Identity group, Identity manager);
 
-    Boolean isDeviceGrouped();
+    ResultCompat<Boolean> isDeviceGrouped();
 
     class KeyDetail {
         private final Address address;
