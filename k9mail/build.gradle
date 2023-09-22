@@ -451,6 +451,15 @@ afterEvaluate {
             it.enabled = false
         }
     }
+    configureSequoiaLogging()
+}
+
+private void configureSequoiaLogging() {
+    if (gradle.startParameter.taskNames.every { it.contains("Debug") }) {
+        if (project.findProperty("ENABLE_SEQUOIA_LOGS") ?: false) {
+            rootProject.ext["SEQUOIA_TARGET"] = "debug"
+        }
+    }
 }
 
 private boolean hasDemoProperties() {
