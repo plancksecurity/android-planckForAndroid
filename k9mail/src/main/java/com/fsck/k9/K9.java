@@ -78,6 +78,7 @@ import java.util.concurrent.SynchronousQueue;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import dagger.Lazy;
 import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
@@ -116,7 +117,6 @@ public class K9 extends MultiDexApplication {
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static ManageableSetting<Long> auditLogDataTimeRetention =
             new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
-    private AuditLogger auditLogger;
     private ManualSyncCountDownTimer manualSyncCountDownTimer;
     private SyncAppState syncState = SyncState.Idle.INSTANCE;
     private SyncStateChangeListener syncStateChangeListener;
@@ -131,6 +131,8 @@ public class K9 extends MultiDexApplication {
     AppAliveMonitor appAliveMonitor;
     @Inject
     Provider<RestrictionsReceiver> restrictionsReceiver;
+    @Inject
+    Lazy<AuditLogger> auditLogger;
 
     public static K9JobManager jobManager;
 
@@ -690,18 +692,12 @@ public class K9 extends MultiDexApplication {
         app = this;
         Globals.setContext(this);
 
-        initializeAuditLog();
-
         provisioningManager.startProvisioning();
     }
 
     private void initializeAuditLog() {
-        auditLogger = new AuditLogger(
-                new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
-                auditLogDataTimeRetention.getValue()
-        );
-        auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
-        auditLogger.addStartEventLog();
+        auditLogger.get().addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
+        auditLogger.get().addStartEventLog();
         appAliveMonitor.startAppAliveMonitor();
     }
 
@@ -738,6 +734,7 @@ public class K9 extends MultiDexApplication {
         // Perform engine provisioning just after its initialization in MessagingController
         planckProvider = messagingController.getPlanckProvider();
         provisioningManager.performInitializedEngineProvisioning();
+        initializeAuditLog();
 
         initJobManager(preferences, messagingController);
 
@@ -1622,7 +1619,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public void setAuditLogDataTimeRetention(Long auditLogDataTimeRetention) {
-        auditLogger.setLogAgeLimit(auditLogDataTimeRetention);
+        auditLogger.get().setLogAgeLimit(auditLogDataTimeRetention);
         K9.auditLogDataTimeRetention.setValue(auditLogDataTimeRetention);
     }
 
@@ -1631,7 +1628,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public void setAuditLogDataTimeRetention(ManageableSetting<Long> auditLogDataTimeRetention) {
-        auditLogger.setLogAgeLimit(auditLogDataTimeRetention.getValue());
+        auditLogger.get().setLogAgeLimit(auditLogDataTimeRetention.getValue());
         K9.auditLogDataTimeRetention = auditLogDataTimeRetention;
     }
 
@@ -1640,7 +1637,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public AuditLogger getAuditLogger() {
-        return auditLogger;
+        return auditLogger.get();
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {

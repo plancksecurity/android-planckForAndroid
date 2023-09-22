@@ -28,6 +28,7 @@ import com.fsck.k9.preferences.Storage;
 
 import net.openid.appauth.AuthState;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,6 +39,7 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import security.planck.audit.AuditLogger;
 import security.planck.permissions.PermissionChecker;
 import security.planck.ui.permissions.PlanckPermissionChecker;
 
@@ -140,5 +142,14 @@ public class ApplicationModule {
     @Provides
     public AuthState provideAuthState() {
         return new AuthState();
+    }
+
+    @Provides
+    public AuditLogger provideAuditLogger(K9 k9, PlanckProvider planckProvider) {
+        return new AuditLogger(
+                planckProvider,
+                new File(k9.getFilesDir(), AuditLogger.AUDIT_LOGGER_ROUTE),
+                k9.getAuditLogDataTimeRetentionValue()
+        );
     }
 }

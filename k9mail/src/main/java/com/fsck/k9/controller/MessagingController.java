@@ -171,7 +171,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
     private final Preferences preferences;
-    private final AuditLogger auditLogger;
 
 
     @VisibleForTesting
@@ -181,8 +180,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Contacts contacts,
             TransportProvider transportProvider,
             Preferences preferences,
-            PlanckProvider planckProvider,
-            AuditLogger auditLogger
+            PlanckProvider planckProvider
     ) {
         this.context = context;
         this.notificationController = notificationController;
@@ -190,7 +188,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         this.transportProvider = transportProvider;
         this.planckProvider = planckProvider;
         this.preferences = preferences;
-        this.auditLogger = auditLogger;
         controllerThread = new AutoCloseableEngineThread(new Runnable() {
             @Override
             public void run() {
@@ -210,8 +207,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             TransportProvider transportProvider = TransportProvider.getInstance();
             Preferences preferences = Preferences.getPreferences(appContext);
             PlanckProvider planckProvider = PlanckProviderFactory.createProvider(appContext);
-            AuditLogger auditLogger = ((K9) appContext).getAuditLogger();
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider, auditLogger);
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider);
         }
         return inst;
     }
@@ -1728,7 +1724,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             // Store message
                                 MimeMessage decryptedMessage = result.msg;
                             if (!PlanckUtils.isAutoConsumeMessage(decryptedMessage)) {
-                                auditLogger.addMessageAuditLog(
+                                getAuditLogger().addMessageAuditLog(
                                         decryptedMessage,
                                         result.rating
                                 );
@@ -1790,6 +1786,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 });
 
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
+    }
+
+    private AuditLogger getAuditLogger() {
+        return ((K9) context).getAuditLogger();
     }
 
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
@@ -3230,7 +3230,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         if (!PlanckUtils.isAutoConsumeMessage(message)) {
             Rating rating = MessageKt.getRatingFromHeader(encryptedMessageToSave);
             if (rating != null) {
-                auditLogger.addMessageAuditLog(
+                getAuditLogger().addMessageAuditLog(
                         message,
                         rating
                 );
