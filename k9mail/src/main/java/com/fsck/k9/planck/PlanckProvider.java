@@ -289,6 +289,11 @@ public interface PlanckProvider {
 
     Rating groupRating(Identity group, Identity manager);
 
+    /**
+     * isDeviceGrouped
+     * Check if this device is in a planck device group.
+     * @return true if in a group, false otherwise.
+     */
     boolean isDeviceGrouped();
 
     class KeyDetail {
