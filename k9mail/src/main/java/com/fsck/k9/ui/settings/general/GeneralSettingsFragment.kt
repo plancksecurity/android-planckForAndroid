@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -77,6 +78,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeUnsecureDeliveryWarning()
         initializeDebugLogging()
         initializeAuditLogDataTimeRetention()
+        initializeLeaveDeviceGroup()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -99,6 +101,30 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             preference?.isVisible = false
         } else {
             configureManualSync(preference)
+        }
+    }
+
+    private fun initializeLeaveDeviceGroup() {
+        findPreference<Preference>(PREFERENCE_LEAVE_DEVICE_GROUP)?.also { preference ->
+            if (k9.isGrouped) {
+                preference.isVisible = true
+                preference.onClick {
+                    lifecycleScope.launch {
+                        withContext(PlanckDispatcher) {
+                            k9.leaveDeviceGroup()
+                            if (!k9.isGrouped) {
+
+                                // display notification that we left device group
+                            }
+                        }
+                        if (!k9.isGrouped) {
+                            preference.isVisible = false
+                        }
+                    }
+                }
+            } else {
+                preference.isVisible = false
+            }
         }
     }
 
@@ -313,6 +339,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_UNSECURE_DELIVERY_WARNING = "pep_forward_warning"
         private const val PREFERENCE_DEBUG_LOGGING = "debug_logging"
         private const val PREFERENCE_AUDIT_LOG_TIME_RETENTION = "audit_log_data_time_retention"
+        private const val PREFERENCE_LEAVE_DEVICE_GROUP = "leave_device_group"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
