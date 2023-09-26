@@ -900,9 +900,9 @@ public class K9 extends MultiDexApplication {
 
         planckProvider.updateSyncAccountsConfig();
         updateDeviceGrouped();
-        //if (!planckProvider.isSyncRunning()) {
-        //    planckProvider.startSync();
-        //}
+        if (grouped && !planckProvider.isSyncRunning()) {
+            planckProvider.startSync();
+        }
     }
 
     private void updateDeviceGrouped() {
@@ -2112,8 +2112,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyAcceptedGroupCreated:
                 case SyncNotifyAcceptedDeviceAccepted:
                     setSyncStateAndNotify(SyncState.Done.INSTANCE);
-                    disallowSync();
-                    updateDeviceGrouped();
+                    grouped = true;
                     break;
                 case SyncNotifySole:
                     if (syncState.getAllowSyncNewDevices()) {
@@ -2157,7 +2156,8 @@ public class K9 extends MultiDexApplication {
 
     public void leaveDeviceGroup() {
         planckProvider.leaveDeviceGroup();
-        updateDeviceGrouped();
+        grouped = false;
+        //updateDeviceGrouped();
     }
 
     public void shutdownSync() {
