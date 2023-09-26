@@ -4,7 +4,10 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
@@ -51,6 +54,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
+
+    private val startForResult = (this as Fragment).registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        Log.e("EFA-269", "RESULT: $it")
+        initializeLeaveDeviceGroup()
+    }
 
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
@@ -150,7 +160,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun startManualSync() {
-        PlanckSyncWizard.startKeySync(requireActivity())
+        startForResult.launch(Intent(context, PlanckSyncWizard::class.java))
+        //PlanckSyncWizard.startKeySync(requireActivity())
     }
 
     private fun shouldDisplayManualSyncButton(): Boolean =
