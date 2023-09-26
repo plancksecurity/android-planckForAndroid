@@ -7,6 +7,9 @@ ext {
     demoStorePassword = 'replace your password'
     // enables logs from planckCoreSequoiaBackend only in debug, will not log anything in release
     ENABLE_SEQUOIA_LOGS = false // change to true, do make clean-all in jni wrapper/android/external and recompile to have sequoia logs
+    // enables logs from core only in debug, will not log anything in release.
+    // Only enable when really needed, performance is **heavily** affected.
+    ENABLE_CORE_LOGS = false // change to true and recompile to have core logs
 }
 
 // Sample settings for a demo application (for example, to upload to an MDM)
