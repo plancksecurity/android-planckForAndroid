@@ -73,6 +73,9 @@ base image:
     - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
     - *compose_deps
   script:
+  # If the problem is a bad connection this may fix it...
+    - dockerd --max-concurrent-downloads 2
+    - dockerd --max-download-attempts 10
     - cat DEPENDENCIES
     - docker pull  ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG} || docker pull  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
     - docker build
