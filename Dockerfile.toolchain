@@ -1,4 +1,4 @@
-FROM debian:bullseye-latest
+FROM debian:latest
 
 # dependencies 
 RUN apt-get update && apt-get upgrade -yqq
