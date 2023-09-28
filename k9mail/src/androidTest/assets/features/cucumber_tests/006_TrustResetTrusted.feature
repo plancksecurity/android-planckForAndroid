@@ -11,6 +11,12 @@ Feature: Trust Reset: Trusted
     And I click confirm trust words
     Then I check if the privacy status is Trusted
     When I reset partner key
-    Then I check if the privacy status is Encrypted
+    Then I check if the privacy status is Trusted
+    And I press back
+    When I click compose message
+    And I check the privacy status is Undefined
+    And I enter bot2 in the messageTo field
+    Then I check the privacy status is NotEncrypted
+    And I discard the message
 
 

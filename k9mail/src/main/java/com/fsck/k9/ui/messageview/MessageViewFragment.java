@@ -57,6 +57,7 @@ import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
+import com.fsck.k9.planck.ui.listeners.SimpleRecipientHandshakeClickListener;
 import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
@@ -162,6 +163,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     };
 
+    private final SimpleRecipientHandshakeClickListener simpleRecipientHandshakeClickListener =
+            () -> onPEpPrivacyStatus();
+
     public void hideInitialStatus() {
         if (planckSecurityStatusLayout != null) {
             planckSecurityStatusLayout.hideRating();
@@ -232,6 +236,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
 
         setMessageOptionsListener();
+        setSimpleRecipientHandshakeClickListener();
 
         planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
         return view;
@@ -251,6 +256,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         ((MessageList) getActivity()).setMessageViewVisible(true);
         setupSwipeDetector();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
+        mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         Context context = getActivity().getApplicationContext();
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
                 getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
@@ -318,6 +324,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void setMessageOptionsListener() {
         mMessageView.getMessageHeader().setOnMessageOptionsListener(messageOptionsListener);
         pEpFabMenu.setClickListeners(messageOptionsListener);
+    }
+
+    private void setSimpleRecipientHandshakeClickListener() {
+        mMessageView.getMessageHeader().setSimpleRecipientHandshakeClickListener(
+                simpleRecipientHandshakeClickListener);
     }
 
     public void displayMessage() {
@@ -868,9 +879,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     @Override
-    public void allowKeyResetWithSender() {
+    public void allowHandshakeWithSender() {
         if (isAdded()) {
             planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
+            mMessageView.getMessageHeader().showSingleRecipientHandshakeBanner();
         }
     }
 

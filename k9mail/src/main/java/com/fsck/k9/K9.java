@@ -76,6 +76,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
@@ -88,6 +89,7 @@ import security.planck.file.PlanckSystemFileLocator;
 import security.planck.mdm.ManageableSetting;
 import security.planck.mdm.ManageableSettingKt;
 import security.planck.mdm.MediaKey;
+import security.planck.mdm.RestrictionsReceiver;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
 import security.planck.notification.GroupMailSignal;
@@ -127,6 +129,8 @@ public class K9 extends MultiDexApplication {
     PlanckSystemFileLocator planckSystemFileLocator;
     @Inject
     AppAliveMonitor appAliveMonitor;
+    @Inject
+    Provider<RestrictionsReceiver> restrictionsReceiver;
 
     public static K9JobManager jobManager;
 
@@ -529,6 +533,12 @@ public class K9 extends MultiDexApplication {
      * sequence isn't safe while some events occur (SD card unmount).
      */
     protected void registerReceivers() {
+        if (isRunningOnWorkProfile()) {
+            registerReceiver(
+                    restrictionsReceiver.get(),
+                    new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
+            );
+        }
         final StorageGoneReceiver receiver = new StorageGoneReceiver();
         final IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_MEDIA_EJECT);
@@ -565,7 +575,10 @@ public class K9 extends MultiDexApplication {
     }
 
     public static void save(StorageEditor editor) {
-        editor.putBoolean("enableDebugLogging", K9.isDebug());
+        editor.putString(
+                "enableDebugLogging",
+                ManageableSettingKt.serializeBooleanManageableSetting(DEBUG)
+        );
         editor.putBoolean("enableSensitiveLogging", K9.DEBUG_SENSITIVE);
         editor.putString("backgroundOperations", K9.backgroundOps.name());
         editor.putBoolean("animations", mAnimations);

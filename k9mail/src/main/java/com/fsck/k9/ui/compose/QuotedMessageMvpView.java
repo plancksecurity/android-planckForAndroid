@@ -57,7 +57,7 @@ public class QuotedMessageMvpView {
     public void setOnClickPresenter(final QuotedMessagePresenter presenter) {
         mQuotedTextShow.setOnClickListener(v ->presenter.onClickShowQuotedText());
         mQuotedTextEdit.setOnClickListener(v -> presenter.onClickEditQuotedText());
-        mQuotedTextDelete.setOnClickListener(v -> presenter.onClickEditQuotedText());
+        mQuotedTextDelete.setOnClickListener(v -> presenter.onClickDeleteQuotedText());
     }
 
     public void addTextChangedListener(TextWatcher draftNeedsChangingTextWatcher) {

@@ -36,13 +36,22 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
             finish()
             return
         }
-        setConfigurationManagerListener(this)
 
         loadAccount()
     }
 
     private fun initializeActionBar() {
        setUpToolbar(true)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        startListeningConfigChanges()
+    }
+
+    override fun onStop() {
+        startListeningConfigChanges()
+        super.onStop()
     }
 
     private fun decodeArguments(): Boolean {

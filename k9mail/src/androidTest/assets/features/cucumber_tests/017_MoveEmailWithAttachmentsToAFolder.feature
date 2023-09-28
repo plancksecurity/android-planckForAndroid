@@ -1,5 +1,6 @@
 Feature: Move email with attachments to a folder
   Background:
+    Given I created an account
 
 
 

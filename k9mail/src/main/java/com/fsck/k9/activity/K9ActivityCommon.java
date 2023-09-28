@@ -40,7 +40,7 @@ import timber.log.Timber;
 public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
     private IntentFilter passphraseReceiverfilter;
-    private ConfigurationManager configurationManager;
+    private final ConfigurationManager configurationManager;
     private OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver;
 
     public static void setLanguage(Context context, String language) {
@@ -68,7 +68,11 @@ public class K9ActivityCommon {
     }
 
     public void setConfigurationManagerListener(RestrictionsListener listener) {
-        configurationManager.setListener(listener);
+        configurationManager.addListener(listener);
+    }
+
+    public void unsetConfigurationManagerListener(RestrictionsListener listener) {
+        configurationManager.removeListener(listener);
     }
 
     /**
@@ -190,14 +194,6 @@ public class K9ActivityCommon {
 
     public void unregisterOAuthTokenRevokedReceiver() {
         oAuthTokenRevokedReceiver.unregister(mActivity);
-    }
-
-    public void registerConfigurationManager() {
-        configurationManager.registerReceiver();
-    }
-
-    public void unregisterConfigurationManager() {
-        configurationManager.unregisterReceiver();
     }
 
     public static class PassphraseRequestReceiver extends BroadcastReceiver {

@@ -247,7 +247,7 @@
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
-    <string name="pep_rating_trusted">Trusted</string>
+    <string name="pep_rating_trusted">Verified</string>
     <string name="pep_rating_encrypted">Encrypted</string>
     <string name="pep_rating_dangerous">Dangerous</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
@@ -387,7 +387,7 @@
     <string name="error_happened_restart_app">An error happened, please restart app.</string>
     <string name="needs_your_permission_to_work">NEEDS YOUR PERMISSION TO WORK</string>
     <string name="account_setup_failed_dlg_oauth_wrong_email_address">The email address %1$s used for login is not allowed by your IT admin. Please use the provided %2$s instead to use the app.</string>
-    <string name="compose_single_recipient_handshake_banner">Tap here to establish trust with this sender.</string>
+    <string name="compose_single_recipient_handshake_banner">Tap here to verify this sender\'s identity.</string>
     <string name="rooted_device_error">Unsupported Operating System</string>
     <string name="action_user_manual">User manual</string>
     <string name="notification_channel_messages_title">Messages</string>
