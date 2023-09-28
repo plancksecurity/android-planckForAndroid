@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:**0**. Application start;
+:**1**. Create folder structure for dbs
+and load native libraries;
+:**2**. Initialize audit logging;
+if (running under MDM) then (yes)
+    if (account is setup) then (no)
+      :**3**. Perform provisioning;
+    else (yes)
+    endif
+else (no)
+endif
+:**4**. Load app settings;
+:**5**. Initialize first core instance;
+if (running under MDM) then (yes)
+    if (account is setup) then (no)
+        :**6**. Perform all settings provisioning;
+    else (yes)
+        :**7**. Perform core provisioning;
+    endif
+else (no)
+endif
+:**8**. Enable mail services;
+:**9**. Start monitoring network connectivity;
+:**10**. Start listening to system broadcasts and widgets actions;
+:**11**. Refresh folders for mail account;
+if (account is setup) then (no)
+    :**12**. Ask user to setup an account;
+else (yes)
+    :**13**. Display account Inbox;
+endif
+
+stop
+
+@enduml
