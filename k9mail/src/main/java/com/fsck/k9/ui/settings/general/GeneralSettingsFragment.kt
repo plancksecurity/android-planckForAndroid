@@ -4,11 +4,10 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -54,11 +53,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
+    private val viewModel: GeneralSettingsViewModel by viewModels()
 
     private val startForResult = (this as Fragment).registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        Log.e("EFA-269", "RESULT: $it")
         initializeLeaveDeviceGroup()
     }
 
@@ -70,6 +69,18 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
         initializePreferences()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        viewModel.deviceGroupLeft.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { groupLeft ->
+                if (groupLeft) {
+                    // display a notification to the user that we left device group
+                    initializeLeaveDeviceGroup()
+                }
+            }
+        }
     }
 
     fun refreshPreferences() {
@@ -119,18 +130,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             if (k9.isGrouped) {
                 preference.isVisible = true
                 preference.onClick {
-                    lifecycleScope.launch {
-                        withContext(PlanckDispatcher) {
-                            k9.leaveDeviceGroup()
-                            if (!k9.isGrouped) {
-
-                                // display notification that we left device group
-                            }
-                        }
-                        if (!k9.isGrouped) {
-                            preference.isVisible = false
-                        }
-                    }
+                    viewModel.leaveDeviceGroup()
                 }
             } else {
                 preference.isVisible = false
