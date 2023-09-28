@@ -69,6 +69,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
         initializePreferences()
+    }
+
+    override fun onStart() {
+        super.onStart()
         observeViewModel()
     }
 
@@ -126,16 +130,33 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeLeaveDeviceGroup() {
-        findPreference<Preference>(PREFERENCE_LEAVE_DEVICE_GROUP)?.also { preference ->
+        findPreference<Preference>(PREFERENCE_LEAVE_DEVICE_GROUP)?.apply {
             if (k9.isGrouped) {
-                preference.isVisible = true
-                preference.onClick {
-                    viewModel.leaveDeviceGroup()
+                isVisible = true
+                onClick {
+                    showLeaveDeviceGroupConfirmation()
                 }
             } else {
-                preference.isVisible = false
+                isVisible = false
             }
         }
+    }
+
+    private fun showLeaveDeviceGroupConfirmation() {
+        AlertDialog.Builder(
+            view?.context,
+            ThemeManager.getAttributeResource(
+                requireContext(),
+                R.attr.resetAllAccountsDialogStyle
+            )
+        )
+            .setMessage(R.string.leave_device_group_dialog_confirmation_text)
+            .setTitle(R.string.pep_sync_leave_device_group)
+            .setCancelable(false)
+            .setPositiveButton(R.string.keysync_wizard_action_leave) { _, _ ->
+                viewModel.leaveDeviceGroup()
+            }.setNegativeButton(R.string.cancel_action, null)
+            .show()
     }
 
     private fun configureManualSync(preference: Preference?) {
@@ -195,7 +216,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                widgetLayoutResource = R.layout.preference_loading_widget
                 AlertDialog.Builder(view?.context,
                     ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
                         .setMessage(R.string.pep_key_reset_all_own_ids_warning)
