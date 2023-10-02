@@ -60,8 +60,14 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private suspend fun observeSyncDelegate() {
         syncDelegate.syncStateFlow.onEach { appState ->
             if (appState is SyncScreenState) {
-                if (appState is SyncState.HandshakeReadyAwaitingUser) {
-                    populateDataFromHandshakeReadyState(appState)
+                when (appState) {
+                    is SyncState.HandshakeReadyAwaitingUser ->
+                        populateDataFromHandshakeReadyState(appState)
+
+                    SyncState.Done ->
+                        wasDone = true
+
+                    else -> {}
                 }
                 syncState.value = appState
             }
