@@ -34,6 +34,7 @@ class LeaveDeviceGroupViewModel @Inject constructor(
                     if (!planckProvider.isDeviceGrouped) {
                         return@repeat
                     }
+                    Timber.e("planckProvider.isDeviceGrouped returned true, trying again...")
                     delay(DEVICE_GROUPED_CHECK_INTERVAL)
                 }
                 syncDelegate.isGrouped = false
