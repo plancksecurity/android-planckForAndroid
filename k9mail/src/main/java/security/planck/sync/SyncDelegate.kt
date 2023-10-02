@@ -205,13 +205,15 @@ class SyncDelegate @Inject constructor(
     }
 
     private fun leaveDeviceGroup() {
-        planckProvider.leaveDeviceGroup()
-            .onSuccess { isGrouped = false }
-            .onFailure {
-                if (BuildConfig.DEBUG) {
-                    Log.e("pEpEngine", "error calling leaveDeviceGroup", it)
+        if (planckProvider.isSyncRunning) {
+            planckProvider.leaveDeviceGroup()
+                .onSuccess { isGrouped = false }
+                .onFailure {
+                    if (BuildConfig.DEBUG) {
+                        Log.e("pEpEngine", "error calling leaveDeviceGroup", it)
+                    }
                 }
-            }
+        }
     }
 
     fun shutdownSync() {
