@@ -13,6 +13,7 @@ import com.fsck.k9.planck.infrastructure.Poller
 import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
+import dagger.Lazy
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
 import foundation.pEp.jniadapter.SyncHandshakeSignal
@@ -24,7 +25,6 @@ import security.planck.ui.passphrase.PassphraseActivity.Companion.notifyRequest
 import security.planck.ui.passphrase.PassphraseRequirementType
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.inject.Singleton
 
 private const val PASSPHRASE_DELAY: Long = 4000L
@@ -35,7 +35,7 @@ class SyncDelegate @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val planckProvider: PlanckProvider,
-    private val manualSyncCountDownTimer: Provider<ManualSyncCountDownTimer>,
+    private val manualSyncCountDownTimer: Lazy<ManualSyncCountDownTimer>,
 ) {
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
         MutableStateFlow(SyncState.Idle)
