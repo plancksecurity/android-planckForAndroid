@@ -2151,6 +2151,10 @@ public class K9 extends MultiDexApplication {
         return this.notifyHandshakeCallback;
     }
 
+    public void setGrouped(boolean value) {
+        this.grouped = value;
+    }
+
     public boolean isGrouped() {
         return this.grouped;
     }
