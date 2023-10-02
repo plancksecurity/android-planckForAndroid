@@ -1,44 +1,45 @@
 package com.fsck.k9.planck.manualsync
 
-import android.os.CountDownTimer
 import com.fsck.k9.planck.PlanckProvider
 import security.planck.sync.SyncDelegate
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlin.concurrent.schedule
 
 private const val TWO_MINUTE_IN_MILLIS = 120000L
 private const val MANUAL_SYNC_TIME_LIMIT = TWO_MINUTE_IN_MILLIS
-private const val MANUAL_SYNC_CHECK_INTERVAL: Long = 200
 
-class ManualSyncCountDownTimer
-@Inject constructor(
+class ManualSyncCountDownTimer(
     private val syncDelegate: Provider<SyncDelegate>,
     private val planckProvider: Provider<PlanckProvider>,
+    private val timer: Timer = Timer(),
+    private val timeout: Long = MANUAL_SYNC_TIME_LIMIT,
 ) {
-    private val countDownTimer: CountDownTimer = object : CountDownTimer(
-        MANUAL_SYNC_TIME_LIMIT,
-        MANUAL_SYNC_CHECK_INTERVAL
-    ) {
-        override fun onTick(millisUntilFinished: Long) {
+    @Inject
+    constructor(
+        syncDelegate: Provider<SyncDelegate>,
+        planckProvider: Provider<PlanckProvider>,
+    ) : this(syncDelegate, planckProvider, Timer(), MANUAL_SYNC_TIME_LIMIT)
 
-        }
-
-        override fun onFinish() {
-            syncDelegate.get().syncStartTimeout()
-        }
-    }
+    private var syncStartTimeoutTask: TimerTask? = null
 
     fun startOrReset() {
         cancel()
+        start()
+    }
+
+    private fun start() {
         when (planckProvider.get().isSyncRunning) {
             true -> planckProvider.get().syncReset()
             else -> planckProvider.get().startSync()
         }
-
-        countDownTimer.start()
+        syncStartTimeoutTask = timer.schedule(timeout) { syncDelegate.get().syncStartTimeout() }
     }
 
     fun cancel() {
-        countDownTimer.cancel()
+        syncStartTimeoutTask?.cancel()
+        syncStartTimeoutTask = null
     }
 }
