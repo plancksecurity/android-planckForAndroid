@@ -816,7 +816,7 @@ public class K9 extends MultiDexApplication {
         });
 
         refreshFoldersForAllAccounts();
-        syncDelegate.get().pEpInitSyncEnvironment();
+        syncDelegate.get().planckInitSyncEnvironment();
         syncDelegate.get().setupFastPoller();
 
         notifyObservers();
@@ -850,7 +850,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
-        syncDelegate.get().pEpInitSyncEnvironment();
+        syncDelegate.get().planckInitSyncEnvironment();
     }
 
     private void pEpSetupUiEngineSession() {

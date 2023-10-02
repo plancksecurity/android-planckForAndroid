@@ -43,7 +43,8 @@ class SyncDelegate @Inject constructor(
     private val syncState: SyncAppState
         get() = syncStateMutableFlow.value
     var isGrouped = false
-    private var pEpSyncEnvironmentInitialized = false
+    var planckSyncEnvironmentInitialized = false
+        private set
     private var isPollingMessages = false
     private var poller: Poller? = null
 
@@ -159,7 +160,7 @@ class SyncDelegate @Inject constructor(
 
     fun setPlanckSyncEnabled(enabled: Boolean) {
         if (enabled) {
-            pEpInitSyncEnvironment()
+            planckInitSyncEnvironment()
         } else if (isGrouped) {
             leaveDeviceGroup()
         } else {
@@ -167,9 +168,9 @@ class SyncDelegate @Inject constructor(
         }
     }
 
-    fun pEpInitSyncEnvironment() {
-        if (pEpSyncEnvironmentInitialized) return
-        pEpSyncEnvironmentInitialized = true
+    fun planckInitSyncEnvironment() {
+        if (planckSyncEnvironmentInitialized) return
+        planckSyncEnvironmentInitialized = true
         queueAutoConsumeMessages()
         if (preferences.accounts.isNotEmpty()) {
             if (K9.isPlanckSyncEnabled()) {

@@ -302,8 +302,10 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         }
     }
     private fun initializeSyncEnvironmentOnStartup() {
-        CoroutineScope(PlanckDispatcher).launch {
-            syncDelegate.pEpInitSyncEnvironment()
+        if (!syncDelegate.planckSyncEnvironmentInitialized) {
+            CoroutineScope(PlanckDispatcher).launch {
+                syncDelegate.planckInitSyncEnvironment()
+            }
         }
     }
 
