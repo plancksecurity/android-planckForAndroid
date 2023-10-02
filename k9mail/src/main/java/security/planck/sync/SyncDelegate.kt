@@ -159,7 +159,6 @@ class SyncDelegate @Inject constructor(
     }
 
     fun planckInitSyncEnvironment() {
-        if (planckSyncEnvironmentInitialized) return
         planckSyncEnvironmentInitialized = true
         queueAutoConsumeMessages()
         if (preferences.accounts.isNotEmpty()) {
