@@ -21,14 +21,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
-import security.planck.ui.passphrase.PassphraseActivity.Companion.notifyRequest
-import security.planck.ui.passphrase.PassphraseRequirementType
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-private const val PASSPHRASE_DELAY: Long = 4000L
 private const val POLLING_INTERVAL = 2000
 
 @Singleton
@@ -50,82 +46,75 @@ class SyncDelegate @Inject constructor(
     private var isPollingMessages = false
     private var poller: Poller? = null
 
-    val notifyHandshakeCallback =
-        NotifyHandshakeCallback { myself, partner, signal ->
-            k9.showHandshakeSignalOnDebug(signal.name)
-            when (signal) {
-                SyncHandshakeSignal.SyncNotifyInitAddOurDevice,
-                SyncHandshakeSignal.SyncNotifyInitAddOtherDevice -> {
-                    if (syncState.allowSyncNewDevices) {
-                        setHandshakeReadyStateAndNotify(
-                            myself,
-                            partner,
-                            false
-                        )
-                        cancelManualSyncCountDown()
-                    }
+    val notifyHandshakeCallback = NotifyHandshakeCallback { myself, partner, signal ->
+        k9.showHandshakeSignalOnDebug(signal.name)
+        when (signal) {
+            SyncHandshakeSignal.SyncNotifyInitAddOurDevice,
+            SyncHandshakeSignal.SyncNotifyInitAddOtherDevice -> {
+                if (syncState.allowSyncNewDevices) {
+                    setHandshakeReadyStateAndNotify(
+                        myself,
+                        partner,
+                        false
+                    )
+                    cancelManualSyncCountDown()
                 }
-
-                SyncHandshakeSignal.SyncNotifyInitFormGroup -> {
-                    if (syncState.allowSyncNewDevices) {
-                        setHandshakeReadyStateAndNotify(
-                            myself,
-                            partner,
-                            true
-                        )
-                        cancelManualSyncCountDown()
-                    }
-                }
-
-                SyncHandshakeSignal.SyncNotifyTimeout -> { //Close handshake
-                    syncStateMutableFlow.value = SyncState.TimeoutError
-                }
-
-                SyncHandshakeSignal.SyncNotifyAcceptedDeviceAdded,
-                SyncHandshakeSignal.SyncNotifyAcceptedGroupCreated,
-                SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted -> {
-                    syncStateMutableFlow.value = SyncState.Done
-                    isGrouped = true
-                }
-
-                SyncHandshakeSignal.SyncNotifySole -> {
-                    isGrouped = false
-                    if (syncState.allowSyncNewDevices) {
-                        startOrResetManualSyncCountDownTimer()
-                    }
-                }
-
-                SyncHandshakeSignal.SyncNotifyInGroup -> {
-                    isGrouped = true
-                    k9.markSyncEnabled(true)
-                    if (syncState.allowSyncNewDevices) {
-                        startOrResetManualSyncCountDownTimer()
-                    }
-                }
-
-                SyncHandshakeSignal.SyncPassphraseRequired -> {
-                    Timber.e("Showing passphrase dialog for sync")
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        notifyRequest(
-                            k9,
-                            PassphraseRequirementType.SYNC_PASSPHRASE
-                        )
-                    }, PASSPHRASE_DELAY)
-                }
-
-                SyncHandshakeSignal.DistributionNotifyGroupInvite -> {
-                    preferences.defaultAccount?.let { account ->
-                        messagingController.get()
-                            .notifyPlanckGroupInviteAndJoinGroup(
-                                account,
-                                fromSignal(myself, partner, account)
-                            )
-                    }
-                }
-
-                else -> {}
             }
+
+            SyncHandshakeSignal.SyncNotifyInitFormGroup -> {
+                if (syncState.allowSyncNewDevices) {
+                    setHandshakeReadyStateAndNotify(
+                        myself,
+                        partner,
+                        true
+                    )
+                    cancelManualSyncCountDown()
+                }
+            }
+
+            SyncHandshakeSignal.SyncNotifyTimeout -> { //Close handshake
+                syncStateMutableFlow.value = SyncState.TimeoutError
+            }
+
+            SyncHandshakeSignal.SyncNotifyAcceptedDeviceAdded,
+            SyncHandshakeSignal.SyncNotifyAcceptedGroupCreated,
+            SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted -> {
+                syncStateMutableFlow.value = SyncState.Done
+                isGrouped = true
+            }
+
+            SyncHandshakeSignal.SyncNotifySole -> {
+                isGrouped = false
+                if (syncState.allowSyncNewDevices) {
+                    startOrResetManualSyncCountDownTimer()
+                }
+            }
+
+            SyncHandshakeSignal.SyncNotifyInGroup -> {
+                isGrouped = true
+                k9.markSyncEnabled(true)
+                if (syncState.allowSyncNewDevices) {
+                    startOrResetManualSyncCountDownTimer()
+                }
+            }
+
+            SyncHandshakeSignal.SyncPassphraseRequired -> {
+                k9.showPassphraseDialogForSync()
+            }
+
+            SyncHandshakeSignal.DistributionNotifyGroupInvite -> {
+                preferences.defaultAccount?.let { account ->
+                    messagingController.get()
+                        .notifyPlanckGroupInviteAndJoinGroup(
+                            account,
+                            fromSignal(myself, partner, account)
+                        )
+                }
+            }
+
+            else -> {}
         }
+    }
 
     fun setCurrentState(state: SyncAppState) {
         syncStateMutableFlow.value = state

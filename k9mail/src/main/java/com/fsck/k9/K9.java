@@ -87,6 +87,8 @@ import security.planck.network.ConnectionMonitor;
 import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.sync.SyncDelegate;
+import security.planck.ui.passphrase.PassphraseActivity;
+import security.planck.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -1919,6 +1921,13 @@ public class K9 extends MultiDexApplication {
             new Handler(Looper.getMainLooper()).post(() ->
                     Toast.makeText(K9.this, signalName, Toast.LENGTH_LONG).show());
         }
+    }
+
+    public void showPassphraseDialogForSync() {
+        Timber.e("Showing passphrase dialog for sync");
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                PassphraseActivity.notifyRequest(K9.this,
+                        PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
     }
 
     public void persistentShutDown() {
