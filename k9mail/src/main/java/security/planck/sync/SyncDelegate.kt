@@ -1,0 +1,257 @@
+package security.planck.sync
+
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
+import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.PlanckProvider.CompletedCallback
+import com.fsck.k9.planck.infrastructure.Poller
+import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer
+import com.fsck.k9.planck.manualsync.SyncAppState
+import com.fsck.k9.planck.manualsync.SyncState
+import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
+import foundation.pEp.jniadapter.SyncHandshakeSignal
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import security.planck.notification.GroupMailSignal.Companion.fromSignal
+import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
+import security.planck.ui.passphrase.PassphraseActivity.Companion.notifyRequest
+import security.planck.ui.passphrase.PassphraseRequirementType
+import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
+
+private const val PASSPHRASE_DELAY: Long = 4000L
+private const val POLLING_INTERVAL = 2000
+
+@Singleton
+class SyncDelegate @Inject constructor(
+    private val k9: K9,
+    private val preferences: Preferences,
+    private val planckProvider: PlanckProvider,
+    private val manualSyncCountDownTimer: Provider<ManualSyncCountDownTimer>,
+) {
+    private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
+        MutableStateFlow(SyncState.Idle)
+    val syncStateFlow = syncStateMutableFlow.asStateFlow()
+    private val syncState: SyncAppState
+        get() = syncStateMutableFlow.value
+    var grouped = false
+        private set
+    private var pEpSyncEnvironmentInitialized = false
+    private var isPollingMessages = false
+    private var poller: Poller? = null
+
+    val notifyHandshakeCallback =
+        NotifyHandshakeCallback { myself, partner, signal ->
+            k9.showHandshakeSignalOnDebug(signal.name)
+            when (signal) {
+                SyncHandshakeSignal.SyncNotifyInitAddOurDevice,
+                SyncHandshakeSignal.SyncNotifyInitAddOtherDevice -> {
+                    if (syncState.allowSyncNewDevices) {
+                        setHandshakeReadyStateAndNotify(
+                            myself,
+                            partner,
+                            false
+                        )
+                        cancelManualSyncCountDown()
+                    }
+                }
+
+                SyncHandshakeSignal.SyncNotifyInitFormGroup -> {
+                    if (syncState.allowSyncNewDevices) {
+                        setHandshakeReadyStateAndNotify(
+                            myself,
+                            partner,
+                            true
+                        )
+                        cancelManualSyncCountDown()
+                    }
+                }
+
+                SyncHandshakeSignal.SyncNotifyTimeout -> { //Close handshake
+                    syncStateMutableFlow.value = SyncState.TimeoutError
+                }
+
+
+                SyncHandshakeSignal.SyncNotifyAcceptedDeviceAdded,
+                SyncHandshakeSignal.SyncNotifyAcceptedGroupCreated,
+                SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted -> {
+                    syncStateMutableFlow.value = SyncState.Done
+                    grouped = true
+                }
+
+                SyncHandshakeSignal.SyncNotifySole -> {
+                    grouped = false
+                    if (syncState.allowSyncNewDevices) {
+                        startOrResetManualSyncCountDownTimer()
+                    }
+                }
+
+                SyncHandshakeSignal.SyncNotifyInGroup -> {
+                    grouped = true
+                    k9.markSyncEnabled(true)
+                    if (syncState.allowSyncNewDevices) {
+                        startOrResetManualSyncCountDownTimer()
+                    }
+                }
+
+                SyncHandshakeSignal.SyncPassphraseRequired -> {
+                    Timber.e("Showing passphrase dialog for sync")
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        notifyRequest(
+                            k9,
+                            PassphraseRequirementType.SYNC_PASSPHRASE
+                        )
+                    }, PASSPHRASE_DELAY)
+                }
+
+                SyncHandshakeSignal.DistributionNotifyGroupInvite -> {
+                    preferences.defaultAccount?.let { account ->
+                        MessagingController.getInstance(k9)
+                            .notifyPlanckGroupInviteAndJoinGroup(
+                                account,
+                                fromSignal(myself, partner, account)
+                            )
+                    }
+                }
+
+                else -> {}
+            }
+        }
+
+    fun setCurrentState(state: SyncAppState) {
+        syncStateMutableFlow.value = state
+    }
+
+    fun setupFastPoller() {
+        if (poller == null) {
+            poller = Poller(Handler(Looper.getMainLooper()))
+            poller!!.init(POLLING_INTERVAL.toLong()) { polling() }
+        } else {
+            poller!!.stopPolling()
+        }
+        poller!!.startPolling()
+    }
+
+    private fun polling() {
+        if (syncState.needsFastPolling && !isPollingMessages) {
+            Log.d("pEpDecrypt", "Entering looper")
+            isPollingMessages = true
+            val messagingController = MessagingController.getInstance(k9)
+            messagingController.checkpEpSyncMail(k9, object : CompletedCallback {
+                override fun onComplete() {
+                    isPollingMessages = false
+                }
+
+                override fun onError(throwable: Throwable) {
+                    Log.e("pEpSync", "onError: ", throwable)
+                    isPollingMessages = false
+                }
+            })
+        }
+    }
+
+
+    fun setPlanckSyncEnabled(enabled: Boolean) {
+        if (enabled) {
+            pEpInitSyncEnvironment()
+        } else if (grouped) {
+            leaveDeviceGroup()
+        } else {
+            shutdownSync()
+        }
+    }
+
+    fun pEpInitSyncEnvironment() {
+        if (pEpSyncEnvironmentInitialized) return
+        pEpSyncEnvironmentInitialized = true
+        queueAutoConsumeMessages()
+        if (preferences.accounts.isNotEmpty()) {
+            if (K9.isPlanckSyncEnabled()) {
+                initSync()
+            }
+        } else {
+            Log.e("pEpEngine-app", "There is no accounts set up, not trying to start sync")
+        }
+    }
+
+    private fun initSync() {
+        planckProvider.updateSyncAccountsConfig()
+        updateDeviceGrouped()
+        if (!planckProvider.isSyncRunning) {
+            planckProvider.startSync()
+        }
+    }
+
+    private fun updateDeviceGrouped() {
+        grouped = planckProvider.isDeviceGrouped
+    }
+
+    private fun setHandshakeReadyStateAndNotify(
+        myself: Identity,
+        partner: Identity,
+        formingGroup: Boolean
+    ) {
+        syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
+            myself,
+            partner,
+            formingGroup
+        )
+    }
+
+    private fun startOrResetManualSyncCountDownTimer() {
+        manualSyncCountDownTimer.get().startOrReset()
+    }
+
+    fun allowManualSync() {
+        startOrResetManualSyncCountDownTimer()
+    }
+
+    private fun disallowSync() {
+        syncStateMutableFlow.value = SyncState.Idle
+    }
+
+    fun cancelSync() {
+        cancelManualSyncCountDown()
+        syncStateMutableFlow.value = SyncState.Cancelled
+        disallowSync()
+    }
+
+    fun syncStartTimeout() {
+        syncStateMutableFlow.value = SyncState.SyncStartTimeout
+        disallowSync()
+    }
+
+    private fun cancelManualSyncCountDown() {
+        manualSyncCountDownTimer.get().cancel()
+    }
+
+    fun setGrouped(value: Boolean) {
+        this.grouped = value
+    }
+
+    fun isGrouped(): Boolean {
+        return this.grouped
+    }
+
+    fun leaveDeviceGroup() {
+        planckProvider.leaveDeviceGroup()
+        grouped = false
+        //updateDeviceGrouped();
+    }
+
+    fun shutdownSync() {
+        Log.e("pEpEngine", "shutdownSync: start")
+        if (planckProvider.isSyncRunning) {
+            planckProvider.stopSync()
+        }
+        k9.markSyncEnabled(false)
+        Log.e("pEpEngine", "shutdownSync: end")
+    }
+}

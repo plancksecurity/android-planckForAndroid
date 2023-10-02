@@ -1,12 +1,18 @@
 package com.fsck.k9.planck.manualsync
 
+import foundation.pEp.jniadapter.Identity
+
 object SyncState {
     // common states
     object Idle : SyncScreenState, SyncAppState
 
     object AwaitingOtherDevice : SyncScreenState, SyncAppState
 
-    object HandshakeReadyAwaitingUser : SyncScreenState, SyncAppState
+    data class HandshakeReadyAwaitingUser(
+        val myself: Identity,
+        val partner: Identity,
+        val formingGroup: Boolean,
+    ) : SyncScreenState, SyncAppState
 
     object Done : SyncScreenState, SyncAppState
 

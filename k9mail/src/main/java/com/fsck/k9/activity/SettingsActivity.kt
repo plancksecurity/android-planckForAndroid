@@ -55,6 +55,7 @@ import kotlinx.coroutines.*
 import security.planck.mdm.RestrictionsListener
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
+import security.planck.sync.SyncDelegate
 import security.planck.ui.about.AboutActivity
 import security.planck.ui.intro.startOnBoarding
 import security.planck.ui.intro.startWelcomeMessage
@@ -113,6 +114,8 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     lateinit var permissionChecker: PermissionChecker
     @Inject
     lateinit var resourcesProvider: ResourcesProvider
+    @Inject
+    lateinit var syncDelegate: SyncDelegate
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -299,10 +302,8 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         }
     }
     private fun initializeSyncEnvironmentOnStartup() {
-        if(!k9.ispEpSyncEnvironmentInitialized()) {
-            CoroutineScope(PlanckDispatcher).launch {
-                k9.pEpInitSyncEnvironment()
-            }
+        CoroutineScope(PlanckDispatcher).launch {
+            syncDelegate.pEpInitSyncEnvironment()
         }
     }
 

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.planck.DefaultDispatcherProvider
 import com.fsck.k9.planck.DispatcherProvider
@@ -12,18 +11,21 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Identity
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.sync.SyncDelegate
 import javax.inject.Inject
 
 private const val DEFAULT_TRUSTWORDS_LANGUAGE = "en"
 
 @HiltViewModel
 class PlanckSyncWizardViewModel @Inject constructor(
-    private val k9: K9,
+    private val syncDelegate: SyncDelegate,
     private val planckProvider: PlanckProvider,
     private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
-) : ViewModel(), SyncStateChangeListener {
+) : ViewModel() {
     private val syncState = MutableLiveData<SyncScreenState>(SyncState.Idle)
     fun getSyncState(): LiveData<SyncScreenState> = syncState
 
@@ -36,18 +38,34 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private var wasDone = false
 
     init {
-        if (k9.syncState != SyncState.Idle && BuildConfig.DEBUG) {
-            error("unexpected initial state: ${k9.syncState}")
-        }
-        syncState.value = k9.syncState as SyncScreenState
-        k9.setSyncStateChangeListener(this)
+        //if (syncDelegate.syncStateFlow.value != SyncState.Idle /*&& syncDelegate.syncStateFlow.value !is SyncState.HandshakeReadyAwaitingUser*/ && BuildConfig.DEBUG) {
+        //    error("unexpected initial state: ${syncDelegate.syncStateFlow.value}")
+        //}
         setState(SyncState.AwaitingOtherDevice)
-        k9.allowManualSync()
+        syncDelegate.allowManualSync()
+        observeSyncDelegate()
+    }
+
+    private fun observeSyncDelegate() {
+        syncDelegate.syncStateFlow.onEach { appState ->
+            if (appState is SyncScreenState) {
+                if (appState is SyncState.HandshakeReadyAwaitingUser) {
+                    populateDataFromHandshakeReadyState(appState)
+                }
+                syncState.value = appState
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun populateDataFromHandshakeReadyState(appState: SyncState.HandshakeReadyAwaitingUser) {
+        myself = appState.myself
+        partner = appState.partner
+        formingGroup = appState.formingGroup
     }
 
     fun next() {
         when (syncState.value) {
-            SyncState.HandshakeReadyAwaitingUser -> {
+            is SyncState.HandshakeReadyAwaitingUser -> {
                 getOrRefreshTrustWords()
             }
 
@@ -64,20 +82,20 @@ class PlanckSyncWizardViewModel @Inject constructor(
             PlanckUtils.formatFpr(myself.fpr),
             PlanckUtils.formatFpr(partner.fpr),
         )
-        k9.syncState = SyncState.PerformingHandshake
+        syncDelegate.setCurrentState(SyncState.PerformingHandshake)
     }
 
     private fun finish() {
-        k9.syncState = k9.syncState.finish()
+        syncDelegate.setCurrentState(SyncState.Idle)
     }
 
     private fun setState(state: SyncScreenState) {
-        syncState.value = state.also { k9.syncState = it as SyncAppState }
+        syncState.value = state.also { syncDelegate.setCurrentState(it as SyncAppState) }
     }
 
     fun rejectHandshake() {
         planckProvider.rejectSync()
-        k9.cancelSync()
+        syncDelegate.cancelSync()
     }
 
     fun acceptHandshake() {
@@ -87,7 +105,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     fun cancelHandshake() {
         planckProvider.cancelSync()
-        k9.cancelSync()
+        syncDelegate.cancelSync()
     }
 
     fun changeTrustwordsLanguage(languagePosition: Int) {
@@ -129,29 +147,9 @@ class PlanckSyncWizardViewModel @Inject constructor(
         }
     }
 
-    override fun syncStateChanged(state: SyncScreenState) {
-        if (state == SyncState.Done) {
-            wasDone = true
-        }
-        this.syncState.postValue(state)
-    }
-
-    override fun syncStateChanged(
-        state: SyncState.HandshakeReadyAwaitingUser,
-        myself: Identity,
-        partner: Identity,
-        formingGroup: Boolean
-    ) {
-        this.formingGroup = formingGroup
-        this.myself = myself
-        this.partner = partner
-        this.syncState.postValue(state)
-    }
-
     override fun onCleared() {
         super.onCleared()
         finish()
-        k9.setSyncStateChangeListener(null)
     }
 
     fun switchTrustwordsLength() {
