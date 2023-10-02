@@ -25,6 +25,7 @@ import security.planck.ui.passphrase.PassphraseActivity.Companion.notifyRequest
 import security.planck.ui.passphrase.PassphraseRequirementType
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 private const val PASSPHRASE_DELAY: Long = 4000L
@@ -35,6 +36,7 @@ class SyncDelegate @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val planckProvider: PlanckProvider,
+    private val messagingController: Provider<MessagingController>,
     private val manualSyncCountDownTimer: Lazy<ManualSyncCountDownTimer>,
 ) {
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
@@ -113,7 +115,7 @@ class SyncDelegate @Inject constructor(
 
                 SyncHandshakeSignal.DistributionNotifyGroupInvite -> {
                     preferences.defaultAccount?.let { account ->
-                        MessagingController.getInstance(k9)
+                        messagingController.get()
                             .notifyPlanckGroupInviteAndJoinGroup(
                                 account,
                                 fromSignal(myself, partner, account)
@@ -143,8 +145,7 @@ class SyncDelegate @Inject constructor(
         if (syncState.needsFastPolling && !isPollingMessages) {
             Log.d("pEpDecrypt", "Entering looper")
             isPollingMessages = true
-            val messagingController = MessagingController.getInstance(k9)
-            messagingController.checkpEpSyncMail(k9, object : CompletedCallback {
+            messagingController.get().checkpEpSyncMail(k9, object : CompletedCallback {
                 override fun onComplete() {
                     isPollingMessages = false
                 }
