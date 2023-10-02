@@ -39,7 +39,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private var wasDone = false
 
     init {
-        if (syncDelegate.syncStateFlow.value != SyncState.Idle && K9.isDebug()) {
+        if (syncDelegate.syncStateFlow.value != SyncState.Idle) {
             Timber.e("unexpected initial state: ${syncDelegate.syncStateFlow.value}")
         }
         viewModelScope.launch {

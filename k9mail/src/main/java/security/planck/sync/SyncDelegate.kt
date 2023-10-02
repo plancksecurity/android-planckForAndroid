@@ -3,6 +3,7 @@ package security.planck.sync
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
@@ -181,7 +182,7 @@ class SyncDelegate @Inject constructor(
 
     private fun initSync() {
         planckProvider.updateSyncAccountsConfig()
-        updateDeviceGrouped()
+        //updateDeviceGrouped()
         if (!planckProvider.isSyncRunning) {
             planckProvider.startSync()
         }
@@ -230,10 +231,14 @@ class SyncDelegate @Inject constructor(
         manualSyncCountDownTimer.get().cancel()
     }
 
-    fun leaveDeviceGroup() {
+    private fun leaveDeviceGroup() {
         planckProvider.leaveDeviceGroup()
-        isGrouped = false
-        //updateDeviceGrouped();
+            .onSuccess { isGrouped = false }
+            .onFailure {
+                if (BuildConfig.DEBUG) {
+                    Log.e("pEpEngine", "error calling leaveDeviceGroup", it)
+                }
+            }
     }
 
     fun shutdownSync() {
