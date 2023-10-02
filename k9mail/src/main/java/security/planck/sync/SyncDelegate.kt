@@ -52,28 +52,25 @@ class SyncDelegate @Inject constructor(
             when (signal) {
                 SyncHandshakeSignal.SyncNotifyInitAddOurDevice,
                 SyncHandshakeSignal.SyncNotifyInitAddOtherDevice -> {
-                    /**
-                     * Logic:
-                     * - when we get a signal to display the screen:
-                     *  - If the sync was manually triggered by the user, set state ready waiting for user and cancel the countdown.
-                     *  - If the sync came from the protocol, set same state and no need for countdown.
-                     *  - Then we should set the waiting for user anyway, and check in viewmodel initialization the initial value.
-                     */
-                    setHandshakeReadyStateAndNotify(
-                        myself,
-                        partner,
-                        false
-                    )
-                    cancelManualSyncCountDown()
+                    if (syncState.allowSyncNewDevices) {
+                        setHandshakeReadyStateAndNotify(
+                            myself,
+                            partner,
+                            false
+                        )
+                        cancelManualSyncCountDown()
+                    }
                 }
 
                 SyncHandshakeSignal.SyncNotifyInitFormGroup -> {
-                    setHandshakeReadyStateAndNotify(
-                        myself,
-                        partner,
-                        true
-                    )
-                    cancelManualSyncCountDown()
+                    if (syncState.allowSyncNewDevices) {
+                        setHandshakeReadyStateAndNotify(
+                            myself,
+                            partner,
+                            true
+                        )
+                        cancelManualSyncCountDown()
+                    }
                 }
 
                 SyncHandshakeSignal.SyncNotifyTimeout -> { //Close handshake

@@ -11,11 +11,12 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Identity
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.sync.SyncDelegate
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val DEFAULT_TRUSTWORDS_LANGUAGE = "en"
@@ -38,17 +39,25 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private var wasDone = false
 
     init {
-        //if (syncDelegate.syncStateFlow.value != SyncState.Idle /*&& syncDelegate.syncStateFlow.value !is SyncState.HandshakeReadyAwaitingUser*/ && BuildConfig.DEBUG) {
-        //    error("unexpected initial state: ${syncDelegate.syncStateFlow.value}")
-        //}
-        if (syncDelegate.syncStateFlow.value !is SyncState.HandshakeReadyAwaitingUser) { // if the SyncDelegate is already awaiting for user, just go along with it.
+        if (syncDelegate.syncStateFlow.value != SyncState.Idle && K9.isDebug()) {
+            Timber.e("unexpected initial state: ${syncDelegate.syncStateFlow.value}")
+        }
+        viewModelScope.launch {
+            cancelOldSyncOnInit()
             setState(SyncState.AwaitingOtherDevice)
             syncDelegate.allowManualSync()
+            observeSyncDelegate()
         }
-        observeSyncDelegate()
+
     }
 
-    private fun observeSyncDelegate() {
+    private fun cancelOldSyncOnInit() {
+        if (planckProvider.isSyncRunning) {
+            planckProvider.cancelSync()
+        }
+    }
+
+    private suspend fun observeSyncDelegate() {
         syncDelegate.syncStateFlow.onEach { appState ->
             if (appState is SyncScreenState) {
                 if (appState is SyncState.HandshakeReadyAwaitingUser) {
@@ -56,7 +65,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
                 }
                 syncState.value = appState
             }
-        }.launchIn(viewModelScope)
+        }.collect()
     }
 
     private fun populateDataFromHandshakeReadyState(appState: SyncState.HandshakeReadyAwaitingUser) {
