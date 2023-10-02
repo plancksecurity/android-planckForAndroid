@@ -134,11 +134,11 @@ class SyncDelegate @Inject constructor(
     fun setupFastPoller() {
         if (poller == null) {
             poller = Poller(Handler(Looper.getMainLooper()))
-            poller!!.init(POLLING_INTERVAL.toLong()) { polling() }
+            poller?.init(POLLING_INTERVAL.toLong()) { polling() }
         } else {
-            poller!!.stopPolling()
+            poller?.stopPolling()
         }
-        poller!!.startPolling()
+        poller?.startPolling()
     }
 
     private fun polling() {
