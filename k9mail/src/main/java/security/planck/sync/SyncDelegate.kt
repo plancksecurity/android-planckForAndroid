@@ -51,25 +51,11 @@ class SyncDelegate @Inject constructor(
         when (signal) {
             SyncHandshakeSignal.SyncNotifyInitAddOurDevice,
             SyncHandshakeSignal.SyncNotifyInitAddOtherDevice -> {
-                if (syncState.allowSyncNewDevices) {
-                    setHandshakeReadyStateAndNotify(
-                        myself,
-                        partner,
-                        false
-                    )
-                    cancelManualSyncCountDown()
-                }
+                foundPartnerDevice(myself, partner, false)
             }
 
             SyncHandshakeSignal.SyncNotifyInitFormGroup -> {
-                if (syncState.allowSyncNewDevices) {
-                    setHandshakeReadyStateAndNotify(
-                        myself,
-                        partner,
-                        true
-                    )
-                    cancelManualSyncCountDown()
-                }
+                foundPartnerDevice(myself, partner, true)
             }
 
             SyncHandshakeSignal.SyncNotifyTimeout -> { //Close handshake
@@ -113,6 +99,21 @@ class SyncDelegate @Inject constructor(
             }
 
             else -> {}
+        }
+    }
+
+    private fun foundPartnerDevice(
+        myself: Identity,
+        partner: Identity,
+        formingGroup: Boolean,
+    ) {
+        if (syncState == SyncState.AwaitingOtherDevice) {
+            syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
+                myself,
+                partner,
+                formingGroup
+            )
+            cancelManualSyncCountDown()
         }
     }
 
@@ -180,18 +181,6 @@ class SyncDelegate @Inject constructor(
 
     private fun updateDeviceGrouped() {
         isGrouped = planckProvider.isDeviceGrouped
-    }
-
-    private fun setHandshakeReadyStateAndNotify(
-        myself: Identity,
-        partner: Identity,
-        formingGroup: Boolean
-    ) {
-        syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
-            myself,
-            partner,
-            formingGroup
-        )
     }
 
     private fun startOrResetManualSyncCountDownTimer() {
