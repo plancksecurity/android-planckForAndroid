@@ -12,20 +12,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountSettingsViewModel @Inject constructor(
     private val preferences: Preferences,
     private val folderRepositoryManager: FolderRepositoryManager,
-    private val syncDelegate: SyncDelegate,
+    private val syncRepository: SyncRepository,
 ) : ViewModel() {
     private val accountLiveData = MutableLiveData<Account>()
     private val foldersLiveData = MutableLiveData<List<Folder>>()
 
     val isGrouped: Boolean
-        get() = syncDelegate.isGrouped
+        get() = syncRepository.isGrouped
 
     fun getAccount(accountUuid: String): LiveData<Account> {
         if (accountLiveData.value == null) {

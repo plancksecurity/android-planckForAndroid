@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import security.planck.dialog.BackgroundTaskDialogView
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -19,7 +19,7 @@ private const val DEVICE_GROUPED_CHECK_INTERVAL = 100L
 @HiltViewModel
 class LeaveDeviceGroupViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
-    private val syncDelegate: SyncDelegate,
+    private val syncRepository: SyncRepository,
 ) : ViewModel() {
 
     private val stateLD: MutableLiveData<BackgroundTaskDialogView.State> =
@@ -37,7 +37,7 @@ class LeaveDeviceGroupViewModel @Inject constructor(
                     Timber.e("planckProvider.isDeviceGrouped returned true, trying again...")
                     delay(DEVICE_GROUPED_CHECK_INTERVAL)
                 }
-                syncDelegate.isGrouped = false
+                syncRepository.isGrouped = false
                 stateLD.value = BackgroundTaskDialogView.State.SUCCESS
             }.onFailure {
                 Timber.e(it)

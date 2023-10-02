@@ -16,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import security.planck.dialog.BackgroundTaskDialogView
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 
 @ExperimentalCoroutinesApi
 class LeaveDeviceGroupViewModelTest {
@@ -27,10 +27,10 @@ class LeaveDeviceGroupViewModelTest {
     var coroutinesTestRule = CoroutineTestRule()
 
     private val planckProvider: PlanckProvider = mockk()
-    private val syncDelegate: SyncDelegate = mockk(relaxed = true)
+    private val syncRepository: SyncRepository = mockk(relaxed = true)
 
     private val receivedStates = mutableListOf<BackgroundTaskDialogView.State>()
-    private val viewModel = LeaveDeviceGroupViewModel(planckProvider, syncDelegate)
+    private val viewModel = LeaveDeviceGroupViewModel(planckProvider, syncRepository)
 
     @Before
     fun setUp() {
@@ -74,7 +74,7 @@ class LeaveDeviceGroupViewModelTest {
 
 
             coVerify { planckProvider.isDeviceGrouped }
-            coVerify { syncDelegate.isGrouped = false }
+            coVerify { syncRepository.isGrouped = false }
             assertStates(
                 BackgroundTaskDialogView.State.CONFIRMATION,
                 BackgroundTaskDialogView.State.LOADING,
@@ -111,7 +111,7 @@ class LeaveDeviceGroupViewModelTest {
 
 
             coVerify(exactly = 5) { planckProvider.isDeviceGrouped }
-            coVerify { syncDelegate.isGrouped = false }
+            coVerify { syncRepository.isGrouped = false }
             assertStates(
                 BackgroundTaskDialogView.State.CONFIRMATION,
                 BackgroundTaskDialogView.State.LOADING,

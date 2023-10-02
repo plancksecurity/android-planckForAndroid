@@ -28,7 +28,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 
 private const val TEST_TRUSTWORDS = "TEST TRUSTWORDS"
 private const val GERMAN_TRUSTWORDS = "GERMAN TRUSTWORDS"
@@ -48,7 +48,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
     var coroutinesTestRule = CoroutineTestRule()
 
     private val planckProvider: PlanckProvider = mockk(relaxed = true)
-    private val syncDelegate: SyncDelegate = mockk(relaxed = true)
+    private val syncRepository: SyncRepository = mockk(relaxed = true)
     private lateinit var viewModel: PlanckSyncWizardViewModel
     private val receivedSyncStates = mutableListOf<SyncScreenState>()
     private val myself: Identity = Identity().apply { fpr = MYSELF_FPR }
@@ -63,9 +63,9 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         val slot = slot<String>()
         every { PlanckUtils.formatFpr(capture(slot)) }.answers { slot.captured }
         every { PlanckUtils.trustWordsAvailableForLang(any()) }.returns(true)
-        every { syncDelegate.syncStateFlow }.returns(syncStateFlow)
+        every { syncRepository.syncStateFlow }.returns(syncStateFlow)
         val stateSlot = slot<SyncAppState>()
-        coEvery { syncDelegate.setCurrentState(capture(stateSlot)) }.coAnswers {
+        coEvery { syncRepository.setCurrentState(capture(stateSlot)) }.coAnswers {
             syncStateFlow.value = stateSlot.captured
         }
         coEvery { planckProvider.isSyncRunning }.returns(true)
@@ -80,7 +80,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
         receivedSyncStates.clear()
         viewModel = PlanckSyncWizardViewModel(
-            syncDelegate,
+            syncRepository,
             planckProvider,
             coroutinesTestRule.testDispatcherProvider
         )
@@ -122,7 +122,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
             SyncState.Done,
         )
         verify(exactly = 0) { planckProvider.cancelSync() }
-        verify(exactly = 0) { syncDelegate.cancelSync() }
+        verify(exactly = 0) { syncRepository.cancelSync() }
     }
 
     @Test
@@ -132,7 +132,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
         assertStates(SyncState.AwaitingOtherDevice)
         verify { planckProvider.cancelSync() }
-        verify { syncDelegate.cancelSync() }
+        verify { syncRepository.cancelSync() }
     }
 
 
@@ -183,7 +183,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
                 SyncState.AwaitingHandshakeCompletion(MYSELF_FPR, PARTNER_FPR)
             )
-            coVerify { syncDelegate.setCurrentState(SyncState.PerformingHandshake) }
+            coVerify { syncRepository.setCurrentState(SyncState.PerformingHandshake) }
         }
 
     @Test
@@ -192,7 +192,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
 
         verify { planckProvider.cancelSync() }
-        verify { syncDelegate.cancelSync() }
+        verify { syncRepository.cancelSync() }
     }
 
     @Test
@@ -201,7 +201,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
 
         verify { planckProvider.rejectSync() }
-        verify { syncDelegate.cancelSync() }
+        verify { syncRepository.cancelSync() }
     }
 
     @Test
@@ -290,15 +290,15 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         method.invoke(viewModel)
 
 
-        verify { syncDelegate.setCurrentState(SyncState.Idle) }
+        verify { syncRepository.setCurrentState(SyncState.Idle) }
     }
 
     private fun assertionsOnViewModelCreation() {
-        coVerify { syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice) }
+        coVerify { syncRepository.setCurrentState(SyncState.AwaitingOtherDevice) }
         verifyAnyPreviousHandshakeCancelled()
-        coVerify { syncDelegate.allowManualSync() }
+        coVerify { syncRepository.allowManualSync() }
         assertStates(SyncState.AwaitingOtherDevice)
-        clearMocks(syncDelegate, planckProvider, answers = false, childMocks = false)
+        clearMocks(syncRepository, planckProvider, answers = false, childMocks = false)
     }
 
     private fun verifyAnyPreviousHandshakeCancelled() {

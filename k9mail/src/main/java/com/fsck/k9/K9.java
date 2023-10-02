@@ -86,7 +86,7 @@ import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
 import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
-import security.planck.sync.SyncDelegate;
+import security.planck.sync.SyncRepository;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
@@ -118,7 +118,7 @@ public class K9 extends MultiDexApplication {
     Provider<RestrictionsReceiver> restrictionsReceiver;
 
     @Inject
-    Provider<SyncDelegate> syncDelegate;
+    Provider<SyncRepository> syncDelegate;
 
     public static K9JobManager jobManager;
 

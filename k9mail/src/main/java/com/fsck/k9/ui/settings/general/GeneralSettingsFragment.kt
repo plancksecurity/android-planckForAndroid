@@ -35,7 +35,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
@@ -54,7 +54,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var k9: K9
     @Inject
-    lateinit var syncDelegate: SyncDelegate
+    lateinit var syncRepository: SyncRepository
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
@@ -131,7 +131,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeLeaveDeviceGroup() {
         findPreference<Preference>(PREFERENCE_LEAVE_DEVICE_GROUP)?.apply {
-            if (syncDelegate.isGrouped) {
+            if (syncRepository.isGrouped) {
                 isVisible = true
                 onClick {
                     showLeaveDeviceGroupConfirmation()

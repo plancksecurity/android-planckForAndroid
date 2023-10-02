@@ -43,7 +43,7 @@ import javax.inject.Provider
 private const val UUID = "uuid1"
 
 @ExperimentalCoroutinesApi
-class SyncDelegateTest : RobolectricTest() {
+class SyncRepositoryTest : RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val account: Account = mockk {
         every { uuid }.returns(UUID)
@@ -68,7 +68,7 @@ class SyncDelegateTest : RobolectricTest() {
     private val myself: Identity = Identity()
     private val partner: Identity = Identity()
 
-    private val syncDelegate: SyncDelegate = SyncDelegate(
+    private val syncRepository: SyncRepository = SyncRepository(
         k9,
         preferences,
         planckProvider,
@@ -102,7 +102,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `setCurrentState changes SyncDelegate state`() {
-        syncDelegate.setCurrentState(SyncState.Done)
+        syncRepository.setCurrentState(SyncState.Done)
 
 
         assertStates(SyncState.Idle, SyncState.Done)
@@ -110,7 +110,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `setupFastPoller() creates, initializes and starts poller if poller is not initialized`() {
-        syncDelegate.setupFastPoller()
+        syncRepository.setupFastPoller()
 
 
         verify { pollerFactory.createPoller() }
@@ -120,9 +120,9 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `setupFastPoller() stops and restarts poller if poller is already initialized`() {
-        syncDelegate.setupFastPoller()
+        syncRepository.setupFastPoller()
         clearMocks(pollerFactory, poller, answers = false)
-        syncDelegate.setupFastPoller()
+        syncRepository.setupFastPoller()
 
 
         verify { pollerFactory.wasNot(called) }
@@ -133,11 +133,11 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `Poller checks planck sync mail if SyncDelegate's current state needs fast polling`() {
-        syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice)
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         val slot = slot<Runnable>()
         every { poller.init(any(), capture(slot)) }.just(runs)
         every { poller.startPolling() }.answers { slot.captured.run() }
-        syncDelegate.setupFastPoller()
+        syncRepository.setupFastPoller()
 
 
         verify { messagingController.checkpEpSyncMail(k9, any()) }
@@ -148,7 +148,7 @@ class SyncDelegateTest : RobolectricTest() {
         val slot = slot<Runnable>()
         every { poller.init(any(), capture(slot)) }.just(runs)
         every { poller.startPolling() }.answers { slot.captured.run() }
-        syncDelegate.setupFastPoller()
+        syncRepository.setupFastPoller()
 
 
         verify { messagingController.wasNot(called) }
@@ -156,7 +156,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `setPlanckSyncEnabled(true) schedules KeySyncCleaner work`() {
-        syncDelegate.setPlanckSyncEnabled(true)
+        syncRepository.setPlanckSyncEnabled(true)
 
 
         verify { KeySyncCleaner.queueAutoConsumeMessages() }
@@ -167,7 +167,7 @@ class SyncDelegateTest : RobolectricTest() {
         every { planckProvider.isSyncRunning }.returns(false)
 
 
-        syncDelegate.setPlanckSyncEnabled(true)
+        syncRepository.setPlanckSyncEnabled(true)
 
 
         verify { planckProvider.updateSyncAccountsConfig() }
@@ -179,7 +179,7 @@ class SyncDelegateTest : RobolectricTest() {
         every { planckProvider.isSyncRunning }.returns(true)
 
 
-        syncDelegate.setPlanckSyncEnabled(true)
+        syncRepository.setPlanckSyncEnabled(true)
 
 
         verify { planckProvider.updateSyncAccountsConfig() }
@@ -192,7 +192,7 @@ class SyncDelegateTest : RobolectricTest() {
         every { preferences.accounts }.returns(emptyList())
 
 
-        syncDelegate.setPlanckSyncEnabled(true)
+        syncRepository.setPlanckSyncEnabled(true)
 
 
         verify { planckProvider.wasNot(called) }
@@ -204,7 +204,7 @@ class SyncDelegateTest : RobolectricTest() {
         every { planckProvider.isSyncRunning }.returns(false)
 
 
-        syncDelegate.setPlanckSyncEnabled(true)
+        syncRepository.setPlanckSyncEnabled(true)
 
 
         verify { planckProvider.wasNot(called) }
@@ -213,10 +213,10 @@ class SyncDelegateTest : RobolectricTest() {
     @Test
     fun `setPlanckSyncEnabled(false) shuts down sync if device is not grouped and sync is running`() {
         every { planckProvider.isSyncRunning }.returns(true)
-        syncDelegate.isGrouped = false
+        syncRepository.isGrouped = false
 
 
-        syncDelegate.setPlanckSyncEnabled(false)
+        syncRepository.setPlanckSyncEnabled(false)
 
 
         verify { planckProvider.stopSync() }
@@ -226,10 +226,10 @@ class SyncDelegateTest : RobolectricTest() {
     @Test
     fun `setPlanckSyncEnabled(false) does not shut down sync if device is not grouped and sync is not running`() {
         every { planckProvider.isSyncRunning }.returns(false)
-        syncDelegate.isGrouped = false
+        syncRepository.isGrouped = false
 
 
-        syncDelegate.setPlanckSyncEnabled(false)
+        syncRepository.setPlanckSyncEnabled(false)
 
 
         verify(exactly = 0) { planckProvider.stopSync() }
@@ -239,44 +239,44 @@ class SyncDelegateTest : RobolectricTest() {
     @Test
     fun `setPlanckSyncEnabled(false) leaves device group if device is grouped and sync is running`() {
         every { planckProvider.isSyncRunning }.returns(true)
-        syncDelegate.isGrouped = true
+        syncRepository.isGrouped = true
         every { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
 
-        syncDelegate.setPlanckSyncEnabled(false)
+        syncRepository.setPlanckSyncEnabled(false)
 
 
         verify { planckProvider.leaveDeviceGroup() }
-        assertEquals(false, syncDelegate.isGrouped)
+        assertEquals(false, syncRepository.isGrouped)
     }
 
     @Test
     fun `setPlanckSyncEnabled(false) does not leave device group if sync is not running`() {
         every { planckProvider.isSyncRunning }.returns(false)
-        syncDelegate.isGrouped = true
+        syncRepository.isGrouped = true
         every { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
 
-        syncDelegate.setPlanckSyncEnabled(false)
+        syncRepository.setPlanckSyncEnabled(false)
 
 
         verify(exactly = 0) { planckProvider.leaveDeviceGroup() }
-        assertEquals(true, syncDelegate.isGrouped)
+        assertEquals(true, syncRepository.isGrouped)
     }
 
     @Test
     fun `setPlanckSyncEnabled(false) does not leave device group if PlanckProvider_leaveDeviceGroup() fails`() {
         every { planckProvider.isSyncRunning }.returns(true)
-        syncDelegate.isGrouped = true
+        syncRepository.isGrouped = true
         every { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.failure(RuntimeException("test")))
 
-        syncDelegate.setPlanckSyncEnabled(false)
+        syncRepository.setPlanckSyncEnabled(false)
 
 
-        assertEquals(true, syncDelegate.isGrouped)
+        assertEquals(true, syncRepository.isGrouped)
     }
 
     @Test
     fun `allowManualSync() starts or reset countdown timer`() {
-        syncDelegate.allowManualSync()
+        syncRepository.allowManualSync()
 
 
         verify { countDownTimer.startOrReset() }
@@ -284,7 +284,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `cancelSync() cancels countdown timer and sets state to Cancelled`() {
-        syncDelegate.cancelSync()
+        syncRepository.cancelSync()
 
 
         verify { countDownTimer.cancel() }
@@ -293,7 +293,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `syncStartTimeout() sets state to SyncStartTimeout`() {
-        syncDelegate.syncStartTimeout()
+        syncRepository.syncStartTimeout()
 
 
         assertStates(SyncState.Idle, SyncState.SyncStartTimeout)
@@ -334,81 +334,81 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `notifyHandshake(SyncNotifyAcceptedDeviceAdded) sets state to Done and sets grouped to true`() {
-        syncDelegate.isGrouped = false
+        syncRepository.isGrouped = false
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyAcceptedDeviceAdded)
 
 
         assertStates(SyncState.Idle, SyncState.Done)
-        assertTrue(syncDelegate.isGrouped)
+        assertTrue(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifyAcceptedGroupCreated) sets state to Done and sets grouped to true`() {
-        syncDelegate.isGrouped = false
+        syncRepository.isGrouped = false
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyAcceptedGroupCreated)
 
 
         assertStates(SyncState.Idle, SyncState.Done)
-        assertTrue(syncDelegate.isGrouped)
+        assertTrue(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifyAcceptedDeviceAccepted) sets state to Done and sets grouped to true`() {
-        syncDelegate.isGrouped = false
+        syncRepository.isGrouped = false
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted)
 
 
         assertStates(SyncState.Idle, SyncState.Done)
-        assertTrue(syncDelegate.isGrouped)
+        assertTrue(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifySole) sets grouped to false and restarts timer if current state allows it`() {
-        syncDelegate.isGrouped = true
-        syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice)
+        syncRepository.isGrouped = true
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifySole)
 
 
         verify { countDownTimer.startOrReset() }
-        assertFalse(syncDelegate.isGrouped)
+        assertFalse(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifySole) does not restart timer if current state does not allow it`() {
-        syncDelegate.isGrouped = true
+        syncRepository.isGrouped = true
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifySole)
 
 
         verify { countDownTimer.wasNot(called) }
-        assertFalse(syncDelegate.isGrouped)
+        assertFalse(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifyInGroup) marks sync as enabled, sets grouped to true and restarts timer if current state allows it`() {
-        syncDelegate.isGrouped = false
-        syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice)
+        syncRepository.isGrouped = false
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInGroup)
 
 
         verify { k9.markSyncEnabled(true) }
         verify { countDownTimer.startOrReset() }
-        assertTrue(syncDelegate.isGrouped)
+        assertTrue(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifyInGroup) does not restart timer if current state does not allow it`() {
-        syncDelegate.isGrouped = false
+        syncRepository.isGrouped = false
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInGroup)
 
 
         verify { k9.markSyncEnabled(true) }
         verify { countDownTimer.wasNot(called) }
-        assertTrue(syncDelegate.isGrouped)
+        assertTrue(syncRepository.isGrouped)
     }
 
     @Test
     fun `notifyHandshake(SyncNotifyInitAddOurDevice) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice`() {
-        syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice)
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOurDevice)
 
 
@@ -429,7 +429,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `notifyHandshake(SyncNotifyInitAddOtherDevice) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice`() {
-        syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice)
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOtherDevice)
 
 
@@ -450,7 +450,7 @@ class SyncDelegateTest : RobolectricTest() {
 
     @Test
     fun `notifyHandshake(SyncNotifyInitFormGroup) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice`() {
-        syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice)
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitFormGroup)
 
 
@@ -470,12 +470,12 @@ class SyncDelegateTest : RobolectricTest() {
     }
 
     private fun notifyHandshake(myself: Identity, partner: Identity, signal: SyncHandshakeSignal) {
-        syncDelegate.notifyHandshakeCallback.notifyHandshake(myself, partner, signal)
+        syncRepository.notifyHandshakeCallback.notifyHandshake(myself, partner, signal)
     }
 
     private fun observeSyncDelegateStates() {
         CoroutineScope(UnconfinedTestDispatcher()).launch {
-            syncDelegate.syncStateFlow.collect {
+            syncRepository.syncStateFlow.collect {
                 syncStates.add(it)
             }
         }

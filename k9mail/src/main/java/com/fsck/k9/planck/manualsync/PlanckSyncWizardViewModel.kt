@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ private const val DEFAULT_TRUSTWORDS_LANGUAGE = "en"
 
 @HiltViewModel
 class PlanckSyncWizardViewModel @Inject constructor(
-    private val syncDelegate: SyncDelegate,
+    private val syncRepository: SyncRepository,
     private val planckProvider: PlanckProvider,
     private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
 ) : ViewModel() {
@@ -39,13 +39,13 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private var wasDone = false
 
     init {
-        if (syncDelegate.syncStateFlow.value != SyncState.Idle) {
-            Timber.e("unexpected initial state: ${syncDelegate.syncStateFlow.value}")
+        if (syncRepository.syncStateFlow.value != SyncState.Idle) {
+            Timber.e("unexpected initial state: ${syncRepository.syncStateFlow.value}")
         }
         viewModelScope.launch {
             cancelOldSyncOnInit()
             setState(SyncState.AwaitingOtherDevice)
-            syncDelegate.allowManualSync()
+            syncRepository.allowManualSync()
             observeSyncDelegate()
         }
 
@@ -58,7 +58,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private suspend fun observeSyncDelegate() {
-        syncDelegate.syncStateFlow.onEach { appState ->
+        syncRepository.syncStateFlow.onEach { appState ->
             if (appState is SyncScreenState) {
                 when (appState) {
                     is SyncState.HandshakeReadyAwaitingUser ->
@@ -99,20 +99,20 @@ class PlanckSyncWizardViewModel @Inject constructor(
             PlanckUtils.formatFpr(myself.fpr),
             PlanckUtils.formatFpr(partner.fpr),
         )
-        syncDelegate.setCurrentState(SyncState.PerformingHandshake)
+        syncRepository.setCurrentState(SyncState.PerformingHandshake)
     }
 
     private fun finish() {
-        syncDelegate.setCurrentState(SyncState.Idle)
+        syncRepository.setCurrentState(SyncState.Idle)
     }
 
     private fun setState(state: SyncScreenState) {
-        syncState.value = state.also { syncDelegate.setCurrentState(it as SyncAppState) }
+        syncState.value = state.also { syncRepository.setCurrentState(it as SyncAppState) }
     }
 
     fun rejectHandshake() {
         planckProvider.rejectSync()
-        syncDelegate.cancelSync()
+        syncRepository.cancelSync()
     }
 
     fun acceptHandshake() {
@@ -122,7 +122,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     fun cancelHandshake() {
         planckProvider.cancelSync()
-        syncDelegate.cancelSync()
+        syncRepository.cancelSync()
     }
 
     fun changeTrustwordsLanguage(languagePosition: Int) {

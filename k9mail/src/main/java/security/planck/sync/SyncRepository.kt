@@ -27,7 +27,7 @@ import javax.inject.Singleton
 private const val POLLING_INTERVAL = 2000
 
 @Singleton
-class SyncDelegate @Inject constructor(
+class SyncRepository @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val planckProvider: PlanckProvider,

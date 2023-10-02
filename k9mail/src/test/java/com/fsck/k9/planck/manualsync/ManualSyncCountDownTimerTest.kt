@@ -6,15 +6,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
-import security.planck.sync.SyncDelegate
+import security.planck.sync.SyncRepository
 import java.util.Timer
 import javax.inject.Provider
 
 class ManualSyncCountDownTimerTest {
-    private val syncDelegate: SyncDelegate = mockk(relaxed = true)
+    private val syncRepository: SyncRepository = mockk(relaxed = true)
     private val planckProvider: PlanckProvider = mockk(relaxed = true)
-    private val syncDelegateProvider: Provider<SyncDelegate> = mockk {
-        every { get() }.returns(syncDelegate)
+    private val syncRepositoryProvider: Provider<SyncRepository> = mockk {
+        every { get() }.returns(syncRepository)
     }
     private val planckProviderProvider: Provider<PlanckProvider> = mockk {
         every { get() }.returns(planckProvider)
@@ -23,21 +23,21 @@ class ManualSyncCountDownTimerTest {
     private val jTimer = Timer()
     private val timeout = 0L
     private val timer =
-        ManualSyncCountDownTimer(syncDelegateProvider, planckProviderProvider, jTimer, timeout)
+        ManualSyncCountDownTimer(syncRepositoryProvider, planckProviderProvider, jTimer, timeout)
 
     @Test
     fun `timer cancel() should cancel timer task`() {
         timer.startOrReset()
         timer.cancel()
 
-        verify { syncDelegate.wasNot(called) }
+        verify { syncRepository.wasNot(called) }
     }
 
     @Test
     fun `SyncDelegate calls syncStartTimeout() on timer timeout`() {
         timer.startOrReset()
 
-        verify { syncDelegate.syncStartTimeout() }
+        verify { syncRepository.syncStartTimeout() }
     }
 
     @Test
