@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fsck.k9.K9
 import com.fsck.k9.planck.PlanckProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import security.planck.dialog.BackgroundTaskDialogView
+import security.planck.sync.SyncDelegate
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -18,8 +18,8 @@ private const val DEVICE_GROUPED_CHECK_INTERVAL = 100L
 
 @HiltViewModel
 class LeaveDeviceGroupViewModel @Inject constructor(
-    private val k9: K9,
     private val planckProvider: PlanckProvider,
+    private val syncDelegate: SyncDelegate,
 ) : ViewModel() {
 
     private val stateLD: MutableLiveData<BackgroundTaskDialogView.State> =
@@ -36,7 +36,7 @@ class LeaveDeviceGroupViewModel @Inject constructor(
                     }
                     delay(DEVICE_GROUPED_CHECK_INTERVAL)
                 }
-                k9.isGrouped = false
+                syncDelegate.isGrouped = false
                 stateLD.value = BackgroundTaskDialogView.State.SUCCESS
             }.onFailure {
                 Timber.e(it)

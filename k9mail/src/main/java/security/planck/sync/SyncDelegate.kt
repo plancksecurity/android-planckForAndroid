@@ -41,8 +41,7 @@ class SyncDelegate @Inject constructor(
     val syncStateFlow = syncStateMutableFlow.asStateFlow()
     private val syncState: SyncAppState
         get() = syncStateMutableFlow.value
-    var grouped = false
-        private set
+    var isGrouped = false
     private var pEpSyncEnvironmentInitialized = false
     private var isPollingMessages = false
     private var poller: Poller? = null
@@ -83,18 +82,18 @@ class SyncDelegate @Inject constructor(
                 SyncHandshakeSignal.SyncNotifyAcceptedGroupCreated,
                 SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted -> {
                     syncStateMutableFlow.value = SyncState.Done
-                    grouped = true
+                    isGrouped = true
                 }
 
                 SyncHandshakeSignal.SyncNotifySole -> {
-                    grouped = false
+                    isGrouped = false
                     if (syncState.allowSyncNewDevices) {
                         startOrResetManualSyncCountDownTimer()
                     }
                 }
 
                 SyncHandshakeSignal.SyncNotifyInGroup -> {
-                    grouped = true
+                    isGrouped = true
                     k9.markSyncEnabled(true)
                     if (syncState.allowSyncNewDevices) {
                         startOrResetManualSyncCountDownTimer()
@@ -161,7 +160,7 @@ class SyncDelegate @Inject constructor(
     fun setPlanckSyncEnabled(enabled: Boolean) {
         if (enabled) {
             pEpInitSyncEnvironment()
-        } else if (grouped) {
+        } else if (isGrouped) {
             leaveDeviceGroup()
         } else {
             shutdownSync()
@@ -190,7 +189,7 @@ class SyncDelegate @Inject constructor(
     }
 
     private fun updateDeviceGrouped() {
-        grouped = planckProvider.isDeviceGrouped
+        isGrouped = planckProvider.isDeviceGrouped
     }
 
     private fun setHandshakeReadyStateAndNotify(
@@ -232,17 +231,9 @@ class SyncDelegate @Inject constructor(
         manualSyncCountDownTimer.get().cancel()
     }
 
-    fun setGrouped(value: Boolean) {
-        this.grouped = value
-    }
-
-    fun isGrouped(): Boolean {
-        return this.grouped
-    }
-
     fun leaveDeviceGroup() {
         planckProvider.leaveDeviceGroup()
-        grouped = false
+        isGrouped = false
         //updateDeviceGrouped();
     }
 

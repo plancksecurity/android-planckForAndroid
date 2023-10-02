@@ -359,7 +359,6 @@ public class K9 extends MultiDexApplication {
     private static boolean usingpEpSyncFolder = true;
     private static boolean planckUsePassphraseForNewKeys = false;
     private static long appVersionCode = -1;
-    private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
 
@@ -1912,14 +1911,6 @@ public class K9 extends MultiDexApplication {
 
     public Sync.NotifyHandshakeCallback getNotifyHandshakeCallback() {
         return syncDelegate.get().getNotifyHandshakeCallback();
-    }
-
-    public void setGrouped(boolean value) {
-        this.grouped = value;
-    }
-
-    public boolean isGrouped() {
-        return this.grouped;
     }
 
     public void showHandshakeSignalOnDebug(String signalName) {
