@@ -107,7 +107,7 @@ class PlanckSyncRepository @Inject constructor(
         partner: Identity,
         formingGroup: Boolean,
     ) {
-        if (syncState == SyncState.AwaitingOtherDevice) {
+        if (syncState == SyncState.AwaitingOtherDevice && isGrouped != formingGroup) {
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,

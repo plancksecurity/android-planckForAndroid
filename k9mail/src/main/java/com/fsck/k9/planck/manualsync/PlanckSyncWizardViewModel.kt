@@ -43,7 +43,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
             Timber.e("unexpected initial state: ${syncRepository.syncStateFlow.value}")
         }
         viewModelScope.launch {
-            cancelOldSyncOnInit()
+            //cancelOldSyncOnInit()
             setState(SyncState.AwaitingOtherDevice)
             syncRepository.allowManualSync()
             observeSyncDelegate()
