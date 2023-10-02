@@ -68,7 +68,7 @@ class SyncRepositoryTest : RobolectricTest() {
     private val myself: Identity = Identity()
     private val partner: Identity = Identity()
 
-    private val syncRepository: SyncRepository = SyncRepository(
+    private val syncRepository: SyncRepository = PlanckSyncRepository(
         k9,
         preferences,
         planckProvider,

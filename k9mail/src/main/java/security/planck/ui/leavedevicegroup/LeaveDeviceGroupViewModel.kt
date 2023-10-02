@@ -16,6 +16,11 @@ import javax.inject.Inject
 private const val DEVICE_GROUPED_CHECK_ITERATIONS = 5
 private const val DEVICE_GROUPED_CHECK_INTERVAL = 100L
 
+/**
+ * LeaveDeviceGroupViewModel
+ *
+ * ViewModel used to leave device group and deliver confirmation via LiveData.
+ */
 @HiltViewModel
 class LeaveDeviceGroupViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
@@ -24,8 +29,19 @@ class LeaveDeviceGroupViewModel @Inject constructor(
 
     private val stateLD: MutableLiveData<BackgroundTaskDialogView.State> =
         MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
+
+    /**
+     * state
+     *
+     * Current state of the ViewModel represented as LiveData of [BackgroundTaskDialogView.State].
+     */
     val state: LiveData<BackgroundTaskDialogView.State> = stateLD
 
+    /**
+     * leaveDeviceGroup
+     *
+     * Leaves device group and updates [state].
+     */
     fun leaveDeviceGroup() {
         viewModelScope.launch {
             stateLD.value = BackgroundTaskDialogView.State.LOADING

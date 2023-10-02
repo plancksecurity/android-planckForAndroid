@@ -8,6 +8,11 @@ import com.fsck.k9.R
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.dialog.SimpleBackgroundTaskDialog
 
+/**
+ * LeaveDeviceGroupDialog
+ *
+ * Dialog used to confirm and process device group leave.
+ */
 @AndroidEntryPoint
 class LeaveDeviceGroupDialog : SimpleBackgroundTaskDialog() {
     private val viewModel: LeaveDeviceGroupViewModel by viewModels()
