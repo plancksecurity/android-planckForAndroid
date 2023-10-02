@@ -831,7 +831,7 @@ public class K9 extends MultiDexApplication {
         });
 
         refreshFoldersForAllAccounts();
-        //pEpInitSyncEnvironment();
+        pEpInitSyncEnvironment();
         setupFastPoller();
 
         notifyObservers();
@@ -869,6 +869,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
+        if (pEpSyncEnvironmentInitialized) return;
         pEpSyncEnvironmentInitialized = true;
         if (planckProvider == null) {
             throw new IllegalStateException("pEpProvider SHOULD NOT BE NULL!!!");
@@ -900,7 +901,7 @@ public class K9 extends MultiDexApplication {
 
         planckProvider.updateSyncAccountsConfig();
         updateDeviceGrouped();
-        if (grouped && !planckProvider.isSyncRunning()) {
+        if (!planckProvider.isSyncRunning()) {
             planckProvider.startSync();
         }
     }
@@ -2047,7 +2048,7 @@ public class K9 extends MultiDexApplication {
     private void disallowSync() {
         manualSyncCountDownTimer = null;
         syncState = SyncState.Idle.INSTANCE;
-        planckProvider.stopSync();
+        //planckProvider.stopSync();
     }
 
     public void cancelSync() {
