@@ -1,31 +1,43 @@
 package com.fsck.k9.planck.manualsync
 
-import android.os.CountDownTimer
-import com.fsck.k9.K9
 import com.fsck.k9.planck.PlanckProvider
+import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
+import security.planck.sync.SyncDelegate
+import java.util.Timer
+import javax.inject.Provider
 
 class ManualSyncCountDownTimerTest {
-    private val k9: K9 = mockk()
+    private val syncDelegate: SyncDelegate = mockk(relaxed = true)
     private val planckProvider: PlanckProvider = mockk(relaxed = true)
-    private val countDownTimer: CountDownTimer = mockk(relaxed = true)
-    private val timer = ManualSyncCountDownTimer(k9, planckProvider, countDownTimer)
+    private val syncDelegateProvider: Provider<SyncDelegate> = mockk {
+        every { get() }.returns(syncDelegate)
+    }
+    private val planckProviderProvider: Provider<PlanckProvider> = mockk {
+        every { get() }.returns(planckProvider)
+    }
+
+    private val jTimer = Timer()
+    private val timeout = 0L
+    private val timer =
+        ManualSyncCountDownTimer(syncDelegateProvider, planckProviderProvider, jTimer, timeout)
 
     @Test
-    fun `timer cancel() should call system timer cancel()`() {
+    fun `timer cancel() should cancel timer task`() {
+        timer.startOrReset()
         timer.cancel()
 
-        verify { countDownTimer.cancel() }
+        verify { syncDelegate.wasNot(called) }
     }
 
     @Test
-    fun `timer startOrReset() calls system timer start()`() {
+    fun `SyncDelegate calls syncStartTimeout() on timer timeout`() {
         timer.startOrReset()
 
-        verify { countDownTimer.start() }
+        verify { syncDelegate.syncStartTimeout() }
     }
 
     @Test
