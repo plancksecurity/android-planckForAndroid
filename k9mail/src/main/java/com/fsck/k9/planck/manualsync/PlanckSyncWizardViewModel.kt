@@ -41,8 +41,10 @@ class PlanckSyncWizardViewModel @Inject constructor(
         //if (syncDelegate.syncStateFlow.value != SyncState.Idle /*&& syncDelegate.syncStateFlow.value !is SyncState.HandshakeReadyAwaitingUser*/ && BuildConfig.DEBUG) {
         //    error("unexpected initial state: ${syncDelegate.syncStateFlow.value}")
         //}
-        setState(SyncState.AwaitingOtherDevice)
-        syncDelegate.allowManualSync()
+        if (syncDelegate.syncStateFlow.value !is SyncState.HandshakeReadyAwaitingUser) { // if the SyncDelegate is already awaiting for user, just go along with it.
+            setState(SyncState.AwaitingOtherDevice)
+            syncDelegate.allowManualSync()
+        }
         observeSyncDelegate()
     }
 
