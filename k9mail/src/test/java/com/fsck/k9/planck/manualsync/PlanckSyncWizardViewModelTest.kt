@@ -8,6 +8,7 @@ import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Identity
+import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -19,6 +20,7 @@ import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -26,6 +28,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import security.planck.sync.SyncDelegate
 
 private const val TEST_TRUSTWORDS = "TEST TRUSTWORDS"
 private const val GERMAN_TRUSTWORDS = "GERMAN TRUSTWORDS"
@@ -44,22 +47,28 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
-    private val k9: K9 = mockk(relaxed = true)
     private val planckProvider: PlanckProvider = mockk(relaxed = true)
+    private val syncDelegate: SyncDelegate = mockk(relaxed = true)
     private lateinit var viewModel: PlanckSyncWizardViewModel
     private val receivedSyncStates = mutableListOf<SyncScreenState>()
     private val myself: Identity = Identity().apply { fpr = MYSELF_FPR }
     private val partner: Identity = Identity().apply { fpr = PARTNER_FPR }
+    private val syncStateFlow: MutableStateFlow<SyncAppState> = MutableStateFlow(SyncState.Idle)
 
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         mockkStatic(K9::class)
         mockkStatic(PlanckUtils::class)
         every { K9.getK9CurrentLanguage() }.returns(ENGLISH_LANGUAGE)
         val slot = slot<String>()
         every { PlanckUtils.formatFpr(capture(slot)) }.answers { slot.captured }
         every { PlanckUtils.trustWordsAvailableForLang(any()) }.returns(true)
-        every { k9.syncState }.returns(SyncState.Idle)
+        every { syncDelegate.syncStateFlow }.returns(syncStateFlow)
+        val stateSlot = slot<SyncAppState>()
+        coEvery { syncDelegate.setCurrentState(capture(stateSlot)) }.coAnswers {
+            syncStateFlow.value = stateSlot.captured
+        }
+        coEvery { planckProvider.isSyncRunning }.returns(true)
         coEvery {
             planckProvider.trustwords(
                 myself,
@@ -71,10 +80,11 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
         receivedSyncStates.clear()
         viewModel = PlanckSyncWizardViewModel(
-            k9,
+            syncDelegate,
             planckProvider,
             coroutinesTestRule.testDispatcherProvider
         )
+        advanceUntilIdle()
         observeViewModel()
         assertionsOnViewModelCreation()
     }
@@ -86,8 +96,9 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `syncStateChanged() sets syncState`() {
-        viewModel.syncStateChanged(SyncState.Done)
+    fun `setting a value in incoming StateFlow sets syncState`() = runTest {
+        syncStateFlow.value = SyncState.Done
+        advanceUntilIdle()
 
 
         assertEquals(
@@ -100,20 +111,18 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `if screen finishes and sync was done, sync is not cancelled`() {
-        viewModel.syncStateChanged(SyncState.Done)
+    fun `if screen finishes and sync was done, sync is not cancelled`() = runTest {
+        syncStateFlow.value = SyncState.Done
+        advanceUntilIdle()
         viewModel.cancelIfNotDone()
 
 
-        assertEquals(
-            listOf(
-                SyncState.AwaitingOtherDevice,
-                SyncState.Done,
-            ),
-            receivedSyncStates
+        assertStates(
+            SyncState.AwaitingOtherDevice,
+            SyncState.Done,
         )
         verify(exactly = 0) { planckProvider.cancelSync() }
-        verify(exactly = 0) { k9.cancelSync() }
+        verify(exactly = 0) { syncDelegate.cancelSync() }
     }
 
     @Test
@@ -121,85 +130,69 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         viewModel.cancelIfNotDone()
 
 
-        assertEquals(
-            listOf(
-                SyncState.AwaitingOtherDevice,
-            ),
-            receivedSyncStates
-        )
+        assertStates(SyncState.AwaitingOtherDevice)
         verify { planckProvider.cancelSync() }
-        verify { k9.cancelSync() }
+        verify { syncDelegate.cancelSync() }
     }
 
+
     @Test
-    fun `initial call to syncStateChanged() sets state and formingGroup in ViewModel`() {
-        viewModel.syncStateChanged(
-            SyncState.HandshakeReadyAwaitingUser, myself, partner, true
-        )
+    fun `initial call to syncStateChanged() sets state and formingGroup in ViewModel`() = runTest {
+        syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+        advanceUntilIdle()
 
 
-        assertEquals(
-            listOf(
-                SyncState.AwaitingOtherDevice,
-                SyncState.HandshakeReadyAwaitingUser
-            ),
-            receivedSyncStates
+        assertStates(
+            SyncState.AwaitingOtherDevice,
+            SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
         )
         assertEquals(true, viewModel.formingGroup)
     }
 
     @Test
-    fun `next() sets state to UserHandshaking with identities received from syncStateChanged() and trustwords from PlanckProvider`() =
+    fun `next() sets state to UserHandshaking with identities received from SyncDelegate's flow and trustwords from PlanckProvider`() =
         runTest {
-            viewModel.syncStateChanged(
-                SyncState.HandshakeReadyAwaitingUser, myself, partner, true
-            )
+            syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+            advanceUntilIdle()
             viewModel.next()
             advanceUntilIdle()
 
 
             coVerify { planckProvider.trustwords(myself, partner, ENGLISH_LANGUAGE, true) }
-            assertEquals(
-                listOf(
-                    SyncState.AwaitingOtherDevice,
-                    SyncState.HandshakeReadyAwaitingUser,
-                    SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS)
-                ),
-                receivedSyncStates
+            assertStates(
+                SyncState.AwaitingOtherDevice,
+                SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
+                SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS)
             )
         }
 
     @Test
     fun `acceptHandshake() calls PlanckProvider acceptSync and sets state AwaitingHandshakeCompletion`() =
         runTest {
-            viewModel.syncStateChanged(
-                SyncState.HandshakeReadyAwaitingUser, myself, partner, true
-            )
+            syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+            advanceUntilIdle()
             viewModel.next()
             advanceUntilIdle()
             viewModel.acceptHandshake()
 
 
             coVerify { planckProvider.acceptSync() }
-            assertEquals(
-                listOf(
-                    SyncState.AwaitingOtherDevice,
-                    SyncState.HandshakeReadyAwaitingUser,
-                    SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
-                    SyncState.AwaitingHandshakeCompletion(MYSELF_FPR, PARTNER_FPR)
-                ),
-                receivedSyncStates
+            assertStates(
+                SyncState.AwaitingOtherDevice,
+                SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
+                SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
+                SyncState.AwaitingHandshakeCompletion(MYSELF_FPR, PARTNER_FPR)
             )
-            coVerify { k9.syncState = SyncState.PerformingHandshake }
+            coVerify { syncDelegate.setCurrentState(SyncState.PerformingHandshake) }
         }
 
     @Test
-    fun `cancelHandshake() uses PlanckProvider and K9 to cancel handshake`() {
+    fun `cancelHandshake() uses PlanckProvider and SyncDelegate to cancel handshake`() {
         viewModel.cancelHandshake()
 
 
         verify { planckProvider.cancelSync() }
-        verify { k9.cancelSync() }
+        verify { syncDelegate.cancelSync() }
     }
 
     @Test
@@ -208,7 +201,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
 
         verify { planckProvider.rejectSync() }
-        verify { k9.cancelSync() }
+        verify { syncDelegate.cancelSync() }
     }
 
     @Test
@@ -220,9 +213,8 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
             .returns(ResultCompat.success(GERMAN_TRUSTWORDS))
 
 
-        viewModel.syncStateChanged(
-            SyncState.HandshakeReadyAwaitingUser, myself, partner, true
-        )
+        syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+        advanceUntilIdle()
         viewModel.next()
         advanceUntilIdle()
         viewModel.changeTrustwordsLanguage(GERMAN_POSITION)
@@ -232,14 +224,11 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         verify { PlanckUtils.getPlanckLocales() }
         coVerify { planckProvider.trustwords(myself, partner, ENGLISH_LANGUAGE, true) }
         coVerify { planckProvider.trustwords(myself, partner, GERMAN_LANGUAGE, true) }
-        assertEquals(
-            listOf(
-                SyncState.AwaitingOtherDevice,
-                SyncState.HandshakeReadyAwaitingUser,
-                SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
-                SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, GERMAN_TRUSTWORDS)
-            ),
-            receivedSyncStates
+        assertStates(
+            SyncState.AwaitingOtherDevice,
+            SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
+            SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
+            SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, GERMAN_TRUSTWORDS)
         )
     }
 
@@ -251,9 +240,8 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
             .returns(ResultCompat.success(LONG_TRUSTWORDS))
 
 
-        viewModel.syncStateChanged(
-            SyncState.HandshakeReadyAwaitingUser, myself, partner, true
-        )
+        syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+        advanceUntilIdle()
         viewModel.next()
         advanceUntilIdle()
         viewModel.switchTrustwordsLength()
@@ -265,7 +253,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         assertEquals(
             listOf(
                 SyncState.AwaitingOtherDevice,
-                SyncState.HandshakeReadyAwaitingUser,
+                SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, LONG_TRUSTWORDS)
             ),
@@ -281,43 +269,45 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
             .returns(ResultCompat.failure(expectedError))
 
 
-        viewModel.syncStateChanged(
-            SyncState.HandshakeReadyAwaitingUser, myself, partner, false
-        )
+        syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, false)
+        advanceUntilIdle()
         viewModel.next()
         advanceUntilIdle()
 
 
         coVerify { planckProvider.trustwords(myself, partner, ENGLISH_LANGUAGE, true) }
-        assertEquals(
-            listOf(
-                SyncState.AwaitingOtherDevice,
-                SyncState.HandshakeReadyAwaitingUser,
-                SyncState.Error(expectedError)
-            ),
-            receivedSyncStates
+        assertStates(
+            SyncState.AwaitingOtherDevice,
+            SyncState.HandshakeReadyAwaitingUser(myself, partner, false),
+            SyncState.Error(expectedError)
         )
     }
 
     @Test
-    fun `when screen finishes, K9 has syncState set to Idle and SyncStateChangeListener set to null`() {
+    fun `when screen finishes, SyncDelegate has syncState set to Idle and SyncStateChangeListener set to null`() {
         val method = viewModel.javaClass.getDeclaredMethod("onCleared")
         method.isAccessible = true
         method.invoke(viewModel)
 
 
-        verify { k9.syncState = SyncState.Idle }
-        verify { k9.setSyncStateChangeListener(null) }
+        verify { syncDelegate.setCurrentState(SyncState.Idle) }
     }
 
     private fun assertionsOnViewModelCreation() {
-        verify { k9.syncState = SyncState.AwaitingOtherDevice }
-        verify { k9.setSyncStateChangeListener(viewModel) }
-        assertStates(listOf(SyncState.AwaitingOtherDevice))
+        coVerify { syncDelegate.setCurrentState(SyncState.AwaitingOtherDevice) }
+        verifyAnyPreviousHandshakeCancelled()
+        coVerify { syncDelegate.allowManualSync() }
+        assertStates(SyncState.AwaitingOtherDevice)
+        clearMocks(syncDelegate, planckProvider, answers = false, childMocks = false)
     }
 
-    private fun assertStates(states: List<SyncScreenState>) {
-        assertEquals(states, receivedSyncStates)
+    private fun verifyAnyPreviousHandshakeCancelled() {
+        coVerify { planckProvider.isSyncRunning }
+        coVerify { planckProvider.cancelSync() }
+    }
+
+    private fun assertStates(vararg states: SyncScreenState) {
+        assertEquals(states.toList(), receivedSyncStates)
     }
 
     private fun observeViewModel() {
