@@ -8,6 +8,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import junit.framework.TestCase
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -51,10 +52,8 @@ class LeaveDeviceGroupViewModelTest {
         advanceUntilIdle()
 
 
-        assertStates(
-            BackgroundTaskDialogView.State.CONFIRMATION,
-            BackgroundTaskDialogView.State.LOADING,
-        )
+        assertEquals(BackgroundTaskDialogView.State.CONFIRMATION, receivedStates.first())
+        assertEquals(BackgroundTaskDialogView.State.LOADING, receivedStates[1])
     }
 
     @Test
