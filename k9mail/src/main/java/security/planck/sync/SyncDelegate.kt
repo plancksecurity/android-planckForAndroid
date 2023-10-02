@@ -213,19 +213,13 @@ class SyncDelegate @Inject constructor(
         startOrResetManualSyncCountDownTimer()
     }
 
-    private fun disallowSync() {
-        syncStateMutableFlow.value = SyncState.Idle
-    }
-
     fun cancelSync() {
         cancelManualSyncCountDown()
         syncStateMutableFlow.value = SyncState.Cancelled
-        disallowSync()
     }
 
     fun syncStartTimeout() {
         syncStateMutableFlow.value = SyncState.SyncStartTimeout
-        disallowSync()
     }
 
     private fun cancelManualSyncCountDown() {
