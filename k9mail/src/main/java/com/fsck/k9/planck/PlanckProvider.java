@@ -17,6 +17,7 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import kotlin.Unit;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
@@ -252,7 +253,7 @@ public interface PlanckProvider {
 
     void keyResetAllOwnKeys();
 
-    void leaveDeviceGroup() throws pEpException; // TODO: 13/1/23 review where to handle this exception.
+    ResultCompat<Unit> leaveDeviceGroup();
 
     void startSync();
     void stopSync();

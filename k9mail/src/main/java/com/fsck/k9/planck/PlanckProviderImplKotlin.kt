@@ -1043,9 +1043,8 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    @Throws(pEpException::class) // TODO: 13/1/23 review where to handle this exception.
-    override fun leaveDeviceGroup() = runBlocking(PlanckDispatcher) {
-        engine.get().leave_device_group()
+    override fun leaveDeviceGroup(): ResultCompat<Unit> = runBlocking(PlanckDispatcher) {
+        ResultCompat.of { engine.get().leave_device_group() }
     }
 
     @WorkerThread

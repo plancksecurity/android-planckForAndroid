@@ -435,5 +435,8 @@
     <string name="reject_trust_dialog_positive_action">Yes, Reject</string>
     <string name="preference_summary_locked_by_it_manager">%1$s\n(Locked by IT manager)</string>
     <string name="leave_device_group_dialog_confirmation_text">Are you sure you want to leave the device group? if you want to read the new emails on both devices you will need to sync this device again.</string>
+    <string name="leave_device_group_dialog_progress_text">Leaving device group…</string>
+    <string name="leave_device_group_dialog_success_text">Successfully left device group.</string>
+    <string name="leave_device_group_dialog_error_text">There was an error while leaving device group. Please try again or contact your IT admin.</string>
 
 </resources>

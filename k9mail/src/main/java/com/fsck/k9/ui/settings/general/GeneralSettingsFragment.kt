@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -35,6 +35,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
+import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
+import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
@@ -53,7 +55,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
-    private val viewModel: GeneralSettingsViewModel by viewModels()
 
     private val startForResult = (this as Fragment).registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -69,20 +70,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
         initializePreferences()
+        initializeFragmentResultListener()
     }
 
-    override fun onStart() {
-        super.onStart()
-        observeViewModel()
-    }
-
-    private fun observeViewModel() {
-        viewModel.deviceGroupLeft.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let { groupLeft ->
-                if (groupLeft) {
-                    // display a notification to the user that we left device group
-                    initializeLeaveDeviceGroup()
-                }
+    private fun initializeFragmentResultListener() {
+        setFragmentResultListener(
+            LeaveDeviceGroupDialog.DIALOG_TAG
+        ) { _, bundle ->
+            val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
+            if (result == LeaveDeviceGroupDialog.EXECUTED) {
+                initializeLeaveDeviceGroup()
             }
         }
     }
@@ -143,20 +140,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showLeaveDeviceGroupConfirmation() {
-        AlertDialog.Builder(
-            view?.context,
-            ThemeManager.getAttributeResource(
-                requireContext(),
-                R.attr.resetAllAccountsDialogStyle
-            )
-        )
-            .setMessage(R.string.leave_device_group_dialog_confirmation_text)
-            .setTitle(R.string.pep_sync_leave_device_group)
-            .setCancelable(false)
-            .setPositiveButton(R.string.keysync_wizard_action_leave) { _, _ ->
-                viewModel.leaveDeviceGroup()
-            }.setNegativeButton(R.string.cancel_action, null)
-            .show()
+        showLeaveDeviceGroupDialog()
     }
 
     private fun configureManualSync(preference: Preference?) {
