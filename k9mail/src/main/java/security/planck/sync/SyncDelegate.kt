@@ -220,8 +220,8 @@ class SyncDelegate @Inject constructor(
         Log.e("pEpEngine", "shutdownSync: start")
         if (planckProvider.isSyncRunning) {
             planckProvider.stopSync()
+            k9.markSyncEnabled(false)
         }
-        k9.markSyncEnabled(false)
         Log.e("pEpEngine", "shutdownSync: end")
     }
 }
