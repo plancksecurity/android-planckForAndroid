@@ -1,7 +1,5 @@
 package security.planck.sync
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
@@ -10,6 +8,7 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckProvider.CompletedCallback
 import com.fsck.k9.planck.infrastructure.Poller
+import com.fsck.k9.planck.infrastructure.PollerFactory
 import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
@@ -34,6 +33,7 @@ class SyncDelegate @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val messagingController: Provider<MessagingController>,
     private val manualSyncCountDownTimer: Lazy<ManualSyncCountDownTimer>,
+    private val pollerFactory: PollerFactory,
 ) {
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
         MutableStateFlow(SyncState.Idle)
@@ -122,7 +122,7 @@ class SyncDelegate @Inject constructor(
 
     fun setupFastPoller() {
         if (poller == null) {
-            poller = Poller(Handler(Looper.getMainLooper()))
+            poller = pollerFactory.createPoller()
             poller?.init(POLLING_INTERVAL.toLong()) { polling() }
         } else {
             poller?.stopPolling()
