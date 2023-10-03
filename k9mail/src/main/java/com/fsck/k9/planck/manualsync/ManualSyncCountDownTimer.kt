@@ -32,10 +32,6 @@ class ManualSyncCountDownTimer(
     }
 
     private fun start() {
-        when (planckProvider.get().isSyncRunning) {
-            true -> planckProvider.get().syncReset()
-            else -> planckProvider.get().startSync()
-        }
         syncStartTimeoutTask = timer.schedule(timeout) { syncRepository.get().syncStartTimeout() }
     }
 
