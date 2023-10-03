@@ -18,6 +18,7 @@ class ManualSyncCountDownTimer(
     private val timeout: Long = MANUAL_SYNC_TIME_LIMIT,
 ) {
     @Inject
+    @Suppress("unused")
     constructor(
         syncRepository: Provider<SyncRepository>,
         planckProvider: Provider<PlanckProvider>,
