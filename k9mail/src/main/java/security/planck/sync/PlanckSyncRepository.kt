@@ -34,7 +34,7 @@ class PlanckSyncRepository @Inject constructor(
     private val messagingController: Provider<MessagingController>,
     private val manualSyncCountDownTimer: Lazy<ManualSyncCountDownTimer>,
     private val pollerFactory: PollerFactory,
-): SyncRepository {
+) : SyncRepository {
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
         MutableStateFlow(SyncState.Idle)
     override val syncStateFlow = syncStateMutableFlow.asStateFlow()
@@ -49,13 +49,30 @@ class PlanckSyncRepository @Inject constructor(
     override val notifyHandshakeCallback = NotifyHandshakeCallback { myself, partner, signal ->
         k9.showHandshakeSignalOnDebug(signal.name)
         when (signal) {
-            SyncHandshakeSignal.SyncNotifyInitAddOurDevice,
+            SyncHandshakeSignal.SyncNotifyInitAddOurDevice ->
+                foundPartnerDevice(
+                    myself,
+                    partner,
+                    formingGroup = false,
+                    groupedCondition = false
+                )
+
             SyncHandshakeSignal.SyncNotifyInitAddOtherDevice -> {
-                foundPartnerDevice(myself, partner, false)
+                foundPartnerDevice(
+                    myself,
+                    partner,
+                    formingGroup = false,
+                    groupedCondition = true
+                )
             }
 
             SyncHandshakeSignal.SyncNotifyInitFormGroup -> {
-                foundPartnerDevice(myself, partner, true)
+                foundPartnerDevice(
+                    myself,
+                    partner,
+                    formingGroup = true,
+                    groupedCondition = false
+                )
             }
 
             SyncHandshakeSignal.SyncNotifyTimeout -> { //Close handshake
@@ -106,8 +123,9 @@ class PlanckSyncRepository @Inject constructor(
         myself: Identity,
         partner: Identity,
         formingGroup: Boolean,
+        groupedCondition: Boolean,
     ) {
-        if (syncState == SyncState.AwaitingOtherDevice && isGrouped != formingGroup) {
+        if (syncState.allowToStartHandshake && isGrouped == groupedCondition) {
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,

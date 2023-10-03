@@ -39,22 +39,21 @@ class PlanckSyncWizardViewModel @Inject constructor(
     private var wasDone = false
 
     init {
-        if (syncRepository.syncStateFlow.value != SyncState.Idle) {
-            Timber.e("unexpected initial state: ${syncRepository.syncStateFlow.value}")
-        }
         viewModelScope.launch {
-            //cancelOldSyncOnInit()
-            setState(SyncState.AwaitingOtherDevice)
-            syncRepository.allowManualSync()
+            val initialState = syncRepository.syncStateFlow.value
+            if (initialState != SyncState.Idle) {
+                Timber.e("unexpected initial state: ${syncRepository.syncStateFlow.value}")
+            }
+            if (initialState is SyncState.HandshakeReadyAwaitingUser) {
+                populateDataFromHandshakeReadyState(initialState)
+                syncState.value = initialState
+            } else {
+                setState(SyncState.AwaitingOtherDevice)
+                syncRepository.allowManualSync()
+            }
             observeSyncDelegate()
         }
 
-    }
-
-    private fun cancelOldSyncOnInit() {
-        if (planckProvider.isSyncRunning) {
-            planckProvider.cancelSync()
-        }
     }
 
     private suspend fun observeSyncDelegate() {

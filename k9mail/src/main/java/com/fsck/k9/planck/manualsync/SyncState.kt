@@ -48,6 +48,8 @@ sealed interface SyncAppState {
         get() = this == SyncState.AwaitingOtherDevice || this is SyncState.PerformingHandshake
     val allowSyncNewDevices: Boolean
         get() = this == SyncState.AwaitingOtherDevice
+    val allowToStartHandshake: Boolean
+        get() = this == SyncState.Idle || this == SyncState.AwaitingOtherDevice
 
     fun finish() = SyncState.Idle
 }
