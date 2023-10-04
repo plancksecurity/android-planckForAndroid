@@ -1,6 +1,5 @@
 package com.fsck.k9.planck.manualsync
 
-import com.fsck.k9.planck.PlanckProvider
 import security.planck.sync.SyncRepository
 import java.util.Timer
 import java.util.TimerTask
@@ -13,7 +12,6 @@ private const val MANUAL_SYNC_TIME_LIMIT = TWO_MINUTE_IN_MILLIS
 
 class ManualSyncCountDownTimer(
     private val syncRepository: Provider<SyncRepository>,
-    private val planckProvider: Provider<PlanckProvider>,
     private val timer: Timer = Timer(),
     private val timeout: Long = MANUAL_SYNC_TIME_LIMIT,
 ) {
@@ -21,8 +19,7 @@ class ManualSyncCountDownTimer(
     @Suppress("unused")
     constructor(
         syncRepository: Provider<SyncRepository>,
-        planckProvider: Provider<PlanckProvider>,
-    ) : this(syncRepository, planckProvider, Timer(), MANUAL_SYNC_TIME_LIMIT)
+    ) : this(syncRepository, Timer(), MANUAL_SYNC_TIME_LIMIT)
 
     private var syncStartTimeoutTask: TimerTask? = null
 
