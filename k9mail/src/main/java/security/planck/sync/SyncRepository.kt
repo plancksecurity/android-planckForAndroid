@@ -75,9 +75,9 @@ interface SyncRepository {
     /**
      * allowManualSync
      *
-     * Allow key sync handshake with another device.
+     * Allow key sync handshake with another device with a timeout for handshake to start.
      */
-    fun allowManualSync()
+    fun allowTimedManualSync()
 
     /**
      * cancelSync

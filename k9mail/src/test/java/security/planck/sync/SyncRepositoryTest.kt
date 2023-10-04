@@ -276,7 +276,7 @@ class SyncRepositoryTest : RobolectricTest() {
 
     @Test
     fun `allowManualSync() starts or reset countdown timer`() {
-        syncRepository.allowManualSync()
+        syncRepository.allowTimedManualSync()
 
 
         verify { countDownTimer.startOrReset() }

@@ -205,7 +205,7 @@ class PlanckSyncRepository @Inject constructor(
         manualSyncCountDownTimer.get().startOrReset()
     }
 
-    override fun allowManualSync() {
+    override fun allowTimedManualSync() {
         when (planckProvider.isSyncRunning) {
             true -> planckProvider.syncReset()
             else -> planckProvider.startSync()

@@ -49,7 +49,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
                 syncState.value = initialState
             } else {
                 setState(SyncState.AwaitingOtherDevice)
-                syncRepository.allowManualSync()
+                syncRepository.allowTimedManualSync()
             }
             observeSyncDelegate()
         }
