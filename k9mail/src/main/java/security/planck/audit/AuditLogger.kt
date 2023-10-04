@@ -139,14 +139,23 @@ class AuditLogger(
         }
     }
 
+    @Throws(TamperProofException::class)
     private fun appendLog(log: MessageAuditLog, blankFile: Boolean = false) {
         if (!blankFile) {
-            //TODO: read previous log record and parse it for the further verification
-            verifyOrThrow("", "")
+            val previousLogRecord = getPreviousLogOrThrow()
+            verifyOrThrow(previousLogRecord.senderId, previousLogRecord.signature)
         }
         auditLoggerFile.appendText(log.toCsv())
     }
 
+    @Throws(TamperProofException::class)
+    private fun getPreviousLogOrThrow(): MessageAuditLog {
+
+        //TODO: read previous log record and parse it for the further verification
+        return MessageAuditLog(0L,"")
+    }
+
+    @Throws(TamperProofException::class)
     private fun verifyOrThrow(text: String, signature: String) {
         runBlocking {
             withContext(PlanckDispatcher) {
