@@ -151,7 +151,9 @@ class PlanckSyncRepository @Inject constructor(
 
     private fun polling() {
         if (syncState.needsFastPolling && !isPollingMessages) {
-            Log.d("pEpDecrypt", "Entering looper")
+            if (BuildConfig.DEBUG) {
+                Log.d("pEpDecrypt", "Entering looper")
+            }
             isPollingMessages = true
             messagingController.get().checkpEpSyncMail(k9, object : CompletedCallback {
                 override fun onComplete() {
@@ -159,7 +161,9 @@ class PlanckSyncRepository @Inject constructor(
                 }
 
                 override fun onError(throwable: Throwable) {
-                    Log.e("pEpSync", "onError: ", throwable)
+                    if (BuildConfig.DEBUG) {
+                        Log.e("pEpSync", "onError: ", throwable)
+                    }
                     isPollingMessages = false
                 }
             })
@@ -185,7 +189,9 @@ class PlanckSyncRepository @Inject constructor(
                 initSync()
             }
         } else {
-            Log.e("pEpEngine-app", "There is no accounts set up, not trying to start sync")
+            if (BuildConfig.DEBUG) {
+                Log.e("pEpEngine-app", "There is no accounts set up, not trying to start sync")
+            }
         }
     }
 
@@ -239,11 +245,15 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun shutdownSync() {
-        Log.e("pEpEngine", "shutdownSync: start")
+        if (BuildConfig.DEBUG) {
+            Log.e("pEpEngine", "shutdownSync: start")
+        }
         if (planckProvider.isSyncRunning) {
             planckProvider.stopSync()
             k9.markSyncEnabled(false)
         }
-        Log.e("pEpEngine", "shutdownSync: end")
+        if (BuildConfig.DEBUG) {
+            Log.e("pEpEngine", "shutdownSync: end")
+        }
     }
 }
