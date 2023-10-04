@@ -6,11 +6,18 @@ import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
+import com.fsck.k9.planck.infrastructure.ResultCompat
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.infrastructure.threading.PlanckEnginePool
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.util.Calendar
 
+val PlanckDispatcher by lazy { PlanckEnginePool().asCoroutineDispatcher() }
 class AuditLogger(
     private val planckProvider: PlanckProvider,
     private val auditLoggerFile: File,
@@ -26,42 +33,85 @@ class AuditLogger(
     private data class MessageAuditLog(
         val timeStamp: Long,
         val senderId: String,
-        val securityRating: String = ""
+        val securityRating: String = "",
+        val signature: String = ""
     ) {
         fun toCsv(): String =
-            "$NEW_LINE$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
+            "$NEW_LINE$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating$SEPARATOR$signature"
 
         fun isStopEvent(): Boolean = senderId == STOP_EVENT
     }
 
     fun addStartEventLog() {
-        addSpecialEventLog(START_EVENT, currentTimeInSeconds)
+        runBlocking {
+            withContext(PlanckDispatcher) {
+                ResultCompat.of {
+                    planckProvider.getSignatureForText(START_EVENT)
+                }.onSuccess {
+                    addSpecialEventLog(
+                        START_EVENT,
+                        currentTimeInSeconds,
+                        it.getOrThrow()
+                    )
+                }.onFailure {
+                    if (K9.isDebug()) {
+                        Log.e(CONSOLE_LOG_TAG, "Error adding start event", it)
+                    }
+                }
+            }
+        }
     }
 
     fun addStopEventLog(stopTime: Long) {
         if (currentTimeInSeconds - stopTime < logAgeLimit) {
-            addSpecialEventLog(STOP_EVENT, stopTime)
+            runBlocking {
+                withContext(PlanckDispatcher) {
+                    ResultCompat.of {
+                        planckProvider.getSignatureForText(START_EVENT)
+                    }.onSuccess {
+                        addSpecialEventLog(STOP_EVENT, stopTime, it.getOrThrow())
+                    }.onFailure {
+                        if (K9.isDebug()) {
+                            Log.e(CONSOLE_LOG_TAG, "Error adding stop event", it)
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private fun addSpecialEventLog(eventName: String, eventTime: Long) {
+    private fun addSpecialEventLog(eventName: String, eventTime: Long, signature: String) {
         addMessageAuditLog(
             MessageAuditLog(
-                eventTime,
-                eventName
+                timeStamp = eventTime,
+                senderId = eventName,
+                signature=signature
             )
         )
     }
 
     @Synchronized
     fun addMessageAuditLog(message: MimeMessage, rating: Rating) {
-        addMessageAuditLog(
-            MessageAuditLog(
-                currentTimeInSeconds,
-                message.from.firstOrNull()?.address.toString(),
-                PlanckUtils.ratingToString(rating)
-            )
-        )
+        runBlocking {
+            withContext(PlanckDispatcher) {
+                ResultCompat.of {
+                    planckProvider.getSignatureForText(message.from.firstOrNull()?.address.toString())
+                }.onSuccess {
+                    addMessageAuditLog(
+                        MessageAuditLog(
+                            currentTimeInSeconds,
+                            message.from.firstOrNull()?.address.toString(),
+                            PlanckUtils.ratingToString(rating),
+                            it.getOrThrow()
+                        )
+                    )
+                }.onFailure {
+                    if (K9.isDebug()) {
+                        Log.e(CONSOLE_LOG_TAG, "Error adding log event", it)
+                    }
+                }
+            }
+        }
     }
 
     private fun addMessageAuditLog(messageAuditLog: MessageAuditLog) {
@@ -71,11 +121,11 @@ class AuditLogger(
             when {
                 allFileText.isBlank() -> {
                     addHeader()
-                    appendLog(messageAuditLog)
+                    appendLog(log = messageAuditLog, blankFile = true)
                 }
 
                 allFileText == HEADER -> {
-                    appendLog(messageAuditLog)
+                    appendLog(log = messageAuditLog, blankFile = false)
                 }
 
                 else -> {
@@ -89,8 +139,31 @@ class AuditLogger(
         }
     }
 
-    private fun appendLog(log: MessageAuditLog) {
+    private fun appendLog(log: MessageAuditLog, blankFile: Boolean = false) {
+        if (!blankFile) {
+            //TODO: read previous log record and parse it for the further verification
+            verifyOrThrow("", "")
+        }
         auditLoggerFile.appendText(log.toCsv())
+    }
+
+    private fun verifyOrThrow(text: String, signature: String) {
+        runBlocking {
+            withContext(PlanckDispatcher) {
+                ResultCompat.of {
+                    planckProvider.verifySignature(text, signature)
+                }.onSuccess {
+                    if (K9.isDebug()) {
+                        Log.i(CONSOLE_LOG_TAG, "Verification confirmation: verified")
+                    }
+                }.onFailure {
+                    if (K9.isDebug()) {
+                        Log.e(CONSOLE_LOG_TAG, "Error verifyOrThrow", it)
+                    }
+                    throw TamperProofException(critical = true, message = it.message, cause = it)
+                }
+            }
+        }
     }
 
     private fun writeLogRemovingOldLogs(
@@ -116,6 +189,8 @@ class AuditLogger(
         }
         return log
     }
+
+    //TODO: Double-check if it legit according to tamper proof audit log otherwise it might be exploit
 
     private fun String.removeOldLogs(newTime: Long): String {
         val textWithoutHeader = substringAfter("$HEADER$NEW_LINE")
