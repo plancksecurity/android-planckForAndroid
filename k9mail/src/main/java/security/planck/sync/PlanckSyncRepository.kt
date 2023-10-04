@@ -197,7 +197,6 @@ class PlanckSyncRepository @Inject constructor(
 
     private fun initSync() {
         planckProvider.updateSyncAccountsConfig()
-        //updateDeviceGrouped()
         if (!planckProvider.isSyncRunning) {
             planckProvider.startSync()
         }
