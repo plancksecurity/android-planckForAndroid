@@ -62,7 +62,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val startForResult = (this as Fragment).registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        initializeLeaveDeviceGroup()
+        updateLeaveDeviceGroupPreferenceVisibility()
     }
 
 
@@ -82,7 +82,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         ) { _, bundle ->
             val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
             if (result == LeaveDeviceGroupDialog.EXECUTED) {
-                initializeLeaveDeviceGroup()
+                updateLeaveDeviceGroupPreferenceVisibility()
             }
         }
     }
@@ -103,6 +103,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeUnsecureDeliveryWarning()
         initializeDebugLogging()
         initializeAuditLogDataTimeRetention()
+        initializeLeaveDeviceGroup()
+    }
+
+    private fun updateLeaveDeviceGroupPreferenceVisibility() {
         initializeLeaveDeviceGroup()
     }
 
@@ -169,7 +173,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun startManualSync() {
         startForResult.launch(Intent(context, PlanckSyncWizard::class.java))
-        //PlanckSyncWizard.startKeySync(requireActivity())
     }
 
     private fun shouldDisplayManualSyncButton(): Boolean =
