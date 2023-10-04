@@ -407,7 +407,8 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `notifyHandshake(SyncNotifyInitAddOurDevice) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice`() {
+    fun `notifyHandshake(SyncNotifyInitAddOurDevice) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice and device is not grouped`() {
+        syncRepository.isGrouped = false
         syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOurDevice)
 
@@ -420,15 +421,41 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `notifyHandshake(SyncNotifyInitAddOurDevice) does not set state to HandshakeReadyAwaitingUser if current state is not AwaitingOtherDevice`() {
+    fun `notifyHandshake(SyncNotifyInitAddOurDevice) sets state to HandshakeReadyAwaitingUser if current state is Idle and device is not grouped`() {
+        syncRepository.isGrouped = false
+        syncRepository.setCurrentState(SyncState.Idle)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOurDevice)
 
 
-        assertStates(SyncState.Idle)
+        assertStates(
+            SyncState.Idle,
+            SyncState.HandshakeReadyAwaitingUser(myself, partner, false)
+        )
     }
 
     @Test
-    fun `notifyHandshake(SyncNotifyInitAddOtherDevice) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice`() {
+    fun `notifyHandshake(SyncNotifyInitAddOurDevice) does not set state to HandshakeReadyAwaitingUser if current state is not AwaitingOtherDevice or Idle`() {
+        syncRepository.isGrouped = false
+        syncRepository.setCurrentState(SyncState.SyncStartTimeout)
+        notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOurDevice)
+
+
+        assertStates(SyncState.Idle, SyncState.SyncStartTimeout)
+    }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInitAddOurDevice) does not set state to HandshakeReadyAwaitingUser if device is already grouped`() {
+        syncRepository.isGrouped = true
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
+        notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOurDevice)
+
+
+        assertStates(SyncState.Idle, SyncState.AwaitingOtherDevice)
+    }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInitAddOtherDevice) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice and device is grouped`() {
+        syncRepository.isGrouped = true
         syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOtherDevice)
 
@@ -441,15 +468,41 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `notifyHandshake(SyncNotifyInitAddOtherDevice) does not set state to HandshakeReadyAwaitingUser if current state is not AwaitingOtherDevice`() {
+    fun `notifyHandshake(SyncNotifyInitAddOtherDevice) sets state to HandshakeReadyAwaitingUser if current state is Idle and device is grouped`() {
+        syncRepository.isGrouped = true
+        syncRepository.setCurrentState(SyncState.Idle)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOtherDevice)
 
 
-        assertStates(SyncState.Idle)
+        assertStates(
+            SyncState.Idle,
+            SyncState.HandshakeReadyAwaitingUser(myself, partner, false)
+        )
     }
 
     @Test
-    fun `notifyHandshake(SyncNotifyInitFormGroup) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice`() {
+    fun `notifyHandshake(SyncNotifyInitAddOtherDevice) does not set state to HandshakeReadyAwaitingUser if current state is not AwaitingOtherDevice or idle`() {
+        syncRepository.isGrouped = true
+        syncRepository.setCurrentState(SyncState.TimeoutError)
+        notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOtherDevice)
+
+
+        assertStates(SyncState.Idle, SyncState.TimeoutError)
+    }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInitAddOtherDevice) does not set state to HandshakeReadyAwaitingUser if device is not grouped`() {
+        syncRepository.isGrouped = false
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
+        notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitAddOtherDevice)
+
+
+        assertStates(SyncState.Idle, SyncState.AwaitingOtherDevice)
+    }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInitFormGroup) sets state to HandshakeReadyAwaitingUser if current state is AwaitingOtherDevice and device is not grouped`() {
+        syncRepository.isGrouped = false
         syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitFormGroup)
 
@@ -462,11 +515,36 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `notifyHandshake(SyncNotifyInitFormGroup) does not set state to HandshakeReadyAwaitingUser if current state is not AwaitingOtherDevice`() {
+    fun `notifyHandshake(SyncNotifyInitFormGroup) sets state to HandshakeReadyAwaitingUser if current state is Idle and device is not grouped`() {
+        syncRepository.isGrouped = false
+        syncRepository.setCurrentState(SyncState.Idle)
         notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitFormGroup)
 
 
-        assertStates(SyncState.Idle)
+        assertStates(
+            SyncState.Idle,
+            SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+        )
+    }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInitFormGroup) does not set state to HandshakeReadyAwaitingUser if current state is not AwaitingOtherDevice or Idle`() {
+        syncRepository.isGrouped = false
+        syncRepository.setCurrentState(SyncState.TimeoutError)
+        notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitFormGroup)
+
+
+        assertStates(SyncState.Idle, SyncState.TimeoutError)
+    }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInitFormGroup) does not set state to HandshakeReadyAwaitingUser if device is already grouped`() {
+        syncRepository.isGrouped = true
+        syncRepository.setCurrentState(SyncState.AwaitingOtherDevice)
+        notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInitFormGroup)
+
+
+        assertStates(SyncState.Idle, SyncState.AwaitingOtherDevice)
     }
 
     private fun notifyHandshake(myself: Identity, partner: Identity, signal: SyncHandshakeSignal) {

@@ -295,15 +295,9 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
     private fun assertionsOnViewModelCreation() {
         coVerify { syncRepository.setCurrentState(SyncState.AwaitingOtherDevice) }
-        verifyAnyPreviousHandshakeCancelled()
         coVerify { syncRepository.allowTimedManualSync() }
         assertStates(SyncState.AwaitingOtherDevice)
         clearMocks(syncRepository, planckProvider, answers = false, childMocks = false)
-    }
-
-    private fun verifyAnyPreviousHandshakeCancelled() {
-        coVerify { planckProvider.isSyncRunning }
-        coVerify { planckProvider.cancelSync() }
     }
 
     private fun assertStates(vararg states: SyncScreenState) {
