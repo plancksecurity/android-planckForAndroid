@@ -206,7 +206,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private fun initializePgpImportKey() {
         val app: K9 = context?.applicationContext as K9
         findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.apply {
-            if (app.isGrouped) {
+            if (viewModel.isGrouped) {
                 isEnabled = false
                 summary = getString(R.string.pgp_key_import_disabled_summary)
             } else {
@@ -287,7 +287,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         //It is only possible to enable/disable sync if the device is not part of device group
         // and is not the only/latest account enabled
         //if grouped sync per Account only can be disabled on setup
-        preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
+        preference?.isEnabled = !viewModel.isGrouped && canSyncAccountBeModified(account)
 
         initializeManagedSettingLockedFeedback(
             account.planckSyncEnabled,

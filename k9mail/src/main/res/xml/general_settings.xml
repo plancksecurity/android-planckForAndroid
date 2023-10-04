@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--suppress AndroidElementNotAllowed -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/general_settings_title">
 
     <PreferenceScreen
@@ -34,6 +35,10 @@
         android:key="planck_key_sync"
         android:summary="@string/planck_key_sync_device_summary"
         android:title="@string/sync_title" />
+    <Preference
+        android:key="leave_device_group"
+        app:isPreferenceVisible="false"
+        android:title="@string/pep_sync_leave_device_group" />
 
     <Preference
         android:key="pep_key_reset"

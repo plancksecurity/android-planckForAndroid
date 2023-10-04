@@ -17,6 +17,7 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import kotlin.Unit;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
@@ -252,7 +253,7 @@ public interface PlanckProvider {
 
     void keyResetAllOwnKeys();
 
-    void leaveDeviceGroup() throws pEpException; // TODO: 13/1/23 review where to handle this exception.
+    ResultCompat<Unit> leaveDeviceGroup();
 
     void startSync();
     void stopSync();
@@ -288,6 +289,13 @@ public interface PlanckProvider {
     void removeMemberFromGroup(Identity group, Identity member);
 
     Rating groupRating(Identity group, Identity manager);
+
+    /**
+     * isDeviceGrouped
+     * Check if this device is in a planck device group.
+     * @return true if in a group, false otherwise.
+     */
+    boolean isDeviceGrouped();
 
     class KeyDetail {
         private final Address address;

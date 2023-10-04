@@ -90,7 +90,7 @@ class PlanckSyncWizard : WizardActivity() {
                 showAwaitingOtherDevice()
             }
 
-            SyncState.HandshakeReadyAwaitingUser -> {
+            is SyncState.HandshakeReadyAwaitingUser -> {
                 showAwaitingUserToStartHandshake()
             }
 
