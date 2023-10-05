@@ -7,6 +7,7 @@ import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
+import com.fsck.k9.preferences.Storage
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,7 @@ import java.util.Calendar
 class AuditLogger(
     private val planckProvider: PlanckProvider,
     private val auditLoggerFile: File,
+    private val storage: Storage,
     var logAgeLimit: Long,
 ) {
     private val currentTimeInSeconds: Long
@@ -116,7 +118,7 @@ class AuditLogger(
         var allFileText = if (auditLoggerFile.exists()) {
             auditLoggerFile.readText()
         } else {
-            // TODO: if file was removed fire tampering warning. We will have a boolean "audit_log_exists" in some shared prefs file. Once file is recreated we update it.
+            checkPreviousExistenceAndCreateFile()
             ""
         }
         if (allFileText.isNotBlank()) {
@@ -124,6 +126,15 @@ class AuditLogger(
             allFileText = newFileText
         }
         return allFileText
+    }
+
+    private fun checkPreviousExistenceAndCreateFile() {
+        val auditLogExisted = storage.auditLogFileExists()
+        if (auditLogExisted) {
+            setTamperedAlert()
+        }
+        auditLoggerFile.writeText("")
+        storage.edit().setAuditLogFileExists(true)
     }
 
     private fun appendLog(log: MessageAuditLog) {
