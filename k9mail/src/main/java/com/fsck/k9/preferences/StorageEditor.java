@@ -149,4 +149,8 @@ public class StorageEditor {
     public void setAuditLogFileExists(boolean exists) {
         auditLogStorage.setAuditLogFileExists(exists);
     }
+
+    public void setPersistentAuditTamperWarningOnStartup(boolean warning) {
+        auditLogStorage.setPersistentWarningOnStartup(warning);
+    }
 }

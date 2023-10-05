@@ -13,6 +13,8 @@ class AuditLogStorage(context: Context) {
         get() = preferences.getLong(LAST_TAMPERING_DETECTED_TIME, 0L)
     val auditLogFileExists: Boolean
         get() = preferences.getBoolean(AUDIT_LOG_FILE_EXISTS, false)
+    val persistentWarningOnStartup: Boolean
+        get() = preferences.getBoolean(PERSISTENT_WARNING_ON_STARTUP, false)
 
     fun setLastTamperingDetectedTime(lastTime: Long) {
         preferences.edit().putLong(LAST_TAMPERING_DETECTED_TIME, lastTime).apply()
@@ -22,9 +24,14 @@ class AuditLogStorage(context: Context) {
         preferences.edit().putBoolean(AUDIT_LOG_FILE_EXISTS, exists).apply()
     }
 
+    fun setPersistentWarningOnStartup(warning: Boolean) {
+        preferences.edit().putBoolean(PERSISTENT_WARNING_ON_STARTUP, warning).apply()
+    }
+
     companion object {
         private const val AUDIT_LOG_STORAGE_PREFS = "audit_log_preferences"
         private const val AUDIT_LOG_FILE_EXISTS = "auditLogFileExists"
+        private const val PERSISTENT_WARNING_ON_STARTUP = "persistentWarningOnStartup"
         private const val LAST_TAMPERING_DETECTED_TIME = "lastTamperingDetectedTime"
     }
 }

@@ -106,8 +106,11 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                     if (requestKey.equals(AUDIT_LOG_TAMPER_DIALOG_TAG)) {
                         int result = bundle.getInt(ConfirmationDialog.RESULT_KEY);
                         if (result == DialogInterface.BUTTON_POSITIVE) {
+                            auditLogViewModel.auditTamperingCloseApp();
                             finishAndRemoveTask();
                             System.exit(0);
+                        } else if (result == DialogInterface.BUTTON_NEGATIVE) {
+                            auditLogViewModel.auditTamperingAlertDismissed();
                         }
                     }
                 });
@@ -322,7 +325,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                         getString(R.string.ok)
                 );
             }
-            auditLogViewModel.resetTamperAlert();
         });
     }
 
