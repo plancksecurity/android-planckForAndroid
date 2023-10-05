@@ -1,6 +1,7 @@
 package security.planck.audit
 
 import android.util.Log
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckProvider
@@ -42,6 +43,9 @@ class AuditLogger(
         fun serialize(): String = "$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
 
         companion object {
+            /**
+             * Empty rating field is allowed as correct format.
+             */
             fun deserialize(serialized: String): MessageAuditLog {
                 val parts = serialized.split(SEPARATOR)
                 return MessageAuditLog(parts[0].toLong(), parts[1], parts[2])
@@ -84,7 +88,7 @@ class AuditLogger(
 
     private fun addMessageAuditLog(messageAuditLog: MessageAuditLog) {
         try {
-            val allFileText = if (auditLoggerFile.exists()) auditLoggerFile.readText() else ""
+            val allFileText = getAuditTextWithoutSignature()
 
             when {
                 allFileText.isBlank() -> {
@@ -100,11 +104,26 @@ class AuditLogger(
                     writeLogRemovingOldLogs(allFileText, messageAuditLog)
                 }
             }
+            addSignature()
         } catch (e: IOException) {
-            if (K9.isDebug()) {
+            if (BuildConfig.DEBUG || K9.isDebug()) {
                 Log.e(CONSOLE_LOG_TAG, "Error adding audit log", e)
             }
         }
+    }
+
+    private fun getAuditTextWithoutSignature(): String {
+        var allFileText = if (auditLoggerFile.exists()) {
+            auditLoggerFile.readText()
+        } else {
+            // if file was removed fire tampering warning
+            ""
+        }
+        if (allFileText.isNotBlank()) {
+            val newFileText = verifyAndRemoveSignature(allFileText)
+            allFileText = newFileText
+        }
+        return allFileText
     }
 
     private fun appendLog(log: MessageAuditLog) {
@@ -129,7 +148,8 @@ class AuditLogger(
         if (log.isStopEvent()) {
             val lastMessageTime = kotlin.runCatching {
                 MessageAuditLog.deserialize(cleanText.substringAfterLast(NEW_LINE)).timeStamp
-            }.getOrDefault(0)
+            }
+                .getOrDefault(0) // in case of empty text / just header left, no need to change log time
             if (lastMessageTime > newTime) {
                 log = log.copy(timeStamp = lastMessageTime)
             }
@@ -178,6 +198,26 @@ class AuditLogger(
             }
     }
 
+    private fun verifyAndRemoveSignature(auditText: String): String {
+        val signatureIndex = auditText.indexOf(SIGNATURE_START)
+        val signature = if (signatureIndex < 0) "" else auditText.substring(signatureIndex)
+        val textToVerify = auditText.substringBefore(SIGNATURE_START)
+        verifyAuditText(textToVerify, signature)
+        val newAuditText = when {
+            textToVerify.substringAfterLast(NEW_LINE).isSignatureLog() ->
+                textToVerify.substringBeforeLast(NEW_LINE)
+
+            else -> textToVerify
+        }
+        auditLoggerFile.writeText(newAuditText)
+        return newAuditText
+    }
+
+    private fun String.isSignatureLog() =
+        kotlin.runCatching {
+            MessageAuditLog.deserialize(this).senderId == SIGNATURE_ID
+        }.getOrDefault(false)
+
     private fun verifyAuditText(auditText: String, signature: String) {
         if (signature.isBlank()
             || !planckProvider.verifySignature(auditText, signature)
@@ -190,9 +230,10 @@ class AuditLogger(
 
     companion object {
         const val AUDIT_LOGGER_ROUTE = "audit/messageAudit.csv"
-        const val START_EVENT = "AUDIT LOGGING START"
-        const val STOP_EVENT = "AUDIT LOGGING STOP"
-        const val SIGNATURE_ID = "SIGNATURE"
+        const val START_EVENT = "**AUDIT LOGGING START**"
+        const val STOP_EVENT = "**AUDIT LOGGING STOP**"
+        const val SIGNATURE_START = "-----BEGIN PGP MESSAGE-----"
+        const val SIGNATURE_ID = "**SIGNATURE**"
         private const val SEPARATOR = ";"
         internal const val HEADER =
             "TIMESTAMP${SEPARATOR}SENDER-ID${SEPARATOR}SECURITY-RATING"
