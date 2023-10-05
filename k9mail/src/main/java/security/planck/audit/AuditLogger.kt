@@ -3,6 +3,7 @@ package security.planck.audit
 import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
 import foundation.pEp.jniadapter.Rating
@@ -11,6 +12,7 @@ import java.io.IOException
 import java.util.Calendar
 
 class AuditLogger(
+    private val planckProvider: PlanckProvider,
     private val auditLoggerFile: File,
     var logAgeLimit: Long,
 ) {
@@ -133,7 +135,7 @@ class AuditLogger(
     }
 
     companion object {
-        const val auditLoggerFileRoute = "audit/messageAudit.csv"
+        const val AUDIT_LOGGER_ROUTE = "audit/messageAudit.csv"
         const val START_EVENT = "AUDIT LOGGING START"
         const val STOP_EVENT = "AUDIT LOGGING STOP"
         private const val SEPARATOR = ";"
