@@ -7,6 +7,9 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import java.io.IOException
 import java.util.Calendar
@@ -18,6 +21,9 @@ class AuditLogger(
 ) {
     private val currentTimeInSeconds: Long
         get() = Calendar.getInstance().timeInMillis / 1000
+
+    private val tamperAlertMF: MutableStateFlow<Int> = MutableStateFlow(0)
+    val tamperAlertFlow: StateFlow<Int> = tamperAlertMF.asStateFlow()
 
     init {
         auditLoggerFile.parentFile?.mkdirs()
@@ -143,6 +149,7 @@ class AuditLogger(
                 auditLoggerFile.appendText(signature)
             }.onFailure {
                 // same as tamper detected on failure
+                tamperAlertMF.value = tamperAlertMF.value + 1
             }
     }
 
@@ -152,6 +159,7 @@ class AuditLogger(
                 .getOrDefault(false) // same as tamper detected on failure
         ) {
             // tamper detected
+            tamperAlertMF.value = tamperAlertMF.value + 1
         }
     }
 
