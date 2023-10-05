@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuditLogViewModel @Inject constructor(
-    auditLogger: AuditLogger,
+    private val auditLogger: AuditLogger,
 ) : ViewModel() {
     private val tamperAlertLD: MutableLiveData<Event<Int>> = MutableLiveData(Event(0))
     val tamperAlert: LiveData<Event<Int>> = tamperAlertLD
@@ -23,5 +23,9 @@ class AuditLogViewModel @Inject constructor(
             .onEach {
                 tamperAlertLD.value = Event(it)
             }.launchIn(viewModelScope)
+    }
+
+    fun resetTamperAlert() {
+        auditLogger.resetTamperAlert()
     }
 }
