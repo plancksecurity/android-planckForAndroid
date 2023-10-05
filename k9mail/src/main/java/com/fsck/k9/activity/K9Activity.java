@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -27,6 +28,7 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.scottyab.rootbeer.RootBeer;
@@ -42,15 +44,24 @@ import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import security.planck.auth.OAuthTokenRevokedListener;
 import security.planck.mdm.RestrictionsListener;
+import security.planck.ui.audit.AuditLogViewModel;
 import timber.log.Timber;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
         OAuthTokenRevokedListener {
 
-    @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
-    @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
-    @Nullable @Bind(R.id.search_input) EditText searchInput;
-    @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
+    @Nullable
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Nullable
+    @Bind(R.id.toolbar_search_container)
+    FrameLayout toolbarSearchContainer;
+    @Nullable
+    @Bind(R.id.search_input)
+    EditText searchInput;
+    @Nullable
+    @Bind(R.id.search_clear)
+    View clearSearchIcon;
 
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
@@ -62,6 +73,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private String searchText;
 
     public static final int NO_ANIMATION = 0;
+    protected AuditLogViewModel auditLogViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,12 +84,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
         super.onCreate(savedInstanceState);
 //        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
 
             isShowingSearchView = savedInstanceState.getBoolean(SHOWING_SEARCH_VIEW, false);
 
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
         }
+        auditLogViewModel = new ViewModelProvider(this).get(AuditLogViewModel.class);
     }
 
     @Override
@@ -163,7 +176,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
-    protected void showComposeFab(boolean show) {}
+    protected void showComposeFab(boolean show) {
+    }
 
     public void showSearchView() {
         isShowingSearchView = true;
@@ -192,13 +206,14 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return toolbarSearchContainer != null && toolbarSearchContainer.getVisibility() == View.VISIBLE;
     }
 
-    @Nullable @OnClick(R.id.search_clear)
+    @Nullable
+    @OnClick(R.id.search_clear)
     public void hideSearchView() {
         isShowingSearchView = false;
         searchText = null;
 
         if (searchInput != null &&
-            toolbarSearchContainer != null && toolbar != null) {
+                toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.GONE);
             toolbar.setVisibility(View.VISIBLE);
             searchInput.setEnabled(false);
@@ -211,7 +226,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    @Nullable @OnTextChanged(R.id.search_input)
+    @Nullable
+    @OnTextChanged(R.id.search_input)
     void onSearchInputChanged(CharSequence query) {
         if (clearSearchIcon != null) {
             if (query.toString().isEmpty()) {
@@ -222,7 +238,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    @Nullable @OnEditorAction(R.id.search_input)
+    @Nullable
+    @OnEditorAction(R.id.search_input)
     boolean onSearchInputSubmitted(KeyEvent keyEvent) {
         if (searchInput != null) {
             if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
@@ -230,8 +247,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 if (!searchedText.trim().isEmpty()) {
                     search(searchInput.getText().toString());
                     return true;
-                }
-                else {
+                } else {
                     searchInput.setError(getString(R.string.search_empty_error));
                 }
             }
@@ -249,7 +265,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         ButterKnife.bind(this);
     }
 
-    public void search(String query) {}
+    public void search(String query) {
+    }
 
     @Override
     protected void onResume() {
@@ -257,21 +274,33 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         boolean isRoot = new RootBeer(this).isRooted();
         if (isRoot && !BuildConfig.DEBUG) {
             Toast.makeText(this, R.string.rooted_device_error, Toast.LENGTH_SHORT).show();
-            try {
-                finalize();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
+            finish();
         }
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Timber.i("Device is (possibly) rooted: %s", isRoot);
         }
 
+        observeAuditLogViewModel();
+
         mBase.registerPassphraseReceiver();
         mBase.registerOAuthTokenRevokedReceiver();
-        if(isShowingSearchView) {
+        if (isShowingSearchView) {
             showSearchView();
         }
+    }
+
+    private void observeAuditLogViewModel() {
+        auditLogViewModel.getTamperAlert().observe(this, event -> {
+            Integer value = event.getContentIfNotHandled();
+            if (value != null && value > 0) {
+                FeedbackTools.createIndefiniteFeedback(
+                        getRootView(),
+                        "Audit log has been tampered",
+                        null,
+                        null
+                );
+            }
+        });
     }
 
     @Override
@@ -289,7 +318,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onPause();
         mBase.unregisterPassphraseReceiver();
         mBase.unregisterOAuthTokenRevokedReceiver();
-        if(isShowingSearchView) {
+        if (isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }
     }
