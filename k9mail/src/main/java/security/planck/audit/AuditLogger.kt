@@ -116,7 +116,7 @@ class AuditLogger(
         var allFileText = if (auditLoggerFile.exists()) {
             auditLoggerFile.readText()
         } else {
-            // if file was removed fire tampering warning
+            // TODO: if file was removed fire tampering warning. We will have a boolean "audit_log_exists" in some shared prefs file. Once file is recreated we update it.
             ""
         }
         if (allFileText.isNotBlank()) {
@@ -194,7 +194,7 @@ class AuditLogger(
                 auditLoggerFile.appendText(signature)
             }.onFailure {
                 // same as tamper detected on failure
-                tamperAlertMF.value = tamperAlertMF.value + 1
+                setTamperedAlert()
             }
     }
 
@@ -224,8 +224,13 @@ class AuditLogger(
                 .getOrDefault(false) // same as tamper detected on failure
         ) {
             // tamper detected
-            tamperAlertMF.value = tamperAlertMF.value + 1
+            setTamperedAlert()
         }
+    }
+
+    private fun setTamperedAlert() {
+        // TODO: if app is running in the background, then set last tamper time in some shared pref file. The value should be reset when warning is displayed.
+        tamperAlertMF.value = tamperAlertMF.value + 1
     }
 
     fun resetTamperAlert() {
