@@ -319,6 +319,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                         getString(R.string.ok)
                 );
             }
+            auditLogViewModel.resetTamperAlert();
         });
     }
 

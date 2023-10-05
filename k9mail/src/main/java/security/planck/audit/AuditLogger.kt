@@ -228,6 +228,10 @@ class AuditLogger(
         }
     }
 
+    fun resetTamperAlert() {
+        tamperAlertMF.value = 0
+    }
+
     companion object {
         const val AUDIT_LOGGER_ROUTE = "audit/messageAudit.csv"
         const val START_EVENT = "**AUDIT LOGGING START**"
