@@ -45,8 +45,8 @@ class AuditLogger(
     private val currentTimeInSeconds: Long
         get() = clock.time
 
-    private val tamperAlertMF: MutableStateFlow<Int> = MutableStateFlow(0)
-    val tamperAlertFlow: StateFlow<Int> = tamperAlertMF.asStateFlow()
+    private val tamperAlertMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val tamperAlertFlow: StateFlow<Boolean> = tamperAlertMF.asStateFlow()
 
     init {
         auditLoggerFile.parentFile?.mkdirs()
@@ -279,12 +279,12 @@ class AuditLogger(
     }
 
     private fun setTamperedAlert() {
-        tamperAlertMF.value = tamperAlertMF.value + 1
+        tamperAlertMF.value = true
     }
 
 
     fun resetTamperAlert() {
-        tamperAlertMF.value = 0
+        tamperAlertMF.value = false
         storage.edit().setLastTamperingDetectedTime(0L)
     }
 
