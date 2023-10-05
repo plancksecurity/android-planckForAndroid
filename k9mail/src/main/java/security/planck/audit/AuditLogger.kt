@@ -35,10 +35,22 @@ class AuditLogger(
         val securityRating: String = ""
     ) {
         fun toCsv(): String =
-            "$NEW_LINE$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
+            "$NEW_LINE${serialize()}"
 
         fun isStopEvent(): Boolean = senderId == STOP_EVENT
+
+        fun serialize(): String = "$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
+
+        companion object {
+            fun deserialize(serialized: String): MessageAuditLog {
+                val parts = serialized.split(SEPARATOR)
+                return MessageAuditLog(parts[0].toLong(), parts[1], parts[2])
+            }
+        }
     }
+
+    private fun MessageAuditLog.isOutdated(newTime: Long): Boolean =
+        newTime - timeStamp > logAgeLimit
 
     fun addStartEventLog() {
         addSpecialEventLog(START_EVENT, currentTimeInSeconds)
@@ -115,7 +127,9 @@ class AuditLogger(
     ): MessageAuditLog {
         var log = this
         if (log.isStopEvent()) {
-            val lastMessageTime = getLogTime(cleanText.substringAfterLast(NEW_LINE))
+            val lastMessageTime = kotlin.runCatching {
+                MessageAuditLog.deserialize(cleanText.substringAfterLast(NEW_LINE)).timeStamp
+            }.getOrDefault(0)
             if (lastMessageTime > newTime) {
                 log = log.copy(timeStamp = lastMessageTime)
             }
@@ -126,14 +140,11 @@ class AuditLogger(
     private fun String.removeOldLogs(newTime: Long): String {
         val textWithoutHeader = substringAfter("$HEADER$NEW_LINE")
             .split(NEW_LINE)
-            .filter { logLine ->
-                logLine.isNotBlank() && newTime - getLogTime(logLine) < logAgeLimit
+            .filterNot { logLine ->
+                kotlin.runCatching { MessageAuditLog.deserialize(logLine).isOutdated(newTime) }
+                    .getOrDefault(true)
             }.joinToString(NEW_LINE)
         return "$HEADER$NEW_LINE" + textWithoutHeader
-    }
-
-    private fun getLogTime(logLine: String): Long {
-        return logLine.substringBefore(SEPARATOR).toLong()
     }
 
     private fun addHeader() {
