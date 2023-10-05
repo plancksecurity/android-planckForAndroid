@@ -438,5 +438,8 @@
     <string name="leave_device_group_dialog_progress_text">Leaving device group…</string>
     <string name="leave_device_group_dialog_success_text">Successfully left device group.</string>
     <string name="leave_device_group_dialog_error_text">There was an error while leaving device group. Please try again or contact your IT admin.</string>
+    <string name="audit_log_tamper_dialog_title">Audit Log Issue Detected</string>
+    <string name="audit_log_tamper_dialog_description">The audit log file seems to have been tampered. Please inform your IT administrator.</string>
+    <string name="audit_log_tamper_dialog_positive_button">Close application</string>
 
 </resources>
