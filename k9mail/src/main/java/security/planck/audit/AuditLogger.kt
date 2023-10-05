@@ -126,6 +126,7 @@ class AuditLogger(
             when {
                 allFileText.isBlank() -> {
                     addHeader()
+                    storage.edit().setAuditLogFileExists(true)
                     appendLog(messageAuditLog)
                 }
 
@@ -146,12 +147,7 @@ class AuditLogger(
     }
 
     private fun getAuditTextWithoutSignature(): String {
-        var allFileText = if (auditLoggerFile.exists()) {
-            auditLoggerFile.readText()
-        } else {
-            checkPreviousExistenceAndCreateFile()
-            ""
-        }
+        var allFileText = getAllFileText()
         if (allFileText.isNotBlank()) {
             val newFileText = verifyAndRemoveSignature(allFileText)
             allFileText = newFileText
@@ -159,13 +155,18 @@ class AuditLogger(
         return allFileText
     }
 
-    private fun checkPreviousExistenceAndCreateFile() {
+    private fun getAllFileText() = if (auditLoggerFile.exists()) {
+        auditLoggerFile.readText()
+    } else {
+        checkPreviousFileExistenceOnNonExistentFile()
+        ""
+    }
+
+    private fun checkPreviousFileExistenceOnNonExistentFile() {
         val auditLogExisted = storage.auditLogFileExists()
         if (auditLogExisted) {
             setTamperedAlertAndSaveTime()
         }
-        auditLoggerFile.writeText("")
-        storage.edit().setAuditLogFileExists(true)
     }
 
     private fun appendLog(log: MessageAuditLog) {
