@@ -20,6 +20,9 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.multidex.MultiDexApplication;
 import androidx.work.WorkManager;
 
@@ -72,7 +75,6 @@ import java.util.concurrent.SynchronousQueue;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import dagger.Lazy;
 import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Sync;
@@ -94,7 +96,7 @@ import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
 @HiltAndroidApp
-public class K9 extends MultiDexApplication {
+public class K9 extends MultiDexApplication implements DefaultLifecycleObserver {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
     private Account currentAccount;
@@ -138,6 +140,12 @@ public class K9 extends MultiDexApplication {
             runningOnWorkProfile = new UserProfile().isRunningOnWorkProfile(this);
         }
         return runningOnWorkProfile;
+    }
+
+    private boolean runningInForeground;
+
+    public boolean isRunningInForeground() {
+        return runningInForeground;
     }
 
     public boolean isBatteryOptimizationAsked() {
@@ -1940,6 +1948,16 @@ public class K9 extends MultiDexApplication {
 
     private void startConnectivityMonitor() {
         connectivityMonitor.register(this);
+    }
+
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {
+        runningInForeground = true;
+    }
+
+    @Override
+    public void onStop(@NonNull LifecycleOwner owner) {
+        runningInForeground = false;
     }
 
 }
