@@ -25,7 +25,13 @@ class AuditLogViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    fun resetTamperAlert() {
+    fun auditTamperingAlertDismissed() {
         auditLogger.resetTamperAlert()
+        auditLogger.disablePersistentWarningOnStartup()
+    }
+
+    fun auditTamperingCloseApp() {
+        auditLogger.resetTamperAlert()
+        auditLogger.enablePersistentWarningOnStartup()
     }
 }

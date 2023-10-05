@@ -1,5 +1,7 @@
 package com.fsck.k9
 
+import javax.inject.Inject
+
 /**
  * An interface to provide the current time.
  */
@@ -7,7 +9,7 @@ interface Clock {
     val time: Long
 }
 
-internal class RealClock : Clock {
+class RealClock @Inject constructor() : Clock {
     override val time: Long
         get() = System.currentTimeMillis()
 }

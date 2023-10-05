@@ -15,7 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AuditLogger(
     private val planckProvider: PlanckProvider,
     private val auditLoggerFile: File,
@@ -24,6 +27,21 @@ class AuditLogger(
     private val clock: Clock,
     var logAgeLimit: Long,
 ) {
+    @Inject
+    constructor(
+        planckProvider: PlanckProvider,
+        storage: Storage,
+        k9: K9,
+        clock: Clock,
+    ) : this(
+        planckProvider,
+        File(k9.filesDir, AUDIT_LOGGER_ROUTE),
+        storage,
+        k9,
+        clock,
+        k9.auditLogDataTimeRetentionValue
+    )
+
     private val currentTimeInSeconds: Long
         get() = clock.time
 
@@ -32,7 +50,9 @@ class AuditLogger(
 
     init {
         auditLoggerFile.parentFile?.mkdirs()
-        val pendingAlert = storage.lastTamperingDetectedTime > 0
+        val pendingAlert =
+            storage.lastTamperingDetectedTime > 0
+                    || storage.persistentWarningOnStartup()
         if (pendingAlert) {
             setTamperedAlert()
         }
@@ -260,6 +280,14 @@ class AuditLogger(
     fun resetTamperAlert() {
         tamperAlertMF.value = 0
         storage.edit().setLastTamperingDetectedTime(0L)
+    }
+
+    fun enablePersistentWarningOnStartup() {
+        storage.edit().setPersistentAuditTamperWarningOnStartup(true)
+    }
+
+    fun disablePersistentWarningOnStartup() {
+        storage.edit().setPersistentAuditTamperWarningOnStartup(false)
     }
 
     companion object {

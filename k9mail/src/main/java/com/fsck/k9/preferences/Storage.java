@@ -385,4 +385,8 @@ public class Storage {
     public boolean auditLogFileExists() {
         return auditLogStorage.getAuditLogFileExists();
     }
+
+    public boolean persistentWarningOnStartup() {
+        return auditLogStorage.getPersistentWarningOnStartup();
+    }
 }
