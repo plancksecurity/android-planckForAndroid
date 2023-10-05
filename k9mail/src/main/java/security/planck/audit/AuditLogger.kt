@@ -3,14 +3,19 @@ package security.planck.audit
 import android.util.Log
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
+import com.fsck.k9.preferences.AuditLogStorage
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.util.Calendar
@@ -58,6 +63,12 @@ class AuditLogger(
 
     fun addStartEventLog() {
         addSpecialEventLog(START_EVENT, currentTimeInSeconds)
+        if (!Preferences.getPreferences(K9.app).storage.auditLogFileExists()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                Preferences.getPreferences(K9.app).storage.edit()
+                    .setAuditLogFileExists(true)
+            }
+        }
     }
 
     fun addStopEventLog(stopTime: Long) {
@@ -116,7 +127,11 @@ class AuditLogger(
         var allFileText = if (auditLoggerFile.exists()) {
             auditLoggerFile.readText()
         } else {
-            // TODO: if file was removed fire tampering warning. We will have a boolean "audit_log_exists" in some shared prefs file. Once file is recreated we update it.
+            // Case when file was removed should display tampering warning.
+            // Once file is recreated we update it.
+            if (AuditLogStorage(K9.app).auditLogFileExists) {
+                setTamperedAlert()
+            }
             ""
         }
         if (allFileText.isNotBlank()) {
@@ -229,7 +244,15 @@ class AuditLogger(
     }
 
     private fun setTamperedAlert() {
-        // TODO: if app is running in the background, then set last tamper time in some shared pref file. The value should be reset when warning is displayed.
+        // When app is running in the background,
+        // then simply setting the last tamper time in shared pref file.
+        // The value should be reset when warning is displayed.
+
+        CoroutineScope(Dispatchers.IO).launch {
+            Preferences.getPreferences(K9.app).storage.edit()
+                    .setLastTamperingDetectedTime(Calendar.getInstance().timeInMillis / 1000)
+        }
+
         tamperAlertMF.value = tamperAlertMF.value + 1
     }
 

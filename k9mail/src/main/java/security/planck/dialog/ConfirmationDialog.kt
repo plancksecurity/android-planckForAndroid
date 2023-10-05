@@ -10,6 +10,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val ARG_TAG = "dialogTag"
 private const val ARG_TITLE = "title"
@@ -39,6 +44,14 @@ class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListener {
             builder.setNeutralButton(neutralText, this)
         }
         isCancelable = false
+
+        //Reset tamper proof audit log last detection stored value
+        //For the background mode workaround
+        CoroutineScope(Dispatchers.IO).launch {
+            Preferences.getPreferences(K9.app).storage.edit()
+                .setLastTamperingDetectedTime(0L)
+        }
+
         return builder.create()
     }
 
