@@ -314,8 +314,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private void observeAuditLogViewModel() {
         auditLogViewModel.getTamperAlert().observe(this, event -> {
-            Integer value = event.getContentIfNotHandled();
-            if (value != null && value > 0) {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
                 ConfirmationDialogKt.showConfirmationDialog(
                         this,
                         AUDIT_LOG_TAMPER_DIALOG_TAG,

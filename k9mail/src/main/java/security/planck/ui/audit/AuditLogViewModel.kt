@@ -15,8 +15,8 @@ import javax.inject.Inject
 class AuditLogViewModel @Inject constructor(
     private val auditLogger: AuditLogger,
 ) : ViewModel() {
-    private val tamperAlertLD: MutableLiveData<Event<Int>> = MutableLiveData(Event(0))
-    val tamperAlert: LiveData<Event<Int>> = tamperAlertLD
+    private val tamperAlertLD: MutableLiveData<Event<Boolean>> = MutableLiveData(Event(false))
+    val tamperAlert: LiveData<Event<Boolean>> = tamperAlertLD
 
     init {
         auditLogger.tamperAlertFlow
