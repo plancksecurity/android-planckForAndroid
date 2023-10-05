@@ -2,6 +2,7 @@ package security.planck.audit
 
 import android.util.Log
 import com.fsck.k9.BuildConfig
+import com.fsck.k9.Clock
 import com.fsck.k9.K9
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.planck.PlanckProvider
@@ -14,22 +15,27 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import java.io.IOException
-import java.util.Calendar
 
 class AuditLogger(
     private val planckProvider: PlanckProvider,
     private val auditLoggerFile: File,
     private val storage: Storage,
+    private val k9: K9,
+    private val clock: Clock,
     var logAgeLimit: Long,
 ) {
     private val currentTimeInSeconds: Long
-        get() = Calendar.getInstance().timeInMillis / 1000
+        get() = clock.time
 
     private val tamperAlertMF: MutableStateFlow<Int> = MutableStateFlow(0)
     val tamperAlertFlow: StateFlow<Int> = tamperAlertMF.asStateFlow()
 
     init {
         auditLoggerFile.parentFile?.mkdirs()
+        val pendingAlert = storage.lastTamperingDetectedTime > 0
+        if (pendingAlert) {
+            setTamperedAlert()
+        }
     }
 
     private data class MessageAuditLog(
@@ -131,7 +137,7 @@ class AuditLogger(
     private fun checkPreviousExistenceAndCreateFile() {
         val auditLogExisted = storage.auditLogFileExists()
         if (auditLogExisted) {
-            setTamperedAlert()
+            setTamperedAlertAndSaveTime()
         }
         auditLoggerFile.writeText("")
         storage.edit().setAuditLogFileExists(true)
@@ -205,7 +211,7 @@ class AuditLogger(
                 auditLoggerFile.appendText(signature)
             }.onFailure {
                 // same as tamper detected on failure
-                setTamperedAlert()
+                setTamperedAlertAndSaveTime()
             }
     }
 
@@ -235,17 +241,25 @@ class AuditLogger(
                 .getOrDefault(false) // same as tamper detected on failure
         ) {
             // tamper detected
-            setTamperedAlert()
+            setTamperedAlertAndSaveTime()
         }
     }
 
+    private fun setTamperedAlertAndSaveTime() {
+        if (!k9.isRunningInForeground) {
+            storage.edit().setLastTamperingDetectedTime(currentTimeInSeconds)
+        }
+        setTamperedAlert()
+    }
+
     private fun setTamperedAlert() {
-        // TODO: if app is running in the background, then set last tamper time in some shared pref file. The value should be reset when warning is displayed.
         tamperAlertMF.value = tamperAlertMF.value + 1
     }
 
+
     fun resetTamperAlert() {
         tamperAlertMF.value = 0
+        storage.edit().setLastTamperingDetectedTime(0L)
     }
 
     companion object {
