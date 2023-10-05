@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.BuildConfig;
@@ -28,7 +30,6 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.scottyab.rootbeer.RootBeer;
@@ -43,6 +44,8 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import security.planck.auth.OAuthTokenRevokedListener;
+import security.planck.dialog.ConfirmationDialog;
+import security.planck.dialog.ConfirmationDialogKt;
 import security.planck.mdm.RestrictionsListener;
 import security.planck.ui.audit.AuditLogViewModel;
 import timber.log.Timber;
@@ -65,6 +68,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
+    private static final String AUDIT_LOG_TAMPER_DIALOG_TAG = "auditLogTamperConfirmationDialog";
 
     @Inject
     K9ActivityCommon mBase;
@@ -91,6 +95,19 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
         }
         auditLogViewModel = new ViewModelProvider(this).get(AuditLogViewModel.class);
+        getSupportFragmentManager().setFragmentResultListener(AUDIT_LOG_TAMPER_DIALOG_TAG, this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                if (requestKey.equals(AUDIT_LOG_TAMPER_DIALOG_TAG)) {
+                    int result = bundle.getInt(ConfirmationDialog.RESULT_KEY);
+                    if (result == DialogInterface.BUTTON_POSITIVE) {
+                        // We close the app
+                    } else if (result == DialogInterface.BUTTON_NEGATIVE) {
+                        // We just dismiss dialog
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -293,11 +310,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         auditLogViewModel.getTamperAlert().observe(this, event -> {
             Integer value = event.getContentIfNotHandled();
             if (value != null && value > 0) {
-                FeedbackTools.createIndefiniteFeedback(
-                        getRootView(),
-                        "Audit log has been tampered",
-                        null,
-                        null
+                ConfirmationDialogKt.showConfirmationDialog(
+                        this,
+                        AUDIT_LOG_TAMPER_DIALOG_TAG,
+                        getString(R.string.audit_log_tamper_dialog_title),
+                        getString(R.string.audit_log_tamper_dialog_description),
+                        getString(R.string.audit_log_tamper_dialog_positive_button),
+                        getString(R.string.ok)
                 );
             }
         });
@@ -315,12 +334,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     protected void onPause() {
-        super.onPause();
+        auditLogViewModel.getTamperAlert().removeObservers(this);
         mBase.unregisterPassphraseReceiver();
         mBase.unregisterOAuthTokenRevokedReceiver();
         if (isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }
+        super.onPause();
     }
 
     @Override

@@ -106,6 +106,7 @@ fun Fragment.showConfirmationDialog(
     )
 }
 
+@JvmOverloads
 fun AppCompatActivity.showConfirmationDialog(
     tag: String,
     title: CharSequence,
