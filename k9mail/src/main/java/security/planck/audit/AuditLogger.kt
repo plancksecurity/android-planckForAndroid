@@ -75,8 +75,13 @@ class AuditLogger(
              * Empty rating field is allowed as correct format.
              */
             fun deserialize(serialized: String): MessageAuditLog {
-                val parts = serialized.split(SEPARATOR)
-                return MessageAuditLog(parts[0].toLong(), parts[1], parts[2])
+                try {
+                    val parts = serialized.split(SEPARATOR)
+                    if (parts.size != 3) error("3 parts expected for log: $serialized")
+                    return MessageAuditLog(parts[0].toLong(), parts[1], parts[2])
+                } catch (e: Exception) {
+                    throw LogBadlyFormattedException(serialized, e)
+                }
             }
         }
     }
