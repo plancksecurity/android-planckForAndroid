@@ -117,7 +117,7 @@ public class K9 extends MultiDexApplication {
     @Inject
     Provider<RestrictionsReceiver> restrictionsReceiver;
     @Inject
-    Lazy<AuditLogger> auditLogger;
+    Provider<AuditLogger> auditLogger;
 
     @Inject
     Provider<SyncRepository> syncDelegate;

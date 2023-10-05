@@ -145,6 +145,7 @@ public class ApplicationModule {
     }
 
     @Provides
+    @Singleton
     public AuditLogger provideAuditLogger(K9 k9, PlanckProvider planckProvider) {
         return new AuditLogger(
                 planckProvider,
