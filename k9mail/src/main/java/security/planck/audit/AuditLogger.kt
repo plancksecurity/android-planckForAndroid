@@ -116,7 +116,7 @@ class AuditLogger(
         messageAuditLog: MessageAuditLog,
     ) {
         val newTime = messageAuditLog.timeStamp
-        val cleanText = allFileText.removeOldLogs(newTime)
+        val cleanText = allFileText.removeOldLogsAndGarbage(newTime)
         val log = messageAuditLog.updateStopTimeToLateLogTime(cleanText, newTime)
         auditLoggerFile.writeText(cleanText + log.toCsv())
     }
@@ -137,14 +137,28 @@ class AuditLogger(
         return log
     }
 
-    private fun String.removeOldLogs(newTime: Long): String {
+    private fun String.removeOldLogsAndGarbage(newTime: Long): String {
+        // remove old logs and old garbage, keep new logs and new garbage in place
+        val reAddHeader = this.startsWith("$HEADER$NEW_LINE")
         val textWithoutHeader = substringAfter("$HEADER$NEW_LINE")
-            .split(NEW_LINE)
-            .filterNot { logLine ->
-                kotlin.runCatching { MessageAuditLog.deserialize(logLine).isOutdated(newTime) }
-                    .getOrDefault(true)
-            }.joinToString(NEW_LINE)
-        return "$HEADER$NEW_LINE" + textWithoutHeader
+        val lastOutdatedLog = findLastOutdatedLog(textWithoutHeader, newTime)
+        val onlyNewLogsAndGarbage = lastOutdatedLog?.let {
+            textWithoutHeader.substringAfter(
+                "$lastOutdatedLog$NEW_LINE",
+                missingDelimiterValue = "" // if no new line after last outdated log, even last log is outdated
+            )
+        } ?: textWithoutHeader
+        return if (reAddHeader) "$HEADER$NEW_LINE$onlyNewLogsAndGarbage" else onlyNewLogsAndGarbage
+    }
+
+    private fun findLastOutdatedLog(textWithoutHeader: String, newTime: Long): String? {
+        val allLines = textWithoutHeader.split(NEW_LINE)
+
+        return allLines.lastOrNull { // we assume logs are entered in time order in the file
+            kotlin.runCatching {
+                MessageAuditLog.deserialize(it)
+            }.map { it.isOutdated(newTime) }.getOrDefault(false)
+        }
     }
 
     private fun addHeader() {
