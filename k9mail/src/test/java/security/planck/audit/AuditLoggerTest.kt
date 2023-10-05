@@ -2,6 +2,7 @@ package security.planck.audit
 
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
 import foundation.pEp.jniadapter.Rating
@@ -19,7 +20,8 @@ import java.util.Calendar
 
 class AuditLoggerTest {
     private val auditLoggerFile = File("messageAudit.csv")
-    private val auditLogger = AuditLogger(auditLoggerFile, THIRTY_DAYS)
+    private val planckProvider: PlanckProvider = mockk()
+    private val auditLogger = AuditLogger(planckProvider, auditLoggerFile, THIRTY_DAYS)
     private val mimeMessage: MimeMessage = mockk()
     private val mockCalendar: Calendar = mockk()
 
