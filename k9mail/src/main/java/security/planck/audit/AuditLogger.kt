@@ -135,21 +135,23 @@ class AuditLogger(
     }
 
     private fun addSignature() {
-        appendLog(MessageAuditLog(currentTimeInSeconds, SIGNATURE_ID, ""))
-        val auditText = auditLoggerFile.readText()
-        planckProvider.getSignatureForText(auditText).onSuccess {
-            auditLoggerFile.appendText(it)
-        }.onFailure {
-            // same as tamper detected
-        }
+        val signatureLog = MessageAuditLog(currentTimeInSeconds, SIGNATURE_ID, "").toCsv()
+        val textToSign = auditLoggerFile.readText() + signatureLog
+        planckProvider.getSignatureForText(textToSign)
+            .onSuccess { signature -> // only add the whole signature log line on success
+                auditLoggerFile.appendText(signatureLog)
+                auditLoggerFile.appendText(signature)
+            }.onFailure {
+                // same as tamper detected on failure
+            }
     }
 
     private fun verifyAuditText(auditText: String, signature: String) {
         if (signature.isBlank()
-            || !planckProvider.verifySignature(auditText, signature).getOrDefault(false)
+            || !planckProvider.verifySignature(auditText, signature)
+                .getOrDefault(false) // same as tamper detected on failure
         ) {
             // tamper detected
-
         }
     }
 
