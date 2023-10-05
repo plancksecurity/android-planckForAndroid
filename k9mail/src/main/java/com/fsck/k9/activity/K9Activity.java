@@ -95,19 +95,22 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
         }
         auditLogViewModel = new ViewModelProvider(this).get(AuditLogViewModel.class);
-        getSupportFragmentManager().setFragmentResultListener(AUDIT_LOG_TAMPER_DIALOG_TAG, this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                if (requestKey.equals(AUDIT_LOG_TAMPER_DIALOG_TAG)) {
-                    int result = bundle.getInt(ConfirmationDialog.RESULT_KEY);
-                    if (result == DialogInterface.BUTTON_POSITIVE) {
-                        // We close the app
-                    } else if (result == DialogInterface.BUTTON_NEGATIVE) {
-                        // We just dismiss dialog
+        initializeAuditLogAlertFragmentListener();
+    }
+
+    private void initializeAuditLogAlertFragmentListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                AUDIT_LOG_TAMPER_DIALOG_TAG,
+                this,
+                (requestKey, bundle) -> {
+                    if (requestKey.equals(AUDIT_LOG_TAMPER_DIALOG_TAG)) {
+                        int result = bundle.getInt(ConfirmationDialog.RESULT_KEY);
+                        if (result == DialogInterface.BUTTON_POSITIVE) {
+                            finishAndRemoveTask();
+                            System.exit(0);
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 
     @Override
