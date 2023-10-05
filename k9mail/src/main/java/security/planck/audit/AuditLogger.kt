@@ -134,10 +134,30 @@ class AuditLogger(
         auditLoggerFile.writeText(HEADER)
     }
 
+    private fun addSignature() {
+        appendLog(MessageAuditLog(currentTimeInSeconds, SIGNATURE_ID, ""))
+        val auditText = auditLoggerFile.readText()
+        planckProvider.getSignatureForText(auditText).onSuccess {
+            auditLoggerFile.appendText(it)
+        }.onFailure {
+            // same as tamper detected
+        }
+    }
+
+    private fun verifyAuditText(auditText: String, signature: String) {
+        if (signature.isBlank()
+            || !planckProvider.verifySignature(auditText, signature).getOrDefault(false)
+        ) {
+            // tamper detected
+
+        }
+    }
+
     companion object {
         const val AUDIT_LOGGER_ROUTE = "audit/messageAudit.csv"
         const val START_EVENT = "AUDIT LOGGING START"
         const val STOP_EVENT = "AUDIT LOGGING STOP"
+        const val SIGNATURE_ID = "SIGNATURE"
         private const val SEPARATOR = ";"
         internal const val HEADER =
             "TIMESTAMP${SEPARATOR}SENDER-ID${SEPARATOR}SECURITY-RATING"
