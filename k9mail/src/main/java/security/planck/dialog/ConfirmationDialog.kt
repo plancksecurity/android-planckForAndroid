@@ -38,6 +38,7 @@ class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListener {
         arguments?.getCharSequence(ARG_NEUTRAL_TEXT)?.let { neutralText ->
             builder.setNeutralButton(neutralText, this)
         }
+        isCancelable = false
         return builder.create()
     }
 
