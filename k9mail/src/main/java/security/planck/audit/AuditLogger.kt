@@ -247,24 +247,34 @@ class AuditLogger(
         var textToVerify = auditText
         var signature = "" // by default if signature is not found, it is empty
         var newAuditText = auditText
-        if (signatureStartIndex >= 0
-            && signatureEndIndex - signatureStartIndex == SIGNATURE_EXPECTED_LENGTH
+        if (signatureHasRightFormat(signatureStartIndex, signatureEndIndex)
         ) {
             val beforeSignature = auditText.substring(0, signatureStartIndex)
             val afterSignature = auditText.substring(signatureEndIndex).removeSuffix(NEW_LINE)
             signature = auditText.substring(signatureStartIndex, signatureEndIndex)
             textToVerify = beforeSignature + afterSignature
-            newAuditText = when {
-                beforeSignature.substringAfterLast(NEW_LINE).isSignatureLog() ->
-                    beforeSignature.substringBeforeLast(NEW_LINE) + afterSignature
-
-                else -> textToVerify
-            }
+            newAuditText =
+                removeSignatureLogIfPresent(beforeSignature, afterSignature, textToVerify)
         }
 
         verifyAuditText(textToVerify, signature)
         auditLoggerFile.writeText(newAuditText)
         return newAuditText
+    }
+
+    private fun signatureHasRightFormat(signatureStartIndex: Int, signatureEndIndex: Int) =
+        signatureStartIndex >= 0
+                && signatureEndIndex - signatureStartIndex == SIGNATURE_EXPECTED_LENGTH
+
+    private fun removeSignatureLogIfPresent(
+        beforeSignature: String,
+        afterSignature: String,
+        textToVerify: String
+    ) = when {
+        beforeSignature.substringAfterLast(NEW_LINE).isSignatureLog() ->
+            beforeSignature.substringBeforeLast(NEW_LINE) + afterSignature // Remove signature timestamp log if present
+
+        else -> textToVerify
     }
 
     private fun String.isSignatureLog() =
