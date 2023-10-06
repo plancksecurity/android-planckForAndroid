@@ -309,6 +309,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         mBase.registerOAuthTokenRevokedReceiver();
         if (isShowingSearchView) {
             showSearchView();
+        } else {
+            KeyboardUtils.hideKeyboard(this);
         }
     }
 
