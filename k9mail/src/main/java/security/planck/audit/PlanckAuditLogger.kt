@@ -325,13 +325,13 @@ class PlanckAuditLogger(
 
     companion object {
         const val AUDIT_LOGGER_ROUTE = "audit/messageAudit.csv"
-        const val START_EVENT = "**AUDIT LOGGING START**"
-        const val STOP_EVENT = "**AUDIT LOGGING STOP**"
-        const val SIGNATURE_START = "-----BEGIN PGP MESSAGE-----"
-        const val SIGNATURE_END = "-----END PGP MESSAGE-----"
-        const val SIGNATURE_EXPECTED_LENGTH = 926
-        const val SIGNATURE_ID = "**SIGNATURE**"
-        private const val SEPARATOR = ";"
+        internal const val START_EVENT = "**AUDIT LOGGING START**"
+        internal const val STOP_EVENT = "**AUDIT LOGGING STOP**"
+        internal const val SIGNATURE_START = "-----BEGIN PGP MESSAGE-----"
+        internal const val SIGNATURE_END = "-----END PGP MESSAGE-----"
+        internal const val SIGNATURE_EXPECTED_LENGTH = 926
+        internal const val SIGNATURE_ID = "**SIGNATURE**"
+        internal const val SEPARATOR = ";"
         internal const val HEADER =
             "TIMESTAMP${SEPARATOR}SENDER-ID${SEPARATOR}SECURITY-RATING"
         private const val CONSOLE_LOG_TAG = "AuditLogger"
