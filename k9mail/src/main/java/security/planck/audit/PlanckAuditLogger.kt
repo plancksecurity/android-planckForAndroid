@@ -58,34 +58,6 @@ class PlanckAuditLogger(
         }
     }
 
-    private data class MessageAuditLog(
-        val timeStamp: Long,
-        val senderId: String,
-        val securityRating: String = ""
-    ) {
-        fun toCsv(): String =
-            "$NEW_LINE${serialize()}"
-
-        fun isStopEvent(): Boolean = senderId == STOP_EVENT
-
-        fun serialize(): String = "$timeStamp$SEPARATOR$senderId$SEPARATOR$securityRating"
-
-        companion object {
-            /**
-             * Empty rating field is allowed as correct format.
-             */
-            fun deserialize(serialized: String): MessageAuditLog {
-                try {
-                    val parts = serialized.split(SEPARATOR)
-                    if (parts.size != 3) error("3 parts expected for log: $serialized")
-                    return MessageAuditLog(parts[0].toLong(), parts[1], parts[2])
-                } catch (e: Exception) {
-                    throw LogBadlyFormattedException(serialized, e)
-                }
-            }
-        }
-    }
-
     private fun MessageAuditLog.isOutdated(newTime: Long): Boolean =
         newTime - timeStamp > logAgeLimit
 
