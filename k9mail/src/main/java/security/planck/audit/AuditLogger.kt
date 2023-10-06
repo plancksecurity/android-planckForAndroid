@@ -248,7 +248,7 @@ class AuditLogger(
         var signature = "" // by default if signature is not found, it is empty
         var newAuditText = auditText
         if (signatureStartIndex >= 0
-            && signatureEndIndex >= signatureStartIndex + SIGNATURE_END.length
+            && signatureEndIndex - signatureStartIndex == SIGNATURE_EXPECTED_LENGTH
         ) {
             val beforeSignature = auditText.substring(0, signatureStartIndex)
             val afterSignature = auditText.substring(signatureEndIndex).removeSuffix(NEW_LINE)
@@ -313,6 +313,7 @@ class AuditLogger(
         const val STOP_EVENT = "**AUDIT LOGGING STOP**"
         const val SIGNATURE_START = "-----BEGIN PGP MESSAGE-----"
         const val SIGNATURE_END = "-----END PGP MESSAGE-----"
+        const val SIGNATURE_EXPECTED_LENGTH = 926
         const val SIGNATURE_ID = "**SIGNATURE**"
         private const val SEPARATOR = ";"
         internal const val HEADER =
