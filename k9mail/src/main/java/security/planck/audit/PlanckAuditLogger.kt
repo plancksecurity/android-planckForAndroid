@@ -43,7 +43,7 @@ class PlanckAuditLogger(
     )
 
     private val currentTimeInSeconds: Long
-        get() = clock.time/1000
+        get() = clock.time / 1000
 
     private val tamperAlertMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val tamperAlertFlow: StateFlow<Boolean> = tamperAlertMF.asStateFlow()
@@ -211,7 +211,14 @@ class PlanckAuditLogger(
                 missingDelimiterValue = "" // if no new line after last outdated log, even last log is outdated
             )
         } ?: textWithoutHeader
-        return if (reAddHeader) "$HEADER$NEW_LINE$onlyNewLogsAndGarbage" else onlyNewLogsAndGarbage
+
+        return when {
+            reAddHeader ->
+                if (onlyNewLogsAndGarbage.isBlank()) HEADER
+                else "$HEADER$NEW_LINE$onlyNewLogsAndGarbage"
+
+            else -> onlyNewLogsAndGarbage
+        }
     }
 
     private fun findLastOutdatedLog(textWithoutHeader: String, newTime: Long): String? {
