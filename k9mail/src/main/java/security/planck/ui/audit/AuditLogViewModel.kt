@@ -33,10 +33,11 @@ class AuditLogViewModel @Inject constructor(
         }
     }
 
-    fun auditTamperingCloseApp() {
+    fun auditTamperingCloseApp(closeApp: () -> Unit) {
         viewModelScope.launch {
             auditLogger.resetTamperAlert()
             auditLogger.enablePersistentWarningOnStartup()
+            closeApp()
         }
     }
 }
