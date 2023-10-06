@@ -8,6 +8,7 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
 import com.fsck.k9.planck.infrastructure.ResultCompat
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import com.fsck.k9.preferences.Storage
 import com.fsck.k9.preferences.StorageEditor
 import foundation.pEp.jniadapter.Rating
@@ -21,8 +22,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import security.planck.audit.PlanckAuditLogger.Companion.HEADER
 import security.planck.audit.PlanckAuditLogger.Companion.SEPARATOR
@@ -33,6 +36,8 @@ import java.io.File
 
 @ExperimentalCoroutinesApi
 class AuditLoggerTest {
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
     private val auditLoggerFile = File("messageAudit.csv")
     private val planckProvider: PlanckProvider = mockk()
     private val storageEditor: StorageEditor = mockk(relaxed = true)
@@ -71,7 +76,8 @@ class AuditLoggerTest {
             storage,
             k9,
             clock,
-            THIRTY_DAYS
+            THIRTY_DAYS,
+            coroutinesTestRule.testDispatcherProvider
         )
         observeAuditLogWarning()
     }
@@ -142,7 +148,7 @@ class AuditLoggerTest {
     }
 
     @Test
-    fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() {
+    fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() = runTest {
         initializeAuditLogger()
 
 
@@ -155,7 +161,7 @@ class AuditLoggerTest {
     }
 
     @Test
-    fun `enablePersistentWarningOnStartup() sets persistent warning on startup in Storage`() {
+    fun `enablePersistentWarningOnStartup() sets persistent warning on startup in Storage`() = runTest {
         initializeAuditLogger()
 
 
@@ -167,7 +173,7 @@ class AuditLoggerTest {
     }
 
     @Test
-    fun `disablePersistentWarningOnStartup() unsets persistent warning on startup in Storage`() {
+    fun `disablePersistentWarningOnStartup() unsets persistent warning on startup in Storage`() = runTest {
         initializeAuditLogger()
 
 
@@ -352,10 +358,10 @@ $EXPECTED_SIGNATURE_LINE
         auditLogger.addMessageAuditLog(mimeMessage, Rating.pEpRatingUnencrypted)
         auditLogger.addStopEventLog(WRITE_TIME)
 
-        assertAuditText(
+        assertAuditText( // last garbage line is kept, since it was after last old log.
             """
 $HEADER
-$GARBAGE_LINE // last garbage line is kept, since it was after last old log.
+$GARBAGE_LINE
 $EXPECTED_START_LINE
 $EXPECTED_LOG_LINE
 $EXPECTED_STOP_LINE
