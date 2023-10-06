@@ -43,7 +43,7 @@ class PlanckAuditLogger(
     )
 
     private val currentTimeInSeconds: Long
-        get() = clock.time
+        get() = clock.time/1000
 
     private val tamperAlertMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val tamperAlertFlow: StateFlow<Boolean> = tamperAlertMF.asStateFlow()
