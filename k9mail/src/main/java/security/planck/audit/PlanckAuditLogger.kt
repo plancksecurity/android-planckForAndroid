@@ -22,6 +22,20 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * PlanckAuditLogger implementation of the AuditLogger interface which allowed to handle majority of the audit log related operations
+ *
+ * Audit Logs ViewModel is responsible to create a LifeData for sharing the update events
+ * about tampering audit log with UI subscribers inherited K9Activity.
+ * @constructor Creates a single instance of the PlanckAuditLogger
+ * @property planckProvider [PlanckProvider] Current unix-time
+ * @property auditLoggerFile [File] Actual audit log file for storing events about the security-related actions
+ * @property storage [Storage] Database and other file related data storing operation class implementation
+ * @property k9 [K9] Instance of the application singleton class
+ * @property clock [Clock] RealClock implementation of the Clock interface for tests purposes
+ * @property logAgeLimit [Long] Duration until the log record become expired
+ * @property dispatcherProvider [DispatcherProvider] DefaultDispatcherProvider implementation of DispatcherProvider for handling events within the different Coroutines pools, etc.
+*/
 @Singleton
 class PlanckAuditLogger(
     private val planckProvider: PlanckProvider,
@@ -49,10 +63,24 @@ class PlanckAuditLogger(
         dispatcherProvider
     )
 
+    /**
+    * @property currentTimeInSeconds [Long] Current unix-time
+    */
     private val currentTimeInSeconds: Long
-        get() = clock.time / 1000
+        get() = clock.time / 1000L
 
+    /**
+     * @property tamperAlertMF
+     *
+     * MutableStateFlow with default log state of undetected tampering
+     */
     private val tamperAlertMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * @property tamperAlertFlow
+     *
+     * [StateFlow] responsible for handling different security states of the audit log.
+     */
     override val tamperAlertFlow: StateFlow<Boolean> = tamperAlertMF.asStateFlow()
 
     init {
