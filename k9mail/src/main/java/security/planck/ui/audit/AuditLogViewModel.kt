@@ -8,6 +8,7 @@ import com.fsck.k9.planck.infrastructure.livedata.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import security.planck.audit.AuditLogger
 import javax.inject.Inject
 
@@ -26,12 +27,16 @@ class AuditLogViewModel @Inject constructor(
     }
 
     fun auditTamperingAlertDismissed() {
-        auditLogger.resetTamperAlert()
-        auditLogger.disablePersistentWarningOnStartup()
+        viewModelScope.launch {
+            auditLogger.resetTamperAlert()
+            auditLogger.disablePersistentWarningOnStartup()
+        }
     }
 
     fun auditTamperingCloseApp() {
-        auditLogger.resetTamperAlert()
-        auditLogger.enablePersistentWarningOnStartup()
+        viewModelScope.launch {
+            auditLogger.resetTamperAlert()
+            auditLogger.enablePersistentWarningOnStartup()
+        }
     }
 }

@@ -10,8 +10,8 @@ interface AuditLogger {
     fun addStartEventLog()
     fun addStopEventLog(stopTime: Long)
     fun addMessageAuditLog(message: MimeMessage, rating: Rating)
-    fun resetTamperAlert()
-    fun enablePersistentWarningOnStartup()
-    fun disablePersistentWarningOnStartup()
+    suspend fun resetTamperAlert()
+    suspend fun enablePersistentWarningOnStartup()
+    suspend fun disablePersistentWarningOnStartup()
     fun checkPendingTamperingWarningFromBackground()
 }

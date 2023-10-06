@@ -5,14 +5,18 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.Clock
 import com.fsck.k9.K9
 import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.NEW_LINE
 import com.fsck.k9.preferences.Storage
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -26,6 +30,7 @@ class PlanckAuditLogger(
     private val k9: K9,
     private val clock: Clock,
     override var logAgeLimit: Long,
+    private val dispatcherProvider: DispatcherProvider,
 ) : AuditLogger {
     @Inject
     constructor(
@@ -33,13 +38,15 @@ class PlanckAuditLogger(
         storage: Storage,
         k9: K9,
         clock: Clock,
+        dispatcherProvider: DispatcherProvider,
     ) : this(
         planckProvider,
         File(k9.filesDir, AUDIT_LOGGER_ROUTE),
         storage,
         k9,
         clock,
-        k9.auditLogDataTimeRetentionValue
+        k9.auditLogDataTimeRetentionValue,
+        dispatcherProvider
     )
 
     private val currentTimeInSeconds: Long
@@ -283,22 +290,25 @@ class PlanckAuditLogger(
     }
 
 
-    override fun resetTamperAlert() {
+    override suspend fun resetTamperAlert() = withContext(dispatcherProvider.io()) {
         tamperAlertMF.value = false
         storage.edit().setLastTamperingDetectedTime(0L)
     }
 
-    override fun enablePersistentWarningOnStartup() {
+    override suspend fun enablePersistentWarningOnStartup() = withContext(dispatcherProvider.io()) {
         storage.edit().setPersistentAuditTamperWarningOnStartup(true)
     }
 
-    override fun disablePersistentWarningOnStartup() {
-        storage.edit().setPersistentAuditTamperWarningOnStartup(false)
-    }
+    override suspend fun disablePersistentWarningOnStartup() =
+        withContext(dispatcherProvider.io()) {
+            storage.edit().setPersistentAuditTamperWarningOnStartup(false)
+        }
 
     override fun checkPendingTamperingWarningFromBackground() {
-        if (storage.lastTamperingDetectedTime > 0) {
-            setTamperedAlert()
+        CoroutineScope(dispatcherProvider.io()).launch {
+            if (storage.lastTamperingDetectedTime > 0) {
+                setTamperedAlert()
+            }
         }
     }
 
