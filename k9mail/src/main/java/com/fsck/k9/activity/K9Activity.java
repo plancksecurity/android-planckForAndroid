@@ -309,6 +309,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 if (checkLogWarningRecords()) {
                     auditLogViewModel.triggerAlertAfterBackground();
+                    auditLogViewModel.resetTamperAlert();
                 }
             }, 1000L);
         }
