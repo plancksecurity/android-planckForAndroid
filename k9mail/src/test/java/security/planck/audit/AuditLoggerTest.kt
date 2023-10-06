@@ -129,6 +129,19 @@ class AuditLoggerTest {
     }
 
     @Test
+    fun `when adding a log, if file text was blank or the file did not exist, file existence is marked in Storage`() {
+        auditLoggerFile.delete()
+
+
+        initializeAuditLogger()
+        auditLogger.addStartEventLog()
+
+
+        verify { storage.edit() }
+        verify { storageEditor.setAuditLogFileExists(true) }
+    }
+
+    @Test
     fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() {
         initializeAuditLogger()
 
@@ -304,7 +317,6 @@ $EXPECTED_SIGNATURE_LINE
             repeat(10) {
                 sb.append("$NEW_LINE$OLD_WRITE_TIME;$FROM;$TELLTALE_RATING$it")
             }
-            //println(sb)
             auditLoggerFile.writeText(sb.toString())
         }
 
@@ -323,6 +335,208 @@ $EXPECTED_SIGNATURE_LINE
             """.trimIndent()
         )
     }
+
+    @Test
+    fun `addMessageAuditLog removes old garbage when it adds new content`() {
+        initializeAuditLogger()
+        StringBuilder(HEADER).also { sb ->
+            repeat(10) {
+                sb.append("$NEW_LINE$OLD_WRITE_TIME;$FROM;$TELLTALE_RATING$it")
+                sb.append("$NEW_LINE$GARBAGE_LINE")
+            }
+            auditLoggerFile.writeText(sb.toString())
+        }
+
+
+        auditLogger.addStartEventLog()
+        auditLogger.addMessageAuditLog(mimeMessage, Rating.pEpRatingUnencrypted)
+        auditLogger.addStopEventLog(WRITE_TIME)
+
+        assertAuditText(
+            """
+$HEADER
+$GARBAGE_LINE // last garbage line is kept, since it was after last old log.
+$EXPECTED_START_LINE
+$EXPECTED_LOG_LINE
+$EXPECTED_STOP_LINE
+$EXPECTED_SIGNATURE_LINE
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `AuditLogger uses PlanckProvider to verify file signature if a valid signature is found`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText(EXPECTED_SIGNATURE_LINE)
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify { planckProvider.verifySignature(any(), any()) }
+    }
+
+    @Test
+    fun `AuditLogger removes signature and calls PlanckProvider_verifySignature with rest of signature line`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText("${NEW_LINE}$EXPECTED_SIGNATURE_LINE")
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify {
+            planckProvider.verifySignature(
+                """
+$HEADER
+$LATE_WRITE_TIME;$FROM;someRating
+$WRITE_TIME$SEPARATOR$SIGNATURE_ID$SEPARATOR
+                """.trimIndent(),
+                VALID_SIGNATURE
+            )
+        }
+    }
+
+    @Test
+    fun `AuditLogger sets warning flow if signature check is successful but negative`() {
+        every { planckProvider.verifySignature(any(), any()) }.returns(ResultCompat.success(false))
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText(EXPECTED_SIGNATURE_LINE)
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify { planckProvider.verifySignature(any(), any()) }
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `AuditLogger sets warning flow if signature check fails`() {
+        every { planckProvider.verifySignature(any(), any()) }.returns(
+            ResultCompat.failure(
+                RuntimeException("test")
+            )
+        )
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText(EXPECTED_SIGNATURE_LINE)
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify { planckProvider.verifySignature(any(), any()) }
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `AuditLogger sets warning flow if getting new signature fails`() {
+        every { planckProvider.getSignatureForText(any()) }.returns(
+            ResultCompat.failure(
+                RuntimeException("test")
+            )
+        )
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText(EXPECTED_SIGNATURE_LINE)
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify { planckProvider.getSignatureForText(any()) }
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `when adding a log and file is blank, signature is not checked and warning flow is not set`() {
+        every { planckProvider.verifySignature(any(), any()) }.returns(ResultCompat.success(false))
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify(exactly = 0) { planckProvider.verifySignature(any(), any()) }
+        assertWarningStates(false)
+    }
+
+    @Test
+    fun `AuditLogger sets warning flow if no valid signature is found and no call to PlanckProvider is done to verify`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText("$NEW_LINE$INVALID_SIGNATURE")
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify(exactly = 0) { planckProvider.verifySignature(any(), any()) }
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `AuditLogger sets warning flow if no signature is found and no call to PlanckProvider is done to verify`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify(exactly = 0) { planckProvider.verifySignature(any(), any()) }
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `When a tampering event is detected with the app running in background, last event time is saved in Storage`() {
+        every { k9.isRunningInForeground }.returns(false)
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText("$NEW_LINE$INVALID_SIGNATURE")
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        verify { storage.edit() }
+        verify { storageEditor.setLastTamperingDetectedTime(clock.time / 1000) }
+    }
+
+    @Test
+    fun `AuditLogger leaves non-valid signature in place as garbage`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText("$NEW_LINE$INVALID_SIGNATURE")
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        assertAuditText(
+            """
+$HEADER
+$LATE_WRITE_TIME;$FROM;someRating
+$INVALID_SIGNATURE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+        """.trimIndent()
+        )
+    }
+
 
     private fun assertWarningStates(vararg states: Boolean) {
         assertEquals(states.toList(), collectedStates)
@@ -369,6 +583,9 @@ $EXPECTED_SIGNATURE_LINE
                 "i9GSyydSA0huD41JZwg=\n" +
                 "=gjCC\n" +
                 "-----END PGP MESSAGE-----"
+
+        private const val INVALID_SIGNATURE = "INVALID_SIGNATURE"
+        private const val GARBAGE_LINE = "SOME_GARBAGE"
 
         private const val EXPECTED_SIGNATURE_LINE =
             "$WRITE_TIME$SEPARATOR$SIGNATURE_ID$SEPARATOR$VALID_SIGNATURE"
