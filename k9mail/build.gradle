@@ -383,6 +383,9 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        testOptions {
+            unitTests.returnDefaultValues = true
+        }
     }
 
     buildFeatures {
