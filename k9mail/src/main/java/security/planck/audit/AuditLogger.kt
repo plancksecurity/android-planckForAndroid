@@ -242,16 +242,27 @@ class AuditLogger(
     }
 
     private fun verifyAndRemoveSignature(auditText: String): String {
-        val signatureIndex = auditText.indexOf(SIGNATURE_START)
-        val signature = if (signatureIndex < 0) "" else auditText.substring(signatureIndex)
-        val textToVerify = auditText.substringBefore(SIGNATURE_START)
-        verifyAuditText(textToVerify, signature)
-        val newAuditText = when {
-            textToVerify.substringAfterLast(NEW_LINE).isSignatureLog() ->
-                textToVerify.substringBeforeLast(NEW_LINE)
+        val signatureStartIndex = auditText.indexOf(SIGNATURE_START)
+        val signatureEndIndex = auditText.indexOf(SIGNATURE_END) + SIGNATURE_END.length
+        var textToVerify = auditText
+        var signature = "" // by default if signature is not found, it is empty
+        var newAuditText = auditText
+        if (signatureStartIndex >= 0
+            && signatureEndIndex >= signatureStartIndex + SIGNATURE_END.length
+        ) {
+            val beforeSignature = auditText.substring(0, signatureStartIndex)
+            val afterSignature = auditText.substring(signatureEndIndex).removeSuffix(NEW_LINE)
+            signature = auditText.substring(signatureStartIndex, signatureEndIndex)
+            textToVerify = beforeSignature + afterSignature
+            newAuditText = when {
+                beforeSignature.substringAfterLast(NEW_LINE).isSignatureLog() ->
+                    beforeSignature.substringBeforeLast(NEW_LINE) + afterSignature
 
-            else -> textToVerify
+                else -> textToVerify
+            }
         }
+
+        verifyAuditText(textToVerify, signature)
         auditLoggerFile.writeText(newAuditText)
         return newAuditText
     }
@@ -301,6 +312,7 @@ class AuditLogger(
         const val START_EVENT = "**AUDIT LOGGING START**"
         const val STOP_EVENT = "**AUDIT LOGGING STOP**"
         const val SIGNATURE_START = "-----BEGIN PGP MESSAGE-----"
+        const val SIGNATURE_END = "-----END PGP MESSAGE-----"
         const val SIGNATURE_ID = "**SIGNATURE**"
         private const val SEPARATOR = ";"
         internal const val HEADER =
