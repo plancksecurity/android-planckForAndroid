@@ -1953,6 +1953,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     @Override
     public void onStart(@NonNull LifecycleOwner owner) {
         runningInForeground = true;
+        auditLogger.get().checkPendingTamperingWarningFromBackground();
     }
 
     @Override

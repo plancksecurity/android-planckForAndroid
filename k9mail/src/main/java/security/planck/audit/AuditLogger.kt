@@ -13,4 +13,5 @@ interface AuditLogger {
     fun resetTamperAlert()
     fun enablePersistentWarningOnStartup()
     fun disablePersistentWarningOnStartup()
+    fun checkPendingTamperingWarningFromBackground()
 }

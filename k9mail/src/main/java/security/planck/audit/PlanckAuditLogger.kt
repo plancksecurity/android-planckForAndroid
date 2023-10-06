@@ -26,7 +26,7 @@ class PlanckAuditLogger(
     private val k9: K9,
     private val clock: Clock,
     override var logAgeLimit: Long,
-): AuditLogger {
+) : AuditLogger {
     @Inject
     constructor(
         planckProvider: PlanckProvider,
@@ -315,6 +315,12 @@ class PlanckAuditLogger(
 
     override fun disablePersistentWarningOnStartup() {
         storage.edit().setPersistentAuditTamperWarningOnStartup(false)
+    }
+
+    override fun checkPendingTamperingWarningFromBackground() {
+        if (storage.lastTamperingDetectedTime > 0) {
+            setTamperedAlert()
+        }
     }
 
     companion object {
