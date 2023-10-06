@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
  * Logs message encryption and decryption events to a text file and keeps the logs for [logAgeLimit].
  */
 interface AuditLogger {
+
     /**
-     * logAgeLimit
+     * @property logAgeLimit
      *
      * Maximum time for the logs to expire.
      * Expired logs are removed from the top of the file when adding new ones at the bottom.
@@ -19,7 +20,7 @@ interface AuditLogger {
     var logAgeLimit: Long
 
     /**
-     * tamperAlertFlow
+     * @property tamperAlertFlow
      *
      * [StateFlow] that can be collected to receive updates on audit log issues.
      */
