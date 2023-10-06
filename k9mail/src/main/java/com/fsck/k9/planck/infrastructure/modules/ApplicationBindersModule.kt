@@ -6,6 +6,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import security.planck.audit.AuditLogger
+import security.planck.audit.PlanckAuditLogger
 import security.planck.sync.PlanckSyncRepository
 import security.planck.sync.SyncRepository
 
@@ -17,4 +19,6 @@ interface ApplicationBindersModule {
     fun bindSyncRepository(repository: PlanckSyncRepository): SyncRepository
     @Binds
     fun bindClock(clock: RealClock): Clock
+    @Binds
+    fun bindAuditLogger(auditLogger: PlanckAuditLogger): AuditLogger
 }
