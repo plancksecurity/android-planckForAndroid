@@ -3,6 +3,8 @@ package com.fsck.k9.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +27,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
@@ -302,11 +305,23 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
         observeAuditLogViewModel();
 
+        if (checkLogWarningRecords()) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (checkLogWarningRecords()) {
+                    auditLogViewModel.triggerAlertAfterBackground();
+                }
+            }, 1000L);
+        }
+
         mBase.registerPassphraseReceiver();
         mBase.registerOAuthTokenRevokedReceiver();
         if (isShowingSearchView) {
             showSearchView();
         }
+    }
+
+    private static boolean checkLogWarningRecords() {
+        return Preferences.getPreferences(K9.app).getStorage().getLastTamperingDetectedTime() != 0;
     }
 
     private void observeAuditLogViewModel() {

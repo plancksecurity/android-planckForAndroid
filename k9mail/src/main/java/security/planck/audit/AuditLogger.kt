@@ -253,6 +253,10 @@ class AuditLogger(
                     .setLastTamperingDetectedTime(Calendar.getInstance().timeInMillis / 1000)
         }
 
+        increaseCounter()
+    }
+
+    fun increaseCounter() {
         tamperAlertMF.value = tamperAlertMF.value + 1
     }
 

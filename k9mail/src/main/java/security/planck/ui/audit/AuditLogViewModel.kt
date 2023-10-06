@@ -28,4 +28,8 @@ class AuditLogViewModel @Inject constructor(
     fun resetTamperAlert() {
         auditLogger.resetTamperAlert()
     }
+
+    fun triggerAlertAfterBackground() {
+        auditLogger.increaseCounter()
+    }
 }
