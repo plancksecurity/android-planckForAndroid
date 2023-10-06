@@ -198,8 +198,8 @@ class PlanckAuditLogger(
 
         return allLines.lastOrNull { // we assume logs are entered in time order in the file
             kotlin.runCatching {
-                MessageAuditLog.deserialize(it)
-            }.map { it.isOutdated(newTime) }.getOrDefault(false)
+                MessageAuditLog.deserialize(it).isOutdated(newTime)
+            }.getOrDefault(false)
         }
     }
 
