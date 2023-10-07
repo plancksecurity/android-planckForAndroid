@@ -23,18 +23,20 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * PlanckAuditLogger implementation of the AuditLogger interface which allowed to handle majority of the audit log related operations
+ * PlanckAuditLogger implementation of the AuditLogger interface which allowed to handle majority
+ * of the audit log related operations
  *
  * Audit Logs ViewModel is responsible to create a LifeData for sharing the update events
  * about tampering audit log with UI subscribers inherited K9Activity.
  * @constructor Creates a single instance of the PlanckAuditLogger
- * @property planckProvider [PlanckProvider] Current unix-time
+ * @property planckProvider [PlanckProvider] Implementation of the PlanckProvider interface
  * @property auditLoggerFile [File] Actual audit log file for storing events about the security-related actions
  * @property storage [Storage] Database and other file related data storing operation class implementation
  * @property k9 [K9] Instance of the application singleton class
  * @property clock [Clock] RealClock implementation of the Clock interface for tests purposes
  * @property logAgeLimit [Long] Duration until the log record become expired
- * @property dispatcherProvider [DispatcherProvider] DefaultDispatcherProvider implementation of DispatcherProvider for handling events within the different Coroutines pools, etc.
+ * @property dispatcherProvider [DispatcherProvider] DefaultDispatcherProvider implementation of the
+ * DispatcherProvider for handling events within the different Coroutines pools, etc.
 */
 @Singleton
 class PlanckAuditLogger(

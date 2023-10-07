@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -16,7 +15,7 @@ import javax.inject.Inject
 /**
 * AuditLogViewModel
 *
-* Audit Logs ViewModel is responsible to create a LifeData for sharing the update events
+* Audit Logs ViewModel is responsible to create a LiveData for sharing the update events
 * about tampering audit log with UI subscribers inherited K9Activity.
 *
 * @property auditLogger [AuditLogger] PlanckAuditLogger implementation for AuditLogger interface
@@ -52,7 +51,8 @@ class AuditLogViewModel @Inject constructor(
     /**
      * auditTamperingAlertDismissed
      *
-     * that can be collected to receive updates on audit log issues.
+     * processing the end user choice to keep working with the application
+     * after audit log tampering was detected.
      */
     fun auditTamperingAlertDismissed() {
         viewModelScope.launch {
@@ -63,6 +63,9 @@ class AuditLogViewModel @Inject constructor(
 
     /**
      * auditTamperingCloseApp
+     *
+     * processing the end user choice to terminate the application
+     * after audit log tampering was detected.
      *
      * @param lambda function as a parameter available for outside implementations execution
      * [closeApp] right after the main processing finished
