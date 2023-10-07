@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
  * AuditLogger
  *
  * Logs message encryption and decryption events to a text file and keeps the logs for [logAgeLimit].
+ * A tampering detection can be implemented, in such case tamper alerts are to be delivered via [tamperAlertFlow].
  */
 interface AuditLogger {
 
@@ -78,7 +79,7 @@ interface AuditLogger {
      *
      * Checks for pending tamper alert saved in disk application storage.
      */
-    fun checkPendingTamperingWarningFromBackground() : Boolean
+    fun checkPendingTamperingWarningFromBackground(): Boolean
 
     /**
      * processPendingTamperingWarningFromBackground

@@ -13,14 +13,14 @@ import security.planck.audit.AuditLogger
 import javax.inject.Inject
 
 /**
-* AuditLogViewModel
-*
-* Audit Logs ViewModel is responsible to create a LiveData for sharing the update events
-* about tampering audit log with UI subscribers inherited K9Activity.
-*
-* @property auditLogger [AuditLogger] PlanckAuditLogger implementation for AuditLogger interface
-* @constructor Creates an AuditLogViewModel
-*/
+ * AuditLogViewModel
+ *
+ * [AuditLogViewModel] is responsible to expose a [LiveData] for sharing updates on issues
+ * concerning audit log.
+ *
+ * @property auditLogger [AuditLogger] source of the audit-log-related alerts.
+ * @constructor Creates an [AuditLogViewModel]
+ */
 @HiltViewModel
 class AuditLogViewModel @Inject constructor(
     private val auditLogger: AuditLogger,
@@ -67,8 +67,7 @@ class AuditLogViewModel @Inject constructor(
      * processing the end user choice to terminate the application
      * after audit log tampering was detected.
      *
-     * @param lambda function as a parameter available for outside implementations execution
-     * [closeApp] right after the main processing finished
+     * @param closeApp lambda passed to perform any remaining tasks after disk operations.
      */
     fun auditTamperingCloseApp(closeApp: () -> Unit) {
         viewModelScope.launch {

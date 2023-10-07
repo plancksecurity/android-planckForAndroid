@@ -23,21 +23,28 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * PlanckAuditLogger implementation of the AuditLogger interface which allowed to handle majority
- * of the audit log related operations
+ * PlanckAuditLogger
  *
- * Audit Logs ViewModel is responsible to create a LifeData for sharing the update events
- * about tampering audit log with UI subscribers inherited K9Activity.
- * @constructor Creates a single instance of the PlanckAuditLogger
- * @property planckProvider [PlanckProvider] Implementation of the PlanckProvider interface
- * @property auditLoggerFile [File] Actual audit log file for storing events about the security-related actions
- * @property storage [Storage] Database and other file related data storing operation class implementation
- * @property k9 [K9] Instance of the application singleton class
- * @property clock [Clock] RealClock implementation of the Clock interface for tests purposes
- * @property logAgeLimit [Long] Duration until the log record become expired
- * @property dispatcherProvider [DispatcherProvider] DefaultDispatcherProvider implementation of the
- * DispatcherProvider for handling events within the different Coroutines pools, etc.
-*/
+ * Implementation of the AuditLogger interface with tamper detection via planck signatures.
+ *
+ * New logs are appended at the end of the file while logs older than [logAgeLimit] are removed from the top.
+ *
+ * Every time an audit log is appended (via [addStartEventLog], [addStopEventLog] or [addMessageAuditLog],
+ * a signature is appended at the end of the file with the timestamp of signing.
+ * And before the log is appended previous signature is also verified.
+ * Any garbage or malformed text found in the file is kept in the file until the logs above it are removed,
+ * then that garbage is removed together with them.
+ * More details about the format of the file can be found in AuditLoggerTest.
+ *
+ * @constructor Creates a single instance of the [PlanckAuditLogger].
+ * @property planckProvider [PlanckProvider] used to sign and verify signatures.
+ * @property auditLoggerFile [File] Actual audit log file for storing events about the security-related actions.
+ * @property storage [Storage] Database and other file related data storing operation class implementation.
+ * @property k9 [K9] Instance of the application class.
+ * @property clock [Clock] that provides the system time.
+ * @property logAgeLimit [Long] Duration until an appended log record becomes expired.
+ * @property dispatcherProvider [DispatcherProvider] that provides dispatchers for Coroutine calls.
+ */
 @Singleton
 class PlanckAuditLogger(
     private val planckProvider: PlanckProvider,
@@ -66,8 +73,8 @@ class PlanckAuditLogger(
     )
 
     /**
-    * @property currentTimeInSeconds [Long] Current unix-time
-    */
+     * @property currentTimeInSeconds [Long] Current unix-time
+     */
     private val currentTimeInSeconds: Long
         get() = clock.time / 1000L
 
