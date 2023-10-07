@@ -76,7 +76,14 @@ interface AuditLogger {
     /**
      * checkPendingTamperingWarningFromBackground
      *
+     * Checks for pending tamper alert saved in disk application storage.
+     */
+    fun checkPendingTamperingWarningFromBackground() : Boolean
+
+    /**
+     * processPendingTamperingWarningFromBackground
+     *
      * Checks for pending tamper alert saved in disk and triggers [tamperAlertFlow] if there was any.
      */
-    fun checkPendingTamperingWarningFromBackground()
+    fun processPendingTamperingWarningFromBackground()
 }

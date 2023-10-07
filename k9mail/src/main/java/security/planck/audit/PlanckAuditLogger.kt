@@ -332,7 +332,9 @@ class PlanckAuditLogger(
             storage.edit().setPersistentAuditTamperWarningOnStartup(false)
         }
 
-    override fun checkPendingTamperingWarningFromBackground() {
+    override fun checkPendingTamperingWarningFromBackground() = storage.persistentWarningOnStartup()
+
+    override fun processPendingTamperingWarningFromBackground() {
         CoroutineScope(dispatcherProvider.io()).launch {
             if (storage.lastTamperingDetectedTime > 0) {
                 setTamperedAlert()
