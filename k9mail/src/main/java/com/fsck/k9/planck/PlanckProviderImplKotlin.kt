@@ -1258,6 +1258,21 @@ class PlanckProviderImplKotlin(
             .onFailure { Timber.e(it) }.getOrDefault(false)
     }
 
+    @WorkerThread
+    override fun getSignatureForText(text: String): ResultCompat<String> =
+        ResultCompat.of { engine.get().signature_for_text(text) }
+
+    @WorkerThread
+    override fun verifySignature(textToVerify: String, signature: String): ResultCompat<Boolean> =
+        ResultCompat.of {
+            try {
+                engine.get().verify_signature(textToVerify, signature)
+                true
+            } catch (ex: pEpDecryptSignatureDoesNotMatch) {
+                false
+            }
+        }
+
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"

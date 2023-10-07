@@ -20,6 +20,9 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.multidex.MultiDexApplication;
 import androidx.work.WorkManager;
 
@@ -93,7 +96,7 @@ import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
 @HiltAndroidApp
-public class K9 extends MultiDexApplication {
+public class K9 extends MultiDexApplication implements DefaultLifecycleObserver {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
     private Account currentAccount;
@@ -104,7 +107,6 @@ public class K9 extends MultiDexApplication {
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static ManageableSetting<Long> auditLogDataTimeRetention =
             new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
-    private AuditLogger auditLogger;
 
     @Inject
     Preferences preferences;
@@ -116,6 +118,8 @@ public class K9 extends MultiDexApplication {
     AppAliveMonitor appAliveMonitor;
     @Inject
     Provider<RestrictionsReceiver> restrictionsReceiver;
+    @Inject
+    Provider<AuditLogger> auditLogger;
 
     @Inject
     Provider<SyncRepository> syncDelegate;
@@ -136,6 +140,12 @@ public class K9 extends MultiDexApplication {
             runningOnWorkProfile = new UserProfile().isRunningOnWorkProfile(this);
         }
         return runningOnWorkProfile;
+    }
+
+    private boolean runningInForeground;
+
+    public boolean isRunningInForeground() {
+        return runningInForeground;
     }
 
     public boolean isBatteryOptimizationAsked() {
@@ -677,18 +687,12 @@ public class K9 extends MultiDexApplication {
         app = this;
         Globals.setContext(this);
 
-        initializeAuditLog();
-
         provisioningManager.startProvisioning();
     }
 
     private void initializeAuditLog() {
-        auditLogger = new AuditLogger(
-                new File(getFilesDir(), AuditLogger.auditLoggerFileRoute),
-                auditLogDataTimeRetention.getValue()
-        );
-        auditLogger.addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
-        auditLogger.addStartEventLog();
+        auditLogger.get().addStopEventLog(appAliveMonitor.getLastAppAliveMonitoredTime());
+        auditLogger.get().addStartEventLog();
         appAliveMonitor.startAppAliveMonitor();
     }
 
@@ -725,6 +729,7 @@ public class K9 extends MultiDexApplication {
         // Perform engine provisioning just after its initialization in MessagingController
         planckProvider = messagingController.getPlanckProvider();
         provisioningManager.performInitializedEngineProvisioning();
+        initializeAuditLog();
 
         initJobManager(preferences, messagingController);
 
@@ -1573,7 +1578,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public void setAuditLogDataTimeRetention(Long auditLogDataTimeRetention) {
-        auditLogger.setLogAgeLimit(auditLogDataTimeRetention);
+        auditLogger.get().setLogAgeLimit(auditLogDataTimeRetention);
         K9.auditLogDataTimeRetention.setValue(auditLogDataTimeRetention);
     }
 
@@ -1582,7 +1587,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public void setAuditLogDataTimeRetention(ManageableSetting<Long> auditLogDataTimeRetention) {
-        auditLogger.setLogAgeLimit(auditLogDataTimeRetention.getValue());
+        auditLogger.get().setLogAgeLimit(auditLogDataTimeRetention.getValue());
         K9.auditLogDataTimeRetention = auditLogDataTimeRetention;
     }
 
@@ -1591,7 +1596,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public AuditLogger getAuditLogger() {
-        return auditLogger;
+        return auditLogger.get();
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {
@@ -1943,6 +1948,17 @@ public class K9 extends MultiDexApplication {
 
     private void startConnectivityMonitor() {
         connectivityMonitor.register(this);
+    }
+
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {
+        runningInForeground = true;
+        auditLogger.get().checkPendingTamperingWarningFromBackground();
+    }
+
+    @Override
+    public void onStop(@NonNull LifecycleOwner owner) {
+        runningInForeground = false;
     }
 
 }

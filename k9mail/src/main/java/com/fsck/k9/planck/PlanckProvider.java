@@ -297,6 +297,24 @@ public interface PlanckProvider {
      */
     boolean isDeviceGrouped();
 
+    /**
+     * getSignatureForText
+     * Get signature String for a given input String
+     * @param text String of which we want to get the signature.
+     * @return [ResultCompat] Success(String result) on success, Failure on error.
+     */
+    ResultCompat<String> getSignatureForText(String text);
+
+    /**
+     * verifySignature
+     * Verify a string with a signature to see if current string is equal to the one the signature was created from.
+     *
+     * @param textToVerify String to verify
+     * @param signature Signature string
+     * @return [ResultCompat] Success(true) if match, Success(false) if no match, Failure on error.
+     */
+    ResultCompat<Boolean> verifySignature(String textToVerify, String signature);
+
     class KeyDetail {
         private final Address address;
         private final String fpr;

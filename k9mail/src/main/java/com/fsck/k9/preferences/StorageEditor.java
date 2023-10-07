@@ -16,8 +16,9 @@ import timber.log.Timber;
 public class StorageEditor {
     private Storage storage;
     private PassphraseStorage passphraseStorage;
-    private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
+    private final OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
     private final AppAliveMonitorStorage appAliveMonitorStorage;
+    private final AuditLogStorage auditLogStorage;
 
     private Map<String, String> changes = new HashMap<>();
     private List<String> removals = new ArrayList<>();
@@ -28,11 +29,13 @@ public class StorageEditor {
     StorageEditor(Storage storage,
                   PassphraseStorage passphraseStorage,
                   OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage,
-                  AppAliveMonitorStorage appAliveMonitorStorage) {
+                  AppAliveMonitorStorage appAliveMonitorStorage,
+                  AuditLogStorage auditLogStorage) {
         this.storage = storage;
         this.passphraseStorage = passphraseStorage;
         this.ongoingDecryptMessagesStorage = ongoingDecryptMessagesStorage;
         this.appAliveMonitorStorage = appAliveMonitorStorage;
+        this.auditLogStorage = auditLogStorage;
 
         snapshot.putAll(storage.getAll());
     }
@@ -137,5 +140,17 @@ public class StorageEditor {
 
     public void setLastAppAliveMonitoredTime(long lastTime) {
         appAliveMonitorStorage.setLastAppAliveMonitoredTime(lastTime);
+    }
+
+    public void setLastTamperingDetectedTime(long lastTime) {
+        auditLogStorage.setLastTamperingDetectedTime(lastTime);
+    }
+
+    public void setAuditLogFileExists(boolean exists) {
+        auditLogStorage.setAuditLogFileExists(exists);
+    }
+
+    public void setPersistentAuditTamperWarningOnStartup(boolean warning) {
+        auditLogStorage.setPersistentWarningOnStartup(warning);
     }
 }
