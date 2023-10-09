@@ -135,6 +135,30 @@ class AuditLoggerTest {
     }
 
     @Test
+    fun `when adding a log, if the log file was blank the warning flow is set`() {
+        auditLoggerFile.writeText("")
+
+
+        initializeAuditLogger()
+        auditLogger.addStartEventLog()
+
+
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `when adding a log, if the log file had only header the warning flow is set`() {
+        auditLoggerFile.writeText(HEADER)
+
+
+        initializeAuditLogger()
+        auditLogger.addStartEventLog()
+
+
+        assertWarningStates(false, true)
+    }
+
+    @Test
     fun `when adding a log, if file text was blank or the file did not exist, file existence is marked in Storage`() {
         auditLoggerFile.delete()
 
@@ -148,41 +172,44 @@ class AuditLoggerTest {
     }
 
     @Test
-    fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() = runTest {
-        initializeAuditLogger()
+    fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() =
+        runTest {
+            initializeAuditLogger()
 
 
-        auditLogger.resetTamperAlert()
+            auditLogger.resetTamperAlert()
 
 
-        verify { storage.edit() }
-        verify { storageEditor.setLastTamperingDetectedTime(0) }
-        assertWarningStates(false)
-    }
-
-    @Test
-    fun `enablePersistentWarningOnStartup() sets persistent warning on startup in Storage`() = runTest {
-        initializeAuditLogger()
-
-
-        auditLogger.enablePersistentWarningOnStartup()
-
-
-        verify { storage.edit() }
-        verify { storageEditor.setPersistentAuditTamperWarningOnStartup(true) }
-    }
+            verify { storage.edit() }
+            verify { storageEditor.setLastTamperingDetectedTime(0) }
+            assertWarningStates(false)
+        }
 
     @Test
-    fun `disablePersistentWarningOnStartup() unsets persistent warning on startup in Storage`() = runTest {
-        initializeAuditLogger()
+    fun `enablePersistentWarningOnStartup() sets persistent warning on startup in Storage`() =
+        runTest {
+            initializeAuditLogger()
 
 
-        auditLogger.disablePersistentWarningOnStartup()
+            auditLogger.enablePersistentWarningOnStartup()
 
 
-        verify { storage.edit() }
-        verify { storageEditor.setPersistentAuditTamperWarningOnStartup(false) }
-    }
+            verify { storage.edit() }
+            verify { storageEditor.setPersistentAuditTamperWarningOnStartup(true) }
+        }
+
+    @Test
+    fun `disablePersistentWarningOnStartup() unsets persistent warning on startup in Storage`() =
+        runTest {
+            initializeAuditLogger()
+
+
+            auditLogger.disablePersistentWarningOnStartup()
+
+
+            verify { storage.edit() }
+            verify { storageEditor.setPersistentAuditTamperWarningOnStartup(false) }
+        }
 
     @Test
     fun `checkPendingTamperingWarningFromBackground() sets the warning flow if there is a pending warning from background`() {
