@@ -621,6 +621,37 @@ $EXPECTED_SIGNATURE_LINE
         )
     }
 
+    @Test
+    fun `AuditLogger finds the last rigthly-formatted signature and skips trailing garbage signatures`() {
+        auditLoggerFile.writeText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+$TOO_LONG_SIGNATURE_LINE
+        """.trimIndent()
+        )
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        assertAuditText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+        """.trimIndent()
+        )
+    }
+
 
     private fun assertWarningStates(vararg states: Boolean) {
         assertEquals(states.toList(), collectedStates)
