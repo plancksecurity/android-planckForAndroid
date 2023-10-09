@@ -146,10 +146,6 @@ class PlanckAuditLogger(
                     appendLog(messageAuditLog)
                 }
 
-                allFileText == HEADER -> {
-                    appendLog(messageAuditLog)
-                }
-
                 else -> {
                     writeLogRemovingOldLogs(allFileText, messageAuditLog)
                 }
@@ -234,7 +230,7 @@ class PlanckAuditLogger(
 
         return when {
             reAddHeader ->
-                if (onlyNewLogsAndGarbage.isBlank()) HEADER
+                if (onlyNewLogsAndGarbage.isBlank()) HEADER // Case of file had only header or all logs were old and were removed
                 else "$HEADER$NEW_LINE$onlyNewLogsAndGarbage"
 
             else -> onlyNewLogsAndGarbage
