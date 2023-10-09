@@ -146,10 +146,6 @@ class PlanckAuditLogger(
                     appendLog(messageAuditLog)
                 }
 
-                allFileText == HEADER -> {
-                    appendLog(messageAuditLog)
-                }
-
                 else -> {
                     writeLogRemovingOldLogs(allFileText, messageAuditLog)
                 }
@@ -172,7 +168,11 @@ class PlanckAuditLogger(
     }
 
     private fun getAllFileText() = if (auditLoggerFile.exists()) {
-        auditLoggerFile.readText()
+        auditLoggerFile.readText().also {
+            if (it.isBlank()) { // there should never be a blank audit file! File is created when first log is added.
+                setTamperedAlertAndSaveTime()
+            }
+        }
     } else {
         checkPreviousFileExistenceOnNonExistentFile()
         ""
@@ -230,7 +230,7 @@ class PlanckAuditLogger(
 
         return when {
             reAddHeader ->
-                if (onlyNewLogsAndGarbage.isBlank()) HEADER
+                if (onlyNewLogsAndGarbage.isBlank()) HEADER // Case of file had only header or all logs were old and were removed
                 else "$HEADER$NEW_LINE$onlyNewLogsAndGarbage"
 
             else -> onlyNewLogsAndGarbage
@@ -265,8 +265,8 @@ class PlanckAuditLogger(
     }
 
     private fun verifyAndRemoveSignature(auditText: String): String {
-        val signatureStartIndex = auditText.indexOf(SIGNATURE_START)
-        val signatureEndIndex = auditText.indexOf(SIGNATURE_END) + SIGNATURE_END.length
+        val (signatureStartIndex, signatureEndIndex) =
+            findLastRightFormattedSignatureBounds(auditText)
         var textToVerify = auditText
         var signature = "" // by default if signature is not found, it is empty
         var newAuditText = auditText
@@ -284,6 +284,27 @@ class PlanckAuditLogger(
         auditLoggerFile.writeText(newAuditText)
         return newAuditText
     }
+
+    private fun findLastRightFormattedSignatureBounds(auditText: String): Pair<Int, Int> {
+        // Try to skip any fake signatures at the end of the file
+        var textLeftToSearch = auditText
+        var signatureBounds = findLastSignatureBounds(textLeftToSearch)
+        while (
+            signatureBounds.first >= 0
+            && signatureBounds.second >= SIGNATURE_END.length // if there is not even an apparent signature contained in remaining text, just give up
+            && signatureBounds.second - signatureBounds.first != SIGNATURE_EXPECTED_LENGTH
+        ) {
+            textLeftToSearch = auditText.substring(0, signatureBounds.first)
+            signatureBounds = findLastSignatureBounds(textLeftToSearch)
+        }
+        return signatureBounds
+    }
+
+    private fun findLastSignatureBounds(textToSearch: String): Pair<Int, Int> =
+        Pair(
+            textToSearch.lastIndexOf(SIGNATURE_START),
+            textToSearch.lastIndexOf(SIGNATURE_END) + SIGNATURE_END.length
+        )
 
     private fun signatureHasRightFormat(signatureStartIndex: Int, signatureEndIndex: Int) =
         signatureStartIndex >= 0

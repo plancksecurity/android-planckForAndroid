@@ -135,6 +135,30 @@ class AuditLoggerTest {
     }
 
     @Test
+    fun `when adding a log, if the log file was blank the warning flow is set`() {
+        auditLoggerFile.writeText("")
+
+
+        initializeAuditLogger()
+        auditLogger.addStartEventLog()
+
+
+        assertWarningStates(false, true)
+    }
+
+    @Test
+    fun `when adding a log, if the log file had only header the warning flow is set`() {
+        auditLoggerFile.writeText(HEADER)
+
+
+        initializeAuditLogger()
+        auditLogger.addStartEventLog()
+
+
+        assertWarningStates(false, true)
+    }
+
+    @Test
     fun `when adding a log, if file text was blank or the file did not exist, file existence is marked in Storage`() {
         auditLoggerFile.delete()
 
@@ -148,41 +172,44 @@ class AuditLoggerTest {
     }
 
     @Test
-    fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() = runTest {
-        initializeAuditLogger()
+    fun `resetTamperAlert() unsets warning flow and resets last tampered time in Storage`() =
+        runTest {
+            initializeAuditLogger()
 
 
-        auditLogger.resetTamperAlert()
+            auditLogger.resetTamperAlert()
 
 
-        verify { storage.edit() }
-        verify { storageEditor.setLastTamperingDetectedTime(0) }
-        assertWarningStates(false)
-    }
-
-    @Test
-    fun `enablePersistentWarningOnStartup() sets persistent warning on startup in Storage`() = runTest {
-        initializeAuditLogger()
-
-
-        auditLogger.enablePersistentWarningOnStartup()
-
-
-        verify { storage.edit() }
-        verify { storageEditor.setPersistentAuditTamperWarningOnStartup(true) }
-    }
+            verify { storage.edit() }
+            verify { storageEditor.setLastTamperingDetectedTime(0) }
+            assertWarningStates(false)
+        }
 
     @Test
-    fun `disablePersistentWarningOnStartup() unsets persistent warning on startup in Storage`() = runTest {
-        initializeAuditLogger()
+    fun `enablePersistentWarningOnStartup() sets persistent warning on startup in Storage`() =
+        runTest {
+            initializeAuditLogger()
 
 
-        auditLogger.disablePersistentWarningOnStartup()
+            auditLogger.enablePersistentWarningOnStartup()
 
 
-        verify { storage.edit() }
-        verify { storageEditor.setPersistentAuditTamperWarningOnStartup(false) }
-    }
+            verify { storage.edit() }
+            verify { storageEditor.setPersistentAuditTamperWarningOnStartup(true) }
+        }
+
+    @Test
+    fun `disablePersistentWarningOnStartup() unsets persistent warning on startup in Storage`() =
+        runTest {
+            initializeAuditLogger()
+
+
+            auditLogger.disablePersistentWarningOnStartup()
+
+
+            verify { storage.edit() }
+            verify { storageEditor.setPersistentAuditTamperWarningOnStartup(false) }
+        }
 
     @Test
     fun `checkPendingTamperingWarningFromBackground() sets the warning flow if there is a pending warning from background`() {
@@ -524,7 +551,7 @@ $WRITE_TIME$SEPARATOR$SIGNATURE_ID$SEPARATOR
     @Test
     fun `AuditLogger leaves non-valid signature in place as garbage`() {
         auditLoggerFile.writeText(HEADER)
-        auditLoggerFile.appendText("$NEW_LINE$LATE_WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText("$NEW_LINE$WRITE_TIME;$FROM;someRating")
         auditLoggerFile.appendText("$NEW_LINE$INVALID_SIGNATURE")
         initializeAuditLogger()
 
@@ -535,8 +562,90 @@ $WRITE_TIME$SEPARATOR$SIGNATURE_ID$SEPARATOR
         assertAuditText(
             """
 $HEADER
-$LATE_WRITE_TIME;$FROM;someRating
+$WRITE_TIME;$FROM;someRating
 $INVALID_SIGNATURE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `AuditLogger leaves a signature with wrong length in place as garbage`() {
+        auditLoggerFile.writeText(HEADER)
+        auditLoggerFile.appendText("$NEW_LINE$WRITE_TIME;$FROM;someRating")
+        auditLoggerFile.appendText("$NEW_LINE$TOO_LONG_SIGNATURE_LINE")
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        assertAuditText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `AuditLogger tells apart the right signature line from the ones kept as garbage`() {
+        auditLoggerFile.writeText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+        """.trimIndent()
+        )
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        assertAuditText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `AuditLogger finds the last rigthly-formatted signature and skips trailing garbage signatures`() {
+        auditLoggerFile.writeText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$EXPECTED_SIGNATURE_LINE
+$TOO_LONG_SIGNATURE_LINE
+        """.trimIndent()
+        )
+        initializeAuditLogger()
+
+
+        auditLogger.addStartEventLog()
+
+
+        assertAuditText(
+            """
+$HEADER
+$WRITE_TIME;$FROM;someRating
+$TOO_LONG_SIGNATURE_LINE
+$EXPECTED_START_LINE
+$TOO_LONG_SIGNATURE_LINE
 $EXPECTED_START_LINE
 $EXPECTED_SIGNATURE_LINE
         """.trimIndent()
@@ -595,5 +704,7 @@ $EXPECTED_SIGNATURE_LINE
 
         private const val EXPECTED_SIGNATURE_LINE =
             "$WRITE_TIME$SEPARATOR$SIGNATURE_ID$SEPARATOR$VALID_SIGNATURE"
+        private val TOO_LONG_SIGNATURE_LINE =
+            EXPECTED_SIGNATURE_LINE.replace("i9GSyydSA0huD41JZwg=", "i9GSyydSA0huD41JZwgX=")
     }
 }
