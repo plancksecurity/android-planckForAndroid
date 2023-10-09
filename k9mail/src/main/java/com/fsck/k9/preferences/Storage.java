@@ -38,9 +38,10 @@ public class Storage {
 
 
     private Context context = null;
-    private PassphraseStorage passphraseStorage;
-    private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
+    private final PassphraseStorage passphraseStorage;
+    private final OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
     private final AppAliveMonitorStorage appAliveMonitorStorage;
+    private final AuditLogStorage auditLogStorage;
 
     private SQLiteDatabase openDB() {
         SQLiteDatabase mDb = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
@@ -192,6 +193,7 @@ public class Storage {
         passphraseStorage = new PassphraseStorage(context);
         ongoingDecryptMessagesStorage = new OngoingDecryptMessagesStorage(context);
         appAliveMonitorStorage = new AppAliveMonitorStorage(context);
+        auditLogStorage = new AuditLogStorage(context);
         loadValues();
     }
 
@@ -273,7 +275,8 @@ public class Storage {
                 this,
                 passphraseStorage,
                 ongoingDecryptMessagesStorage,
-                appAliveMonitorStorage
+                appAliveMonitorStorage,
+                auditLogStorage
         );
     }
 
@@ -373,5 +376,17 @@ public class Storage {
 
     public long getLastAppAliveMonitoredTime() {
         return appAliveMonitorStorage.getLastAppAliveMonitoredTime();
+    }
+
+    public long getLastTamperingDetectedTime() {
+        return auditLogStorage.getLastTamperingDetectedTime();
+    }
+
+    public boolean auditLogFileExists() {
+        return auditLogStorage.getAuditLogFileExists();
+    }
+
+    public boolean persistentWarningOnStartup() {
+        return auditLogStorage.getPersistentWarningOnStartup();
     }
 }

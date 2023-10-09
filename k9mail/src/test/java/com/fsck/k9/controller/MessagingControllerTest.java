@@ -76,8 +76,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import security.planck.audit.AuditLogger;
-
 
 @SuppressWarnings("unchecked")
 public class MessagingControllerTest extends RobolectricTest {
@@ -148,8 +146,6 @@ public class MessagingControllerTest extends RobolectricTest {
     private Storage storage;
     @Mock
     private StorageEditor storageEditor;
-    @Mock
-    private AuditLogger auditLogger;
 
     private volatile boolean hasFetchedMessage = false;
 
@@ -160,7 +156,7 @@ public class MessagingControllerTest extends RobolectricTest {
         appContext = ApplicationProvider.getApplicationContext();
         stubPreferences();
 
-        controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider, auditLogger);
+        controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider);
 
         configureAccount();
         configureLocalStore();

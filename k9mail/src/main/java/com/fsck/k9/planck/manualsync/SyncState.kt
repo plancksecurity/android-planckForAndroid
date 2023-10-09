@@ -1,12 +1,18 @@
 package com.fsck.k9.planck.manualsync
 
+import foundation.pEp.jniadapter.Identity
+
 object SyncState {
     // common states
     object Idle : SyncScreenState, SyncAppState
 
     object AwaitingOtherDevice : SyncScreenState, SyncAppState
 
-    object HandshakeReadyAwaitingUser : SyncScreenState, SyncAppState
+    data class HandshakeReadyAwaitingUser(
+        val myself: Identity,
+        val partner: Identity,
+        val formingGroup: Boolean,
+    ) : SyncScreenState, SyncAppState
 
     object Done : SyncScreenState, SyncAppState
 
@@ -42,6 +48,8 @@ sealed interface SyncAppState {
         get() = this == SyncState.AwaitingOtherDevice || this is SyncState.PerformingHandshake
     val allowSyncNewDevices: Boolean
         get() = this == SyncState.AwaitingOtherDevice
+    val allowToStartHandshake: Boolean
+        get() = this == SyncState.Idle || this == SyncState.AwaitingOtherDevice
 
     fun finish() = SyncState.Idle
 }

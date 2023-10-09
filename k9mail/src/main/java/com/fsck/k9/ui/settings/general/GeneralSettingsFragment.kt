@@ -5,6 +5,9 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -32,6 +35,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
+import security.planck.sync.SyncRepository
+import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
+import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
@@ -47,9 +53,17 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     lateinit var preferences: Preferences
     @Inject
     lateinit var k9: K9
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
+
+    private val startForResult = (this as Fragment).registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        updateLeaveDeviceGroupPreferenceVisibility()
+    }
 
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
@@ -59,6 +73,18 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
         initializePreferences()
+        initializeFragmentResultListener()
+    }
+
+    private fun initializeFragmentResultListener() {
+        setFragmentResultListener(
+            LeaveDeviceGroupDialog.DIALOG_TAG
+        ) { _, bundle ->
+            val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
+            if (result == LeaveDeviceGroupDialog.EXECUTED) {
+                updateLeaveDeviceGroupPreferenceVisibility()
+            }
+        }
     }
 
     fun refreshPreferences() {
@@ -77,6 +103,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeUnsecureDeliveryWarning()
         initializeDebugLogging()
         initializeAuditLogDataTimeRetention()
+        initializeLeaveDeviceGroup()
+    }
+
+    private fun updateLeaveDeviceGroupPreferenceVisibility() {
+        initializeLeaveDeviceGroup()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -102,6 +133,23 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeLeaveDeviceGroup() {
+        findPreference<Preference>(PREFERENCE_LEAVE_DEVICE_GROUP)?.apply {
+            if (syncRepository.isGrouped) {
+                isVisible = true
+                onClick {
+                    showLeaveDeviceGroupConfirmation()
+                }
+            } else {
+                isVisible = false
+            }
+        }
+    }
+
+    private fun showLeaveDeviceGroupConfirmation() {
+        showLeaveDeviceGroupDialog()
+    }
+
     private fun configureManualSync(preference: Preference?) {
         preference?.apply {
             setOnPreferenceClickListener {
@@ -124,7 +172,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun startManualSync() {
-        PlanckSyncWizard.startKeySync(requireActivity())
+        startForResult.launch(Intent(context, PlanckSyncWizard::class.java))
     }
 
     private fun shouldDisplayManualSyncButton(): Boolean =
@@ -158,7 +206,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                widgetLayoutResource = R.layout.preference_loading_widget
                 AlertDialog.Builder(view?.context,
                     ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
                         .setMessage(R.string.pep_key_reset_all_own_ids_warning)
@@ -313,6 +360,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_UNSECURE_DELIVERY_WARNING = "pep_forward_warning"
         private const val PREFERENCE_DEBUG_LOGGING = "debug_logging"
         private const val PREFERENCE_AUDIT_LOG_TIME_RETENTION = "audit_log_data_time_retention"
+        private const val PREFERENCE_LEAVE_DEVICE_GROUP = "leave_device_group"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

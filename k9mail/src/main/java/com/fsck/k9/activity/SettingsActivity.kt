@@ -55,6 +55,7 @@ import kotlinx.coroutines.*
 import security.planck.mdm.RestrictionsListener
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
+import security.planck.sync.SyncRepository
 import security.planck.ui.about.AboutActivity
 import security.planck.ui.intro.startOnBoarding
 import security.planck.ui.intro.startWelcomeMessage
@@ -113,6 +114,8 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     lateinit var permissionChecker: PermissionChecker
     @Inject
     lateinit var resourcesProvider: ResourcesProvider
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -299,9 +302,9 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         }
     }
     private fun initializeSyncEnvironmentOnStartup() {
-        if(!k9.ispEpSyncEnvironmentInitialized()) {
+        if (!syncRepository.planckSyncEnvironmentInitialized) {
             CoroutineScope(PlanckDispatcher).launch {
-                k9.pEpInitSyncEnvironment()
+                syncRepository.planckInitSyncEnvironment()
             }
         }
     }
@@ -803,8 +806,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.TOP)
             menu.findItem(R.id.move_down).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)
         }
-        val app: K9 = applicationContext as K9
-        if (app.isGrouped) {
+        if (syncRepository.isGrouped) {
             menu.findItem(R.id.import_PGP_key_from_SD)?.isEnabled = false
         }
     }

@@ -22,9 +22,9 @@ import com.fsck.k9.planck.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailureWrongPassphrase
 import com.fsck.k9.planck.infrastructure.exceptions.CannotCreateMessageException
 import com.fsck.k9.planck.infrastructure.extensions.mapError
-import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.planck.ui.HandshakeData
 import com.fsck.k9.planck.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -1043,9 +1043,8 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    @Throws(pEpException::class) // TODO: 13/1/23 review where to handle this exception.
-    override fun leaveDeviceGroup() = runBlocking(PlanckDispatcher) {
-        engine.get().leave_device_group()
+    override fun leaveDeviceGroup(): ResultCompat<Unit> = runBlocking(PlanckDispatcher) {
+        ResultCompat.of { engine.get().leave_device_group() }
     }
 
     @WorkerThread
@@ -1252,6 +1251,27 @@ class PlanckProviderImplKotlin(
     override fun groupRating(group: Identity, manager: Identity): Rating {
         return engine.get().group_rating(group, manager)
     }
+
+    @WorkerThread
+    override fun isDeviceGrouped(): Boolean = runBlocking(PlanckDispatcher) {
+        ResultCompat.of { engine.get().deviceGrouped() ?: false }
+            .onFailure { Timber.e(it) }.getOrDefault(false)
+    }
+
+    @WorkerThread
+    override fun getSignatureForText(text: String): ResultCompat<String> =
+        ResultCompat.of { engine.get().signature_for_text(text) }
+
+    @WorkerThread
+    override fun verifySignature(textToVerify: String, signature: String): ResultCompat<Boolean> =
+        ResultCompat.of {
+            try {
+                engine.get().verify_signature(textToVerify, signature)
+                true
+            } catch (ex: pEpDecryptSignatureDoesNotMatch) {
+                false
+            }
+        }
 
     companion object {
         private const val TAG = "pEpEngine-provider"

@@ -1,49 +1,39 @@
 package com.fsck.k9.planck.manualsync
 
-import android.os.CountDownTimer
-import com.fsck.k9.K9
-import com.fsck.k9.planck.PlanckProvider
+import security.planck.sync.SyncRepository
+import java.util.Timer
+import java.util.TimerTask
+import javax.inject.Inject
+import javax.inject.Provider
+import kotlin.concurrent.schedule
 
 private const val TWO_MINUTE_IN_MILLIS = 120000L
 private const val MANUAL_SYNC_TIME_LIMIT = TWO_MINUTE_IN_MILLIS
-private const val MANUAL_SYNC_CHECK_INTERVAL: Long = 200
 
-class ManualSyncCountDownTimer
-@JvmOverloads
-constructor(
-    private val k9: K9,
-    private val planckProvider: PlanckProvider,
-    private var countDownTimer: CountDownTimer = getCountDownTimer(k9)
+class ManualSyncCountDownTimer(
+    private val syncRepository: Provider<SyncRepository>,
+    private val timer: Timer = Timer(),
+    private val timeout: Long = MANUAL_SYNC_TIME_LIMIT,
 ) {
+    @Inject
+    @Suppress("unused")
+    constructor(
+        syncRepository: Provider<SyncRepository>,
+    ) : this(syncRepository, Timer(), MANUAL_SYNC_TIME_LIMIT)
+
+    private var syncStartTimeoutTask: TimerTask? = null
+
     fun startOrReset() {
         cancel()
-        when (planckProvider.isSyncRunning) {
-            true -> planckProvider.syncReset()
-            else -> planckProvider.startSync()
-        }
+        start()
+    }
 
-        countDownTimer.start()
+    private fun start() {
+        syncStartTimeoutTask = timer.schedule(timeout) { syncRepository.get().syncStartTimeout() }
     }
 
     fun cancel() {
-        countDownTimer.cancel()
-    }
-
-    companion object {
-        fun getCountDownTimer(k9: K9): CountDownTimer {
-            return object : CountDownTimer(
-                MANUAL_SYNC_TIME_LIMIT,
-                MANUAL_SYNC_CHECK_INTERVAL
-            ) {
-                override fun onTick(millisUntilFinished: Long) {
-
-                }
-
-                override fun onFinish() {
-                    k9.syncStartTimeout()
-                }
-            }
-        }
-
+        syncStartTimeoutTask?.cancel()
+        syncStartTimeoutTask = null
     }
 }

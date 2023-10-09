@@ -17,6 +17,7 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import kotlin.Unit;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
@@ -252,7 +253,7 @@ public interface PlanckProvider {
 
     void keyResetAllOwnKeys();
 
-    void leaveDeviceGroup() throws pEpException; // TODO: 13/1/23 review where to handle this exception.
+    ResultCompat<Unit> leaveDeviceGroup();
 
     void startSync();
     void stopSync();
@@ -288,6 +289,31 @@ public interface PlanckProvider {
     void removeMemberFromGroup(Identity group, Identity member);
 
     Rating groupRating(Identity group, Identity manager);
+
+    /**
+     * isDeviceGrouped
+     * Check if this device is in a planck device group.
+     * @return true if in a group, false otherwise.
+     */
+    boolean isDeviceGrouped();
+
+    /**
+     * getSignatureForText
+     * Get signature String for a given input String
+     * @param text String of which we want to get the signature.
+     * @return [ResultCompat] Success(String result) on success, Failure on error.
+     */
+    ResultCompat<String> getSignatureForText(String text);
+
+    /**
+     * verifySignature
+     * Verify a string with a signature to see if current string is equal to the one the signature was created from.
+     *
+     * @param textToVerify String to verify
+     * @param signature Signature string
+     * @return [ResultCompat] Success(true) if match, Success(false) if no match, Failure on error.
+     */
+    ResultCompat<Boolean> verifySignature(String textToVerify, String signature);
 
     class KeyDetail {
         private final Address address;
