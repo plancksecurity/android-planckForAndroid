@@ -172,7 +172,11 @@ class PlanckAuditLogger(
     }
 
     private fun getAllFileText() = if (auditLoggerFile.exists()) {
-        auditLoggerFile.readText()
+        auditLoggerFile.readText().also {
+            if (it.isBlank()) { // there should never be a blank audit file! File is created when first log is added.
+                setTamperedAlertAndSaveTime()
+            }
+        }
     } else {
         checkPreviousFileExistenceOnNonExistentFile()
         ""
