@@ -252,7 +252,7 @@ class PlanckSyncWizard : WizardActivity() {
         binding.syncStateFeedback.isVisible = syncStateFeedbackVisible
         binding.negativeActionButton.isVisible = negativeButtonVisible
         binding.dissmissActionButton.visibility =
-            if (dismissButtonVisible) View.VISIBLE else View.INVISIBLE
+            if (dismissButtonVisible) View.INVISIBLE else View.INVISIBLE
         binding.afirmativeActionButton.apply {
             isVisible =
                 (positiveButtonText != NO_RESOURCE).also { if (it) setText(positiveButtonText) }
