@@ -24,6 +24,7 @@ private const val EMPTY_SPACE = 0
 private const val NO_RESOURCE = 0
 private const val ENGLISH_POSITION = 0
 private const val GERMAN_POSITION = 1
+private const val IGNORE_REJECT_BUTTON = true
 
 @AndroidEntryPoint
 class PlanckSyncWizard : WizardActivity() {
@@ -250,9 +251,10 @@ class PlanckSyncWizard : WizardActivity() {
         binding.waitingForSync.isVisible = waitingForSyncVisible
         binding.waitingForSyncText.isVisible = waitingForSyncVisible
         binding.syncStateFeedback.isVisible = syncStateFeedbackVisible
-        binding.negativeActionButton.isVisible = negativeButtonVisible
+        binding.negativeActionButton.isVisible =
+            if (IGNORE_REJECT_BUTTON) false else negativeButtonVisible
         binding.dissmissActionButton.visibility =
-            if (dismissButtonVisible) View.INVISIBLE else View.INVISIBLE
+            if (dismissButtonVisible) View.VISIBLE else View.INVISIBLE
         binding.afirmativeActionButton.apply {
             isVisible =
                 (positiveButtonText != NO_RESOURCE).also { if (it) setText(positiveButtonText) }
