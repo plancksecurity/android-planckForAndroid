@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -45,6 +46,7 @@ class PlanckSyncRepository @Inject constructor(
         private set
     private var isPollingMessages = false
     private var poller: Poller? = null
+    private var handshakeLocked = false
 
     override val notifyHandshakeCallback = NotifyHandshakeCallback { myself, partner, signal ->
         k9.showHandshakeSignalOnDebug(signal.name)
@@ -253,6 +255,17 @@ class PlanckSyncRepository @Inject constructor(
         }
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: end")
+        }
+    }
+
+    override fun userConnected() {
+        val initialState = syncStateMutableFlow.value
+        if (initialState != SyncState.Idle) {
+            Timber.e("unexpected initial state: ${syncStateMutableFlow.value}")
+        }
+        if (initialState !is SyncState.HandshakeReadyAwaitingUser) {
+            syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
+            allowTimedManualSync()
         }
     }
 }
