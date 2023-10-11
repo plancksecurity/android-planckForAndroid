@@ -127,7 +127,7 @@ class PlanckSyncRepository @Inject constructor(
         formingGroup: Boolean,
         groupedCondition: Boolean,
     ) {
-        if (syncState.allowToStartHandshake && isGrouped == groupedCondition) {
+        if (!handshakeLocked && isGrouped == groupedCondition) {
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,
@@ -267,5 +267,18 @@ class PlanckSyncRepository @Inject constructor(
             syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
             allowTimedManualSync()
         }
+    }
+
+    override fun lockHandshake() {
+        handshakeLocked = true
+    }
+
+    private fun unlockHandshake() {
+        handshakeLocked = false
+    }
+
+    override fun userDisconnected() {
+        syncStateMutableFlow.value = SyncState.Idle
+        unlockHandshake()
     }
 }
