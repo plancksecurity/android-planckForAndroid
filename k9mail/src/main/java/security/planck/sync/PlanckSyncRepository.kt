@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -125,7 +126,7 @@ class PlanckSyncRepository @Inject constructor(
         formingGroup: Boolean,
         groupedCondition: Boolean,
     ) {
-        if (syncState.allowToStartHandshake && isGrouped == groupedCondition) {
+        if (syncState == SyncState.AwaitingOtherDevice && isGrouped == groupedCondition) {
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,
@@ -254,5 +255,13 @@ class PlanckSyncRepository @Inject constructor(
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: end")
         }
+    }
+
+    override fun userConnected() {
+        if (syncStateMutableFlow.value != SyncState.Idle) {
+            Timber.e("unexpected initial state: ${syncStateMutableFlow.value}")
+        }
+        syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
+        allowTimedManualSync()
     }
 }
