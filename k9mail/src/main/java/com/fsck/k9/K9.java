@@ -12,6 +12,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -1554,7 +1555,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static String getPlanckNewKeysPassphrase(){
-        return planckNewKeysPassphrase;
+        return "mypass";
     }
 
     public static void setPlanckNewKeysPassphrase(String passphrase){
@@ -1600,7 +1601,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {
-        return planckNewKeysPassphrase != null && !planckNewKeysPassphrase.isEmpty();
+        return true;
     }
 
     public static synchronized SortType getSortType() {
@@ -1727,7 +1728,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static boolean isPlanckUsePassphraseForNewKeys() {
-        return planckUsePassphraseForNewKeys;
+        return true;
     }
 
     public static void setPlanckUsePassphraseForNewKeys(boolean pEpUsePassphraseForNewKeys) {
@@ -1902,7 +1903,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static boolean isPlanckSyncEnabled() {
-        return planckSyncEnabled;
+        return false;
     }
 
 
