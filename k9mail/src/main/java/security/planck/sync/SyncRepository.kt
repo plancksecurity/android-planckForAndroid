@@ -99,4 +99,5 @@ interface SyncRepository {
      * Temporarily disable sync. This status is not persisted unless [K9.save] is called.
      */
     fun shutdownSync()
+    fun userConnected()
 }
