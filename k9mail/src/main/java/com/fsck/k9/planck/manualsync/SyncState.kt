@@ -12,6 +12,7 @@ object SyncState {
         val myself: Identity,
         val partner: Identity,
         val formingGroup: Boolean,
+        val ready: Boolean,
     ) : SyncScreenState, SyncAppState
 
     object Done : SyncScreenState, SyncAppState
@@ -49,7 +50,9 @@ sealed interface SyncAppState {
     val allowSyncNewDevices: Boolean
         get() = this == SyncState.AwaitingOtherDevice
     val allowToStartHandshake: Boolean
-        get() = this == SyncState.Idle || this == SyncState.AwaitingOtherDevice
+        get() = this == SyncState.AwaitingOtherDevice
+                || (this is SyncState.HandshakeReadyAwaitingUser && !ready)
+
 
     fun finish() = SyncState.Idle
 }

@@ -62,9 +62,11 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private fun populateDataFromHandshakeReadyState(appState: SyncState.HandshakeReadyAwaitingUser) {
-        myself = appState.myself
-        partner = appState.partner
-        formingGroup = appState.formingGroup
+        if (appState.ready) {
+            myself = appState.myself
+            partner = appState.partner
+            formingGroup = appState.formingGroup
+        }
     }
 
     fun next() {
@@ -90,7 +92,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private fun finish() {
-        syncRepository.setCurrentState(SyncState.Idle)
+        syncRepository.userDisconnected()
     }
 
     private fun setState(state: SyncScreenState) {

@@ -100,4 +100,5 @@ interface SyncRepository {
      */
     fun shutdownSync()
     fun userConnected()
+    fun userDisconnected()
 }

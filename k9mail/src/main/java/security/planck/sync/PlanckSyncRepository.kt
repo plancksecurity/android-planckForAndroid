@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
 import timber.log.Timber
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -36,6 +38,8 @@ class PlanckSyncRepository @Inject constructor(
     private val manualSyncCountDownTimer: Lazy<ManualSyncCountDownTimer>,
     private val pollerFactory: PollerFactory,
 ) : SyncRepository {
+    private val timer: Timer = Timer()
+    private var task: MyTask? = null
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
         MutableStateFlow(SyncState.Idle)
     override val syncStateFlow = syncStateMutableFlow.asStateFlow()
@@ -102,6 +106,13 @@ class PlanckSyncRepository @Inject constructor(
                 }
             }
 
+            SyncHandshakeSignal.SyncNotifyBackToStart -> {
+                task?.cancel()
+                task = null
+                syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
+                manualSyncCountDownTimer.get().startOrReset()
+            }
+
             SyncHandshakeSignal.SyncPassphraseRequired -> {
                 k9.showPassphraseDialogForSync()
             }
@@ -120,20 +131,49 @@ class PlanckSyncRepository @Inject constructor(
         }
     }
 
+    inner class MyTask(val handhsake: SyncState.HandshakeReadyAwaitingUser): TimerTask() {
+        override fun run() {
+            syncStateMutableFlow.value = handhsake
+            task = null
+        }
+    }
+
     private fun foundPartnerDevice(
         myself: Identity,
         partner: Identity,
         formingGroup: Boolean,
         groupedCondition: Boolean,
     ) {
-        if (syncState == SyncState.AwaitingOtherDevice && isGrouped == groupedCondition) {
+        if (syncState.allowToStartHandshake && isGrouped == groupedCondition) {
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,
-                formingGroup
+                formingGroup,
+                false,
             )
             cancelManualSyncCountDown()
+            scheduleHandshakeReady(myself, partner, formingGroup)
         }
+    }
+
+    private fun scheduleHandshakeReady(
+        myself: Identity,
+        partner: Identity,
+        formingGroup: Boolean
+    ) {
+        task?.cancel()
+        task = MyTask(
+            SyncState.HandshakeReadyAwaitingUser(
+                myself,
+                partner,
+                formingGroup,
+                true,
+            )
+        )
+        timer.schedule(
+            task,
+            20000L
+        )
     }
 
     override fun setCurrentState(state: SyncAppState) {
@@ -220,6 +260,8 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun cancelSync() {
+        task?.cancel()
+        task = null
         cancelManualSyncCountDown()
         syncStateMutableFlow.value = SyncState.Cancelled
     }
@@ -258,10 +300,16 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun userConnected() {
-        if (syncStateMutableFlow.value != SyncState.Idle) {
-            Timber.e("unexpected initial state: ${syncStateMutableFlow.value}")
+        if (syncState != SyncState.Idle) {
+            Timber.e("unexpected initial state: $syncState")
         }
         syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
         allowTimedManualSync()
+    }
+
+    override fun userDisconnected() {
+        task?.cancel()
+        task = null
+        syncStateMutableFlow.value = SyncState.Idle
     }
 }
