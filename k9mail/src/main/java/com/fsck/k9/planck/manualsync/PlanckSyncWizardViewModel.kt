@@ -70,6 +70,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     fun next() {
         when (syncState.value) {
             is SyncState.HandshakeReadyAwaitingUser -> {
+                syncRepository.lockHandshake()
                 getOrRefreshTrustWords()
             }
 
@@ -90,7 +91,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private fun finish() {
-        syncRepository.setCurrentState(SyncState.Idle)
+        syncRepository.userDisconnected()
     }
 
     private fun setState(state: SyncScreenState) {
