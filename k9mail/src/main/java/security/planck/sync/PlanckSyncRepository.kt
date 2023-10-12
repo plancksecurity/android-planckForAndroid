@@ -21,9 +21,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
 import timber.log.Timber
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.concurrent.schedule
 
 private const val POLLING_INTERVAL = 2000
 
@@ -47,6 +50,8 @@ class PlanckSyncRepository @Inject constructor(
     private var isPollingMessages = false
     private var poller: Poller? = null
     private var handshakeLocked = false
+    private val timer = Timer()
+    private var timerTask: TimerTask? = null
 
     override val notifyHandshakeCallback = NotifyHandshakeCallback { myself, partner, signal ->
         k9.showHandshakeSignalOnDebug(signal.name)
@@ -221,6 +226,8 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun cancelSync() {
+        timerTask?.cancel()
+        timerTask = null
         cancelManualSyncCountDown()
         syncStateMutableFlow.value = SyncState.Cancelled
     }
@@ -265,7 +272,12 @@ class PlanckSyncRepository @Inject constructor(
         }
         if (initialState !is SyncState.HandshakeReadyAwaitingUser) {
             syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
-            allowTimedManualSync()
+            timerTask = timer.schedule(20000) {
+                if (syncState !is SyncState.HandshakeReadyAwaitingUser) {
+                    syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
+                    allowTimedManualSync()
+                }
+            }
         }
     }
 
@@ -278,6 +290,8 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun userDisconnected() {
+        timerTask?.cancel()
+        timerTask = null
         syncStateMutableFlow.value = SyncState.Idle
         unlockHandshake()
     }
