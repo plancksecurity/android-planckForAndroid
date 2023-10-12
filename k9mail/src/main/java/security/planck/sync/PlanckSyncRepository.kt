@@ -145,6 +145,8 @@ class PlanckSyncRepository @Inject constructor(
                 partner,
                 formingGroup
             )
+            timerTask?.cancel()
+            timerTask = null
             cancelManualSyncCountDown()
         }
     }
