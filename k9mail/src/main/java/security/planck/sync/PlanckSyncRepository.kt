@@ -107,10 +107,12 @@ class PlanckSyncRepository @Inject constructor(
             }
 
             SyncHandshakeSignal.SyncNotifyBackToStart -> {
-                task?.cancel()
-                task = null
-                syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
-                manualSyncCountDownTimer.get().startOrReset()
+                task?.let {
+                    task?.cancel()
+                    task = null
+                    syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
+                    manualSyncCountDownTimer.get().startOrReset()
+                }
             }
 
             SyncHandshakeSignal.SyncPassphraseRequired -> {
@@ -145,13 +147,15 @@ class PlanckSyncRepository @Inject constructor(
         groupedCondition: Boolean,
     ) {
         if (syncState.allowToStartHandshake && isGrouped == groupedCondition) {
+            task?.cancel()
+            task = null
+            cancelManualSyncCountDown()
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,
                 formingGroup,
                 false,
             )
-            cancelManualSyncCountDown()
             scheduleHandshakeReady(myself, partner, formingGroup)
         }
     }
@@ -161,7 +165,6 @@ class PlanckSyncRepository @Inject constructor(
         partner: Identity,
         formingGroup: Boolean
     ) {
-        task?.cancel()
         task = MyTask(
             SyncState.HandshakeReadyAwaitingUser(
                 myself,
