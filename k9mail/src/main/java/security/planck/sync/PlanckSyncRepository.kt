@@ -115,6 +115,13 @@ class PlanckSyncRepository @Inject constructor(
                 }
             }
 
+            SyncHandshakeSignal.SyncNotifyCancelled -> {
+                task?.cancel()
+                task = null
+                cancelManualSyncCountDown()
+                syncStateMutableFlow.value = SyncState.Cancelled
+            }
+
             SyncHandshakeSignal.SyncPassphraseRequired -> {
                 k9.showPassphraseDialogForSync()
             }
