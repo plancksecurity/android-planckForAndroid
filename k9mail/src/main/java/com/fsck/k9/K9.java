@@ -3,6 +3,8 @@ package com.fsck.k9;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +23,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -61,6 +61,11 @@ import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
 
+import org.acra.ReportField;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.MailSenderConfigurationBuilder;
+import org.acra.config.NotificationConfigurationBuilder;
+import org.acra.data.StringFormat;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -100,9 +105,6 @@ import security.planck.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-@ReportsCrashes(mailTo = "support@planck.security",
-        mode = ReportingInteractionMode.TOAST,
-        resToastText = R.string.crash_toast_text)
 @HiltAndroidApp
 public class K9 extends MultiDexApplication implements DefaultLifecycleObserver {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
@@ -464,6 +466,64 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
             public static final String EXTRA_FROM = BuildConfig.APPLICATION_ID + ".intent.extra.SENDER";
         }
     }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        createAcraNotificationChannel();
+
+        ACRA.DEV_LOGGING = BuildConfig.DEBUG;
+
+        ACRA.init(this, new CoreConfigurationBuilder()
+                .withBuildConfigClass(BuildConfig.class)
+                .withSharedPreferencesName("custom_acra_preferences")
+                .withReportFormat(StringFormat.JSON)
+                .withReportContent(ReportField.APP_VERSION_NAME, ReportField.ANDROID_VERSION,
+                        ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA,
+                        ReportField.STACK_TRACE, ReportField.AVAILABLE_MEM_SIZE,
+                        ReportField.USER_CRASH_DATE, ReportField.THREAD_DETAILS,
+                        ReportField.LOGCAT)
+                .withExcludeMatchingSettingsKeys()//specify what to exclude
+                .withPluginConfigurations(
+                        new NotificationConfigurationBuilder()
+                                .withTitle(getString(R.string.acra_notification_title))
+                                .withText(getString(R.string.acra_notification_text))
+                                .withChannelDescription(getString(R.string.acra_notification_channel_description))
+                                .withChannelName(getString(R.string.acra_notification_channel_id))
+                                //.withResChannelImportance(NotificationManager.IMPORTANCE_MAX)//for updated versions which requires higher kotlin 1.8.21+
+                                .withSendButtonText(getString(R.string.ok))
+                                .withDiscardButtonText(getString(R.string.cancel_action))
+                                .withSendOnClick(true)
+                                .build(),
+                        new MailSenderConfigurationBuilder()
+                                .withMailTo(getString(R.string.acra_developer_email))
+                                .withReportAsFile(true)
+                                .withReportFileName(getString(R.string.acra_file_name))
+                                .withSubject(getString(R.string.acra_mail_subject) + BuildConfig.APPLICATION_ID + " - " + BuildConfig.VERSION_NAME)
+                        .build()
+                )
+        );
+
+    }
+
+    private void createAcraNotificationChannel() {
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        if (notificationManager.getNotificationChannel(getString(R.string.acra_notification_channel_id)) != null) {
+            return;
+        }
+
+        CharSequence name = getString(R.string.acra_notification_channel_name);
+        String description = getString(R.string.acra_notification_channel_name);
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel channel = new NotificationChannel(getString(R.string.acra_notification_channel_id), name, importance);
+        channel.setDescription(description);
+
+        // Register the channel with the system. You can't change the importance
+        // or other notification behaviors after this.
+        notificationManager.createNotificationChannel(channel);
+    }
+
 
     /**
      * Called throughout the application when the number of accounts has changed. This method

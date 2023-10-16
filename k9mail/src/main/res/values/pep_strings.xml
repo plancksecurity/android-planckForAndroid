@@ -6,6 +6,9 @@
     <string name="pep" translatable="false">planck</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="acra_developer_email" translatable="false">support@planck.security</string>
+    <string name="acra_file_name" translatable="false">crash_file_android.txt</string>
+    <string name="acra_mail_subject" translatable="false">Android Crash:</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
     <string name="pEp_trustwords">planck Trustwords</string>
@@ -53,6 +56,11 @@
     <string name="pep_extra_addresses">Extra key IDs:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
+    <string name="acra_notification_title">Runtime crash</string>
+    <string name="acra_notification_channel_name">Acra crash sending notification channel</string>
+    <string name="acra_notification_channel_id">10567</string>
+    <string name="acra_notification_channel_description">Notification channel created for keeping acra crash notifications organized</string>
+    <string name="acra_notification_text">Sorry, the application crashed. Please send a report to the developers</string>
     <string name="pep_subject_protection">Protect Message subject</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
