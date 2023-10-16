@@ -45,8 +45,7 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun cancel() {
-        PassphraseProvider.stop()
-        view.finish()
+        finish()
     }
 
     fun deliverPassphrase(passphrase: String) {
@@ -57,7 +56,7 @@ class PassphrasePresenter @Inject constructor(
                 scope.launch {
                     planck.configPassphrase(passphrase)
                 }
-                view.finish()
+                finish()
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 scope.launch {
@@ -66,14 +65,19 @@ class PassphrasePresenter @Inject constructor(
                     K9.save(editor)
                     editor.commit()
                     planck.configPassphraseForNewKeys(true, passphrase)
-                    view.finish(true)
+                    finish(true)
                 }
             }
             else -> {
                 PassphraseProvider.passphrase = passphrase
-                view.finish()
+                finish()
             }
         }
+    }
+
+    private fun finish(passphraseAdded: Boolean = false) {
+        PassphraseProvider.stop()
+        view.finish(passphraseAdded)
     }
 
     fun validateInput(passphrase: String) {
@@ -90,7 +94,7 @@ class PassphrasePresenter @Inject constructor(
             }
 
         }
-        view.finish()
+        finish()
     }
 
 }
