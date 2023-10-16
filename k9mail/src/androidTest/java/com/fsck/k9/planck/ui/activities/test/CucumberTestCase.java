@@ -58,11 +58,11 @@ public class CucumberTestCase extends CucumberAndroidJUnitRunner {
                 super.onCreate(args);
         }
 
-        @Override
+/*        @Override
         public Application newApplication(ClassLoader cl, String className, Context context) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
                 return super.newApplication(cl, TestK9.class.getName(), context);
         }
-
+*/
         enum TestType {
                 normal,
                 cucumber,
