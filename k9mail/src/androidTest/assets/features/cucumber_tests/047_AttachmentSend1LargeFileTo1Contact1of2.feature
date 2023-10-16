@@ -1,11 +1,11 @@
-Feature: Attachment Send 1 Large File To 1 Contact (1/2)
+Feature: Attachment Send 1 Large File To 1 Contact Part1
   Background:
 
 
     #Summary: send a large file as an attachment to a contact, confirming successful delivery.
     # Description: checks the system's ability to send a large file as an attachment to a specific contact. It involves composing a message, attaching a large file, and confirming successful message delivery.
 
-  Scenario: Cucumber Attachment Send 1 Large File To 1 Contact (1/2)
+  Scenario: Cucumber Attachment Send 1 Large File To 1 Contact Part1
 
     And I remove all messages
     And I click compose message
