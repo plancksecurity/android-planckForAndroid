@@ -56,6 +56,11 @@
         android:summary="@string/debug_enable_debug_logging_summary"
         android:title="@string/debug_enable_debug_logging_title" />
 
+    <SwitchPreferenceCompat
+        android:key="pep_use_passphrase_for_new_keys"
+        android:title="@string/passhphrase_new_keys_settings_title"
+        app:isPreferenceVisible="false"/>
+
     <ListPreference
         android:dialogTitle="@string/audit_log_data_time_retention_title"
         android:entries="@array/audit_log_data_time_retention_entries"

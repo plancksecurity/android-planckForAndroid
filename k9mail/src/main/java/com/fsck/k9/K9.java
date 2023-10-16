@@ -369,7 +369,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean planckSyncEnabled = true;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
-    private static boolean planckUsePassphraseForNewKeys = false;
+    private static boolean planckUsePassphraseForNewKeys = BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS;
     private static long appVersionCode = -1;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -377,7 +377,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
 
-    private static String planckNewKeysPassphrase;
+    private static String planckNewKeysPassphrase = "";
 
     /**
      * @see #areDatabasesUpToDate()
@@ -662,7 +662,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
         editor.putBoolean("pEpUsePassphraseForNewKeys", planckUsePassphraseForNewKeys);
-        editor.putPassphrase(planckNewKeysPassphrase);
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -1057,8 +1056,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
-        planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
-        planckNewKeysPassphrase = storage.getPassphrase();
+        planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS);
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1597,10 +1595,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
     public AuditLogger getAuditLogger() {
         return auditLogger.get();
-    }
-
-    public static boolean ispEpUsingPassphraseForNewKey() {
-        return planckNewKeysPassphrase != null && !planckNewKeysPassphrase.isEmpty();
     }
 
     public static synchronized SortType getSortType() {

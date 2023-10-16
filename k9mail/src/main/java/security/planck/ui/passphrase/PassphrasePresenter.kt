@@ -1,19 +1,20 @@
 package security.planck.ui.passphrase
 
 import com.fsck.k9.K9
-import com.fsck.k9.Preferences
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import security.planck.ui.PassphraseProvider
 import timber.log.Timber
 import javax.inject.Inject
 
 class PassphrasePresenter @Inject constructor(
     private val planck: PlanckProvider,
-    private val preferences: Preferences,
+    private val dispatcherProvider: DispatcherProvider,
 ) {
     lateinit var view: PassphraseInputView
     lateinit var type: PassphraseRequirementType
@@ -45,35 +46,36 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun cancel() {
-        PassphraseProvider.stop()
-        view.finish()
+        finish()
     }
 
     fun deliverPassphrase(passphrase: String) {
-        val scope = CoroutineScope(PlanckDispatcher + SupervisorJob())
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         when (type) {
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
                 scope.launch {
-                    planck.configPassphrase(passphrase)
+                    withContext(dispatcherProvider.planckDispatcher()) {
+                        planck.configPassphrase(passphrase)
+                    }
+                    finish()
                 }
-                view.finish()
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
-                scope.launch {
-                    K9.setPlanckNewKeysPassphrase(passphrase)
-                    val editor = preferences.storage.edit()
-                    K9.save(editor)
-                    editor.commit()
-                    planck.configPassphraseForNewKeys(true, passphrase)
-                    view.finish(true)
-                }
+                PassphraseProvider.passphrase = passphrase
+                K9.setPlanckNewKeysPassphrase(passphrase)
+                finish(true)
             }
             else -> {
                 PassphraseProvider.passphrase = passphrase
-                view.finish()
+                finish()
             }
         }
+    }
+
+    private fun finish(passphraseAdded: Boolean = false) {
+        PassphraseProvider.stop()
+        view.finish(passphraseAdded)
     }
 
     fun validateInput(passphrase: String) {
@@ -81,7 +83,7 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun cancelSync() {
-        val scope = CoroutineScope(PlanckDispatcher + SupervisorJob())
+        val scope = CoroutineScope(dispatcherProvider.planckDispatcher() + SupervisorJob())
         scope.launch {
             try {
                planck.stopSync()
@@ -90,7 +92,7 @@ class PassphrasePresenter @Inject constructor(
             }
 
         }
-        view.finish()
+        finish()
     }
 
 }
