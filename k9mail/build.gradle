@@ -107,6 +107,8 @@ dependencies {
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
     implementation "androidx.core:core-ktx:${versions.androidXcore}"
 
+    implementation "ch.acra:acra:${versions.acra}"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"

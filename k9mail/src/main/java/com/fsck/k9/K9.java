@@ -20,6 +20,10 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -96,6 +100,9 @@ import security.planck.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
+@ReportsCrashes(mailTo = "support@planck.security",
+        mode = ReportingInteractionMode.TOAST,
+        resToastText = R.string.crash_toast_text)
 @HiltAndroidApp
 public class K9 extends MultiDexApplication implements DefaultLifecycleObserver {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
@@ -688,6 +695,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         app = this;
         Globals.setContext(this);
 
+        ACRA.init(this);
         provisioningManager.startProvisioning();
     }
 
