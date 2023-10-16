@@ -1,35 +1,11 @@
-// COMMON SETTINGS
 ext {
+    demoAppIdSuffix = '.test.ig'
+    demoAppVersionNameSuffix = '.test.ig'
+    demoVersionCode = 5
     enableEndUser = false
+    //appId = 'security.planck.test' // changes the appId for all the flavors
     demoKeyAlias = 'demo'
     demoKeyPassword = 'replace your password'
     demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')
     demoStorePassword = 'replace your password'
-    // enables logs from planckCoreSequoiaBackend only in debug, will not log anything in release
-    ENABLE_SEQUOIA_LOGS = false // change to true, do make clean-all in jni wrapper/android/external and recompile to have sequoia logs
-    // enables logs from core only in debug, will not log anything in release.
-    // Only enable when really needed, performance is **heavily** affected.
-    ENABLE_CORE_LOGS = false // change to true and recompile to have core logs
-    // enables passphrase from the first account setup in the app, only on debug build.
-    // after first account setup, the setting "use passphrase for new keys" can be disabled (setting only available on debug build).
-    DEBUG_USE_PASSPHRASE_FOR_NEW_KEYS = false // if true, user will be requested a passphrase for new keys during first account setup.
 }
-
-// Sample settings for a demo application (for example, to upload to an MDM)
-// application id of the demo app will be <appId><demoAppIdSuffix>[.enterprise][.debug]
-ext {
-    //demoAppIdSuffix = '.my.demo'
-    //demoAppVersionNameSuffix = '.my.demo'
-    //demoVersionCode = 1
-    //appId = 'security.planck.syncissue' // -> careful! appId applies to all the app variants, not only to the demo.
-}
-
-// Another sample settings for demo
-//ext {
-//    demoAppIdSuffix = '.my.internal'
-//    demoAppVersionNameSuffix = '.my.internal'
-//    demoVersionCode = 1
-//    appId = 'security.planck.somedemo'
-//}
-
-// ...
