@@ -4,7 +4,10 @@ import android.content.Context
 import android.util.Log
 import foundation.pEp.jniadapter.PassphraseType
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.planck.ui.passphrase.PassphraseActivity
 import security.planck.ui.passphrase.PassphraseRequirementType
 import timber.log.Timber
@@ -15,6 +18,7 @@ object PassphraseProvider {
     var passphrase = ""
     @Volatile
     var running = false
+        private set
 
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
         return PassphraseRequiredCallback {passphraseType ->
