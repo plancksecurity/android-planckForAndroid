@@ -1,8 +1,8 @@
 package security.planck.ui.passphrase
 
 import com.fsck.k9.K9
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 class PassphrasePresenter @Inject constructor(
     private val planck: PlanckProvider,
+    private val dispatcherProvider: DispatcherProvider,
 ) {
     lateinit var view: PassphraseInputView
     lateinit var type: PassphraseRequirementType
@@ -54,7 +55,7 @@ class PassphrasePresenter @Inject constructor(
         when (type) {
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
                 scope.launch {
-                    withContext(PlanckDispatcher) {
+                    withContext(dispatcherProvider.planckDispatcher()) {
                         planck.configPassphrase(passphrase)
                     }
                     finish()
@@ -82,7 +83,7 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun cancelSync() {
-        val scope = CoroutineScope(PlanckDispatcher + SupervisorJob())
+        val scope = CoroutineScope(dispatcherProvider.planckDispatcher() + SupervisorJob())
         scope.launch {
             try {
                planck.stopSync()
