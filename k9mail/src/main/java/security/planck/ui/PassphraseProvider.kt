@@ -2,6 +2,7 @@ package security.planck.ui
 
 import android.content.Context
 import android.util.Log
+import com.fsck.k9.K9
 import foundation.pEp.jniadapter.PassphraseType
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +53,7 @@ object PassphraseProvider {
 
     private fun prepareProvider() {
         passphrase = ""
-        running = true
+        running = (K9.app as K9).isRunningInForeground
     }
 
     private suspend fun launchUI(context: Context, passphraseType: PassphraseType) = withContext(Dispatchers.Main) {
