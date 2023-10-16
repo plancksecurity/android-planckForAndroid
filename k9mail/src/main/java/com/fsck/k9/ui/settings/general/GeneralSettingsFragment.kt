@@ -118,9 +118,12 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeNewKeysPassphrase() {
         findPreference<SwitchPreferenceCompat>(PEP_USE_PASSPHRASE_FOR_NEW_KEYS)?.apply {
-            this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+            if (BuildConfig.DEBUG) {
+                isVisible = true
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
                     processNewKeysSwitchClick(preference, newValue)
                 }
+            }
         }
     }
 
