@@ -46,7 +46,7 @@ class EngineThreadLocal private constructor(
         engine.config_passive_mode(K9.getPlanckPassiveMode())
         engine.config_unencrypted_subject(!K9.isPlanckSubjectProtection())
         engine.config_passphrase_for_new_keys(
-            K9.ispEpUsingPassphraseForNewKey(),
+            K9.isPlanckUsePassphraseForNewKeys(),
             K9.getPlanckNewKeysPassphrase()
         )
         engine.setMessageToSendCallback(MessagingController.getInstance(k9))

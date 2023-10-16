@@ -1599,10 +1599,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         return auditLogger.get();
     }
 
-    public static boolean ispEpUsingPassphraseForNewKey() {
-        return planckNewKeysPassphrase != null && !planckNewKeysPassphrase.isEmpty();
-    }
-
     public static synchronized SortType getSortType() {
         return mSortType;
     }
