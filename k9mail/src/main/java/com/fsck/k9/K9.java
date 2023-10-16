@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDexApplication;
 import androidx.work.WorkManager;
 
@@ -682,6 +683,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         }
 
         super.onCreate();
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
         //Debug.waitForDebugger();
         app = this;
         Globals.setContext(this);
