@@ -1,4 +1,4 @@
-Feature: Attachment Send 1 File To 1 Contact (1/2)
+Feature: Attachment Send 1 File To 1 Contact Part1
   Background:
     Given I created an account
 
@@ -6,7 +6,7 @@ Feature: Attachment Send 1 File To 1 Contact (1/2)
 
 #Summary: This Cucumber test involves removing all messages, sending a message with attachments containing special characters to bot5, and waiting for a new message.
 #Description: This Cucumber test is focused on sending a message with special characters and checking that it is successfully received. The test begins by selecting an account and removing all existing messages. Then, a new message is composed and sent to a bot with a specified subject and body, which contains special characters. The message is sent with an attachment containing special characters as well. Finally, the test checks that the message was successfully received by waiting for a new message to appear.
-  Scenario: Cucumber Attachment Send 1 File To 1 Contact (1/2)
+  Scenario: Cucumber Attachment Send 1 File To 1 Contact Part1
 
     And I remove all messages
     And I click compose message
