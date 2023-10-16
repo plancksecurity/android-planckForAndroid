@@ -773,7 +773,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
     private fun onAbout() {
         AboutActivity.onAbout(this)
-        throw Exception("Acra testing exception")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
