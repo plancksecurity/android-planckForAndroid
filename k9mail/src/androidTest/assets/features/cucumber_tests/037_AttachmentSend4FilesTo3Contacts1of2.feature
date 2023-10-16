@@ -1,10 +1,10 @@
-Feature: Attachment Send 4 Files To 3 Contacts (1/2)
+Feature: Attachment Send 4 Files To 3 Contacts Part1
   Background:
 
 
 #Summary: This Cucumber test involves sending multiple messages to different bots with various subjects and bodies, and attaching several files to the last message sent.
 #Description: This Cucumber test is a functional test that tests the ability of a messaging system to send multiple messages to different recipients with different subject and message body. It also checks if different types of files can be attached to the message, and the system's ability to send the message successfully. The test involves sending three messages to different recipients with different subjects and message bodies, and then sending another message to the same recipients with a different subject and message body. The test attaches different types of files to the message and then checks if the message has been sent successfully.
-  Scenario: Cucumber Attachment Send 4 Files To 3 Contacts (1/2)
+  Scenario: Cucumber Attachment Send 4 Files To 3 Contacts Part1
 
     When I click compose message
     And I send 1 message to bot6 with subject TM-128 and body attach4
