@@ -377,7 +377,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
 
-    private static String planckNewKeysPassphrase;
+    private static String planckNewKeysPassphrase = "";
 
     /**
      * @see #areDatabasesUpToDate()
@@ -662,7 +662,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
         editor.putBoolean("pEpUsePassphraseForNewKeys", planckUsePassphraseForNewKeys);
-        editor.putPassphrase(planckNewKeysPassphrase);
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -1058,7 +1057,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
-        planckNewKeysPassphrase = storage.getPassphrase();
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
