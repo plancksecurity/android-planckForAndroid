@@ -15,7 +15,6 @@ import timber.log.Timber;
 
 public class StorageEditor {
     private Storage storage;
-    private PassphraseStorage passphraseStorage;
     private final OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
     private final AppAliveMonitorStorage appAliveMonitorStorage;
     private final AuditLogStorage auditLogStorage;
@@ -27,12 +26,10 @@ public class StorageEditor {
 
 
     StorageEditor(Storage storage,
-                  PassphraseStorage passphraseStorage,
                   OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage,
                   AppAliveMonitorStorage appAliveMonitorStorage,
                   AuditLogStorage auditLogStorage) {
         this.storage = storage;
-        this.passphraseStorage = passphraseStorage;
         this.ongoingDecryptMessagesStorage = ongoingDecryptMessagesStorage;
         this.appAliveMonitorStorage = appAliveMonitorStorage;
         this.auditLogStorage = auditLogStorage;
@@ -111,10 +108,6 @@ public class StorageEditor {
             changes.put(key, value);
         }
         return this;
-    }
-
-    public void putPassphrase(String passphrase){
-        passphraseStorage.putPassphrase(passphrase);
     }
 
     public StorageEditor remove(String key) {

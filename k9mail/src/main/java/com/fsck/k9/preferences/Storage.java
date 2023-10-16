@@ -38,7 +38,6 @@ public class Storage {
 
 
     private Context context = null;
-    private final PassphraseStorage passphraseStorage;
     private final OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
     private final AppAliveMonitorStorage appAliveMonitorStorage;
     private final AuditLogStorage auditLogStorage;
@@ -190,7 +189,6 @@ public class Storage {
 
     private Storage(Context context) {
         this.context = context;
-        passphraseStorage = new PassphraseStorage(context);
         ongoingDecryptMessagesStorage = new OngoingDecryptMessagesStorage(context);
         appAliveMonitorStorage = new AppAliveMonitorStorage(context);
         auditLogStorage = new AuditLogStorage(context);
@@ -273,7 +271,6 @@ public class Storage {
     public StorageEditor edit() {
         return new StorageEditor(
                 this,
-                passphraseStorage,
                 ongoingDecryptMessagesStorage,
                 appAliveMonitorStorage,
                 auditLogStorage
@@ -360,10 +357,6 @@ public class Storage {
         if (result == -1) {
             Timber.e("Error writing key '%s', value = '%s'", key, value);
         }
-    }
-
-    public String getPassphrase() {
-        return passphraseStorage.getPassphrase();
     }
 
     public Set<String> getOngoingDecryptMessages() {
