@@ -368,7 +368,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
             requestCode ^= REQUEST_MASK_LOADER_HELPER;
-            messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
+            if (messageLoaderHelper != null) {
+                messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
+            }
             return;
         }
 
@@ -836,7 +838,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessageCryptoMvpView messageCryptoMvpView = new MessageCryptoMvpView() {
         @Override
         public void redisplayMessage() {
-            messageLoaderHelper.asyncReloadMessage();
+            if (messageLoaderHelper != null) {
+                messageLoaderHelper.asyncReloadMessage();
+            }
         }
 
         @Override
@@ -861,8 +865,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public void restartMessageCryptoProcessing() {
-            mMessageView.setToLoadingState();
-            messageLoaderHelper.asyncRestartMessageCryptoProcessing();
+            if (messageLoaderHelper != null) {
+                mMessageView.setToLoadingState();
+                messageLoaderHelper.asyncRestartMessageCryptoProcessing();
+            }
         }
     };
 
