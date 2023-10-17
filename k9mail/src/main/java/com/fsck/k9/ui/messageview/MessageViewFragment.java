@@ -80,6 +80,7 @@ import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
+import security.planck.ui.PassphraseProvider;
 import security.planck.ui.message_compose.PlanckFabMenu;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
@@ -257,11 +258,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         setupSwipeDetector();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
-        Context context = getActivity().getApplicationContext();
-        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
-                displayHtml);
-        displayMessage();
+        loadMessageIfNeeded();
+    }
+
+    private void loadMessageIfNeeded() {
+        if (!PassphraseProvider.INSTANCE.getRunning()) {
+            Context context = getActivity().getApplicationContext();
+            messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
+                    getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
+                    displayHtml);
+            displayMessage();
+        }
     }
 
     @Override
@@ -347,7 +354,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onPause() {
         super.onPause();
         ((MessageList) ContextKt.getRootContext(requireActivity())).removeGestureDetector();
-        messageLoaderHelper.cancelAndClearLocalMessageLoader();
+        if (messageLoaderHelper != null) {
+            messageLoaderHelper.cancelAndClearLocalMessageLoader();
+        }
     }
 
     @Override
