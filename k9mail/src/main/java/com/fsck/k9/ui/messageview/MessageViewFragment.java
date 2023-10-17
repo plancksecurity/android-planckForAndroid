@@ -263,9 +263,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void loadMessageIfNeeded() {
         if (!PassphraseProvider.INSTANCE.getRunning()) {
-            Context context = getActivity().getApplicationContext();
+            Context context = requireActivity().getApplicationContext();
             messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                    getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
+                    getParentFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                     displayHtml);
             displayMessage();
         }
