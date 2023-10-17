@@ -1096,6 +1096,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 GroupTestScreen.start(this);
                 return true;
             }
+            case R.id.crash_test: {
+                throw new RuntimeException("Acra test only");
+            }
             case R.id.reset_sender_keys: {
                 mMessageViewFragment.resetSenderKey();
                 return true;
@@ -1273,6 +1276,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 !BuildConfig.IS_ENTERPRISE
         );
         menu.findItem(R.id.group_test).setVisible(BuildConfig.DEBUG);
+        menu.findItem(R.id.crash_test).setVisible(BuildConfig.DEBUG);
         return true;
     }
 

@@ -17,6 +17,12 @@
         android:visible="false"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/crash_test"
+        android:title="CRASH test"
+        android:visible="false"
+        app:showAsAction="never" />
+
     <!-- MessageView -->
     <item
         android:id="@+id/flag"
