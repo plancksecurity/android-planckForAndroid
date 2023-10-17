@@ -236,7 +236,7 @@ class PlanckStatusPresenterTest : RobolectricTest() {
             advanceUntilIdle()
 
 
-            verify { provider.trustPersonaKey(identity) }
+            verify { provider.trustPersonalKey(identity) }
         }
 
     @Test
@@ -382,7 +382,7 @@ class PlanckStatusPresenterTest : RobolectricTest() {
     fun `if performHandshake() fails, dialog displays error state`() =
         runTest {
             stubIncomingMessageRating()
-            every { provider.trustPersonaKey(any()) }.throws(RuntimeException("test"))
+            every { provider.trustPersonalKey(any()) }.throws(RuntimeException("test"))
             initializePresenter()
 
 

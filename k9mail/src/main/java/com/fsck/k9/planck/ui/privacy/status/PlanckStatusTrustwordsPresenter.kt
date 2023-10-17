@@ -140,7 +140,7 @@ class PlanckStatusTrustwordsPresenter(
                 withContext(Dispatchers.IO) { newpartner = planck.updateIdentity(partner) }
                 newpartner.fpr = tempFpr
             }
-            withContext(Dispatchers.IO) { planck.trustPersonaKey(newpartner) }
+            withContext(Dispatchers.IO) { planck.trustPersonalKey(newpartner) }
         }
     }
 }

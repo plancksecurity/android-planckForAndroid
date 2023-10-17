@@ -156,7 +156,7 @@ public interface PlanckProvider {
      *
      * @param id identity to trust it
      */
-    void trustPersonaKey(Identity id);
+    void trustPersonalKey(Identity id);
 
     /**
      * Trust own identity
