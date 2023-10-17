@@ -971,7 +971,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun trustPersonaKey(id: Identity) {
+    override fun trustPersonalKey(id: Identity) {
         Timber.i("%s %s", TAG, "Calling trust personal key")
         engine.get().trustPersonalKey(id)
     }
