@@ -14,10 +14,13 @@ import com.fsck.k9.message.extractors.PreviewResult.PreviewType
 import foundation.pEp.jniadapter.Identity
 import security.planck.notification.GroupMailInvite
 import security.planck.notification.GroupMailSignal
+import security.planck.permissions.PermissionChecker
+import security.planck.ui.permissions.PlanckPermissionChecker
 
 internal class NotificationContentCreator(
     private val context: Context,
-    private val resourceProvider: NotificationResourceProvider
+    private val resourceProvider: NotificationResourceProvider,
+    private val permissionChecker: PermissionChecker = PlanckPermissionChecker(context),
 ) {
     fun createFromMessage(account: Account, message: LocalMessage): NotificationContent<MessageReference> {
         val sender = getMessageSender(account, message)
@@ -95,13 +98,17 @@ internal class NotificationContentCreator(
     }
 
     private fun formatIdentityAsContact(identity: Identity): String? {
-        val contacts = if (K9.showContactName()) Contacts.getInstance(context) else null
+        val contacts = if (permissionChecker.hasContactsPermission() && K9.showContactName())
+            Contacts.getInstance(context)
+        else null
         val address = Address(identity.address, identity.username)
         return MessageHelper.toFriendly(address, contacts)?.toString()
     }
 
     private fun getMessageSender(account: Account, message: Message): String? {
-        val contacts = if (K9.showContactName()) Contacts.getInstance(context) else null
+        val contacts = if (permissionChecker.hasContactsPermission() && K9.showContactName())
+            Contacts.getInstance(context)
+        else null
         var isSelf = false
 
         val fromAddresses = message.from
