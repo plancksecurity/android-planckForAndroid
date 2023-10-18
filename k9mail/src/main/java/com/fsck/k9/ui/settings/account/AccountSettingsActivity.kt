@@ -12,7 +12,6 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
-import com.fsck.k9.ui.observe
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
