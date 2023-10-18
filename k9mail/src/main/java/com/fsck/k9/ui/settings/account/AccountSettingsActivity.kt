@@ -14,11 +14,10 @@ import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
 import dagger.hilt.android.AndroidEntryPoint
-import security.planck.mdm.RestrictionsListener
 import timber.log.Timber
 
 @AndroidEntryPoint
-class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, RestrictionsListener {
+class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
     private val viewModel: AccountSettingsViewModel by viewModels()
     private lateinit var accountUuid: String
     private var startScreenKey: String? = null
@@ -42,16 +41,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
 
     private fun initializeActionBar() {
        setUpToolbar(true)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        startListeningConfigChanges()
-    }
-
-    override fun onStop() {
-        startListeningConfigChanges()
-        super.onStop()
     }
 
     private fun decodeArguments(): Boolean {
@@ -90,12 +79,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun updatedRestrictions() {
-        val fragment =
-                supportFragmentManager.findFragmentById(R.id.accountSettingsContainer) as AccountSettingsFragment?
-        fragment?.refreshPreferences()
     }
 
     override fun onPreferenceStartScreen(
