@@ -2,9 +2,13 @@ package security.planck.ui
 
 import android.content.Context
 import android.util.Log
+import com.fsck.k9.K9
 import foundation.pEp.jniadapter.PassphraseType
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.planck.ui.passphrase.PassphraseActivity
 import security.planck.ui.passphrase.PassphraseRequirementType
 import timber.log.Timber
@@ -15,6 +19,7 @@ object PassphraseProvider {
     var passphrase = ""
     @Volatile
     var running = false
+        private set
 
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
         return PassphraseRequiredCallback {passphraseType ->
@@ -48,7 +53,7 @@ object PassphraseProvider {
 
     private fun prepareProvider() {
         passphrase = ""
-        running = true
+        running = (K9.app as K9).isRunningInForeground
     }
 
     private suspend fun launchUI(context: Context, passphraseType: PassphraseType) = withContext(Dispatchers.Main) {

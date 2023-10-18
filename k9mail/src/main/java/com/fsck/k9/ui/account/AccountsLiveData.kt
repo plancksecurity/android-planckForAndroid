@@ -25,6 +25,6 @@ class AccountsLiveData @Inject constructor(val preferences: Preferences) : LiveD
     }
 
     private fun loadAccounts(): List<Account> {
-        return preferences.accounts
+        return preferences.accounts!!
     }
 }
