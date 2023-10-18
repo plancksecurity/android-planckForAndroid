@@ -4,7 +4,6 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.models.PlanckIdentity
 import foundation.pEp.jniadapter.Identity
 import javax.inject.Inject
-import kotlin.math.min
 
 class PlanckIdentityMapper @Inject constructor(private val planckProvider: PlanckProvider) {
 
