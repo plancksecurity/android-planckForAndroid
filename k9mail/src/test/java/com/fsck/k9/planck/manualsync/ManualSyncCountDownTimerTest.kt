@@ -4,6 +4,7 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import security.planck.sync.SyncRepository
 import java.util.Timer
@@ -16,7 +17,7 @@ class ManualSyncCountDownTimerTest {
     }
 
     private val jTimer = Timer()
-    private val timeout = 0L
+    private val timeout = 10L
     private val timer =
         ManualSyncCountDownTimer(syncRepositoryProvider, jTimer, timeout)
 
@@ -32,6 +33,7 @@ class ManualSyncCountDownTimerTest {
     fun `SyncDelegate calls syncStartTimeout() on timer timeout`() {
         timer.startOrReset()
 
+        runBlocking { 30 }
         verify { syncRepository.syncStartTimeout() }
     }
 }
