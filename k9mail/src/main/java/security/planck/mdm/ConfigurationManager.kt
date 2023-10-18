@@ -7,6 +7,8 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.planck.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -24,7 +26,8 @@ class ConfigurationManager @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
-    private val listeners = mutableSetOf<RestrictionsListener>()
+    private val restrictionsUpdatedMF: MutableStateFlow<Int> = MutableStateFlow(0)
+    val restrictionsUpdatedFlow = restrictionsUpdatedMF.asStateFlow()
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -119,16 +122,6 @@ class ConfigurationManager @Inject constructor(
     }
 
     private fun sendRemoteConfig() {
-        listeners.forEach {
-            it.updatedRestrictions()
-        }
-    }
-
-    fun addListener(listener: RestrictionsListener) {
-        listeners.add(listener)
-    }
-
-    fun removeListener(listener: RestrictionsListener) {
-        listeners.remove(listener)
+        restrictionsUpdatedMF.value = restrictionsUpdatedMF.value + 1
     }
 }
