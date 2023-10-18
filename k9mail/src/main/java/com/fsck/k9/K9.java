@@ -3,6 +3,8 @@ package com.fsck.k9;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +21,8 @@ import android.os.PowerManager;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.acra.ACRA;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -57,6 +61,11 @@ import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
 
+import org.acra.ReportField;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.MailSenderConfigurationBuilder;
+import org.acra.config.NotificationConfigurationBuilder;
+import org.acra.data.StringFormat;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -196,6 +205,35 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
      * </p>
      */
     private static final String DATABASE_VERSION_CACHE = "database_version_cache";
+
+    /**
+     * The file name for the dedicated ACRA's custom shared preferences
+     */
+    private static final String ACRA_SETTINGS = "custom_acra_preferences";
+
+    /**
+     * The key which responsible to disabling ACRA crash reporting
+     */
+    private static final String ACRA_DISABLE = "acra.disable";
+
+    /**
+     * The key which responsible to enabling ACRA crash reporting
+     */
+    private static final String ACRA_ENABLE = "acra.enable";
+
+    /**
+     * If user granted the READ_PHONE_STATE permission to the application but we want to let the end user
+     * be able to disable the inclusion of their Device ID in crash reports for privacy reasons.
+     * android:defaultValue="true"
+     */
+    private static final String ACRA_DEVICE_ID_ENABLE = "acra.deviceid.enable";
+
+    /**
+     * Including logcat extracts in reports is a great tool for developers, but it can lead to privacy issues
+     * as some other applications might log private data like user account names, opened URLs, calendar events.
+     * defaultValue="true"
+     */
+    private static final String ACRA_SYSTEM_LOGS_ENABLE = "acra.syslog.enable";
 
     /**
      * Key used to store the last known database version of the accounts' databases.
@@ -458,6 +496,102 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         }
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        if (createAcraNotificationChannel()) {
+            //By default we don't want to allow ACRA tracking system logs, unless user intentionally will grant this permission
+            adjustAcraSystemLogsTracking(false);
+            //By default we don't want to allow ACRA tracking device ID, unless user intentionally will grant this permission
+            adjustAcraDeviceIdSharing(false);
+        }
+
+        ACRA.DEV_LOGGING = BuildConfig.DEBUG;
+
+        ACRA.init(this, new CoreConfigurationBuilder()
+                .withBuildConfigClass(BuildConfig.class)
+                .withSharedPreferencesName(ACRA_SETTINGS)
+                .withReportFormat(StringFormat.JSON)
+                .withReportContent(ReportField.APP_VERSION_NAME, ReportField.ANDROID_VERSION,
+                        ReportField.BRAND, ReportField.PHONE_MODEL,
+                        ReportField.STACK_TRACE, ReportField.AVAILABLE_MEM_SIZE,
+                        ReportField.USER_CRASH_DATE, ReportField.THREAD_DETAILS,
+                        ReportField.LOGCAT)
+                .withExcludeMatchingSettingsKeys()//TODO: specify what to exclude
+                .withPluginConfigurations(
+                        new NotificationConfigurationBuilder()
+                                .withTitle(getString(R.string.acra_notification_title))
+                                .withText(getString(R.string.acra_notification_text))
+                                .withChannelDescription(getString(R.string.acra_notification_channel_description))
+                                .withChannelName(getString(R.string.acra_notification_channel_id))
+                                .withSendButtonText(getString(R.string.ok))
+                                .withDiscardButtonText(getString(R.string.cancel_action))
+                                .withEnabled(true)
+                                .withSendOnClick(true)
+                                .build(),
+                        new MailSenderConfigurationBuilder()
+                                .withMailTo(getString(R.string.acra_developer_email))
+                                .withReportAsFile(true)
+                                .withEnabled(true)
+                                .withReportFileName(getString(R.string.acra_file_name))
+                                .withSubject(getString(R.string.acra_mail_subject,
+                                        BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME))
+                        .build()
+                )
+        );
+
+    }
+
+    private SharedPreferences getAcraPreferences() {
+        return getSharedPreferences(ACRA_SETTINGS, MODE_PRIVATE);
+    }
+
+    public void turnOffAcraCrashLogging() {
+        getAcraPreferences().edit().
+                putBoolean(ACRA_ENABLE, false).
+                putBoolean(ACRA_DISABLE, true).
+                apply();
+    }
+
+    public void turnOnAcraCrashLogging() {
+        getAcraPreferences().edit().
+                putBoolean(ACRA_ENABLE, true).
+                putBoolean(ACRA_DISABLE, false).
+                apply();
+    }
+
+    public void adjustAcraDeviceIdSharing(boolean allow) {
+        getAcraPreferences().edit().
+                putBoolean(ACRA_DEVICE_ID_ENABLE, allow).apply();
+    }
+
+    public void adjustAcraSystemLogsTracking(boolean allow) {
+        getAcraPreferences().edit().
+                putBoolean(ACRA_SYSTEM_LOGS_ENABLE, allow).apply();
+    }
+
+    private boolean createAcraNotificationChannel() {
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        if (notificationManager.getNotificationChannel(getString(R.string.acra_notification_channel_id)) != null) {
+            return false;
+        }
+
+        String description = getString(R.string.acra_notification_channel_name);
+        NotificationChannel channel = new NotificationChannel(
+                getString(R.string.acra_notification_channel_id),
+                getString(R.string.acra_notification_channel_name),
+                NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription(description);
+
+        // Register the channel with the system. We can't change the importance
+        // or other notification behaviors after this.
+        notificationManager.createNotificationChannel(channel);
+        return true;
+    }
+
+
     /**
      * Called throughout the application when the number of accounts has changed. This method
      * enables or disables the Compose activity, the boot receiver and the service based on
@@ -688,6 +822,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         app = this;
         Globals.setContext(this);
 
+        ACRA.init(this);
         provisioningManager.startProvisioning();
     }
 
