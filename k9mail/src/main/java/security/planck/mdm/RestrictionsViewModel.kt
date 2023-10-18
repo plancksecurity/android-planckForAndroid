@@ -10,12 +10,21 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+/**
+ * [ViewModel] dedicated for restrictions affairs.
+ */
 @HiltViewModel
 class RestrictionsViewModel @Inject constructor(
     configurationManager: ConfigurationManager,
 ) : ViewModel() {
     private val restrictionsUpdatedLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
+
+    /**
+     * @property restrictionsUpdated
+     *
+     * [LiveData] that delivers restrictions updates.
+     */
     val restrictionsUpdated: LiveData<Event<Boolean>> = restrictionsUpdatedLiveData
 
     init {
