@@ -215,7 +215,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                         .setTitle(R.string.pep_key_reset_all_own_ids_summary)
                         .setCancelable(false)
                         .setPositiveButton(R.string.reset_all) { _, _ ->
-                            dopEpKeyReset()
+                            doPlanckKeyReset()
                         }.setNeutralButton(R.string.cancel_action, null)
                         .show()
                 true
@@ -284,7 +284,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     }
 
-    private fun dopEpKeyReset() {
+    private fun doPlanckKeyReset() {
         disableKeyResetClickListener()
         loading?.visibility = View.VISIBLE
 
@@ -292,11 +292,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         uiScope.launch {
             ownKeyReset()
+            syncRepository.isGrouped = false
             context?.applicationContext?.let {
                 FeedbackTools.showLongFeedback(view,
                         it.getString(R.string.key_reset_all_own_identitities_feedback))
             }
             initializeGlobalpEpKeyReset()
+            updateLeaveDeviceGroupPreferenceVisibility()
             loading?.visibility = View.GONE
         }
     }
