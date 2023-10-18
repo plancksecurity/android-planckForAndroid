@@ -25,6 +25,7 @@ class PlanckIdentityMapper @Inject constructor(private val planckProvider: Planc
             rating = recipient.rating
             major_ver = recipient.major_ver
             minor_ver = recipient.minor_ver
+            enc_format = recipient.enc_format;
         }
     }
 }
