@@ -20,7 +20,6 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.ui.tools.FeedbackTools
-import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
@@ -38,6 +37,7 @@ import kotlinx.coroutines.withContext
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.mdm.ManageableSetting
+import security.planck.mdm.RestrictionsViewModel
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 import javax.inject.Inject
@@ -45,6 +45,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by viewModels()
+    private val restrictionsViewModel: RestrictionsViewModel by viewModels()
     @Inject
     lateinit var dataStoreFactory: AccountSettingsDataStoreFactory
     @Inject
@@ -69,7 +70,18 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.account_settings, rootKey)
         title = preferenceScreen.title
 
+        observeRestrictionsUpdates()
         initializePreferences()
+    }
+
+    private fun observeRestrictionsUpdates() {
+        restrictionsViewModel.restrictionsUpdated.observe(this) { event ->
+            event?.getContentIfNotHandled()?.let { updated ->
+                if (updated) {
+                    refreshPreferences()
+                }
+            }
+        }
     }
 
     private fun initializePreferences(){

@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -35,6 +36,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
+import security.planck.mdm.RestrictionsViewModel
 import security.planck.sync.SyncRepository
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
@@ -47,6 +49,7 @@ import javax.inject.Inject
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
 @AndroidEntryPoint
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
+    private val restrictionsViewModel: RestrictionsViewModel by viewModels()
     @Inject
     lateinit var dataStore: GeneralSettingsDataStore
     @Inject
@@ -72,6 +75,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
+        observeRestrictionsUpdates()
         initializePreferences()
         initializeFragmentResultListener()
     }
@@ -83,6 +87,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
             if (result == LeaveDeviceGroupDialog.EXECUTED) {
                 updateLeaveDeviceGroupPreferenceVisibility()
+            }
+        }
+    }
+
+    private fun observeRestrictionsUpdates() {
+        restrictionsViewModel.restrictionsUpdated.observe(this) { event ->
+            event?.getContentIfNotHandled()?.let { updated ->
+                if (updated) {
+                    refreshPreferences()
+                }
             }
         }
     }

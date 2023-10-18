@@ -20,7 +20,9 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -62,11 +64,14 @@ class ConfigurationManagerTest : RobolectricTest() {
         updater,
         coroutineTestRule.testDispatcherProvider
     )
+    private val restrictionsUpdateValues = mutableListOf<Int>()
 
     @Before
     fun setUp() {
         mockkStatic(K9::class)
         every { K9.save(any()) }.just(Runs)
+        restrictionsUpdateValues.clear()
+        observeRestrictionsUpdateValues()
     }
 
     @After
@@ -225,31 +230,42 @@ class ConfigurationManagerTest : RobolectricTest() {
     }
 
     @Test
-    fun `loadConfigurations() calls restrictions listeners when settings are successfully updated`() =
+    fun `initially restrictions flow value is 0`() {
+        assertUpdateValues(0)
+    }
+
+    @Test
+    fun `loadConfigurations() updates restrictions flow when settings are successfully updated`() =
         runTest {
-            val listener = mockk<RestrictionsListener>()
-
-
-            manager.addListener(listener)
             manager.loadConfigurations()
             advanceUntilIdle()
 
 
-            coVerify { listener.updatedRestrictions() }
+            assertUpdateValues(0, 1)
         }
 
     @Test
-    fun `loadConfigurations() does not call restrictions listeners when settings update fails`() =
+    fun `loadConfigurations() does not update restrictions flow when settings update fails`() =
         runTest {
             coEvery { restrictionsProvider.applicationRestrictions }.throws(RuntimeException("test"))
-            val listener = mockk<RestrictionsListener>()
 
 
-            manager.addListener(listener)
             manager.loadConfigurations()
             advanceUntilIdle()
 
 
-            coVerify(exactly = 0) { listener.updatedRestrictions() }
+            assertUpdateValues(0)
         }
+
+    private fun observeRestrictionsUpdateValues() {
+        CoroutineScope(UnconfinedTestDispatcher()).launch {
+            manager.restrictionsUpdatedFlow.collect {
+                restrictionsUpdateValues.add(it)
+            }
+        }
+    }
+
+    private fun assertUpdateValues(vararg states: Int) {
+        assertEquals(states.toList(), restrictionsUpdateValues)
+    }
 }

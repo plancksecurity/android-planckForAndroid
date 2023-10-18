@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.BuildConfig;
@@ -46,7 +45,6 @@ import butterknife.OnTextChanged;
 import security.planck.auth.OAuthTokenRevokedListener;
 import security.planck.dialog.ConfirmationDialog;
 import security.planck.dialog.ConfirmationDialogKt;
-import security.planck.mdm.RestrictionsListener;
 import security.planck.ui.audit.AuditLogViewModel;
 import timber.log.Timber;
 
@@ -139,14 +137,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         PlanckUIArtefactCache planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
         planckUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
-    }
-
-    protected void startListeningConfigChanges() {
-        mBase.setConfigurationManagerListener((RestrictionsListener) this);
-    }
-
-    protected void stopListeningConfigChanges() {
-        mBase.unsetConfigurationManagerListener((RestrictionsListener) this);
     }
 
     public void setUpToolbar(boolean showUpButton) {
