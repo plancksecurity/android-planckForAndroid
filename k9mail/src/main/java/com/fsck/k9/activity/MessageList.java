@@ -29,6 +29,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -77,7 +78,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.group.GroupTestScreen;
-import security.planck.mdm.RestrictionsListener;
+import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.intro.WelcomeMessageKt;
@@ -93,7 +94,7 @@ import timber.log.Timber;
  */
 @AndroidEntryPoint
 public class MessageList extends K9Activity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker, RestrictionsListener {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker {
 
     @Inject
     NotificationChannelManager channelUtils;
@@ -219,8 +220,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         return isThreadDisplayed;
     }
 
-    @Override
-    public void updatedRestrictions() {
+    private void updatedRestrictions() {
         if (mMessageViewFragment != null
                 && getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             mMessageViewFragment.displayMessage();
@@ -331,6 +331,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Inject
     PermissionChecker permissionChecker;
+    private RestrictionsViewModel restrictionsViewModel;
 
     private void askForContactPermission() {
         if (permissionChecker.doesntHaveContactsPermission()) {
@@ -385,7 +386,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeFragments();
         displayViews();
         channelUtils.updateChannels();
-
+        restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
@@ -780,9 +781,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void onPause() {
         super.onPause();
-        stopListeningConfigChanges();
+        stopObservingRestrictionsChanges();
         overridePendingTransition(NO_ANIMATION, NO_ANIMATION);
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
+    }
+
+    private void stopObservingRestrictionsChanges() {
+        restrictionsViewModel.getRestrictionsUpdated().removeObservers(this);
     }
 
     @Override
@@ -811,7 +816,16 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
         setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
-        startListeningConfigChanges();
+        startObservingRestrictionsChanges();
+    }
+
+    private void startObservingRestrictionsChanges() {
+        restrictionsViewModel.getRestrictionsUpdated().observe(this, event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                updatedRestrictions();
+            }
+        });
     }
 
     private void setDefaultFolderNameIfNeeded() {

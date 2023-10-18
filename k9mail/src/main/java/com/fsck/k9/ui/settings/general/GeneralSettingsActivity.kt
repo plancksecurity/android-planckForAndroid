@@ -14,11 +14,9 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import dagger.hilt.android.AndroidEntryPoint
-import security.planck.mdm.RestrictionsListener
 
 @AndroidEntryPoint
-class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
-    RestrictionsListener {
+class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
     private var newLanguage : String? = null
 
     override fun search(query: String?) {
@@ -38,16 +36,6 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        startListeningConfigChanges()
-    }
-
-    override fun onStop() {
-        startListeningConfigChanges()
-        super.onStop()
     }
 
     private fun initializeActionBar() {
@@ -112,11 +100,5 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
         val fragment: GeneralSettingsFragment = supportFragmentManager
                 .findFragmentById(R.id.generalSettingsContainer) as GeneralSettingsFragment
         fragment.setLanguage(newLanguage)
-    }
-
-    override fun updatedRestrictions() {
-        val fragment = supportFragmentManager
-            .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
-        fragment?.refreshPreferences()
     }
 }

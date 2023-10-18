@@ -18,6 +18,7 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
+import androidx.activity.viewModels
 import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
@@ -52,7 +53,7 @@ import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
-import security.planck.mdm.RestrictionsListener
+import security.planck.mdm.RestrictionsViewModel
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
 import security.planck.sync.SyncRepository
@@ -68,8 +69,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback,
-    RestrictionsListener {
+class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
     private var controller: MessagingController? = null
 
@@ -116,6 +116,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     lateinit var resourcesProvider: ResourcesProvider
     @Inject
     lateinit var syncRepository: SyncRepository
+    private val restrictionsViewModel: RestrictionsViewModel by viewModels()
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -375,13 +376,27 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
         refresh()
         StorageManager.getInstance(application).addListener(storageListener)
-        startListeningConfigChanges()
+        startObservingRestrictionsChanges()
+    }
+
+    private fun startObservingRestrictionsChanges() {
+        restrictionsViewModel.restrictionsUpdated.observe(this) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    updatedRestrictions()
+                }
+            }
+        }
     }
 
     public override fun onPause() {
         super.onPause()
-        stopListeningConfigChanges()
+        stopObservingRestrictionsChanges()
         StorageManager.getInstance(application).removeListener(storageListener)
+    }
+
+    private fun stopObservingRestrictionsChanges() {
+        restrictionsViewModel.restrictionsUpdated.removeObservers(this)
     }
 
     private enum class ACCOUNT_LOCATION {
@@ -1182,7 +1197,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
     }
 
-    override fun updatedRestrictions() {
+    private fun updatedRestrictions() {
         val fragment = supportFragmentManager
             .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
         fragment?.refreshPreferences()

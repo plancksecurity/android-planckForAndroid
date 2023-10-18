@@ -219,7 +219,7 @@ class PlanckStatusPresenter @Inject internal constructor(
 
     private suspend fun changePartnerTrust(): ResultCompat<Unit> = withContext(planckDispatcher) {
         ResultCompat.of {
-            if (latestTrust) planckProvider.trustPersonaKey(latestHandshakeId)
+            if (latestTrust) planckProvider.trustPersonalKey(latestHandshakeId)
             else planckProvider.keyMistrusted(latestHandshakeId)
         }
     }
