@@ -75,6 +75,7 @@ public class Account implements BaseAccount, StoreConfig {
      */
     public static final String OUTBOX = "PEP_INTERNAL_OUTBOX";
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
+    public final boolean EXCLUDE_COPY_MOVE_TO_DRAFT_FOLDER = true;
     private ManageableSetting<Boolean> planckSyncEnabled;
     private String oAuthState;
     private OAuthProviderType mandatoryOAuthProviderType;

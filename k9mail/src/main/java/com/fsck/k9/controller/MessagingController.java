@@ -455,6 +455,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 LocalStore localStore = account.getLocalStore();
                 localFolders = localStore.getPersonalNamespaces(false);
 
+                if (account.EXCLUDE_COPY_MOVE_TO_DRAFT_FOLDER) {
+                    String draftFolderName = account.getDraftsFolderName();
+                    localFolders.removeIf(folder-> folder.getName().equalsIgnoreCase(draftFolderName));
+                }
+
                 if (refreshRemote || localFolders.isEmpty()) {
                     doRefreshRemote(account, listener);
                     return;
