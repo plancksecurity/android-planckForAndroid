@@ -83,7 +83,6 @@ import timber.log.Timber;
 public class LocalStore extends Store implements Serializable {
 
     private static final long serialVersionUID = -5142141896809423072L;
-    private static final  boolean EXCLUDE_COPY_MOVE_TO_DRAFT_FOLDER = true;
     static final String[] EMPTY_STRING_ARRAY = new String[0];
     static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
@@ -410,7 +409,6 @@ public class LocalStore extends Store implements Serializable {
     @Override
     public List<LocalFolder> getPersonalNamespaces(boolean forceListAll) throws MessagingException {
         final List<LocalFolder> folders = new LinkedList<>();
-        final String draftsName = mAccount.getDraftsFolderName();
         try {
             database.execute(false, (DbCallback<List<? extends Folder>>) db -> {
                 Cursor cursor = null;
@@ -423,9 +421,6 @@ public class LocalStore extends Store implements Serializable {
                             continue;
                         }
                         String folderName = cursor.getString(FOLDER_NAME_INDEX);
-                        if (draftsName != null && draftsName.equalsIgnoreCase(folderName)) {
-                            continue;
-                        }
                         LocalFolder folder = new LocalFolder(LocalStore.this, folderName);
                         folder.open(cursor);
 

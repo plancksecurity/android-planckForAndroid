@@ -44,7 +44,7 @@ public class ChooseFolder extends K9ListActivity {
     public static final String EXTRA_SHOW_CURRENT = "com.fsck.k9.ChooseFolder_showcurrent";
     public static final String EXTRA_SHOW_FOLDER_NONE = "com.fsck.k9.ChooseFolder_showOptionNone";
     public static final String EXTRA_SHOW_DISPLAYABLE_ONLY = "com.fsck.k9.ChooseFolder_showDisplayableOnly";
-
+    public static final  boolean EXCLUDE_COPY_MOVE_TO_DRAFT_FOLDER = true;
 
     String mFolder;
     String mSelectFolder;
@@ -366,24 +366,23 @@ public class ChooseFolder extends K9ListActivity {
                     position++;
                 }
             } finally {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Now we're in the UI-thread, we can safely change the contents of the adapter.
-                        mAdapter.clear();
-                        for (String folderName: folderList) {
+                runOnUiThread(() -> {
+                    // Now we're in the UI-thread, we can safely change the contents of the adapter.
+                    mAdapter.clear();
+                    for (String folderName: folderList) {
+                        if (!shouldExcludeFolder(folderName)){
                             mAdapter.add(folderName);
                         }
-
-                        mAdapter.notifyDataSetChanged();
-
-                        /*
-                         * Only enable the text filter after the list has been
-                         * populated to avoid possible race conditions because our
-                         * FolderListFilter isn't really thread-safe.
-                         */
-                        getListView().setTextFilterEnabled(true);
                     }
+
+                    mAdapter.notifyDataSetChanged();
+
+                    /*
+                     * Only enable the text filter after the list has been
+                     * populated to avoid possible race conditions because our
+                     * FolderListFilter isn't really thread-safe.
+                     */
+                    getListView().setTextFilterEnabled(true);
                 });
             }
 
@@ -392,4 +391,10 @@ public class ChooseFolder extends K9ListActivity {
             }
         }
     };
+
+    private boolean shouldExcludeFolder(String folderName) {
+        return EXCLUDE_COPY_MOVE_TO_DRAFT_FOLDER &&
+                mAccount.getDraftsFolderName() != null &&
+                mAccount.getDraftsFolderName().equalsIgnoreCase(folderName);
+    }
 }
