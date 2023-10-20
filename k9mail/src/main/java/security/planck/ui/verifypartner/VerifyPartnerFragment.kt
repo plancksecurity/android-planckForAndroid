@@ -234,7 +234,7 @@ class VerifyPartnerFragment : DialogFragment() {
     private fun renderHandshakeData(state: VerifyPartnerState.HandshakeReady) {
         binding.fprGroup.isVisible = true
         binding.trustwordsGroup.isVisible = state.trustwords.isNotBlank()
-        binding.description.isVisible = state.trustwords.isNotBlank()
+        binding.description.isVisible = true
         binding.description.setText(R.string.pep_ask_trustwords)
         binding.trustwords.text = state.trustwords
         binding.fprCurrentAccountTitle.text = viewModel.myselfEmail

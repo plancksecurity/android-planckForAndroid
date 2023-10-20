@@ -59,7 +59,7 @@
     <string name="pep_confirm_trustwords">Confirm</string>
     <string name="pep_wrong_trustwords">Reject</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
-    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords\? Then compare to the correct answer shown below.</string>
+    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords or fingerprints\? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
