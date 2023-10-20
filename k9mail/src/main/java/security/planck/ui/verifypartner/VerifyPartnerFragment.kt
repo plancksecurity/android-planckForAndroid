@@ -198,13 +198,6 @@ class VerifyPartnerFragment : DialogFragment() {
             viewModel.partnerEmail
         ) // better use userName than email if possible??
         binding.afirmativeActionButton.setText(R.string.reject_trust_dialog_positive_action)
-        binding.afirmativeActionButton.setOnClickListener {
-            viewModel.positiveAction()
-        }
-        binding.negativeActionButton.setOnClickListener {
-            viewModel.negativeAction()
-        }
-        binding.dissmissActionButton.setOnClickListener { dismissAllowingStateLoss() }
         binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
         binding.negativeActionButton.setTextColorAttr(R.attr.colorAccent)
         binding.dissmissActionButton.setTextColorAttr(R.attr.colorAccent)
@@ -219,16 +212,9 @@ class VerifyPartnerFragment : DialogFragment() {
             viewModel.partnerEmail
         ) // better use userName than email if possible??
         binding.afirmativeActionButton.setText(R.string.confirm_trust_dialog_positive_action)
-        binding.afirmativeActionButton.setOnClickListener {
-            viewModel.positiveAction()
-        }
         binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
         binding.negativeActionButton.setTextColorAttr(R.attr.colorAccent)
         binding.dissmissActionButton.setTextColorAttr(R.attr.colorAccent)
-        binding.negativeActionButton.setOnClickListener {
-            viewModel.negativeAction()
-        }
-        binding.dissmissActionButton.setOnClickListener { dismissAllowingStateLoss() }
     }
 
     private fun renderHandshakeData(state: VerifyPartnerState.HandshakeReady) {
@@ -243,7 +229,6 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.fprPartnerAccountTitle.text = viewModel.partnerEmail
         binding.fprCurrentAccountValue.text = state.ownFpr
         binding.fprPartnerAccountValue.text = state.partnerFpr
-        binding.progressGroup.isVisible = false
         binding.afirmativeActionButton.isVisible = true
         binding.negativeActionButton.isVisible = true
         binding.dissmissActionButton.isVisible = true
@@ -251,6 +236,7 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.negativeActionButton.setText(R.string.key_import_reject)
         binding.afirmativeActionButton.setText(R.string.pep_confirm_trustwords)
         binding.dissmissActionButton.setTextColorAttr(R.attr.defaultColorOnBackground)
+        binding.progressGroup.isVisible = false
         setupMenu()
     }
 
