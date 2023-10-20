@@ -336,7 +336,7 @@ private fun createAndShowVerifyPartnerDialog(
         .commitAllowingStateLoss()
 }
 
-fun Fragment.showConfirmationDialog(
+fun Fragment.showVerifyPartnerDialog(
     sender: String,
     myself: String,
     messageReference: MessageReference,
@@ -348,7 +348,7 @@ fun Fragment.showConfirmationDialog(
     )
 }
 
-fun AppCompatActivity.showConfirmationDialog(
+fun AppCompatActivity.showVerifyPartnerDialog(
     sender: String,
     myself: String,
     messageReference: MessageReference,

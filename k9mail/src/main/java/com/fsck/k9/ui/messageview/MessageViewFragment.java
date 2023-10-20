@@ -890,7 +890,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         refreshRecipients(getContext());
         if (MessageKt.isValidForHandshake(mMessage)) {
             String myAddress = mAccount.getEmail();
-            VerifyPartnerFragmentKt.showConfirmationDialog(this, mMessage.getFrom()[0].getAddress(), myAddress, getMessageReference(), true);
+            VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, mMessage.getFrom()[0].getAddress(), myAddress, getMessageReference(), true);
             //PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
     }
