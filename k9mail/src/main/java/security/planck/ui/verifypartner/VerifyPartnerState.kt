@@ -8,6 +8,7 @@ sealed class VerifyPartnerState {
     object ErrorLoadingMessage : VerifyPartnerState()
     object ErrorGettingTrustwords : VerifyPartnerState()
     data class HandshakeReady(
+        val myself: String,
         override val partner: String,
         val ownFpr: String,
         val partnerFpr: String,

@@ -54,8 +54,8 @@ class VerifyPartnerViewModel @Inject constructor(
     private var shortTrustWords = true
     private var latestTrust = false
     private val partnerName: String = cache.recipients.first().username
-    val myselfEmail: String
-        get() = myself.address
+    private val myselfName: String
+        get() = myself.username
 
     fun initialize(
         sender: String,
@@ -66,13 +66,12 @@ class VerifyPartnerViewModel @Inject constructor(
         viewModelScope.launch {
             stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
             populateData(sender, myself, messageReference, isMessageIncoming)
-            loadMessage().onSuccess {
-                localMessage = it ?: let {
-                    stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
-                    return@launch
+            loadMessage().onSuccessSuspend {
+                it?.let { message ->
+                    localMessage = message
+                    ratingLiveData.value = localMessage.planckRating
+                    getHandshakeData()
                 }
-                rating.value
-                getHandshakeData()
             }.onFailure {
                 // display error
                 stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
@@ -136,7 +135,7 @@ class VerifyPartnerViewModel @Inject constructor(
     }
 
     private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
-        this.ratingLiveData.value = rating
+        ratingLiveData.value = rating
         return if (isMessageIncoming) {
             saveRatingToMessage(rating)
         } else {
@@ -206,6 +205,7 @@ class VerifyPartnerViewModel @Inject constructor(
             getOrRefreshTrustWords()
         } else {
             stateLiveData.value = VerifyPartnerState.HandshakeReady(
+                myselfName,
                 partnerName,
                 myself.fpr,
                 partner.fpr,
@@ -228,7 +228,7 @@ class VerifyPartnerViewModel @Inject constructor(
             stateLiveData.value = if (trustwords.isNullOrBlank()) {
                 VerifyPartnerState.ErrorGettingTrustwords
             } else VerifyPartnerState.HandshakeReady(
-                partnerName, myself.fpr, partner.fpr, trustwords, shortTrustWords
+                myselfName, partnerName, myself.fpr, partner.fpr, trustwords, shortTrustWords
             )
         }.onFailure {
             stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords
@@ -247,9 +247,9 @@ class VerifyPartnerViewModel @Inject constructor(
         this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
     }
 
-    private suspend fun loadMessage(): Result<LocalMessage?> =
+    private suspend fun loadMessage(): ResultCompat<LocalMessage?> =
         withContext(dispatcherProvider.io()) {
-            kotlin.runCatching {
+            ResultCompat.of {
                 val account = preferences.getAccount(messageReference.accountUuid)
                 controller.loadMessage(account, messageReference.folderName, messageReference.uid)
             }

@@ -1,5 +1,6 @@
 package security.planck.ui.verifypartner
 
+import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -30,6 +32,7 @@ private const val ARG_MESSAGE_DIRECTION =
     "security.planck.ui.verifypartner.VerifyPartnerFragment.messageDirection"
 private const val ENGLISH_POSITION = 0
 private const val GERMAN_POSITION = 1
+private const val NO_RESOURCE = 0
 
 @AndroidEntryPoint
 class VerifyPartnerFragment : DialogFragment() {
@@ -66,6 +69,10 @@ class VerifyPartnerFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (requireView() as ViewGroup).layoutTransition = LayoutTransition().apply {
+            enableTransitionType(LayoutTransition.CHANGING)
+        }
+        dialog?.setCancelable(false)
         observeViewModel()
     }
 
@@ -118,112 +125,87 @@ class VerifyPartnerFragment : DialogFragment() {
     }
 
     private fun showErrorMistrusting(state: VerifyPartnerState.ErrorMistrusting) {
-        binding.progressGroup.isVisible = false
-        binding.description.text =
-            getString(R.string.reject_trust_dialog_failure, state.partner)
-        configureButtonsJustClose()
+        configureButtonsJustClose(getString(R.string.reject_trust_dialog_failure, state.partner))
     }
 
     private fun showErrorTrusting(state: VerifyPartnerState.ErrorTrusting) {
-        binding.progressGroup.isVisible = false
-        binding.description.text =
-            getString(R.string.confirm_trust_dialog_failure, state.partner)
-        configureButtonsJustClose()
+        configureButtonsJustClose(getString(R.string.confirm_trust_dialog_failure, state.partner))
     }
 
     private fun showErrorGettingTrustwords() {
-        binding.progressGroup.isVisible = false
-        binding.description.setText(R.string.status_loading_error)
-        configureButtonsJustClose()
+        configureButtonsJustClose(getString(R.string.status_loading_error))
     }
 
     private fun showErrorLoadingMessage() {
-        binding.progressGroup.isVisible = false
-        binding.description.setText(R.string.status_loading_error)
-        configureButtonsJustClose()
+        configureButtonsJustClose(getString(R.string.status_loading_error))
     }
 
     private fun showMistrustDone(state: VerifyPartnerState.MistrustDone) {
-        binding.progressGroup.isVisible = false
-        binding.description.text =
-            getString(R.string.reject_trust_dialog_success, state.partner)
-        configureButtonsJustClose()
+        configureButtonsJustClose(getString(R.string.reject_trust_dialog_success, state.partner))
     }
 
     private fun showTrustDone(state: VerifyPartnerState.TrustDone) {
-        binding.progressGroup.isVisible = false
-        binding.description.text =
-            getString(R.string.confirm_trust_dialog_success, state.partner)
-        configureButtonsJustClose()
+        configureButtonsJustClose(getString(R.string.confirm_trust_dialog_success, state.partner))
     }
 
-    private fun configureButtonsJustClose() {
-        binding.dissmissActionButton.isVisible = false
-        binding.negativeActionButton.isVisible = false
-        binding.afirmativeActionButton.setText(R.string.close)
-        binding.afirmativeActionButton.setOnClickListener { dismissAllowingStateLoss() }
+    private fun configureButtonsJustClose(description: String) {
+        showScreen(
+            description = description,
+            positiveButtonText = R.string.close,
+            positiveButtonClick = ::dismissAllowingStateLoss
+        )
     }
 
     private fun showMistrustProgress(state: VerifyPartnerState.MistrustProgress) {
-        binding.progressGroup.isVisible = true
-        binding.progressText.text =
-            getString(R.string.reject_trust_dialog_progress, state.partner)
+        showScreen(
+            progressText = getString(R.string.reject_trust_dialog_progress, state.partner)
+        )
     }
 
     private fun showTrustProgress(state: VerifyPartnerState.TrustProgress) {
-        binding.progressGroup.isVisible = true
-        binding.progressText.text =
-            getString(R.string.confirm_trust_dialog_progress, state.partner)
+        showScreen(
+            progressText = getString(R.string.confirm_trust_dialog_progress, state.partner)
+        )
     }
 
     private fun showMistrustConfirmation(state: VerifyPartnerState.ConfirmMistrust) {
         binding.toolbar.menu.clear()
-        binding.fprGroup.isVisible = false
-        binding.trustwordsGroup.isVisible = false
-        binding.description.text = getString(
-            R.string.reject_trust_dialog_confirmation,
-            state.partner
+        showScreen(
+            description = getString(R.string.reject_trust_dialog_confirmation, state.partner),
+            positiveButtonText = R.string.reject_trust_dialog_positive_action,
+            negativeButtonText = R.string.verify_partner_dialog_go_back,
+            dismissButtonVisible = true,
         )
-        binding.afirmativeActionButton.setText(R.string.reject_trust_dialog_positive_action)
-        binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
         binding.negativeActionButton.setTextColorAttr(R.attr.colorAccent)
         binding.dissmissActionButton.setTextColorAttr(R.attr.colorAccent)
     }
 
     private fun showTrustConfirmation(state: VerifyPartnerState.ConfirmTrust) {
         binding.toolbar.menu.clear()
-        binding.fprGroup.isVisible = false
-        binding.trustwordsGroup.isVisible = false
-        binding.description.text = getString(
-            R.string.confirm_trust_dialog_confirmation,
-            state.partner
+        showScreen(
+            description = getString(R.string.confirm_trust_dialog_confirmation, state.partner),
+            positiveButtonText = R.string.confirm_trust_dialog_positive_action,
+            negativeButtonText = R.string.verify_partner_dialog_go_back,
+            dismissButtonVisible = true,
         )
-        binding.afirmativeActionButton.setText(R.string.confirm_trust_dialog_positive_action)
-        binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
         binding.negativeActionButton.setTextColorAttr(R.attr.colorAccent)
         binding.dissmissActionButton.setTextColorAttr(R.attr.colorAccent)
     }
 
     private fun renderHandshakeData(state: VerifyPartnerState.HandshakeReady) {
-        binding.fprGroup.isVisible = true
-        binding.trustwordsGroup.isVisible = state.trustwords.isNotBlank()
-        binding.showLongTrustwords.isVisible =
-            state.trustwords.isNotBlank() && state.shortTrustwords
-        binding.description.isVisible = true
-        binding.description.setText(R.string.pep_ask_trustwords)
-        binding.trustwords.text = state.trustwords
-        binding.fprCurrentAccountTitle.text = viewModel.myselfEmail
-        binding.fprPartnerAccountTitle.text = state.partner
-        binding.fprCurrentAccountValue.text = state.ownFpr
-        binding.fprPartnerAccountValue.text = state.partnerFpr
-        binding.afirmativeActionButton.isVisible = true
-        binding.negativeActionButton.isVisible = true
-        binding.dissmissActionButton.isVisible = true
+        showScreen(
+            trustwords = state.trustwords,
+            ownFprTitle = state.myself,
+            partnerFprTitle = state.partner,
+            ownFpr = state.ownFpr,
+            partnerFpr = state.partnerFpr,
+            description = getString(R.string.pep_ask_trustwords),
+            positiveButtonText = R.string.pep_confirm_trustwords,
+            negativeButtonText = R.string.key_import_reject,
+            dismissButtonVisible = true,
+        )
         binding.negativeActionButton.setTextColorColor(R.color.planck_red)
-        binding.negativeActionButton.setText(R.string.key_import_reject)
-        binding.afirmativeActionButton.setText(R.string.pep_confirm_trustwords)
         binding.dissmissActionButton.setTextColorAttr(R.attr.defaultColorOnBackground)
-        binding.progressGroup.isVisible = false
         setupMenu()
     }
 
@@ -231,6 +213,69 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.toolbar.menu.clear()
         binding.progressText.setText(R.string.message_list_loading)
         binding.progressGroup.isVisible = true
+    }
+
+    private fun showScreen(
+        description: String = "",
+        ownFprTitle: String = "",
+        partnerFprTitle: String = "",
+        ownFpr: String = "",
+        partnerFpr: String = "",
+        trustwords: String = "",
+        shortTrustwords: Boolean = true,
+        progressText: String = "",
+        negativeButtonVisible: Boolean = false,
+        dismissButtonVisible: Boolean = false,
+        @StringRes positiveButtonText: Int = NO_RESOURCE,
+        @StringRes negativeButtonText: Int = NO_RESOURCE,
+        positiveButtonClick: () -> Unit = { viewModel.positiveAction() },
+    ) {
+        binding.description.apply {
+            isVisible = (description.isNotBlank()).also { if (it) text = description }
+        }
+        if (ownFpr.isNotBlank()) {
+            showFprs(ownFprTitle, partnerFprTitle, ownFpr, partnerFpr)
+        } else {
+            binding.fprGroup.isVisible = false
+        }
+        if (trustwords.isNotBlank()) {
+            showTrustwords(trustwords)
+            binding.showLongTrustwords.isVisible = shortTrustwords
+        } else {
+            binding.trustwordsGroup.isVisible = false
+        }
+
+        binding.progressGroup.isVisible = progressText.isNotBlank()
+        binding.progressText.text = progressText
+        binding.negativeActionButton.isVisible = negativeButtonVisible
+        binding.negativeActionButton.apply {
+            isVisible =
+                (negativeButtonText != NO_RESOURCE).also { if (it) setText(negativeButtonText) }
+        }
+        binding.dissmissActionButton.isVisible = dismissButtonVisible
+        binding.afirmativeActionButton.apply {
+            isVisible =
+                (positiveButtonText != NO_RESOURCE).also { if (it) setText(positiveButtonText) }
+            setOnClickListener { positiveButtonClick() }
+        }
+    }
+
+    private fun showTrustwords(trustwords: String) {
+        binding.trustwordsGroup.isVisible = true
+        binding.trustwords.text = trustwords
+    }
+
+    private fun showFprs(
+        ownTitle: String,
+        partnerTitle: String,
+        ownFpr: String,
+        partnerFpr: String
+    ) {
+        binding.fprGroup.isVisible = true
+        binding.fprCurrentAccountTitle.text = ownTitle
+        binding.fprPartnerAccountTitle.text = partnerTitle
+        binding.fprCurrentAccountValue.text = ownFpr
+        binding.fprPartnerAccountValue.text = partnerFpr
     }
 
     private fun setupViews() {
@@ -255,7 +300,7 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.toolbar.menu.clear()
         binding.toolbar.inflateMenu(R.menu.menu_add_device)
         binding.toolbar.overflowIcon =
-            ThemeManager.getDrawableFromAttributeResource(requireContext(), R.attr.iconLanguage)
+            ThemeManager.getDrawableFromAttributeResource(requireContext(), R.attr.iconLanguageGray)
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.english -> viewModel.changeTrustwordsLanguage(ENGLISH_POSITION)
