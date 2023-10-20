@@ -234,6 +234,8 @@ class VerifyPartnerFragment : DialogFragment() {
     private fun renderHandshakeData(state: VerifyPartnerState.HandshakeReady) {
         binding.fprGroup.isVisible = true
         binding.trustwordsGroup.isVisible = state.trustwords.isNotBlank()
+        binding.showLongTrustwords.isVisible =
+            state.trustwords.isNotBlank() && viewModel.shortTrustWords
         binding.description.isVisible = true
         binding.description.setText(R.string.pep_ask_trustwords)
         binding.trustwords.text = state.trustwords
@@ -245,24 +247,9 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.afirmativeActionButton.isVisible = true
         binding.negativeActionButton.isVisible = true
         binding.dissmissActionButton.isVisible = true
-        binding.afirmativeActionButton.setOnClickListener {
-            viewModel.positiveAction()
-        }
-        binding.negativeActionButton.setOnClickListener {
-            viewModel.negativeAction()
-        }
-        binding.showLongTrustwords.setOnClickListener {
-            binding.showLongTrustwords.isVisible = false
-            viewModel.switchTrustwordsLength()
-        }
-        binding.trustwords.setOnLongClickListener {
-            viewModel.switchTrustwordsLength()
-            true
-        }
         binding.negativeActionButton.setTextColorColor(R.color.planck_red)
         binding.negativeActionButton.setText(R.string.key_import_reject)
         binding.afirmativeActionButton.setText(R.string.pep_confirm_trustwords)
-        binding.dissmissActionButton.setOnClickListener { dismissAllowingStateLoss() }
         binding.dissmissActionButton.setTextColorAttr(R.attr.defaultColorOnBackground)
         setupMenu()
     }
@@ -274,9 +261,21 @@ class VerifyPartnerFragment : DialogFragment() {
     }
 
     private fun setupViews() {
-        binding.description.setText(R.string.pep_ask_trustwords)
-        binding.fprCurrentAccountTitle.text = viewModel.myselfEmail
-        binding.fprPartnerAccountTitle.text = viewModel.partnerEmail
+        binding.afirmativeActionButton.setOnClickListener {
+            viewModel.positiveAction()
+        }
+        binding.negativeActionButton.setOnClickListener {
+            viewModel.negativeAction()
+        }
+        binding.dissmissActionButton.setOnClickListener { dismissAllowingStateLoss() }
+        binding.showLongTrustwords.setOnClickListener {
+            binding.showLongTrustwords.isVisible = false
+            viewModel.switchTrustwordsLength()
+        }
+        binding.trustwords.setOnLongClickListener {
+            viewModel.switchTrustwordsLength()
+            true
+        }
     }
 
     private fun setupMenu() {
