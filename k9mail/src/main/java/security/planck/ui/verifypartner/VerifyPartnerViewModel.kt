@@ -52,6 +52,7 @@ class VerifyPartnerViewModel @Inject constructor(
 
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
     var shortTrustWords = true
+        private set
     private var latestTrust = false
     val partnerEmail: String = cache.recipients.first().address
     val myselfEmail: String
@@ -77,59 +78,46 @@ class VerifyPartnerViewModel @Inject constructor(
         }
     }
 
-    fun startHandshake(trust: Boolean) {
+    private fun startHandshake(trust: Boolean) {
         latestTrust = trust
     }
 
-    private fun performHandshake() { // from the confirmation
+    private fun performHandshake() { // actually trust or mistrust partner
         viewModelScope.launch {
-            //setTrustConfimationState(BackgroundTaskDialogView.State.LOADING)
+            setHandshakeProgress()
             changePartnerTrust().flatMapSuspend {
                 refreshRating()
             }.onSuccessSuspend {
-                stateLiveData.value = if (latestTrust) {
-                    VerifyPartnerState.TrustDone
-                } else {
-                    VerifyPartnerState.MistrustDone
-                }
-                //setTrustConfimationState(BackgroundTaskDialogView.State.SUCCESS)
-                //updateIdentityAndNotify()
+                setHandshakeDone()
             }.onFailure {
                 // display error
-                stateLiveData.value = if (latestTrust) {
-                    VerifyPartnerState.ErrorTrusting
-                } else {
-                    VerifyPartnerState.ErrorMistrusting
-                }
-                //setTrustConfimationState(BackgroundTaskDialogView.State.ERROR)
+                setHandshakeError()
             }
         }
     }
 
-    fun rejectHandshake(partner: Identity) {
-        viewModelScope.launch {
-            //identityView.enableButtons(false) // disable buttons or display progressbar
-            withContext(dispatcherProvider.planckDispatcher()) {
-                planckProvider.keyMistrusted(partner)
-            }
-            // enable buttons or hide progressbar
+    private fun setHandshakeError() {
+        stateLiveData.value = if (latestTrust) {
+            VerifyPartnerState.ErrorTrusting
+        } else {
+            VerifyPartnerState.ErrorMistrusting
         }
     }
 
-    fun confirmHandshake(partner: Identity) {
-        viewModelScope.launch {
-            //identityView.enableButtons(false) // disable buttons or display progressbar
-            withContext(dispatcherProvider.planckDispatcher()) {
-                planckProvider.trustPersonalKey(
-                    this@VerifyPartnerViewModel.partner
-                )
-            }
-            // enable buttons or hide progressbar
+    private fun setHandshakeDone() {
+        stateLiveData.value = if (latestTrust) {
+            VerifyPartnerState.TrustDone
+        } else {
+            VerifyPartnerState.MistrustDone
         }
     }
 
-    private suspend fun updateIdentityAndNotify() {
-        updateIdentity()
+    private fun setHandshakeProgress() {
+        stateLiveData.value = if (latestTrust) {
+            VerifyPartnerState.TrustProgress
+        } else {
+            VerifyPartnerState.MistrustProgress
+        }
     }
 
     private suspend fun updateIdentity() = withContext(dispatcherProvider.planckDispatcher()) {
@@ -219,7 +207,7 @@ class VerifyPartnerViewModel @Inject constructor(
             getOrRefreshTrustWords()
         } else {
             stateLiveData.value = VerifyPartnerState.HandshakeReady(
-                myself.fpr, partner!!.fpr, ""
+                myself.fpr, partner!!.fpr, "" // no trustwords available for non-planck user
             )
         }
     }
@@ -238,7 +226,6 @@ class VerifyPartnerViewModel @Inject constructor(
                 myself.fpr, partner!!.fpr, trustwords
             )
         }.onFailure {
-            // error state syncState.value = SyncState.Error(it)
             stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords
         }
 
@@ -273,11 +260,11 @@ class VerifyPartnerViewModel @Inject constructor(
             VerifyPartnerState.ConfirmTrust -> {
                 performHandshake()
             }
-            //stateLiveData.value = VerifyPartnerState.TrustDone
+
             VerifyPartnerState.ConfirmMistrust ->
                 performHandshake()
 
-            else -> error("unknown option: ${stateLiveData.value}")
+            else -> error("unexpected state: ${stateLiveData.value}")
         }
     }
 
@@ -285,19 +272,17 @@ class VerifyPartnerViewModel @Inject constructor(
         when (stateLiveData.value) {
             is VerifyPartnerState.HandshakeReady -> {
                 startHandshake(false)
-                // display confirmation
                 stateLiveData.value = VerifyPartnerState.ConfirmMistrust
             }
 
             VerifyPartnerState.ConfirmTrust -> {
                 goBack()
             }
-            //stateLiveData.value = VerifyPartnerState.TrustDone
+
             VerifyPartnerState.ConfirmMistrust ->
                 goBack()
 
-            else -> error("unknown option: ${stateLiveData.value}")
-            //stateLiveData.value = VerifyPartnerState.TrustDone
+            else -> error("unexpected state: ${stateLiveData.value}")
         }
     }
 
