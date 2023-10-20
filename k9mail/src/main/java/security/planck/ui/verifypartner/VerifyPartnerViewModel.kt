@@ -41,8 +41,8 @@ class VerifyPartnerViewModel @Inject constructor(
     private lateinit var myself: Identity
     private lateinit var messageReference: MessageReference
     private var isMessageIncoming = false
-    private var localMessage: LocalMessage? = null
-    private var partner: PlanckIdentity? = null
+    private lateinit var localMessage: LocalMessage
+    private lateinit var partner: PlanckIdentity
 
     private val ratingLiveData = MutableLiveData(Rating.pEpRatingUndefined)
     val rating: LiveData<Rating> = ratingLiveData
@@ -67,7 +67,10 @@ class VerifyPartnerViewModel @Inject constructor(
             stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
             populateData(sender, myself, messageReference, isMessageIncoming)
             loadMessage().onSuccess {
-                localMessage = it
+                localMessage = it ?: let {
+                    stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
+                    return@launch
+                }
                 rating.value
                 getHandshakeData()
             }.onFailure {
@@ -126,7 +129,7 @@ class VerifyPartnerViewModel @Inject constructor(
     private fun setupOutgoingMessageRating(): ResultCompat<Rating> {
         return planckProvider.getRatingResult(
             sender,
-            listOf(Address(partner!!.address!!)),
+            listOf(Address(partner.address!!)),
             emptyList(),
             emptyList()
         )
@@ -145,10 +148,7 @@ class VerifyPartnerViewModel @Inject constructor(
         rating: Rating
     ): ResultCompat<Unit> = withContext(dispatcherProvider.io()) {
         ResultCompat.of {
-            localMessage?.let {
-                it.planckRating = rating
-            }
-            Unit
+            localMessage.planckRating = rating
         }
     }
 
@@ -208,7 +208,7 @@ class VerifyPartnerViewModel @Inject constructor(
             stateLiveData.value = VerifyPartnerState.HandshakeReady(
                 partnerName,
                 myself.fpr,
-                partner!!.fpr,
+                partner.fpr,
                 "", // no trustwords available for non-planck user
                 true
             )
@@ -228,7 +228,7 @@ class VerifyPartnerViewModel @Inject constructor(
             stateLiveData.value = if (trustwords.isNullOrBlank()) {
                 VerifyPartnerState.ErrorGettingTrustwords
             } else VerifyPartnerState.HandshakeReady(
-                partnerName, myself.fpr, partner!!.fpr, trustwords, shortTrustWords
+                partnerName, myself.fpr, partner.fpr, trustwords, shortTrustWords
             )
         }.onFailure {
             stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords
@@ -247,12 +247,13 @@ class VerifyPartnerViewModel @Inject constructor(
         this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
     }
 
-    private suspend fun loadMessage(): Result<LocalMessage> = withContext(dispatcherProvider.io()) {
-        kotlin.runCatching {
-            val account = preferences.getAccount(messageReference.accountUuid)
-            controller.loadMessage(account, messageReference.folderName, messageReference.uid)
+    private suspend fun loadMessage(): Result<LocalMessage?> =
+        withContext(dispatcherProvider.io()) {
+            kotlin.runCatching {
+                val account = preferences.getAccount(messageReference.accountUuid)
+                controller.loadMessage(account, messageReference.folderName, messageReference.uid)
+            }
         }
-    }
 
     fun positiveAction() {
         when (stateLiveData.value) {
