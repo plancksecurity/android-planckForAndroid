@@ -84,6 +84,7 @@ import security.planck.ui.PassphraseProvider;
 import security.planck.ui.message_compose.PlanckFabMenu;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.verifypartner.VerifyPartnerFragmentKt;
 import timber.log.Timber;
 
 @AndroidEntryPoint
@@ -889,7 +890,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         refreshRecipients(getContext());
         if (MessageKt.isValidForHandshake(mMessage)) {
             String myAddress = mAccount.getEmail();
-            PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
+            VerifyPartnerFragmentKt.showConfirmationDialog(this, mMessage.getFrom()[0].getAddress(), myAddress, getMessageReference(), true);
+            //PlanckStatus.actionShowStatus(getActivity(), mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
     }
 

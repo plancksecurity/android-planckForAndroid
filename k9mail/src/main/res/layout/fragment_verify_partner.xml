@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="24dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp"
+    tools:context="security.planck.ui.verifypartner.VerifyPartnerFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:text="@string/verify_partner_dialog_title"
+            android:textColor="?attr/defaultColorOnBackground"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/pep_ask_trustwords"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <!--include layout="@layout/planck_status_trustwords_view"/-->
+
+    <TextView
+        android:id="@+id/trustwords_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif"
+        android:text="@string/trustwords_title"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/description"
+        tools:text="@string/trustwords_title" />
+
+    <TextView
+        android:id="@+id/trustwords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/show_long_trustwords"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trustwords_title"
+        tools:text="IMPORTUNER METAPHOR ARNO DIA SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+
+    <ImageView
+        android:id="@+id/show_long_trustwords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/selectable_message_background"
+        android:contentDescription="@string/pep_menu_long_trustwords"
+        android:src="@drawable/ic_show_long_trustwords"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/trustwords"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/fpr_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:text="@string/fpr_title"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/trustwords"
+        tools:text="Fingerprints" />
+
+    <TextView
+        android:id="@+id/fpr_current_account_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/fpr_title"
+        tools:text="your_account@pep.security" />
+
+    <TextView
+        android:id="@+id/fpr_current_account_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:breakStrategy="simple"
+        android:ellipsize="none"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/fpr_current_account_title"
+        tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
+
+    <TextView
+        android:id="@+id/fpr_partner_account_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/fpr_current_account_value"
+        tools:text="partner_account@pep.security" />
+
+    <TextView
+        android:id="@+id/fpr_partner_account_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:breakStrategy="simple"
+        android:ellipsize="none"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/fpr_partner_account_title"
+        tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
+
+    <Button
+        android:id="@+id/afirmativeActionButton"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/pep_confirm_trustwords"
+        android:textColor="?attr/colorAccent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fpr_partner_account_value"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/negativeActionButton"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/key_import_reject"
+        android:textColor="@color/planck_red"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
+        app:layout_constraintStart_toEndOf="@+id/dissmissActionButton"
+        app:layout_constraintTop_toBottomOf="@id/fpr_partner_account_value"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/dissmissActionButton"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keysync_wizard_action_cancel"
+        android:textColor="?attr/defaultColorOnBackground"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fpr_partner_account_value"
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/progress"
+        tools:text="loading..." />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/trustwords_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="trustwords_title, trustwords, show_long_trustwords" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/fpr_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="fpr_title,
+        fpr_current_account_title,
+        fpr_current_account_value,
+        fpr_partner_account_title,
+        fpr_partner_account_value" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/progress_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="progress, progress_text" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
