@@ -83,7 +83,7 @@ import timber.log.Timber;
 public class LocalStore extends Store implements Serializable {
 
     private static final long serialVersionUID = -5142141896809423072L;
-
+    private static final  boolean EXCLUDE_COPY_MOVE_TO_DRAFT_FOLDER = true;
     static final String[] EMPTY_STRING_ARRAY = new String[0];
     static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
@@ -410,31 +410,32 @@ public class LocalStore extends Store implements Serializable {
     @Override
     public List<LocalFolder> getPersonalNamespaces(boolean forceListAll) throws MessagingException {
         final List<LocalFolder> folders = new LinkedList<>();
+        final String draftsName = mAccount.getDraftsFolderName();
         try {
-            database.execute(false, new DbCallback < List <? extends Folder >> () {
-                @Override
-                public List <? extends Folder > doDbWork(final SQLiteDatabase db) throws WrappedException {
-                    Cursor cursor = null;
+            database.execute(false, (DbCallback<List<? extends Folder>>) db -> {
+                Cursor cursor = null;
 
-                    try {
-                        cursor = db.rawQuery("SELECT " + GET_FOLDER_COLS + " FROM folders " +
-                                "ORDER BY name ASC", null);
-                        while (cursor.moveToNext()) {
-                            if (cursor.isNull(FOLDER_ID_INDEX)) {
-                                continue;
-                            }
-                            String folderName = cursor.getString(FOLDER_NAME_INDEX);
-                            LocalFolder folder = new LocalFolder(LocalStore.this, folderName);
-                            folder.open(cursor);
-
-                            folders.add(folder);
+                try {
+                    cursor = db.rawQuery("SELECT " + GET_FOLDER_COLS + " FROM folders " +
+                            "ORDER BY name ASC", null);
+                    while (cursor.moveToNext()) {
+                        if (cursor.isNull(FOLDER_ID_INDEX)) {
+                            continue;
                         }
-                        return folders;
-                    } catch (MessagingException e) {
-                        throw new WrappedException(e);
-                    } finally {
-                        Utility.closeQuietly(cursor);
+                        String folderName = cursor.getString(FOLDER_NAME_INDEX);
+                        if (draftsName != null && draftsName.equalsIgnoreCase(folderName)) {
+                            continue;
+                        }
+                        LocalFolder folder = new LocalFolder(LocalStore.this, folderName);
+                        folder.open(cursor);
+
+                        folders.add(folder);
                     }
+                    return folders;
+                } catch (MessagingException e) {
+                    throw new WrappedException(e);
+                } finally {
+                    Utility.closeQuietly(cursor);
                 }
             });
         } catch (WrappedException e) {
