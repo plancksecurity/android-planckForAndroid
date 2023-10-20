@@ -183,7 +183,7 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.description.text = getString(
             R.string.reject_trust_dialog_confirmation,
             state.partner
-        ) // better use userName than email if possible??
+        )
         binding.afirmativeActionButton.setText(R.string.reject_trust_dialog_positive_action)
         binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
         binding.negativeActionButton.setTextColorAttr(R.attr.colorAccent)
@@ -197,7 +197,7 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.description.text = getString(
             R.string.confirm_trust_dialog_confirmation,
             state.partner
-        ) // better use userName than email if possible??
+        )
         binding.afirmativeActionButton.setText(R.string.confirm_trust_dialog_positive_action)
         binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
         binding.negativeActionButton.setTextColorAttr(R.attr.colorAccent)
