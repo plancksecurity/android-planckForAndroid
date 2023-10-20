@@ -51,10 +51,9 @@ class VerifyPartnerViewModel @Inject constructor(
     val state: LiveData<VerifyPartnerState> = stateLiveData
 
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
-    var shortTrustWords = true
-        private set
+    private var shortTrustWords = true
     private var latestTrust = false
-    val partnerEmail: String = cache.recipients.first().address
+    private val partnerName: String = cache.recipients.first().username
     val myselfEmail: String
         get() = myself.address
 
@@ -98,25 +97,25 @@ class VerifyPartnerViewModel @Inject constructor(
 
     private fun setHandshakeError() {
         stateLiveData.value = if (latestTrust) {
-            VerifyPartnerState.ErrorTrusting
+            VerifyPartnerState.ErrorTrusting(partnerName)
         } else {
-            VerifyPartnerState.ErrorMistrusting
+            VerifyPartnerState.ErrorMistrusting(partnerName)
         }
     }
 
     private fun setHandshakeDone() {
         stateLiveData.value = if (latestTrust) {
-            VerifyPartnerState.TrustDone
+            VerifyPartnerState.TrustDone(partnerName)
         } else {
-            VerifyPartnerState.MistrustDone
+            VerifyPartnerState.MistrustDone(partnerName)
         }
     }
 
     private fun setHandshakeProgress() {
         stateLiveData.value = if (latestTrust) {
-            VerifyPartnerState.TrustProgress
+            VerifyPartnerState.TrustProgress(partnerName)
         } else {
-            VerifyPartnerState.MistrustProgress
+            VerifyPartnerState.MistrustProgress(partnerName)
         }
     }
 
@@ -207,7 +206,11 @@ class VerifyPartnerViewModel @Inject constructor(
             getOrRefreshTrustWords()
         } else {
             stateLiveData.value = VerifyPartnerState.HandshakeReady(
-                myself.fpr, partner!!.fpr, "" // no trustwords available for non-planck user
+                partnerName,
+                myself.fpr,
+                partner!!.fpr,
+                "", // no trustwords available for non-planck user
+                true
             )
         }
     }
@@ -222,8 +225,10 @@ class VerifyPartnerViewModel @Inject constructor(
             )
         }.onSuccess { trustwords ->
             // display trustwords on Screen
-            stateLiveData.value = VerifyPartnerState.HandshakeReady(
-                myself.fpr, partner!!.fpr, trustwords
+            stateLiveData.value = if (trustwords.isNullOrBlank()) {
+                VerifyPartnerState.ErrorGettingTrustwords
+            } else VerifyPartnerState.HandshakeReady(
+                partnerName, myself.fpr, partner!!.fpr, trustwords, shortTrustWords
             )
         }.onFailure {
             stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords
@@ -254,14 +259,14 @@ class VerifyPartnerViewModel @Inject constructor(
             is VerifyPartnerState.HandshakeReady -> {
                 startHandshake(true)
                 // display confirmation
-                stateLiveData.value = VerifyPartnerState.ConfirmTrust
+                stateLiveData.value = VerifyPartnerState.ConfirmTrust(partnerName)
             }
 
-            VerifyPartnerState.ConfirmTrust -> {
+            is VerifyPartnerState.ConfirmTrust -> {
                 performHandshake()
             }
 
-            VerifyPartnerState.ConfirmMistrust ->
+            is VerifyPartnerState.ConfirmMistrust ->
                 performHandshake()
 
             else -> error("unexpected state: ${stateLiveData.value}")
@@ -272,14 +277,14 @@ class VerifyPartnerViewModel @Inject constructor(
         when (stateLiveData.value) {
             is VerifyPartnerState.HandshakeReady -> {
                 startHandshake(false)
-                stateLiveData.value = VerifyPartnerState.ConfirmMistrust
+                stateLiveData.value = VerifyPartnerState.ConfirmMistrust(partnerName)
             }
 
-            VerifyPartnerState.ConfirmTrust -> {
+            is VerifyPartnerState.ConfirmTrust -> {
                 goBack()
             }
 
-            VerifyPartnerState.ConfirmMistrust ->
+            is VerifyPartnerState.ConfirmMistrust ->
                 goBack()
 
             else -> error("unexpected state: ${stateLiveData.value}")

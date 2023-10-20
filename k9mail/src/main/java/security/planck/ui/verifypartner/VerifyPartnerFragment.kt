@@ -66,23 +66,10 @@ class VerifyPartnerFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        if (savedInstanceState == null) {
-//            arguments?.let {arguments ->
-//                val sender = arguments.getString(ARG_SENDER) ?: error("sender missing")
-//                val myself = arguments.getString(ARG_MYSELF) ?: error("myself missing")
-//                val messageReference = MessageReference.parse(
-//                    arguments.getString(ARG_MESSAGE_REFERENCE) ?: error("message reference missing")
-//                ) ?: error("wrong message reference")
-//                val isMessageIncoming = arguments.getBoolean(ARG_MESSAGE_DIRECTION)
-//
-//                viewModel.initialize(sender, myself, messageReference, isMessageIncoming)
-//            }
-//        }
         observeViewModel()
     }
 
     private fun observeViewModel() {
-        viewModel.rating
         viewModel.state.observe(viewLifecycleOwner) { state ->
             renderState(state)
         }
@@ -96,23 +83,23 @@ class VerifyPartnerFragment : DialogFragment() {
             is VerifyPartnerState.HandshakeReady ->
                 renderHandshakeData(state)
 
-            VerifyPartnerState.ConfirmTrust ->
-                showTrustConfirmation()
+            is VerifyPartnerState.ConfirmTrust ->
+                showTrustConfirmation(state)
 
-            VerifyPartnerState.ConfirmMistrust ->
-                showMistrustConfirmation()
+            is VerifyPartnerState.ConfirmMistrust ->
+                showMistrustConfirmation(state)
 
-            VerifyPartnerState.TrustProgress ->
-                showTrustProgress()
+            is VerifyPartnerState.TrustProgress ->
+                showTrustProgress(state)
 
-            VerifyPartnerState.MistrustProgress ->
-                showMistrustProgress()
+            is VerifyPartnerState.MistrustProgress ->
+                showMistrustProgress(state)
 
-            VerifyPartnerState.TrustDone ->
-                showTrustDone()
+            is VerifyPartnerState.TrustDone ->
+                showTrustDone(state)
 
-            VerifyPartnerState.MistrustDone ->
-                showMistrustDone()
+            is VerifyPartnerState.MistrustDone ->
+                showMistrustDone(state)
 
             VerifyPartnerState.ErrorLoadingMessage ->
                 showErrorLoadingMessage()
@@ -120,27 +107,27 @@ class VerifyPartnerFragment : DialogFragment() {
             VerifyPartnerState.ErrorGettingTrustwords ->
                 showErrorGettingTrustwords()
 
-            VerifyPartnerState.ErrorTrusting ->
-                showErrorTrusting()
+            is VerifyPartnerState.ErrorTrusting ->
+                showErrorTrusting(state)
 
-            VerifyPartnerState.ErrorMistrusting ->
-                showErrorMistrusting()
+            is VerifyPartnerState.ErrorMistrusting ->
+                showErrorMistrusting(state)
 
             VerifyPartnerState.Idle -> {}
         }
     }
 
-    private fun showErrorMistrusting() {
+    private fun showErrorMistrusting(state: VerifyPartnerState.ErrorMistrusting) {
         binding.progressGroup.isVisible = false
         binding.description.text =
-            getString(R.string.reject_trust_dialog_failure, viewModel.partnerEmail)
+            getString(R.string.reject_trust_dialog_failure, state.partner)
         configureButtonsJustClose()
     }
 
-    private fun showErrorTrusting() {
+    private fun showErrorTrusting(state: VerifyPartnerState.ErrorTrusting) {
         binding.progressGroup.isVisible = false
         binding.description.text =
-            getString(R.string.confirm_trust_dialog_failure, viewModel.partnerEmail)
+            getString(R.string.confirm_trust_dialog_failure, state.partner)
         configureButtonsJustClose()
     }
 
@@ -156,17 +143,17 @@ class VerifyPartnerFragment : DialogFragment() {
         configureButtonsJustClose()
     }
 
-    private fun showMistrustDone() {
+    private fun showMistrustDone(state: VerifyPartnerState.MistrustDone) {
         binding.progressGroup.isVisible = false
         binding.description.text =
-            getString(R.string.reject_trust_dialog_success, viewModel.partnerEmail)
+            getString(R.string.reject_trust_dialog_success, state.partner)
         configureButtonsJustClose()
     }
 
-    private fun showTrustDone() {
+    private fun showTrustDone(state: VerifyPartnerState.TrustDone) {
         binding.progressGroup.isVisible = false
         binding.description.text =
-            getString(R.string.confirm_trust_dialog_success, viewModel.partnerEmail)
+            getString(R.string.confirm_trust_dialog_success, state.partner)
         configureButtonsJustClose()
     }
 
@@ -177,25 +164,25 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.afirmativeActionButton.setOnClickListener { dismissAllowingStateLoss() }
     }
 
-    private fun showMistrustProgress() {
+    private fun showMistrustProgress(state: VerifyPartnerState.MistrustProgress) {
         binding.progressGroup.isVisible = true
         binding.progressText.text =
-            getString(R.string.reject_trust_dialog_progress, viewModel.partnerEmail)
+            getString(R.string.reject_trust_dialog_progress, state.partner)
     }
 
-    private fun showTrustProgress() {
+    private fun showTrustProgress(state: VerifyPartnerState.TrustProgress) {
         binding.progressGroup.isVisible = true
         binding.progressText.text =
-            getString(R.string.confirm_trust_dialog_progress, viewModel.partnerEmail)
+            getString(R.string.confirm_trust_dialog_progress, state.partner)
     }
 
-    private fun showMistrustConfirmation() {
+    private fun showMistrustConfirmation(state: VerifyPartnerState.ConfirmMistrust) {
         binding.toolbar.menu.clear()
         binding.fprGroup.isVisible = false
         binding.trustwordsGroup.isVisible = false
         binding.description.text = getString(
             R.string.reject_trust_dialog_confirmation,
-            viewModel.partnerEmail
+            state.partner
         ) // better use userName than email if possible??
         binding.afirmativeActionButton.setText(R.string.reject_trust_dialog_positive_action)
         binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
@@ -203,13 +190,13 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.dissmissActionButton.setTextColorAttr(R.attr.colorAccent)
     }
 
-    private fun showTrustConfirmation() {
+    private fun showTrustConfirmation(state: VerifyPartnerState.ConfirmTrust) {
         binding.toolbar.menu.clear()
         binding.fprGroup.isVisible = false
         binding.trustwordsGroup.isVisible = false
         binding.description.text = getString(
             R.string.confirm_trust_dialog_confirmation,
-            viewModel.partnerEmail
+            state.partner
         ) // better use userName than email if possible??
         binding.afirmativeActionButton.setText(R.string.confirm_trust_dialog_positive_action)
         binding.negativeActionButton.setText(R.string.verify_partner_dialog_go_back)
@@ -221,12 +208,12 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.fprGroup.isVisible = true
         binding.trustwordsGroup.isVisible = state.trustwords.isNotBlank()
         binding.showLongTrustwords.isVisible =
-            state.trustwords.isNotBlank() && viewModel.shortTrustWords
+            state.trustwords.isNotBlank() && state.shortTrustwords
         binding.description.isVisible = true
         binding.description.setText(R.string.pep_ask_trustwords)
         binding.trustwords.text = state.trustwords
         binding.fprCurrentAccountTitle.text = viewModel.myselfEmail
-        binding.fprPartnerAccountTitle.text = viewModel.partnerEmail
+        binding.fprPartnerAccountTitle.text = state.partner
         binding.fprCurrentAccountValue.text = state.ownFpr
         binding.fprPartnerAccountValue.text = state.partnerFpr
         binding.afirmativeActionButton.isVisible = true
