@@ -6,7 +6,7 @@ object SyncState {
     // common states
     object Idle : SyncScreenState, SyncAppState
 
-    object AwaitingOtherDevice : SyncScreenState, SyncAppState
+    data class AwaitingOtherDevice(val inCatchupAllowancePeriod: Boolean = false) : SyncScreenState, SyncAppState
 
     data class HandshakeReadyAwaitingUser(
         val myself: Identity,
@@ -45,11 +45,9 @@ sealed interface SyncScreenState
 
 sealed interface SyncAppState {
     val needsFastPolling: Boolean
-        get() = this == SyncState.AwaitingOtherDevice || this is SyncState.PerformingHandshake
+        get() = this is SyncState.AwaitingOtherDevice || this is SyncState.PerformingHandshake
     val allowSyncNewDevices: Boolean
-        get() = this == SyncState.AwaitingOtherDevice
-    val allowToStartHandshake: Boolean
-        get() = this == SyncState.Idle || this == SyncState.AwaitingOtherDevice
+        get() = this == SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = false)
 
     fun finish() = SyncState.Idle
 }

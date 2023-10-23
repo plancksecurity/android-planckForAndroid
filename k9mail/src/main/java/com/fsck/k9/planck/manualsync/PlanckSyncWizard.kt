@@ -1,7 +1,5 @@
 package com.fsck.k9.planck.manualsync
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -87,7 +85,7 @@ class PlanckSyncWizard : WizardActivity() {
         binding.showLongTrustwords.isVisible = viewModel.shortTrustWords
         when (syncState) {
             SyncState.Idle,
-            SyncState.AwaitingOtherDevice -> {
+            is SyncState.AwaitingOtherDevice -> {
                 showAwaitingOtherDevice()
             }
 
@@ -317,12 +315,5 @@ class PlanckSyncWizard : WizardActivity() {
 
     override fun onBackPressed() {
         viewModel.cancelIfNotDone()
-    }
-
-    companion object {
-        fun startKeySync(context: Activity) {
-            val intent = Intent(context, PlanckSyncWizard::class.java)
-            context.startActivity(intent)
-        }
     }
 }
