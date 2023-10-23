@@ -141,15 +141,6 @@ class VerifyPartnerViewModel @Inject constructor(
         partner = identityMapper.updateAndMapRecipient(cache.recipients.first())
     }
 
-    private fun setupOutgoingMessageRating(): ResultCompat<Rating> {
-        return planckProvider.getRatingResult(
-            sender,
-            listOf(Address(partner.address!!)),
-            emptyList(),
-            emptyList()
-        )
-    }
-
     private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
         currentRating = rating
         return if (isMessageIncoming) {
@@ -175,17 +166,28 @@ class VerifyPartnerViewModel @Inject constructor(
             }
         }
 
-    private suspend fun refreshRating(): ResultCompat<Rating> =
-        retrieveNewRating().alsoDoFlatSuspend { onRatingChanged(it) }
+    private suspend fun refreshRating(): ResultCompat<Unit> =
+        retrieveNewRating().flatMapSuspend { onRatingChanged(it) }
 
     private suspend fun retrieveNewRating(): ResultCompat<Rating> =
         withContext(dispatcherProvider.planckDispatcher()) {
             if (isMessageIncoming) {
-                planckProvider.incomingMessageRating(localMessage)
+                getIncomingMessageRating()
             } else {
-                setupOutgoingMessageRating()
+                getOutgoingMessageRating()
             }
         }
+
+    private fun getOutgoingMessageRating(): ResultCompat<Rating> =
+        planckProvider.getRatingResult(
+            sender,
+            listOf(Address.create(partner.address)),
+            emptyList(),
+            emptyList()
+        )
+
+    private fun getIncomingMessageRating(): ResultCompat<Rating> =
+        planckProvider.incomingMessageRating(localMessage)
 
     fun changeTrustwordsLanguage(languagePosition: Int) {
         val planckLanguages = PlanckUtils.getPlanckLocales()
