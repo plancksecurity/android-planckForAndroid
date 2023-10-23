@@ -578,6 +578,10 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         }
     }
 
+    public void handleVerifyPartnerIdentityResult() {
+        loadPEpStatus();
+    }
+
     private static int recipientTypeToRequestCode(RecipientType type) {
         switch (type) {
             case TO: {

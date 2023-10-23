@@ -350,8 +350,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     void onPlanckPrivacyStatus() {
-        PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
-        launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
+        activity.launchVerifyPartnerIdentity(getFrom(), messageReference);
     }
 
     public void setMessageReference(MessageReference reference) {

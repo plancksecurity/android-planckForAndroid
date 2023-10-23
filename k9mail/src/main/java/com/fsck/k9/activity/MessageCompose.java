@@ -130,6 +130,8 @@ import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
+import security.planck.ui.verifypartner.VerifyPartnerFragment;
+import security.planck.ui.verifypartner.VerifyPartnerFragmentKt;
 import timber.log.Timber;
 
 @AndroidEntryPoint
@@ -298,7 +300,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
-
+        initializeVerifyPartnerResultListener();
         uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -538,6 +540,21 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
         Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
         restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
+    }
+
+    private void initializeVerifyPartnerResultListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                VerifyPartnerFragment.REQUEST_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(VerifyPartnerFragment.REQUEST_KEY)) {
+                        String ratingString = result.getString(VerifyPartnerFragment.RESULT_KEY_RATING);
+                        if (ratingString != null) {
+                            recipientPresenter.handleVerifyPartnerIdentityResult();
+                        }
+                    }
+                }
+        );
     }
 
     private void restoreMessageComposeConfigurationInstance() {
@@ -2120,6 +2137,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             addNewDebugErrorText(errorText);
         }
         showError(lastError.toString());
+    }
+
+    public void launchVerifyPartnerIdentity(String myself, MessageReference messageReference) {
+        VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, myself, myself, messageReference, false);
     }
 
     private boolean shouldInitializeError() {
