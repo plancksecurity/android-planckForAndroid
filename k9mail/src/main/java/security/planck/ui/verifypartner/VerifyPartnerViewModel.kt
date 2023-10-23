@@ -50,7 +50,7 @@ class VerifyPartnerViewModel @Inject constructor(
         MutableLiveData(VerifyPartnerState.Idle)
     val state: LiveData<VerifyPartnerState> = stateLiveData
 
-    private val result = mutableMapOf<String, Any?>()
+    private var result = mutableMapOf<String, Any?>()
 
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
     private var shortTrustWords = true
@@ -86,8 +86,11 @@ class VerifyPartnerViewModel @Inject constructor(
     }
 
     fun finish() {
-        result[VerifyPartnerFragment.RESULT_KEY_RATING] = currentRating?.toString()
-        stateLiveData.value = VerifyPartnerState.Finish(result)
+        stateLiveData.value = VerifyPartnerState.Finish(
+            if (result.isEmpty()) {  // deliver result if not yet delivered
+                mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to currentRating?.toString())
+            } else emptyMap()
+        )
     }
 
     private fun startHandshake(trust: Boolean) {
@@ -117,10 +120,11 @@ class VerifyPartnerViewModel @Inject constructor(
     }
 
     private fun setHandshakeDone() {
+        result[VerifyPartnerFragment.RESULT_KEY_RATING] = currentRating?.toString()
         stateLiveData.value = if (latestTrust) {
-            VerifyPartnerState.TrustDone(partnerName)
+            VerifyPartnerState.TrustDone(partnerName, result)
         } else {
-            VerifyPartnerState.MistrustDone(partnerName)
+            VerifyPartnerState.MistrustDone(partnerName, result)
         }
     }
 

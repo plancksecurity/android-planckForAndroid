@@ -126,7 +126,9 @@ class VerifyPartnerFragment : DialogFragment() {
             }
 
             is VerifyPartnerState.Finish -> {
-                setFragmentResult(REQUEST_KEY, state.result.toBundle())
+                if (state.result.isNotEmpty()) {
+                    setFragmentResult(REQUEST_KEY, state.result.toBundle())
+                }
                 dismissAllowingStateLoss()
             }
 
@@ -155,10 +157,12 @@ class VerifyPartnerFragment : DialogFragment() {
     }
 
     private fun showMistrustDone(state: VerifyPartnerState.MistrustDone) {
+        setFragmentResult(REQUEST_KEY, state.result.toBundle())
         configureButtonsJustClose(getString(R.string.reject_trust_dialog_success, state.partner))
     }
 
     private fun showTrustDone(state: VerifyPartnerState.TrustDone) {
+        setFragmentResult(REQUEST_KEY, state.result.toBundle())
         configureButtonsJustClose(getString(R.string.confirm_trust_dialog_success, state.partner))
     }
 

@@ -22,8 +22,16 @@ sealed class VerifyPartnerState {
     data class ConfirmMistrust(override val partner: String) : VerifyPartnerState()
     data class TrustProgress(override val partner: String) : VerifyPartnerState()
     data class MistrustProgress(override val partner: String) : VerifyPartnerState()
-    data class TrustDone(override val partner: String) : VerifyPartnerState()
-    data class MistrustDone(override val partner: String) : VerifyPartnerState()
+    data class TrustDone(
+        override val partner: String,
+        val result: Map<String, Any?>,
+    ) : VerifyPartnerState()
+
+    data class MistrustDone(
+        override val partner: String,
+        val result: Map<String, Any?>,
+    ) : VerifyPartnerState()
+
     data class ErrorTrusting(override val partner: String) : VerifyPartnerState()
     data class ErrorMistrusting(override val partner: String) : VerifyPartnerState()
     data class Finish(val result: Map<String, Any?>) : VerifyPartnerState()
