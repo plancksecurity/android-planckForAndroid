@@ -45,11 +45,12 @@ class VerifyPartnerViewModel @Inject constructor(
     private lateinit var localMessage: LocalMessage
     private lateinit var partner: PlanckIdentity
 
-    private val ratingLiveData: MutableLiveData<Rating?> = MutableLiveData(null)
-    val rating: LiveData<Rating?> = ratingLiveData
+    private var currentRating: Rating? = null
     private val stateLiveData: MutableLiveData<VerifyPartnerState> =
         MutableLiveData(VerifyPartnerState.Idle)
     val state: LiveData<VerifyPartnerState> = stateLiveData
+
+    private val result = mutableMapOf<String, Any?>()
 
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
     private var shortTrustWords = true
@@ -73,7 +74,7 @@ class VerifyPartnerViewModel @Inject constructor(
                         stateLiveData.value = VerifyPartnerState.DeletedMessage
                     } else {
                         localMessage = message
-                        ratingLiveData.value = localMessage.planckRating
+                        currentRating = localMessage.planckRating
                         getHandshakeData()
                     }
                 }
@@ -82,6 +83,11 @@ class VerifyPartnerViewModel @Inject constructor(
                 stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
             }
         }
+    }
+
+    fun finish() {
+        result[VerifyPartnerFragment.RESULT_KEY_RATING] = currentRating?.toString()
+        stateLiveData.value = VerifyPartnerState.Finish(result)
     }
 
     private fun startHandshake(trust: Boolean) {
@@ -140,7 +146,7 @@ class VerifyPartnerViewModel @Inject constructor(
     }
 
     private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
-        ratingLiveData.value = rating
+        currentRating = rating
         return if (isMessageIncoming) {
             saveRatingToMessage(rating)
         } else {
@@ -226,7 +232,8 @@ class VerifyPartnerViewModel @Inject constructor(
             partnerFpr = partner.fpr,
             trustwords = trustwords,
             shortTrustwords = shortTrustwords,
-            allowChangeTrust = PlanckUtils.isHandshakeRating(ratingLiveData.value)
+            allowChangeTrust = currentRating?.let { PlanckUtils.isHandshakeRating(currentRating) }
+                ?: false
         )
 
 

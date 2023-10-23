@@ -81,12 +81,6 @@ class VerifyPartnerFragment : DialogFragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             renderState(state)
         }
-        viewModel.rating.observe(viewLifecycleOwner) { rating ->
-            setFragmentResult(
-                REQUEST_KEY,
-                bundleOf(RESULT_KEY_RATING to rating.toString())
-            )
-        }
     }
 
     private fun renderState(state: VerifyPartnerState) {
@@ -131,6 +125,11 @@ class VerifyPartnerFragment : DialogFragment() {
                 showMessageNoLongerAvailable()
             }
 
+            is VerifyPartnerState.Finish -> {
+                setFragmentResult(REQUEST_KEY, state.result.toBundle())
+                dismissAllowingStateLoss()
+            }
+
             VerifyPartnerState.Idle -> {}
         }
     }
@@ -167,7 +166,7 @@ class VerifyPartnerFragment : DialogFragment() {
         showScreen(
             description = description,
             positiveButtonText = R.string.close,
-            positiveButtonClick = ::dismissAllowingStateLoss
+            positiveButtonClick = viewModel::finish
         )
     }
 
@@ -305,7 +304,7 @@ class VerifyPartnerFragment : DialogFragment() {
         binding.negativeActionButton.setOnClickListener {
             viewModel.negativeAction()
         }
-        binding.dissmissActionButton.setOnClickListener { dismissAllowingStateLoss() }
+        binding.dissmissActionButton.setOnClickListener { viewModel.finish() }
         binding.showLongTrustwords.setOnClickListener {
             binding.showLongTrustwords.isVisible = false
             viewModel.switchTrustwordsLength()
@@ -342,6 +341,9 @@ class VerifyPartnerFragment : DialogFragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun Map<String, Any?>.toBundle(): Bundle =
+        bundleOf(*map { it.key to it.value }.toTypedArray())
 
     companion object {
         const val REQUEST_KEY = TAG
