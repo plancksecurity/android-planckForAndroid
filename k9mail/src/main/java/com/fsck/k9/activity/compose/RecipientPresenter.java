@@ -547,9 +547,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_STATUS:
-                handlepEpDataIfNeeded(requestCode, data, resultCode);
-                break;
             case CONTACT_PICKER_TO:
             case CONTACT_PICKER_CC:
             case CONTACT_PICKER_BCC:
