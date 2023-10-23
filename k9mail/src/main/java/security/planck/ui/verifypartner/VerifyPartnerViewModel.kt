@@ -55,9 +55,9 @@ class VerifyPartnerViewModel @Inject constructor(
     private var trustwordsLanguage = getInitialTrustwordsLanguage()
     private var shortTrustWords = true
     private var latestTrust = false
-    private val partnerName: String = cache.recipients.first().username
+    private val partnerName: String = cache.recipients.first().address
     private val myselfName: String
-        get() = myself.username
+        get() = myself.address
 
     fun initialize(
         sender: String,
