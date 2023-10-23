@@ -228,7 +228,10 @@ class VerifyPartnerFragment : DialogFragment() {
         )
         binding.negativeActionButton.setTextColorColor(R.color.planck_red)
         binding.dissmissActionButton.setTextColorAttr(R.attr.defaultColorOnBackground)
-        setupMenu()
+        binding.toolbar.menu.clear()
+        if (state.trustwords.isNotBlank()) {
+            setupMenu()
+        }
     }
 
     private fun showLoadingHandshakeData() {
@@ -321,7 +324,6 @@ class VerifyPartnerFragment : DialogFragment() {
     }
 
     private fun setupMenu() {
-        binding.toolbar.menu.clear()
         binding.toolbar.inflateMenu(R.menu.menu_add_device)
         binding.toolbar.overflowIcon =
             ThemeManager.getDrawableFromAttributeResource(requireContext(), R.attr.iconLanguageGray)
