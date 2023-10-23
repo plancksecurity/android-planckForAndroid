@@ -127,8 +127,16 @@ class VerifyPartnerFragment : DialogFragment() {
             is VerifyPartnerState.ErrorMistrusting ->
                 showErrorMistrusting(state)
 
+            VerifyPartnerState.DeletedMessage -> {
+                showMessageNoLongerAvailable()
+            }
+
             VerifyPartnerState.Idle -> {}
         }
+    }
+
+    private fun showMessageNoLongerAvailable() {
+        configureButtonsJustClose(getString(R.string.message_view_message_no_longer_available))
     }
 
     private fun showErrorMistrusting(state: VerifyPartnerState.ErrorMistrusting) {

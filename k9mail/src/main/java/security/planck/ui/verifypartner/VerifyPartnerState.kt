@@ -6,6 +6,7 @@ sealed class VerifyPartnerState {
     object Idle : VerifyPartnerState()
     object LoadingHandshakeData : VerifyPartnerState()
     object ErrorLoadingMessage : VerifyPartnerState()
+    object DeletedMessage : VerifyPartnerState()
     object ErrorGettingTrustwords : VerifyPartnerState()
     data class HandshakeReady(
         val myself: String,

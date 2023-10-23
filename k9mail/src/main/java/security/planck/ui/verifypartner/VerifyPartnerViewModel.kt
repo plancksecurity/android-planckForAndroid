@@ -10,6 +10,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
+import com.fsck.k9.mail.Flag
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
@@ -68,9 +69,13 @@ class VerifyPartnerViewModel @Inject constructor(
             populateData(sender, myself, messageReference, isMessageIncoming)
             loadMessage().onSuccessSuspend {
                 it?.let { message ->
-                    localMessage = message
-                    ratingLiveData.value = localMessage.planckRating
-                    getHandshakeData()
+                    if (message.isSet(Flag.DELETED)) {
+                        stateLiveData.value = VerifyPartnerState.DeletedMessage
+                    } else {
+                        localMessage = message
+                        ratingLiveData.value = localMessage.planckRating
+                        getHandshakeData()
+                    }
                 }
             }.onFailure {
                 // display error
