@@ -28,8 +28,27 @@ import javax.inject.Inject
 
 private const val DEFAULT_TRUSTWORDS_LANGUAGE = "en"
 
+/**
+ * VerifyPartnerViewModel
+ *
+ * [ViewModel] for [VerifyPartnerFragment].
+ */
 @HiltViewModel
-class VerifyPartnerViewModel @Inject constructor(
+class VerifyPartnerViewModel @Inject
+/**
+ * Constructor
+ *
+ * Creates an istance of [VerifyPartnerViewModel]
+ *
+ * @param context [Application] The application
+ * @param preferences [Preferences] to retrieve accounts
+ * @param controller [MessagingController] to do message-related operations
+ * @param identityMapper [PlanckIdentityMapper] to map and update identities
+ * @param planckProvider [PlanckProvider] to do planck operations
+ * @param cache [PlanckUIArtefactCache] to retrieve cached identities
+ * @param dispatcherProvider [DispatcherProvider] to provide coroutine dispatchers
+ */
+constructor(
     private val context: Application,
     private val preferences: Preferences,
     private val controller: MessagingController,
@@ -48,6 +67,12 @@ class VerifyPartnerViewModel @Inject constructor(
     private var currentRating: Rating? = null
     private val stateLiveData: MutableLiveData<VerifyPartnerState> =
         MutableLiveData(VerifyPartnerState.Idle)
+
+    /**
+     * @property state
+     *
+     * [VerifyPartnerState] that can be observed by the view to get updates on the model state.
+     */
     val state: LiveData<VerifyPartnerState> = stateLiveData
 
     private var result = mutableMapOf<String, Any?>()
@@ -59,6 +84,16 @@ class VerifyPartnerViewModel @Inject constructor(
     private val myselfName: String
         get() = myself.address
 
+    /**
+     * initialize
+     *
+     * Initialize this instance of [VerifyPartnerViewModel].
+     *
+     * @param sender Mail address of the sender of the message
+     * @param myself My own mail address
+     * @param messageReference that represents the message to work with
+     * @param isMessageIncoming whether the message direction is incoming or outgoing.
+     */
     fun initialize(
         sender: String,
         myself: String,
@@ -86,6 +121,12 @@ class VerifyPartnerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * finish
+     *
+     * Should be called when closing the screen.
+     * It delivers a result with current rating if not yet delivered.
+     */
     fun finish() {
         stateLiveData.value = VerifyPartnerState.Finish(
             if (result.isEmpty()) {  // deliver result if not yet delivered
@@ -189,11 +230,23 @@ class VerifyPartnerViewModel @Inject constructor(
     private fun getIncomingMessageRating(): ResultCompat<Rating> =
         planckProvider.incomingMessageRating(localMessage)
 
+    /**
+     * changeTrustwordsLanguage
+     *
+     * Change language of the trustwords.
+     *
+     * @param languagePosition Position of the desired language in planck locales.
+     */
     fun changeTrustwordsLanguage(languagePosition: Int) {
         val planckLanguages = PlanckUtils.getPlanckLocales()
         changeTrustwords(planckLanguages[languagePosition])
     }
 
+    /**
+     * switchTrustwordsLength
+     *
+     * Switch the length of the trustwords, from short to long and from long to short.
+     */
     fun switchTrustwordsLength() {
         viewModelScope.launch {
             stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
@@ -289,6 +342,11 @@ class VerifyPartnerViewModel @Inject constructor(
             }
         }
 
+    /**
+     * positiveAction
+     *
+     * User chose the positive action
+     */
     fun positiveAction() {
         when (stateLiveData.value) {
             is VerifyPartnerState.HandshakeReady -> {
@@ -308,6 +366,11 @@ class VerifyPartnerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * negativeAction
+     *
+     * User chose the negative action
+     */
     fun negativeAction() {
         when (stateLiveData.value) {
             is VerifyPartnerState.HandshakeReady -> {
