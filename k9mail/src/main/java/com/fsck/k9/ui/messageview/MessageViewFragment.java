@@ -58,7 +58,6 @@ import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.listeners.SimpleRecipientHandshakeClickListener;
-import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
@@ -84,6 +83,7 @@ import security.planck.ui.PassphraseProvider;
 import security.planck.ui.message_compose.PlanckFabMenu;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.verifypartner.VerifyPartnerFragment;
 import security.planck.ui.verifypartner.VerifyPartnerFragmentKt;
 import timber.log.Timber;
 
@@ -202,6 +202,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializeVerifyPartnerResultListener();
 
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
@@ -212,6 +213,27 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
         ((MessageList) getActivity()).hideSearchView();
+    }
+
+    private void initializeVerifyPartnerResultListener() {
+        getParentFragmentManager().setFragmentResultListener(
+                VerifyPartnerFragment.REQUEST_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(VerifyPartnerFragment.REQUEST_KEY)) {
+                        String ratingString = result.getString(VerifyPartnerFragment.RESULT_KEY_RATING);
+                        if (ratingString != null) {
+                            try {
+                                Rating rating = Rating.valueOf(ratingString);
+                                refreshRating(rating);
+                                senderPlanckHelper.checkCanHandshakeSender();
+                            } catch (Exception ex) {
+                                Timber.e(ex, "wrong rating");
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -378,11 +400,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if ((requestCode & REQUEST_MASK_CRYPTO_PRESENTER) == REQUEST_MASK_CRYPTO_PRESENTER) {
             requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
-        }
-
-        if (resultCode == RESULT_OK && requestCode == PlanckStatus.REQUEST_STATUS) {
-            Rating rating = (Rating) data.getSerializableExtra(PlanckStatus.CURRENT_RATING);
-            refreshRating(rating);
         }
     }
 
@@ -900,6 +917,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if (isAdded()) {
             planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
             mMessageView.getMessageHeader().showSingleRecipientHandshakeBanner();
+        }
+    }
+
+    @Override
+    public void disallowHandshakeWithSender() {
+        if (isAdded()) {
+            planckSecurityStatusLayout.setOnClickListener(null);
+            mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         }
     }
 

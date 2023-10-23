@@ -44,8 +44,8 @@ class VerifyPartnerViewModel @Inject constructor(
     private lateinit var localMessage: LocalMessage
     private lateinit var partner: PlanckIdentity
 
-    private val ratingLiveData = MutableLiveData(Rating.pEpRatingUndefined)
-    val rating: LiveData<Rating> = ratingLiveData
+    private val ratingLiveData: MutableLiveData<Rating?> = MutableLiveData(null)
+    val rating: LiveData<Rating?> = ratingLiveData
     private val stateLiveData: MutableLiveData<VerifyPartnerState> =
         MutableLiveData(VerifyPartnerState.Idle)
     val state: LiveData<VerifyPartnerState> = stateLiveData

@@ -56,6 +56,8 @@ class SenderPlanckHelper @Inject constructor(
                 && PlanckUtils.isHandshakeRating(getSenderRating())
             ) {
                 view.allowHandshakeWithSender()
+            } else {
+                view.disallowHandshakeWithSender()
             }
         }
     }

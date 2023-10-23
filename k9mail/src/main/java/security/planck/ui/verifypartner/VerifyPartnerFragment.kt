@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageReference
@@ -79,6 +80,12 @@ class VerifyPartnerFragment : DialogFragment() {
     private fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             renderState(state)
+        }
+        viewModel.rating.observe(viewLifecycleOwner) { rating ->
+            setFragmentResult(
+                REQUEST_KEY,
+                bundleOf(RESULT_KEY_RATING to rating.toString())
+            )
         }
     }
 
@@ -321,6 +328,12 @@ class VerifyPartnerFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val REQUEST_KEY = TAG
+        const val RESULT_KEY_RATING =
+            "security.planck.ui.verifypartner.VerifyPartnerFragment.Rating"
     }
 }
 
