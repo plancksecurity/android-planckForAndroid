@@ -1,7 +1,6 @@
 package security.planck.ui.verifypartner
 
 import android.app.Application
-import android.text.util.Rfc822Tokenizer
 import androidx.lifecycle.LiveData
 import com.fsck.k9.Account
 import com.fsck.k9.K9
@@ -32,7 +31,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import security.planck.common.LiveDataTest
@@ -120,6 +118,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         stubPlanckUtils()
         mockkStatic(Address::class)
         coEvery { Address.create(partner.address) }.returns(partnerAddress)
+        coEvery { Address.create(myself.address) }.returns(myselfAddress)
         stupPlanckProvider()
         coEvery { controller.loadMessage(any(), any(), any()) }.returns(localMessage)
         createViewModel()
@@ -177,11 +176,6 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }.returns(ResultCompat.success(TRUSTED_RATING))
     }
 
-    @Before
-    fun setUp() {
-
-    }
-
     private fun createViewModel() {
         viewModel = VerifyPartnerViewModel(
             context,
@@ -198,7 +192,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
     fun tearDown() {
         unmockkStatic(K9::class)
         unmockkStatic(PlanckUtils::class)
-        unmockkStatic(Rfc822Tokenizer::class)
+        unmockkStatic(Address::class)
     }
 
     @Test
@@ -226,6 +220,8 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         advanceUntilIdle()
 
 
+        verify { Address.create(myself.address) }
+        verify { Address.create(partner.address) }
         verify { PlanckUtils.createIdentity(myselfAddress, context) }
         verify { planckProvider.myself(myself) }
     }
@@ -1165,11 +1161,11 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
 
     private fun initializeViewModel(incoming: Boolean = true) {
         viewModel.initialize(
-            if (incoming) partnerAddress
-            else myselfAddress,
-            myselfAddress,
-            testMessageReference,
-            incoming
+            sender = if (incoming) partner.address
+            else myself.address,
+            myself = myself.address,
+            messageReference = testMessageReference,
+            isMessageIncoming = incoming
         )
     }
 

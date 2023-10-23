@@ -60,8 +60,8 @@ class VerifyPartnerViewModel @Inject constructor(
         get() = myself.address
 
     fun initialize(
-        sender: Address,
-        myself: Address,
+        sender: String,
+        myself: String,
         messageReference: MessageReference,
         isMessageIncoming: Boolean
     ) {
@@ -267,15 +267,15 @@ class VerifyPartnerViewModel @Inject constructor(
         }
 
     private suspend fun populateData(
-        sender: Address,
-        myself: Address,
+        sender: String,
+        myself: String,
         messageReference: MessageReference,
         isMessageIncoming: Boolean
     ): ResultCompat<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         ResultCompat.of {
-            this@VerifyPartnerViewModel.sender = sender
+            this@VerifyPartnerViewModel.sender = Address.create(sender)
             this@VerifyPartnerViewModel.myself =
-                planckProvider.myself(PlanckUtils.createIdentity(myself, context))
+                planckProvider.myself(PlanckUtils.createIdentity(Address.create(myself), context))
             this@VerifyPartnerViewModel.messageReference = messageReference
             this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
         }
