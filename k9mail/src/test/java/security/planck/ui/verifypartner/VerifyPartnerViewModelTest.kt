@@ -115,9 +115,17 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         MessageReference("", "", "", null)
 
     override fun initialize() {
-        //coEvery { context.applicationContext }.returns(context)
         mockkStatic(K9::class)
         every { K9.getK9CurrentLanguage() }.returns(ENGLISH_LANGUAGE)
+        stubPlanckUtils()
+        mockkStatic(Address::class)
+        coEvery { Address.create(partner.address) }.returns(partnerAddress)
+        stupPlanckProvider()
+        coEvery { controller.loadMessage(any(), any(), any()) }.returns(localMessage)
+        createViewModel()
+    }
+
+    private fun stubPlanckUtils() {
         mockkStatic(PlanckUtils::class)
         coEvery { PlanckUtils.createIdentity(myselfAddress, context) }.returns(myself)
         coEvery { PlanckUtils.createIdentity(partnerAddress, context) }.returns(partner)
@@ -125,8 +133,9 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         val slot = slot<String>()
         coEvery { PlanckUtils.formatFpr(capture(slot)) }.coAnswers { slot.captured }
         coEvery { PlanckUtils.trustWordsAvailableForLang(any()) }.returns(true)
-        mockkStatic(Address::class)
-        coEvery { Address.create(partner.address) }.returns(partnerAddress)
+    }
+
+    private fun stupPlanckProvider() {
         val identitySlot = slot<Identity>()
         coEvery { planckProvider.myself(capture(identitySlot)) }.coAnswers { identitySlot.captured }
         coEvery {
@@ -134,7 +143,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                 any(),
                 any(),
                 ENGLISH_LANGUAGE,
-                any()
+                true
             )
         }.returns(ResultCompat.success(TEST_TRUSTWORDS))
         coEvery {
@@ -142,9 +151,17 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                 any(),
                 any(),
                 GERMAN_LANGUAGE,
-                any()
+                true
             )
         }.returns(ResultCompat.success(GERMAN_TRUSTWORDS))
+        coEvery {
+            planckProvider.trustwords(
+                any(),
+                any(),
+                any(),
+                false
+            )
+        }.returns(ResultCompat.success(LONG_TRUSTWORDS))
         coEvery { planckProvider.incomingMessageRating(any()) }.returns(
             ResultCompat.success(
                 TRUSTED_RATING
@@ -158,8 +175,6 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                 any()
             )
         }.returns(ResultCompat.success(TRUSTED_RATING))
-        coEvery { controller.loadMessage(any(), any(), any()) }.returns(localMessage)
-        createViewModel()
     }
 
     @Before
@@ -1075,7 +1090,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                     partner.address,
                     MYSELF_FPR,
                     PARTNER_FPR,
-                    TEST_TRUSTWORDS,
+                    LONG_TRUSTWORDS,
                     shortTrustwords = false,
                     allowChangeTrust = true
                 ),
