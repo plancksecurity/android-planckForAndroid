@@ -287,9 +287,7 @@ public class ChooseFolder extends K9ListActivity {
                 String name = folder.getName();
 
                 // Inbox needs to be compared case-insensitively
-                if (mHideCurrentFolder && (name.equals(mFolder) || (
-                        mAccount.getInboxFolderName().equalsIgnoreCase(mFolder) &&
-                        mAccount.getInboxFolderName().equalsIgnoreCase(name)))) {
+                if (shouldFilterFolder(name)) {
                     continue;
                 }
                 Folder.FolderClass fMode = folder.getDisplayClass();
@@ -392,4 +390,11 @@ public class ChooseFolder extends K9ListActivity {
             }
         }
     };
+
+    private boolean shouldFilterFolder(String name) {
+        return mHideCurrentFolder && (name.equals(mFolder) || (
+                mAccount.getInboxFolderName().equalsIgnoreCase(mFolder) &&
+                        mAccount.getInboxFolderName().equalsIgnoreCase(name)) ||
+                mAccount.getDraftsFolderName().equalsIgnoreCase(name));
+    }
 }
