@@ -196,6 +196,7 @@ class VerifyPartnerViewModel @Inject constructor(
 
     fun switchTrustwordsLength() {
         viewModelScope.launch {
+            stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
             shortTrustWords = !shortTrustWords
             getOrRefreshTrustWords()
         }
@@ -211,6 +212,7 @@ class VerifyPartnerViewModel @Inject constructor(
 
     private fun changeTrustwords(language: String) {
         viewModelScope.launch {
+            stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
             trustwordsLanguage = language
             getOrRefreshTrustWords()
         }
