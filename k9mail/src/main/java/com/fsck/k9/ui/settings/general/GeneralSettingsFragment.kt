@@ -46,7 +46,6 @@ import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportPlanckSupportDataActivity
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
@@ -90,6 +89,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
             if (result == LeaveDeviceGroupDialog.EXECUTED) {
                 updateLeaveDeviceGroupPreferenceVisibility()
+                k9.markDeviceJustLeftGroup()
             }
         }
     }
@@ -175,21 +175,21 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             setOnPreferenceClickListener {
                 view?.let {
                     if (isDeviceOnline()) {
-                        if (K9.isPlanckSyncEnabled()) {
-                            AlertDialog.Builder(it.context)
-                                .setTitle(getString(R.string.sync_title))
-                                .setMessage(R.string.planck_key_sync_warning)
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.sync_action) { _, _ ->
-                                    startManualSync()
-                                }.setNegativeButton(R.string.cancel_action, null).show()
-                        } else {
+                        if (k9.isDeviceJustLeftGroup) {
                             AlertDialog.Builder(it.context)
                                 .setTitle(getString(R.string.sync_title))
                                 .setMessage(R.string.device_group_rejoin_warning)
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.action_restart) { _, _ ->
                                     restartApp()
+                                }.setNegativeButton(R.string.action_postpone, null).show()
+                        } else {
+                            AlertDialog.Builder(it.context)
+                                .setTitle(getString(R.string.sync_title))
+                                .setMessage(R.string.planck_key_sync_warning)
+                                .setCancelable(true)
+                                .setPositiveButton(R.string.sync_action) { _, _ ->
+                                    startManualSync()
                                 }.setNegativeButton(R.string.cancel_action, null).show()
                         }
                     } else {

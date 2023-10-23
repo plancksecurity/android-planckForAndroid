@@ -196,6 +196,7 @@
     <string name="sync_title">planck sync wizard</string>
     <string name="sync_action">Sync</string>
     <string name="action_restart">Restart the application</string>
+    <string name="action_postpone">Later</string>
     <string name="reset">Reset</string>
     <string name="offline">Device is offline. Please fix internet connection and try again.</string>
     <string name="reset_all">Yes, Reset</string>

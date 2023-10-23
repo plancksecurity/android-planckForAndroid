@@ -105,6 +105,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
+
+    private boolean deviceJustLeftGroup = false;
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static ManageableSetting<Long> auditLogDataTimeRetention =
             new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
@@ -480,6 +482,14 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         } else {
             deviceIdleManager.unregisterReceiver();
         }
+    }
+
+    public boolean isDeviceJustLeftGroup() {
+        return deviceJustLeftGroup;
+    }
+
+    public void markDeviceJustLeftGroup() {
+        deviceJustLeftGroup = true;
     }
 
     private static void setServicesEnabled(Context context, boolean enabled) {
