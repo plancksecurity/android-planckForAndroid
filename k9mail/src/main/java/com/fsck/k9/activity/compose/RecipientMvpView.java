@@ -24,7 +24,6 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.ActionRecipientSelectView;
-import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
 import foundation.pEp.jniadapter.Rating;

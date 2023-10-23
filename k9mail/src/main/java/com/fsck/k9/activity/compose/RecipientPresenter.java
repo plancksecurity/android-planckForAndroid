@@ -1,9 +1,6 @@
 package com.fsck.k9.activity.compose;
 
 
-import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.CURRENT_RATING;
-import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.REQUEST_STATUS;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -559,19 +556,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             case OPENPGP_USER_INTERACTION:
                 openPgpApiManager.onUserInteractionResult();
                 break;
-        }
-    }
-
-    private void handlepEpDataIfNeeded(int requestCode, Intent data, int resultCode) {
-        if (requestCode == REQUEST_STATUS && resultCode == Activity.RESULT_OK && data.hasExtra(CURRENT_RATING)) {
-            boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
-            boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
-            if (forceUncrypted != this.forceUnencrypted) {
-                switchPrivacyProtection(PlanckProvider.ProtectionScope.MESSAGE);
-            }
-            if (alwaysSecure != this.isAlwaysSecure) {
-                setAlwaysSecure(alwaysSecure);
-            }
         }
     }
 
