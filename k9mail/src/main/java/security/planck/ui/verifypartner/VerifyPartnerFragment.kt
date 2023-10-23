@@ -21,6 +21,7 @@ import androidx.fragment.app.viewModels
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.databinding.FragmentVerifyPartnerBinding
+import com.fsck.k9.mail.Address
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,7 +53,7 @@ class VerifyPartnerFragment : DialogFragment() {
                 ) ?: error("wrong message reference")
                 val isMessageIncoming = arguments.getBoolean(ARG_MESSAGE_DIRECTION)
 
-                viewModel.initialize(sender, myself, messageReference, isMessageIncoming)
+                viewModel.initialize(Address(sender), Address(myself), messageReference, isMessageIncoming)
             }
         }
     }

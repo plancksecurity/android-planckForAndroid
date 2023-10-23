@@ -60,28 +60,29 @@ class VerifyPartnerViewModel @Inject constructor(
         get() = myself.address
 
     fun initialize(
-        sender: String,
-        myself: String,
+        sender: Address,
+        myself: Address,
         messageReference: MessageReference,
         isMessageIncoming: Boolean
     ) {
         viewModelScope.launch {
             stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
             populateData(sender, myself, messageReference, isMessageIncoming)
-            loadMessage().onSuccessSuspend {
-                it?.let { message ->
-                    if (message.isSet(Flag.DELETED)) {
-                        stateLiveData.value = VerifyPartnerState.DeletedMessage
-                    } else {
-                        localMessage = message
-                        currentRating = localMessage.planckRating
-                        getHandshakeData()
+                .flatMapSuspend { loadMessage() }
+                .onSuccessSuspend {
+                    it?.let { message ->
+                        if (message.isSet(Flag.DELETED)) {
+                            stateLiveData.value = VerifyPartnerState.DeletedMessage
+                        } else {
+                            localMessage = message
+                            currentRating = localMessage.planckRating
+                            getHandshakeData()
+                        }
                     }
+                }.onFailure {
+                    // display error
+                    stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
                 }
-            }.onFailure {
-                // display error
-                stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
-            }
         }
     }
 
@@ -262,16 +263,18 @@ class VerifyPartnerViewModel @Inject constructor(
         }
 
     private suspend fun populateData(
-        sender: String,
-        myself: String,
+        sender: Address,
+        myself: Address,
         messageReference: MessageReference,
         isMessageIncoming: Boolean
-    ) = withContext(dispatcherProvider.planckDispatcher()) {
-        this@VerifyPartnerViewModel.sender = Address(sender)
-        this@VerifyPartnerViewModel.myself =
-            planckProvider.myself(PlanckUtils.createIdentity(Address(myself), context))
-        this@VerifyPartnerViewModel.messageReference = messageReference
-        this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
+    ): ResultCompat<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
+        ResultCompat.of {
+            this@VerifyPartnerViewModel.sender = sender
+            this@VerifyPartnerViewModel.myself =
+                planckProvider.myself(PlanckUtils.createIdentity(myself, context))
+            this@VerifyPartnerViewModel.messageReference = messageReference
+            this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
+        }
     }
 
     private suspend fun loadMessage(): ResultCompat<LocalMessage?> =
