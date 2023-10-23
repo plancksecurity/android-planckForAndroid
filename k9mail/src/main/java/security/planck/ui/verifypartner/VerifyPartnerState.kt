@@ -14,6 +14,7 @@ sealed class VerifyPartnerState {
         val partnerFpr: String,
         val trustwords: String,
         val shortTrustwords: Boolean,
+        val allowChangeTrust: Boolean,
     ) : VerifyPartnerState()
 
     data class ConfirmTrust(override val partner: String) : VerifyPartnerState()

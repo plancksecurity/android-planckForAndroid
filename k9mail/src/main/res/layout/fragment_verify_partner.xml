@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="24dp"
+    android:minWidth="@dimen/key_import_floating_width"
+    android:paddingHorizontal="24dp"
     android:paddingTop="16dp"
-    android:paddingEnd="24dp"
     android:paddingBottom="8dp"
     tools:context="security.planck.ui.verifypartner.VerifyPartnerFragment">
 

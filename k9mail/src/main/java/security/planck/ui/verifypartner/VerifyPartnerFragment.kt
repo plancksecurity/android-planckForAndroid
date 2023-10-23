@@ -140,7 +140,7 @@ class VerifyPartnerFragment : DialogFragment() {
     }
 
     private fun showErrorGettingTrustwords() {
-        configureButtonsJustClose(getString(R.string.status_loading_error))
+        configureButtonsJustClose(getString(R.string.verify_partner_dialog_error_getting_trustwords))
     }
 
     private fun showErrorLoadingMessage() {
@@ -207,9 +207,9 @@ class VerifyPartnerFragment : DialogFragment() {
             ownFpr = state.ownFpr,
             partnerFpr = state.partnerFpr,
             description = getString(R.string.pep_ask_trustwords),
-            positiveButtonText = R.string.pep_confirm_trustwords,
-            negativeButtonText = R.string.key_import_reject,
-            dismissButtonVisible = true,
+            positiveButtonText = if (state.allowChangeTrust) R.string.pep_confirm_trustwords else NO_RESOURCE,
+            negativeButtonText = if (state.allowChangeTrust) R.string.key_import_reject else NO_RESOURCE,
+            dismissButtonVisible = state.allowChangeTrust,
         )
         binding.negativeActionButton.setTextColorColor(R.color.planck_red)
         binding.dissmissActionButton.setTextColorAttr(R.attr.defaultColorOnBackground)

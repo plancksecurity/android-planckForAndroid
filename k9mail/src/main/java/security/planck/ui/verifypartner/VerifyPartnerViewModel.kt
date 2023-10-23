@@ -204,16 +204,26 @@ class VerifyPartnerViewModel @Inject constructor(
         if (PlanckUtils.isPEpUser(partner)) {
             getOrRefreshTrustWords()
         } else {
-            stateLiveData.value = VerifyPartnerState.HandshakeReady(
-                myselfName,
-                partnerName,
-                myself.fpr,
-                partner.fpr,
-                "", // no trustwords available for non-planck user
-                true
+            stateLiveData.value = handshakeReady(
+                trustwords = "" // no trustwords available for non-planck user
             )
         }
     }
+
+    private fun handshakeReady(
+        trustwords: String,
+        shortTrustwords: Boolean = true,
+    ): VerifyPartnerState.HandshakeReady =
+        VerifyPartnerState.HandshakeReady(
+            myself = myselfName,
+            partner = partnerName,
+            ownFpr = myself.fpr,
+            partnerFpr = partner.fpr,
+            trustwords = trustwords,
+            shortTrustwords = shortTrustwords,
+            allowChangeTrust = PlanckUtils.isHandshakeRating(ratingLiveData.value)
+        )
+
 
     private suspend fun getOrRefreshTrustWords() =
         withContext(dispatcherProvider.planckDispatcher()) {
@@ -227,8 +237,9 @@ class VerifyPartnerViewModel @Inject constructor(
             // display trustwords on Screen
             stateLiveData.value = if (trustwords.isNullOrBlank()) {
                 VerifyPartnerState.ErrorGettingTrustwords
-            } else VerifyPartnerState.HandshakeReady(
-                myselfName, partnerName, myself.fpr, partner.fpr, trustwords, shortTrustWords
+            } else handshakeReady(
+                trustwords = trustwords,
+                shortTrustwords = shortTrustWords,
             )
         }.onFailure {
             stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords

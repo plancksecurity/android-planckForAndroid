@@ -443,5 +443,6 @@
     <string name="audit_log_tamper_dialog_positive_button">Close application</string>
     <string name="verify_partner_dialog_title">Verify identity</string>
     <string name="verify_partner_dialog_go_back">Go back</string>
+    <string name="verify_partner_dialog_error_getting_trustwords">There was an error retrieving trustwords for this message.</string>
 
 </resources>

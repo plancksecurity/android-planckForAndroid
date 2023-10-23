@@ -3,6 +3,7 @@ package com.fsck.k9.ui.messageview
 import android.app.Application
 import com.fsck.k9.Preferences
 import com.fsck.k9.extensions.hasToBeDecrypted
+import com.fsck.k9.extensions.isValidForHandshake
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.planck.PlanckProvider
@@ -52,8 +53,8 @@ class SenderPlanckHelper @Inject constructor(
 
     fun checkCanHandshakeSender() {
         uiScope.launch {
-            if (messageConditionsForSenderHandshake(message)
-                && PlanckUtils.isHandshakeRating(getSenderRating())
+            if (message.isValidForHandshake()
+                && PlanckUtils.isRatingReliable(getSenderRating())
             ) {
                 view.allowHandshakeWithSender()
             } else {
@@ -101,16 +102,6 @@ class SenderPlanckHelper @Inject constructor(
     private suspend fun getSenderRating(): Rating = withContext(PlanckDispatcher) {
         planckProvider.getRating(message.from.first())
     }.getOrDefault(Rating.pEpRatingUndefined)
-
-    private fun messageConditionsForSenderHandshake(message: LocalMessage): Boolean =
-        message.from != null // sender not null
-                && message.from.size == 1 // only one sender
-                && PlanckUtils.isHandshakeRating(message.planckRating)
-                && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
-                && message.getRecipients(Message.RecipientType.CC)
-            .isNullOrEmpty() // no recipients in CC
-                && message.getRecipients(Message.RecipientType.BCC)
-            .isNullOrEmpty() // no recipients in BCC
 
     private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
         !message.hasToBeDecrypted()

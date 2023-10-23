@@ -957,7 +957,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         List<Address> candidates = new ArrayList<>();
         candidates.addAll(newToAdresses);
         candidates.addAll(newCcAdresses);
-        return candidates.size() == ONE_ADDRESS && PlanckUtils.isHandshakeRating(privacyState);
+        return candidates.size() == ONE_ADDRESS && PlanckUtils.isRatingReliable(privacyState);
     }
 
     private int getUnsecureRecipientsCount() {
