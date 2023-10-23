@@ -217,7 +217,10 @@ class VerifyPartnerFragment : DialogFragment() {
             description = getString(R.string.pep_ask_trustwords),
             positiveButtonText = if (state.allowChangeTrust) R.string.pep_confirm_trustwords else NO_RESOURCE,
             negativeButtonText = if (state.allowChangeTrust) R.string.key_import_reject else NO_RESOURCE,
-            dismissButtonVisible = state.allowChangeTrust,
+            dismissButtonVisible = true,
+            dismissButtonText = if (state.allowChangeTrust)
+                R.string.keysync_wizard_action_cancel
+            else R.string.close
         )
         binding.negativeActionButton.setTextColorColor(R.color.planck_red)
         binding.dissmissActionButton.setTextColorAttr(R.attr.defaultColorOnBackground)
@@ -243,6 +246,7 @@ class VerifyPartnerFragment : DialogFragment() {
         dismissButtonVisible: Boolean = false,
         @StringRes positiveButtonText: Int = NO_RESOURCE,
         @StringRes negativeButtonText: Int = NO_RESOURCE,
+        @StringRes dismissButtonText: Int = R.string.keysync_wizard_action_cancel,
         positiveButtonClick: () -> Unit = { viewModel.positiveAction() },
     ) {
         binding.description.apply {
@@ -268,6 +272,7 @@ class VerifyPartnerFragment : DialogFragment() {
                 (negativeButtonText != NO_RESOURCE).also { if (it) setText(negativeButtonText) }
         }
         binding.dissmissActionButton.isVisible = dismissButtonVisible
+        binding.dissmissActionButton.setText(dismissButtonText)
         binding.afirmativeActionButton.apply {
             isVisible =
                 (positiveButtonText != NO_RESOURCE).also { if (it) setText(positiveButtonText) }
