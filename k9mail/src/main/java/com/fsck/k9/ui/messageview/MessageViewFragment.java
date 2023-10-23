@@ -226,11 +226,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                             try {
                                 Rating rating = Rating.valueOf(ratingString);
                                 refreshRating(rating);
-                                senderPlanckHelper.checkCanHandshakeSender();
                             } catch (Exception ex) {
                                 Timber.e(ex, "wrong rating");
                             }
                         }
+                        loadMessageIfNeeded();
                     }
                 }
         );
@@ -280,11 +280,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         ((MessageList) getActivity()).setMessageViewVisible(true);
         setupSwipeDetector();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
-        mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         loadMessageIfNeeded();
     }
 
     private void loadMessageIfNeeded() {
+        mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         if (!PassphraseProvider.INSTANCE.getRunning()) {
             Context context = requireActivity().getApplicationContext();
             messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
@@ -916,14 +916,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if (isAdded()) {
             planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
             mMessageView.getMessageHeader().showSingleRecipientHandshakeBanner();
-        }
-    }
-
-    @Override
-    public void disallowHandshakeWithSender() {
-        if (isAdded()) {
-            planckSecurityStatusLayout.setOnClickListener(null);
-            mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         }
     }
 
