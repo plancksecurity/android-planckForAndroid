@@ -9,10 +9,8 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckProvider.CompletedCallback
 import com.fsck.k9.planck.infrastructure.Poller
 import com.fsck.k9.planck.infrastructure.PollerFactory
-import com.fsck.k9.planck.manualsync.ManualSyncCountDownTimer
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
-import dagger.Lazy
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
 import foundation.pEp.jniadapter.SyncHandshakeSignal
@@ -20,15 +18,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
+import security.planck.timer.Timer
 import timber.log.Timber
-import java.util.Timer
-import java.util.TimerTask
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
-import kotlin.concurrent.schedule
 
-private const val POLLING_INTERVAL = 2000
+private const val POLLING_INTERVAL = 2000L
+private const val MANUAL_SYNC_TIME_LIMIT = 120000L // 2 minutes
+private const val INITIAL_HANDSHAKE_AVAILABLE_WAIT = 20000L // 20 seconds
 
 @Singleton
 class PlanckSyncRepository @Inject constructor(
@@ -36,7 +34,7 @@ class PlanckSyncRepository @Inject constructor(
     private val preferences: Preferences,
     private val planckProvider: PlanckProvider,
     private val messagingController: Provider<MessagingController>,
-    private val manualSyncCountDownTimer: Lazy<ManualSyncCountDownTimer>,
+    private val timer: Timer,
     private val pollerFactory: PollerFactory,
 ) : SyncRepository {
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
@@ -49,9 +47,9 @@ class PlanckSyncRepository @Inject constructor(
         private set
     private var isPollingMessages = false
     private var poller: Poller? = null
+
+    @Volatile
     private var handshakeLocked = false
-    private val timer = Timer()
-    private var timerTask: TimerTask? = null
 
     override val notifyHandshakeCallback = NotifyHandshakeCallback { myself, partner, signal ->
         k9.showHandshakeSignalOnDebug(signal.name)
@@ -96,7 +94,7 @@ class PlanckSyncRepository @Inject constructor(
             SyncHandshakeSignal.SyncNotifySole -> {
                 isGrouped = false
                 if (syncState.allowSyncNewDevices) {
-                    startOrResetManualSyncCountDownTimer()
+                    startOrResetManualSyncTimer()
                 }
             }
 
@@ -104,7 +102,7 @@ class PlanckSyncRepository @Inject constructor(
                 isGrouped = true
                 k9.markSyncEnabled(true)
                 if (syncState.allowSyncNewDevices) {
-                    startOrResetManualSyncCountDownTimer()
+                    startOrResetManualSyncTimer()
                 }
             }
 
@@ -133,14 +131,12 @@ class PlanckSyncRepository @Inject constructor(
         groupedCondition: Boolean,
     ) {
         if (!handshakeLocked && isGrouped == groupedCondition) {
+            cancelTimer()
             syncStateMutableFlow.value = SyncState.HandshakeReadyAwaitingUser(
                 myself,
                 partner,
                 formingGroup
             )
-            timerTask?.cancel()
-            timerTask = null
-            cancelManualSyncCountDown()
         }
     }
 
@@ -215,8 +211,8 @@ class PlanckSyncRepository @Inject constructor(
         isGrouped = planckProvider.isDeviceGrouped
     }
 
-    private fun startOrResetManualSyncCountDownTimer() {
-        manualSyncCountDownTimer.get().startOrReset()
+    private fun startOrResetManualSyncTimer() {
+        timer.startOrReset(MANUAL_SYNC_TIME_LIMIT) { syncStartTimeout() }
     }
 
     override fun allowTimedManualSync() {
@@ -224,13 +220,11 @@ class PlanckSyncRepository @Inject constructor(
             true -> planckProvider.syncReset()
             else -> planckProvider.startSync()
         }
-        startOrResetManualSyncCountDownTimer()
+        startOrResetManualSyncTimer()
     }
 
     override fun cancelSync() {
-        timerTask?.cancel()
-        timerTask = null
-        cancelManualSyncCountDown()
+        cancelTimer()
         syncStateMutableFlow.value = SyncState.Cancelled
     }
 
@@ -238,8 +232,8 @@ class PlanckSyncRepository @Inject constructor(
         syncStateMutableFlow.value = SyncState.SyncStartTimeout
     }
 
-    private fun cancelManualSyncCountDown() {
-        manualSyncCountDownTimer.get().cancel()
+    private fun cancelTimer() {
+        timer.cancel()
     }
 
     private fun leaveDeviceGroup() {
@@ -273,10 +267,12 @@ class PlanckSyncRepository @Inject constructor(
             Timber.e("unexpected initial state: ${syncStateMutableFlow.value}")
         }
         if (initialState !is SyncState.HandshakeReadyAwaitingUser) {
-            syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
-            timerTask = timer.schedule(20000) {
+            syncStateMutableFlow.value =
+                SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = true)
+            timer.startOrReset(INITIAL_HANDSHAKE_AVAILABLE_WAIT) {
                 if (syncState !is SyncState.HandshakeReadyAwaitingUser) {
-                    syncStateMutableFlow.value = SyncState.AwaitingOtherDevice
+                    syncStateMutableFlow.value =
+                        SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = false)
                     allowTimedManualSync()
                 }
             }
@@ -292,8 +288,7 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun userDisconnected() {
-        timerTask?.cancel()
-        timerTask = null
+        cancelTimer()
         syncStateMutableFlow.value = SyncState.Idle
         unlockHandshake()
     }
