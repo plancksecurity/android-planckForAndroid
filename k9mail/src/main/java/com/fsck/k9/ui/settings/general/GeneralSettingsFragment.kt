@@ -3,6 +3,7 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.manualsync.PlanckSyncWizard
+import com.fsck.k9.planck.ui.activities.SplashActivity
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
@@ -44,6 +46,8 @@ import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportPlanckSupportDataActivity
 import javax.inject.Inject
+import kotlin.system.exitProcess
+
 
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
 @AndroidEntryPoint
@@ -171,13 +175,23 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             setOnPreferenceClickListener {
                 view?.let {
                     if (isDeviceOnline()) {
-                        AlertDialog.Builder(it.context)
-                            .setTitle(getString(R.string.sync_title))
-                            .setMessage(R.string.planck_key_sync_warning)
-                            .setCancelable(true)
-                            .setPositiveButton(R.string.sync_action) { _, _ ->
-                                startManualSync()
-                            }.setNegativeButton(R.string.cancel_action, null).show()
+                        if (K9.isPlanckSyncEnabled()) {
+                            AlertDialog.Builder(it.context)
+                                .setTitle(getString(R.string.sync_title))
+                                .setMessage(R.string.planck_key_sync_warning)
+                                .setCancelable(true)
+                                .setPositiveButton(R.string.sync_action) { _, _ ->
+                                    startManualSync()
+                                }.setNegativeButton(R.string.cancel_action, null).show()
+                        } else {
+                            AlertDialog.Builder(it.context)
+                                .setTitle(getString(R.string.sync_title))
+                                .setMessage(R.string.device_group_rejoin_warning)
+                                .setCancelable(true)
+                                .setPositiveButton(R.string.action_restart) { _, _ ->
+                                    restartApp()
+                                }.setNegativeButton(R.string.cancel_action, null).show()
+                        }
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
                     }
@@ -185,6 +199,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun restartApp() {
+        val intent = Intent(context, SplashActivity::class.java)
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+        context?.startActivity(intent)
+        activity?.finish()
+        Runtime.getRuntime().exit(0)
     }
 
     private fun startManualSync() {
