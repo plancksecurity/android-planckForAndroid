@@ -94,10 +94,6 @@ class PlanckSyncWizardViewModel @Inject constructor(
         syncRepository.userDisconnected()
     }
 
-    private fun setState(state: SyncScreenState) {
-        syncState.value = state.also { syncRepository.setCurrentState(it as SyncAppState) }
-    }
-
     fun rejectHandshake() {
         planckProvider.rejectSync()
         syncRepository.cancelSync()
