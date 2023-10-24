@@ -175,22 +175,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             setOnPreferenceClickListener {
                 view?.let {
                     if (isDeviceOnline()) {
-                        if (k9.isDeviceJustLeftGroup) {
-                            AlertDialog.Builder(it.context)
-                                .setTitle(getString(R.string.sync_title))
-                                .setMessage(R.string.device_group_rejoin_warning)
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.action_restart) { _, _ ->
-                                    restartApp()
-                                }.setNegativeButton(R.string.action_postpone, null).show()
+                        if (k9.deviceJustLeftGroup()) {
+                            showRestartDialog(it)
                         } else {
-                            AlertDialog.Builder(it.context)
-                                .setTitle(getString(R.string.sync_title))
-                                .setMessage(R.string.planck_key_sync_warning)
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.sync_action) { _, _ ->
-                                    startManualSync()
-                                }.setNegativeButton(R.string.cancel_action, null).show()
+                            showManualSyncDialog(it)
                         }
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
@@ -200,6 +188,24 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             }
         }
     }
+
+    private fun showManualSyncDialog(it: View): AlertDialog? =
+        AlertDialog.Builder(it.context)
+            .setTitle(getString(R.string.sync_title))
+            .setMessage(R.string.planck_key_sync_warning)
+            .setCancelable(true)
+            .setPositiveButton(R.string.sync_action) { _, _ ->
+                startManualSync()
+            }.setNegativeButton(R.string.cancel_action, null).show()
+
+    private fun showRestartDialog(it: View): AlertDialog? =
+        AlertDialog.Builder(it.context)
+            .setTitle(getString(R.string.sync_title))
+            .setMessage(R.string.device_group_rejoin_warning)
+            .setCancelable(true)
+            .setPositiveButton(R.string.action_restart) { _, _ ->
+                restartApp()
+            }.setNegativeButton(R.string.action_postpone, null).show()
 
     private fun restartApp() {
         val intent = Intent(context, SplashActivity::class.java)
