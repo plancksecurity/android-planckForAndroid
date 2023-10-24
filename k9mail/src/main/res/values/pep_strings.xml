@@ -415,14 +415,15 @@
     <string name="reject_trust_dialog_progress">Rejecting trust with %s…</string>
     <string name="confirm_trust_dialog_confirmation">
         Trustwords or fingerprints are matching, this means that it is secure to communicate with "%1$s" identity.\n\n
-        We recommend to press "Yes, Confirm", marking "%1$s" as Trusted.
+        We recommend to press "Yes, Confirm", marking "%1$s" as Verified.
     </string>
     <string name="reject_trust_dialog_confirmation">
         Trustwords or fingerprints are not matching, this could indicate that someone is trying to imitate yours or "%1$s" identity.\n\n
         We recommend to press "Yes, Reject", marking "%1$s" as Dangerous, and to contact your IT support or your operational security team to investigate.
     </string>
-    <string name="confirm_trust_dialog_success">%s is now trusted.</string>
-    <string name="reject_trust_dialog_success">%s is now mistrusted.</string>
+    <string name="confirm_trust_dialog_success">%s is now a Verified email partner.</string>
+    <string name="reject_trust_dialog_success">%s is now a Dangerous email partner.
+        We recommend to contact your IT support or your operational security team to investigate.</string>
     <string name="confirm_trust_dialog_failure">
         An error has occurred while marking %s as Trusted.\n\n
         Please contact your IT support or your operational security team.
