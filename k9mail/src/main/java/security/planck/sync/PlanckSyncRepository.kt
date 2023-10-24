@@ -25,8 +25,8 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 private const val POLLING_INTERVAL = 2000L
-private const val MANUAL_SYNC_TIME_LIMIT = 120000L // 2 minutes
-private const val INITIAL_HANDSHAKE_AVAILABLE_WAIT = 20000L // 20 seconds
+internal const val MANUAL_SYNC_TIME_LIMIT = 120000L // 2 minutes
+internal const val INITIAL_HANDSHAKE_AVAILABLE_WAIT = 20000L // 20 seconds
 
 @Singleton
 class PlanckSyncRepository @Inject constructor(
@@ -269,12 +269,16 @@ class PlanckSyncRepository @Inject constructor(
         if (initialState !is SyncState.HandshakeReadyAwaitingUser) {
             syncStateMutableFlow.value =
                 SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = true)
-            timer.startOrReset(INITIAL_HANDSHAKE_AVAILABLE_WAIT) {
-                if (syncState !is SyncState.HandshakeReadyAwaitingUser) {
-                    syncStateMutableFlow.value =
-                        SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = false)
-                    allowTimedManualSync()
-                }
+            startCatchupAllowancePeriod()
+        }
+    }
+
+    private fun startCatchupAllowancePeriod() {
+        timer.startOrReset(INITIAL_HANDSHAKE_AVAILABLE_WAIT) {
+            if (syncState !is SyncState.HandshakeReadyAwaitingUser) {
+                syncStateMutableFlow.value =
+                    SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = false)
+                allowTimedManualSync()
             }
         }
     }
