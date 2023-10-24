@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -36,6 +37,7 @@ class PlanckSyncWizard : WizardActivity() {
         setUpToolbar(false)
         setUpFloatingWindowWrapHeight()
         setupViews()
+        onBackPressedDispatcher.addCallback { viewModel.cancelIfNotDone() }
         observeViewModel()
     }
 
@@ -311,9 +313,5 @@ class PlanckSyncWizard : WizardActivity() {
     private fun getLoadingAnimationDrawable(): Int {
         return if (viewModel.formingGroup) R.drawable.add_second_device
         else R.drawable.add_device_to_group
-    }
-
-    override fun onBackPressed() {
-        viewModel.cancelIfNotDone()
     }
 }
