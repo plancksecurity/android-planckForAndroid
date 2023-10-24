@@ -82,7 +82,6 @@ class PlanckSyncWizard : WizardActivity() {
     private fun renderSyncState(syncState: SyncScreenState) {
         val stateDebugText = "State: ${syncState::class.java.simpleName}"
         binding.syncStateFeedback.text = stateDebugText
-        binding.showLongTrustwords.isVisible = viewModel.shortTrustWords
         when (syncState) {
             SyncState.Idle,
             is SyncState.AwaitingOtherDevice -> {
@@ -194,6 +193,7 @@ class PlanckSyncWizard : WizardActivity() {
     private fun showHandshake(syncState: SyncState.UserHandshaking) {
         invalidateOptionsMenu()
         showLangIcon()
+        binding.showLongTrustwords.isVisible = syncState.trustwords.isNotBlank() && viewModel.shortTrustWords
         showScreen(
             description = R.string.keysync_wizard_handshake_message,
             ownFpr = syncState.ownFpr,
