@@ -6,12 +6,7 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="@dimen/key_import_floating_width"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
+        style="@style/WizardLayout"
         tools:context="security.planck.ui.verifypartner.VerifyPartnerFragment">
 
         <androidx.appcompat.widget.Toolbar
@@ -22,14 +17,8 @@
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:text="@string/verify_partner_dialog_title"
-                android:textColor="?attr/defaultColorOnBackground"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                style="@style/WizardToolbarTitle"
+                android:text="@string/verify_partner_dialog_title" />
         </androidx.appcompat.widget.Toolbar>
 
         <TextView
@@ -39,30 +28,18 @@
             android:text="@string/pep_ask_trustwords"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-        <!--include layout="@layout/planck_status_trustwords_view"/-->
-
         <TextView
             android:id="@+id/trustwords_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="sans-serif"
+            style="@style/WizardTrustwordsFprsTitle"
             android:text="@string/trustwords_title"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="@string/trustwords_title" />
 
         <TextView
             android:id="@+id/trustwords"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="sans-serif"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            style="@style/WizardTrustwords"
             app:layout_constraintEnd_toStartOf="@id/show_long_trustwords"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/trustwords_title"
@@ -70,69 +47,50 @@
 
         <ImageView
             android:id="@+id/show_long_trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/selectable_message_background"
+            style="@style/WizardShowLongTrustwords"
             android:contentDescription="@string/pep_menu_long_trustwords"
-            android:src="@drawable/ic_show_long_trustwords"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@id/trustwords"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/fpr_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
+            style="@style/WizardTrustwordsFprsTitle"
             android:text="@string/fpr_title"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/trustwords"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="Fingerprints" />
 
         <TextView
             android:id="@+id/fpr_current_account_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
+            style="@style/WizardTrustwordsFprsTitle"
             app:layout_constraintTop_toBottomOf="@id/fpr_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="your_account@pep.security" />
 
         <TextView
             android:id="@+id/fpr_current_account_value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:breakStrategy="simple"
-            android:ellipsize="none"
-            android:textStyle="bold"
+            style="@style/WizardFprValue"
             app:layout_constraintTop_toBottomOf="@id/fpr_current_account_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
 
         <TextView
             android:id="@+id/fpr_partner_account_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
+            style="@style/WizardTrustwordsFprsTitle"
             app:layout_constraintTop_toBottomOf="@id/fpr_current_account_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="partner_account@pep.security" />
 
         <TextView
             android:id="@+id/fpr_partner_account_value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:breakStrategy="simple"
-            android:ellipsize="none"
-            android:textStyle="bold"
+            style="@style/WizardFprValue"
             app:layout_constraintTop_toBottomOf="@id/fpr_partner_account_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
 
         <Button
@@ -193,12 +151,10 @@
 
         <TextView
             android:id="@+id/progress_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:fontFamily="sans-serif"
-            android:gravity="center_horizontal"
+            style="@style/WizardProgressText"
             app:layout_constraintTop_toBottomOf="@id/progress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             tools:text="loading..." />
 
         <androidx.constraintlayout.widget.Group
