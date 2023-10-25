@@ -68,6 +68,12 @@ SyncWizard: * Handshake is **locked** when user clicks on "Next" button to displ
     state AwaitingHandshakeCompletion
     AwaitingHandshakeCompletion: * Display progress animation
     UserHandshaking --> AwaitingHandshakeCompletion : User accepted handshake
+    AwaitingHandshakeCompletion ---left-> Done : Handshake completed successfully\n* SYNC_NOTIFY_ACCEPTED_GROUP_CREATED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ADDED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ACCEPTED
+
+    UserHandshaking --> Cancelled : User cancelled\nhandshake
+    state CancelledRoot <<start>>
+    CancelledRoot -up-> Cancelled : From many states
+    AwaitingHandshakeCompletion --> Cancelled : User cancelled\nhandshake
 }
 
 SyncWizard -up-> Idle : Sync wizard closed
@@ -76,11 +82,7 @@ Wizard_Start --> HandshakeReadyAwaitingUser : Handshake already\navailable
 CatchupAllowancePeriod -up------> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
 AwaitingOtherDevice --> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
 HandshakeReadyAwaitingUser --> UserHandshaking : "Next" button clicked
-UserHandshaking --> Cancelled : User cancelled\nhandshake
-state CancelledRoot <<start>>
-CancelledRoot -up-> Cancelled : From many states
-AwaitingHandshakeCompletion ---left-> Done : Handshake completed successfully\n* SYNC_NOTIFY_ACCEPTED_GROUP_CREATED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ADDED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ACCEPTED
-AwaitingHandshakeCompletion --> Cancelled : User cancelled\nhandshake
+
 
 
 state HandshakeReadyAwaitingUser
