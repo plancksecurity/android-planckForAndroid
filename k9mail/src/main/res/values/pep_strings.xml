@@ -425,7 +425,7 @@
     <string name="reject_trust_dialog_success">%s is now a Dangerous email partner.\n
         We recommend to contact your IT support or your operational security team to investigate.</string>
     <string name="confirm_trust_dialog_failure">
-        An error has occurred while marking %s as Trusted.\n\n
+        An error has occurred while marking %s as Verified.\n\n
         Please contact your IT support or your operational security team.
     </string>
     <string name="reject_trust_dialog_failure">
