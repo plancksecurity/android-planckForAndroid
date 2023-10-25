@@ -25,6 +25,9 @@ Start_App : - This SyncDelegate has a **state**, initially Idle
 
 Start_App -down-> Idle
 Idle: Nothing to do here
+Idle: Go to other states:
+Idle: * On sync handshake signals
+Idle: * When user starts sync wizard
 Idle -> Idle : Initially stay in Idle\nwhile no event
 'Idle ---> Sync_Wizard
 state SyncWizard {
@@ -33,6 +36,7 @@ SyncWizard: * Handshake is **locked** when user clicks on "Next" button to displ
     state Wizard_Start <<start>>
     note right of Wizard_Start
       User starts the sync wizard
+      * From any current state
     end note
 
     Wizard_Start --> CatchupAllowancePeriod : Handshake not available
