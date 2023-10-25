@@ -599,5 +599,9 @@ public class PlanckUtils {
     public static boolean isRatingTrusted(Rating rating){
         return rating.value >= Rating.pEpRatingTrusted.value;
     }
+
+    public static boolean isRatingReliable(Rating rating) {
+        return rating.value >= Rating.pEpRatingReliable.value;
+    }
 }
 

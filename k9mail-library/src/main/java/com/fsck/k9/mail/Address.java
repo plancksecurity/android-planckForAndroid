@@ -49,6 +49,10 @@ public class Address implements Serializable {
         this(address, null, true);
     }
 
+    public static Address create(String address) {
+        return new Address(address);
+    }
+
     private Address(String address, String personal, boolean parse) {
         if (parse) {
             Rfc822Token[] tokens =  Rfc822Tokenizer.tokenize(address);

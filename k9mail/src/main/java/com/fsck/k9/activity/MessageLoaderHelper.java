@@ -214,7 +214,7 @@ public class MessageLoaderHelper {
     private void startOrResumeLocalMessageLoader() {
         LocalMessageLoader loader =
                 (LocalMessageLoader) loaderManager.<LocalMessage>getLoader(LOCAL_MESSAGE_LOADER_ID);
-        boolean isLoaderStale = (loader == null) || !loader.isCreatedFor(messageReference);
+        boolean isLoaderStale = (loader != null) && loader.isCreatedFor(messageReference);
 
         if (isLoaderStale) {
             Timber.d("Creating new local message loader");
