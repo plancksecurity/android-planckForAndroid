@@ -9,7 +9,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -31,12 +37,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.openid.appauth.*
+import net.openid.appauth.AppAuthConfiguration
+import net.openid.appauth.AuthState
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.BuildConfig
+import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.browser.BrowserDescriptor
+import net.openid.appauth.browser.BrowserSelector
 import timber.log.Timber
 import javax.inject.Inject
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
 private const val ACCESS_DENIED_BY_USER = "access_denied"
+private const val MICROSOFT_BROWSER = "microsoft"
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -149,21 +166,25 @@ class AuthViewModel @Inject constructor(
                 return@launch
             }
 
-            try {
-                startLogin(account, config)
-            } catch (e: ActivityNotFoundException) {
-                _uiState.value = AuthFlowState.BrowserNotFound
+            startLogin(account, config).onFailure { throwable ->
+                when (throwable) {
+                    is ActivityNotFoundException ->
+                        _uiState.value = AuthFlowState.BrowserNotFound
+                    is UnsuitableBrowserFound ->
+                        _uiState.value = AuthFlowState.UnsuitableBrowserFound
+                    else -> throw throwable
+                }
             }
         }
     }
 
-    private suspend fun startLogin(account: Account, config: OAuthConfiguration) {
-        val authRequestIntent = withContext(dispatcherProvider.io()) {
-            createAuthorizationRequestIntent(account.email, config)
+    private suspend fun startLogin(account: Account, config: OAuthConfiguration): Result<Unit> =
+        withContext(dispatcherProvider.io()) {
+            kotlin.runCatching { createAuthorizationRequestIntent(account.email, config) }
+        }.mapCatching { authRequestIntent ->
+            resultObserver.login(authRequestIntent)
         }
 
-        resultObserver.login(authRequestIntent)
-    }
 
     private fun createAuthorizationRequestIntent(email: String?, config: OAuthConfiguration): Intent {
         val serviceConfig = AuthorizationServiceConfiguration(
@@ -361,6 +382,8 @@ sealed interface AuthFlowState {
 
     object BrowserNotFound : AuthFlowState
 
+    object UnsuitableBrowserFound : AuthFlowState
+
     object Canceled : AuthFlowState
 
     data class Failed(val errorCode: String?, val errorMessage: String?) : AuthFlowState {
@@ -390,5 +413,22 @@ sealed interface AuthFlowState {
 class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
 
 class AuthServiceFactory @Inject constructor(private val application: Application) {
-    fun create(): AuthorizationService = AuthorizationService(application)
+    fun create(): AuthorizationService {
+        val (unsuitable, suitable) =
+            BrowserSelector.getAllBrowsers(application)
+                .filter { it.packageName != null }
+                .partition { it.isMicrosoftBrowser()  }
+        if (unsuitable.isNotEmpty() && suitable.isEmpty()) {
+            throw UnsuitableBrowserFound()
+        }
+        return AuthorizationService(
+            application,
+            AppAuthConfiguration.Builder()
+                .setBrowserMatcher { matcher -> matcher in suitable }
+                .build()
+        )
+    }
+
+    private fun BrowserDescriptor.isMicrosoftBrowser() =
+        packageName.contains(MICROSOFT_BROWSER, ignoreCase = true)
 }
