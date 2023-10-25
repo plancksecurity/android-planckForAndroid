@@ -21,15 +21,15 @@ scale 800 height
 [*] --> Start_App
 Start_App : - Initialize a SyncRepository or SyncDelegate
 Start_App : - This SyncDelegate contains the SyncHandshakeCallback
-Start_App : - This SyncDelegate has a state, initially Idle
+Start_App : - This SyncDelegate has a **state**, initially Idle
 
 Start_App -down-> Idle
 Idle: Nothing to do here
-Idle -> Idle : Stay in Idle on no event
+Idle -> Idle : Initially stay in Idle\nwhile no event
 'Idle ---> Sync_Wizard
-state Sync_Wizard {
-Sync_Wizard: * Handshake is **unlocked** when sync wizard is closed so it can keep being updated by the core.
-Sync_Wizard: * Handshake is **locked** when user clicks on "Next" button to display the trustwords.
+state SyncWizard {
+SyncWizard: * Handshake is **unlocked** when sync wizard is closed so it can keep being updated by the core.
+SyncWizard: * Handshake is **locked** when user clicks on "Next" button to display the trustwords.
     state Wizard_Start <<start>>
     note right of Wizard_Start
       User starts the sync wizard
@@ -66,6 +66,8 @@ Sync_Wizard: * Handshake is **locked** when user clicks on "Next" button to disp
     UserHandshaking --> AwaitingHandshakeCompletion : User accepted handshake
 }
 
+SyncWizard -up-> Idle : Sync wizard closed
+
 Wizard_Start --> HandshakeReadyAwaitingUser : Handshake already\navailable
 CatchupAllowancePeriod -up------> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
 AwaitingOtherDevice --> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
@@ -73,7 +75,7 @@ HandshakeReadyAwaitingUser --> UserHandshaking : "Next" button clicked
 UserHandshaking --> Cancelled : User cancelled\nhandshake
 state CancelledRoot <<start>>
 CancelledRoot -up-> Cancelled : From many states
-AwaitingHandshakeCompletion -down-> Done : Handshake completed successfully\n* SYNC_NOTIFY_ACCEPTED_GROUP_CREATED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ADDED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ACCEPTED
+AwaitingHandshakeCompletion ---left-> Done : Handshake completed successfully\n* SYNC_NOTIFY_ACCEPTED_GROUP_CREATED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ADDED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ACCEPTED
 AwaitingHandshakeCompletion --> Cancelled : User cancelled\nhandshake
 
 
@@ -83,7 +85,7 @@ HandshakeReadyAwaitingUser: + myself: Identity
 HandshakeReadyAwaitingUser: + partner: Identity
 HandshakeReadyAwaitingUser: + formingGroup: Boolean
 HandshakeReadyAwaitingUser: * Cancel timer
-HandshakeReadyAwaitingUser: * If Sync_Wizard is displaying, show screen "another device found"
+HandshakeReadyAwaitingUser: * If SyncWizard is displaying, show screen "another device found"
 
 state TimeoutRoot <<start>>
 TimeoutRoot --> TimeoutError : SYNC_NOTIFY_TIMEOUT
