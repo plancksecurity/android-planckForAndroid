@@ -26,7 +26,6 @@ import javax.inject.Inject;
 
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.mdm.ConfigurationManager;
-import security.planck.mdm.RestrictionsListener;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;
@@ -40,7 +39,6 @@ import timber.log.Timber;
 public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
     private IntentFilter passphraseReceiverfilter;
-    private final ConfigurationManager configurationManager;
     private OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver;
 
     public static void setLanguage(Context context, String language) {
@@ -65,14 +63,6 @@ public class K9ActivityCommon {
 
     private static void invalidateChromeLocaleForWebView(Context context) {
         new WebView(context).destroy();
-    }
-
-    public void setConfigurationManagerListener(RestrictionsListener listener) {
-        configurationManager.addListener(listener);
-    }
-
-    public void unsetConfigurationManagerListener(RestrictionsListener listener) {
-        configurationManager.removeListener(listener);
     }
 
     /**
@@ -101,7 +91,6 @@ public class K9ActivityCommon {
             OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver
     ) {
         mActivity = activity;
-        this.configurationManager = configurationManager;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         this.passphraseReceiverfilter = passphraseReceiverfilter;

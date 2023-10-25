@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -23,7 +24,6 @@ import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
-import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
 import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
@@ -35,6 +35,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
+import security.planck.mdm.RestrictionsViewModel
 import security.planck.sync.SyncRepository
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
@@ -47,6 +48,7 @@ import javax.inject.Inject
 private const val PREFERENCE_PLANCK_MANUAL_SYNC = "planck_key_sync"
 @AndroidEntryPoint
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
+    private val restrictionsViewModel: RestrictionsViewModel by viewModels()
     @Inject
     lateinit var dataStore: GeneralSettingsDataStore
     @Inject
@@ -72,6 +74,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
+        observeRestrictionsUpdates()
         initializePreferences()
         initializeFragmentResultListener()
     }
@@ -83,6 +86,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
             if (result == LeaveDeviceGroupDialog.EXECUTED) {
                 updateLeaveDeviceGroupPreferenceVisibility()
+            }
+        }
+    }
+
+    private fun observeRestrictionsUpdates() {
+        restrictionsViewModel.restrictionsUpdated.observe(this) { event ->
+            event?.getContentIfNotHandled()?.let { updated ->
+                if (updated) {
+                    refreshPreferences()
+                }
             }
         }
     }
@@ -215,7 +228,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                         .setTitle(R.string.pep_key_reset_all_own_ids_summary)
                         .setCancelable(false)
                         .setPositiveButton(R.string.reset_all) { _, _ ->
-                            dopEpKeyReset()
+                            doPlanckKeyReset()
                         }.setNeutralButton(R.string.cancel_action, null)
                         .show()
                 true
@@ -236,12 +249,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeExportPEpSupportDataPreference() {
         findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.let { pref ->
-            if (BuildConfig.DEBUG) {
-                pref.onClick {
-                    ExportPlanckSupportDataActivity.showExportPlanckSupportDataDialog(requireActivity())
-                }
-            } else {
-                pref.remove()
+            pref.onClick {
+                ExportPlanckSupportDataActivity.showExportPlanckSupportDataDialog(requireActivity())
             }
         }
     }
@@ -284,7 +293,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     }
 
-    private fun dopEpKeyReset() {
+    private fun doPlanckKeyReset() {
         disableKeyResetClickListener()
         loading?.visibility = View.VISIBLE
 
@@ -292,11 +301,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         uiScope.launch {
             ownKeyReset()
+            syncRepository.isGrouped = false
             context?.applicationContext?.let {
                 FeedbackTools.showLongFeedback(view,
                         it.getString(R.string.key_reset_all_own_identitities_feedback))
             }
             initializeGlobalpEpKeyReset()
+            updateLeaveDeviceGroupPreferenceVisibility()
             loading?.visibility = View.GONE
         }
     }

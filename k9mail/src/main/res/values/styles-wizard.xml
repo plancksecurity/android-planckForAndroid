@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="WizardLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/key_import_floating_width</item>
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="WizardShowLongTrustwords">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:background">@drawable/selectable_message_background</item>
+        <item name="srcCompat">@drawable/ic_show_long_trustwords</item>
+    </style>
+
+    <style name="WizardToolbarTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">?attr/defaultColorOnBackground</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="WizardTrustwordsFprsTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="WizardTrustwords">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginVertical">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="WizardFprValue">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:breakStrategy">simple</item>
+        <item name="android:ellipsize">none</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="WizardProgressText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+</resources>

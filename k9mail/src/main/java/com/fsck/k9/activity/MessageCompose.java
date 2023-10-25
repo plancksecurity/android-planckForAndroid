@@ -41,6 +41,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -121,7 +122,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
-import security.planck.mdm.RestrictionsListener;
+import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
@@ -129,6 +130,8 @@ import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
+import security.planck.ui.verifypartner.VerifyPartnerFragment;
+import security.planck.ui.verifypartner.VerifyPartnerFragmentKt;
 import timber.log.Timber;
 
 @AndroidEntryPoint
@@ -136,7 +139,7 @@ import timber.log.Timber;
 public class MessageCompose extends K9Activity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
-        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener, RestrictionsListener {
+        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
     private static final int DIALOG_CONFIRM_DISCARD_ON_BACK = 2;
     private static final int DIALOG_CHOOSE_IDENTITY = 3;
@@ -283,6 +286,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private TextView userActionBanner;
     private View userActionBannerSeparator;
     private StringBuilder lastError;
+    private RestrictionsViewModel restrictionsViewModel;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -296,7 +300,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
-
+        initializeVerifyPartnerResultListener();
         uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -535,7 +539,22 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
         Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
+        restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
+    }
 
+    private void initializeVerifyPartnerResultListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                VerifyPartnerFragment.REQUEST_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(VerifyPartnerFragment.REQUEST_KEY)) {
+                        String ratingString = result.getString(VerifyPartnerFragment.RESULT_KEY_RATING);
+                        if (ratingString != null) {
+                            recipientPresenter.handleVerifyPartnerIdentityResult();
+                        }
+                    }
+                }
+        );
     }
 
     private void restoreMessageComposeConfigurationInstance() {
@@ -672,13 +691,22 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         messageRatingIsBeingLoaded();
         recipientPresenter.onResume();
         invalidateOptionsMenu();
-        startListeningConfigChanges();
+        startObservingRestrictionsChanges();
+    }
+
+    private void startObservingRestrictionsChanges() {
+        restrictionsViewModel.getRestrictionsUpdated().observe(this, event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                updatedRestrictions();
+            }
+        });
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        stopListeningConfigChanges();
+        stopObservingRestrictionsChanges();
         hideUserActionBanner();
         MessagingController.getInstance(this).removeListener(messagingListener);
         MessagingController.getInstance(this).setEchoMessageReceivedListener(null);
@@ -692,6 +720,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         checkToSaveDraftImplicitly();
+    }
+
+    private void stopObservingRestrictionsChanges() {
+        restrictionsViewModel.getRestrictionsUpdated().removeObservers(this);
     }
 
     /**
@@ -719,8 +751,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     }
 
-    @Override
-    public void updatedRestrictions() {
+    private void updatedRestrictions() {
         recipientPresenter.updateCryptoStatus();
         recipientPresenter.notifyRecipientsChanged();
         recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
@@ -2106,6 +2137,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             addNewDebugErrorText(errorText);
         }
         showError(lastError.toString());
+    }
+
+    public void launchVerifyPartnerIdentity(String myself, MessageReference messageReference) {
+        VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, myself, myself, messageReference, false);
     }
 
     private boolean shouldInitializeError() {

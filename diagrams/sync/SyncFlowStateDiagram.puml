@@ -1,0 +1,125 @@
+@startuml
+'https://plantuml.com/state-diagram
+'skinparam ranksep 20
+skinparam dpi 125
+'skinparam packageTitleAlignment left
+'skinparam linetype ortho
+'skinparam linetype polyline
+'left to right direction
+skinparam arrowColor red
+skinparam arrowFontColor green
+'skinparam handwritten true
+skinparam State {
+    AttributeFontcolor navy
+    BackgroundColor lavender
+}
+
+
+scale 800 width
+scale 800 height
+
+[*] --> Start_App
+Start_App : - Initialize a SyncRepository or SyncDelegate
+Start_App : - This SyncDelegate contains the SyncHandshakeCallback
+Start_App : - This SyncDelegate has a **state**, initially Idle
+
+Start_App -down-> Idle
+Idle: Nothing to do here
+Idle: Go to other states:
+Idle: * On sync handshake signals
+Idle: * When user starts sync wizard
+Idle -> Idle : Initially stay in Idle\nwhile no event
+'Idle ---> Sync_Wizard
+state SyncWizard {
+SyncWizard: * Handshake is **unlocked** when sync wizard is closed so it can keep being updated by the core.
+SyncWizard: * Handshake is **locked** when user clicks on "Next" button to display the trustwords.
+    state Wizard_Start <<start>>
+    note right of Wizard_Start
+      User starts the sync wizard
+      * From any current state
+    end note
+
+    Wizard_Start --> CatchupAllowancePeriod : Handshake not available
+
+    CatchupAllowancePeriod: * Start polling planck folder
+    CatchupAllowancePeriod: * Wait 20 seconds to allow devices to \ncatch up each other's state
+    CatchupAllowancePeriod: * Possibly a handshake is already ongoing
+    CatchupAllowancePeriod: * Display "awaiting the other device..."
+
+    CatchupAllowancePeriod --> CatchupAllowancePeriod : SYNC_NOTIFY_SOLE/\nSYNC_NOTIFY_GROUPED:\nrestart 2 minute timer
+    CatchupAllowancePeriod --> AwaitingOtherDevice : Handshake not available\ntimeup
+    AwaitingOtherDevice: * Start polling planck folder
+    AwaitingOtherDevice: * Display "awaiting the other device..."
+    AwaitingOtherDevice: * **Call reinit_sync**
+    AwaitingOtherDevice: * Start 2 minute timer
+    AwaitingOtherDevice: to find an available handshake
+    AwaitingOtherDevice --> AwaitingOtherDevice : SYNC_NOTIFY_SOLE/\nSYNC_NOTIFY_GROUPED:\nrestart 2 minute timer
+    AwaitingOtherDevice --> SyncStartTimeout : Handshake not available\ntimeup
+    SyncStartTimeout: Handshake could not start\nwithin the allowed time
+    SyncStartTimeout: * Display "Device sync could not start..."
+
+    state UserHandshaking
+    UserHandshaking: + ownFpr: String
+    UserHandshaking: + partnerFpr: String
+    UserHandshaking: + trustwords: String
+    UserHandshaking: * **Lock handshake**
+    UserHandshaking: * Display fprs and trustwords, buttons
+
+    state AwaitingHandshakeCompletion
+    AwaitingHandshakeCompletion: * Display progress animation
+    UserHandshaking --> AwaitingHandshakeCompletion : User accepted handshake
+    AwaitingHandshakeCompletion -left> Done : Handshake completed successfully\n* SYNC_NOTIFY_ACCEPTED_GROUP_CREATED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ADDED\n* SYNC_NOTIFY_ACCEPTED_DEVICE_ACCEPTED
+    Done: * Display done feedback
+
+    UserHandshaking --> Cancelled : User cancelled\nhandshake
+    Cancelled: * Cancel any timers
+    Cancelled: * Automatically close sync wizard
+    state CancelledRoot <<start>>
+    CancelledRoot -up-> Cancelled : From many states
+    AwaitingHandshakeCompletion --> Cancelled : User cancelled\nhandshake
+    state Close <<exitPoint>>
+    Cancelled -[norank]left-> Close : Automatically closed
+}
+
+SyncWizard -up-> Idle : Sync wizard closed **by user** \nafter Done, timeout or error\n **or automatically** on cancel
+
+Wizard_Start --> HandshakeReadyAwaitingUser : Handshake already\navailable
+CatchupAllowancePeriod -up------> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
+AwaitingOtherDevice --> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
+HandshakeReadyAwaitingUser --> UserHandshaking : "Next" button clicked
+
+
+
+state HandshakeReadyAwaitingUser
+HandshakeReadyAwaitingUser: Contains variables representing available handshake:
+HandshakeReadyAwaitingUser: + myself: Identity
+HandshakeReadyAwaitingUser: + partner: Identity
+HandshakeReadyAwaitingUser: + formingGroup: Boolean
+HandshakeReadyAwaitingUser: * Cancel timer
+HandshakeReadyAwaitingUser: * If SyncWizard is displaying, show screen "another device found"
+
+state TimeoutRoot <<start>>
+TimeoutRoot --> TimeoutError : SYNC_NOTIFY_TIMEOUT
+TimeoutError: * Reached from different states.
+TimeoutError: * App got SYNC_NOTIFY_TIMEOUT signal.
+TimeoutError: * Display "could not complete device sync..."
+
+state ErrorRoot <<start>>
+ErrorRoot --> Error : Errors getting\ntrustwords etc
+Error: * Display "something wrong"
+
+
+
+state anyState <<start>>
+anyState -> HandshakeReadyAwaitingUser: From any state\nwhen handshake\nnot locked
+note top of anyState
+From any state **only if** handshake is **not locked** on signals:
+- signal **SYNC_NOTIFY_INIT_FORM_GROUP** and device **not grouped**
+- signal **SYNC_NOTIFY_INIT_ADD_OUR_DEVICE** and device **not grouped**
+- signal **SYNC_NOTIFY_INIT_ADD_OTHER_DEVICE** and device **grouped**
+"**Handshake available**" means app is in state **HandshakeReadyAwaitingUser**.
+* **Replace** last available handshake with the sync callback event info.
+end note
+
+
+@enduml

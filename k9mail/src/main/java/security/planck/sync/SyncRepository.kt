@@ -1,7 +1,8 @@
 package security.planck.sync
 
+import com.fsck.k9.K9
 import com.fsck.k9.planck.manualsync.SyncAppState
-import foundation.pEp.jniadapter.Sync
+import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -36,7 +37,7 @@ interface SyncRepository {
      *
      * A [NotifyHandshakeCallback] to receive sync-related signals from the core.
      */
-    val notifyHandshakeCallback: Sync.NotifyHandshakeCallback
+    val notifyHandshakeCallback: NotifyHandshakeCallback
 
     /**
      * setCurrentState
@@ -99,4 +100,26 @@ interface SyncRepository {
      * Temporarily disable sync. This status is not persisted unless [K9.save] is called.
      */
     fun shutdownSync()
+
+    /**
+     * userConnected
+     *
+     * User interface is connected to this [SyncRepository] and starts collecting the [syncStateFlow].
+     */
+    fun userConnected()
+
+    /**
+     * lockHandshake
+     *
+     * The user locked the last available handshake data. This data will be used through the rest of the process.
+     * So it cannot be externally changed by any other handshake signal coming from the core.
+     */
+    fun lockHandshake()
+
+    /**
+     * userDisconnected
+     *
+     * User interface is disconnected from this [SyncRepository].
+     */
+    fun userDisconnected()
 }
