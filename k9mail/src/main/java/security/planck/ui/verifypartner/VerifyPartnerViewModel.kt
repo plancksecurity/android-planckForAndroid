@@ -328,6 +328,9 @@ constructor(
         isMessageIncoming: Boolean
     ): ResultCompat<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         ResultCompat.of {
+            if (isMessageIncoming && messageReference == null) {
+                error("incoming message needs a message reference always")
+            }
             this@VerifyPartnerViewModel.sender = Address.create(sender)
             this@VerifyPartnerViewModel.myself =
                 planckProvider.myself(PlanckUtils.createIdentity(Address.create(myself), context))
