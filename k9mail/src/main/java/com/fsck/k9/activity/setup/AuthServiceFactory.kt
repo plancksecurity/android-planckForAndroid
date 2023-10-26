@@ -16,7 +16,7 @@ class AuthServiceFactory @Inject constructor(private val application: Applicatio
                 .filter { it.packageName != null }
                 .partition { !allowMsBrowser && it.isMicrosoftBrowser() }
         if (unsuitable.isNotEmpty() && suitable.isEmpty()) {
-            throw UnsuitableBrowserFound()
+            throw UnsuitableBrowserFoundException()
         }
         return AuthorizationService(
             application,

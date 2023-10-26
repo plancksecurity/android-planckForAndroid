@@ -167,7 +167,7 @@ class AuthViewModel @Inject constructor(
                 when (throwable) {
                     is ActivityNotFoundException ->
                         _uiState.value = AuthFlowState.BrowserNotFound
-                    is UnsuitableBrowserFound ->
+                    is UnsuitableBrowserFoundException ->
                         _uiState.value = AuthFlowState.UnsuitableBrowserFound
                     else -> throw throwable
                 }
