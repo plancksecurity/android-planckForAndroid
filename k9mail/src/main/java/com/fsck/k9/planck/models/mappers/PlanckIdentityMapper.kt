@@ -23,6 +23,9 @@ class PlanckIdentityMapper @Inject constructor(private val planckProvider: Planc
             username = updatedRecipient.username
             me = updatedRecipient.me
             rating = updatedRecipient.rating
+            major_ver = updatedRecipient.major_ver
+            minor_ver = updatedRecipient.minor_ver
+            enc_format = updatedRecipient.enc_format
         }
     }
 }
