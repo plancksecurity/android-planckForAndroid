@@ -47,9 +47,8 @@ class VerifyPartnerFragment : DialogFragment() {
             arguments?.let { arguments ->
                 val sender = arguments.getString(ARG_SENDER) ?: error("sender missing")
                 val myself = arguments.getString(ARG_MYSELF) ?: error("myself missing")
-                val messageReference = MessageReference.parse(
-                    arguments.getString(ARG_MESSAGE_REFERENCE) ?: error("message reference missing")
-                ) ?: error("wrong message reference")
+                val messageReference = arguments.getString(ARG_MESSAGE_REFERENCE)
+                    ?.let { MessageReference.parse(it) }
                 val isMessageIncoming = arguments.getBoolean(ARG_MESSAGE_DIRECTION)
 
                 viewModel.initialize(sender, myself, messageReference, isMessageIncoming)
@@ -361,13 +360,13 @@ class VerifyPartnerFragment : DialogFragment() {
 private fun newInstance(
     sender: String,
     myself: String,
-    messageReference: MessageReference,
+    messageReference: MessageReference?,
     isMessageIncoming: Boolean,
 ): VerifyPartnerFragment = VerifyPartnerFragment().apply {
     arguments = bundleOf(
         ARG_SENDER to sender,
         ARG_MYSELF to myself,
-        ARG_MESSAGE_REFERENCE to messageReference.toIdentityString(),
+        ARG_MESSAGE_REFERENCE to messageReference?.toIdentityString(),
         ARG_MESSAGE_DIRECTION to isMessageIncoming,
     )
 }
@@ -376,7 +375,7 @@ private fun createAndShowVerifyPartnerDialog(
     fragmentManager: FragmentManager,
     sender: String,
     myself: String,
-    messageReference: MessageReference,
+    messageReference: MessageReference?,
     isMessageIncoming: Boolean,
 ) {
     val fragment = newInstance(
@@ -391,7 +390,7 @@ private fun createAndShowVerifyPartnerDialog(
 fun Fragment.showVerifyPartnerDialog(
     sender: String,
     myself: String,
-    messageReference: MessageReference,
+    messageReference: MessageReference?,
     isMessageIncoming: Boolean,
 ) {
     createAndShowVerifyPartnerDialog(
@@ -403,7 +402,7 @@ fun Fragment.showVerifyPartnerDialog(
 fun AppCompatActivity.showVerifyPartnerDialog(
     sender: String,
     myself: String,
-    messageReference: MessageReference,
+    messageReference: MessageReference?,
     isMessageIncoming: Boolean,
 ) {
     createAndShowVerifyPartnerDialog(

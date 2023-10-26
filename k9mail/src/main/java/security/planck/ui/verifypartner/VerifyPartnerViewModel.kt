@@ -59,7 +59,7 @@ constructor(
 ) : ViewModel() {
     private lateinit var sender: Address
     private lateinit var myself: Identity
-    private lateinit var messageReference: MessageReference
+    private var messageReference: MessageReference? = null
     private var isMessageIncoming = false
     private lateinit var localMessage: LocalMessage
     private lateinit var partner: PlanckIdentity
@@ -97,7 +97,7 @@ constructor(
     fun initialize(
         sender: String,
         myself: String,
-        messageReference: MessageReference,
+        messageReference: MessageReference?,
         isMessageIncoming: Boolean
     ) {
         viewModelScope.launch {
@@ -110,10 +110,10 @@ constructor(
                             stateLiveData.value = VerifyPartnerState.DeletedMessage
                         } else {
                             localMessage = message
-                            currentRating = localMessage.planckRating
-                            getHandshakeData()
+                            currentRating = message.planckRating
                         }
                     }
+                    getHandshakeData()
                 }.onFailure {
                     // display error
                     stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
@@ -322,7 +322,7 @@ constructor(
     private suspend fun populateData(
         sender: String,
         myself: String,
-        messageReference: MessageReference,
+        messageReference: MessageReference?,
         isMessageIncoming: Boolean
     ): ResultCompat<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         ResultCompat.of {
@@ -337,8 +337,14 @@ constructor(
     private suspend fun loadMessage(): ResultCompat<LocalMessage?> =
         withContext(dispatcherProvider.io()) {
             ResultCompat.of {
-                val account = preferences.getAccount(messageReference.accountUuid)
-                controller.loadMessage(account, messageReference.folderName, messageReference.uid)
+                messageReference?.let { messageReference ->
+                    val account = preferences.getAccount(messageReference.accountUuid)
+                    controller.loadMessage(
+                        account,
+                        messageReference.folderName,
+                        messageReference.uid
+                    )
+                }
             }
         }
 
