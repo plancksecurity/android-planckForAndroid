@@ -294,8 +294,7 @@ constructor(
             partnerFpr = PlanckUtils.formatFpr(partner.fpr),
             trustwords = trustwords,
             shortTrustwords = shortTrustwords,
-            allowChangeTrust = currentRating?.let { PlanckUtils.isHandshakeRating(currentRating) }
-                ?: false
+            allowChangeTrust = PlanckUtils.isHandshakeRating(partner.rating)
         )
 
 
