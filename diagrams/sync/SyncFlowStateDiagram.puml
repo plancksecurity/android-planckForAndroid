@@ -46,7 +46,6 @@ SyncWizard: * Handshake is **locked** when user clicks on "Next" button to displ
     CatchupAllowancePeriod: * Possibly a handshake is already ongoing
     CatchupAllowancePeriod: * Display "awaiting the other device..."
 
-    CatchupAllowancePeriod --> CatchupAllowancePeriod : SYNC_NOTIFY_SOLE/\nSYNC_NOTIFY_GROUPED:\nrestart 2 minute timer
     CatchupAllowancePeriod --> AwaitingOtherDevice : Handshake not available\ntimeup
     AwaitingOtherDevice: * Start polling planck folder
     AwaitingOtherDevice: * Display "awaiting the other device..."
@@ -102,7 +101,7 @@ state TimeoutRoot <<start>>
 TimeoutRoot --> TimeoutError : SYNC_NOTIFY_TIMEOUT
 TimeoutError: * Reached from different states.
 TimeoutError: * App got SYNC_NOTIFY_TIMEOUT signal.
-TimeoutError: * Display "could not complete device sync..."
+TimeoutError: * If SyncWizard is displaying, show screen\n"could not complete device sync..."
 
 state ErrorRoot <<start>>
 ErrorRoot --> Error : Errors getting\ntrustwords etc
