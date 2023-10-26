@@ -33,7 +33,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.cert.CertificateEncodingException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -108,6 +108,9 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                 }
                 AuthFlowState.BrowserNotFound -> {
                     showErrorDialog(R.string.account_setup_failed_dlg_browser_not_found)
+                }
+                AuthFlowState.UnsuitableBrowserFound -> {
+                    showErrorDialog(R.string.account_setup_failed_dlg_unsuitable_browser_found)
                 }
                 is AuthFlowState.WrongEmailAddress -> {
                     showErrorDialog(R.string.account_setup_failed_dlg_oauth_wrong_email_address, state.userWrongEmail, state.adminEmail)

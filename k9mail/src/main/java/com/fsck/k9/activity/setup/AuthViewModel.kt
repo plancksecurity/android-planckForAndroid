@@ -9,7 +9,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -31,7 +37,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.openid.appauth.*
+import net.openid.appauth.AuthState
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -104,7 +116,9 @@ class AuthViewModel @Inject constructor(
 
     @Synchronized
     private fun getAuthService(): AuthorizationService {
-        return authService ?: authServiceFactory.create().also { authService = it }
+        return authService ?: authServiceFactory.create(
+            account?.mandatoryOAuthProviderType != null && account?.mandatoryOAuthProviderType != OAuthProviderType.MICROSOFT
+        ).also { authService = it }
     }
 
     fun init(activityResultRegistry: ActivityResultRegistry, lifecycle: Lifecycle) {
@@ -149,21 +163,25 @@ class AuthViewModel @Inject constructor(
                 return@launch
             }
 
-            try {
-                startLogin(account, config)
-            } catch (e: ActivityNotFoundException) {
-                _uiState.value = AuthFlowState.BrowserNotFound
+            startLogin(account, config).onFailure { throwable ->
+                when (throwable) {
+                    is ActivityNotFoundException ->
+                        _uiState.value = AuthFlowState.BrowserNotFound
+                    is UnsuitableBrowserFoundException ->
+                        _uiState.value = AuthFlowState.UnsuitableBrowserFound
+                    else -> throw throwable
+                }
             }
         }
     }
 
-    private suspend fun startLogin(account: Account, config: OAuthConfiguration) {
-        val authRequestIntent = withContext(dispatcherProvider.io()) {
-            createAuthorizationRequestIntent(account.email, config)
+    private suspend fun startLogin(account: Account, config: OAuthConfiguration): Result<Unit> =
+        withContext(dispatcherProvider.io()) {
+            kotlin.runCatching { createAuthorizationRequestIntent(account.email, config) }
+        }.mapCatching { authRequestIntent ->
+            resultObserver.login(authRequestIntent)
         }
 
-        resultObserver.login(authRequestIntent)
-    }
 
     private fun createAuthorizationRequestIntent(email: String?, config: OAuthConfiguration): Intent {
         val serviceConfig = AuthorizationServiceConfiguration(
@@ -352,43 +370,3 @@ private data class AuthorizationResult(
     val exception: AuthorizationException?
 )
 
-sealed interface AuthFlowState {
-    object Idle : AuthFlowState
-
-    object Success : AuthFlowState
-
-    object NotSupported : AuthFlowState
-
-    object BrowserNotFound : AuthFlowState
-
-    object Canceled : AuthFlowState
-
-    data class Failed(val errorCode: String?, val errorMessage: String?) : AuthFlowState {
-
-        constructor(throwable: Throwable): this(
-            errorCode = null,
-            errorMessage = if (BuildConfig.DEBUG) throwable.stackTraceToString()
-            else throwable.message
-        )
-
-        override fun toString(): String {
-            return listOfNotNull(errorCode, errorMessage).joinToString(separator = " - ")
-        }
-    }
-
-    data class WrongEmailAddress(
-        val adminEmail: String,
-        val userWrongEmail: String
-        ): AuthFlowState {
-            constructor(exception: WrongEmailAddressException) : this(
-                exception.adminEmail,
-                exception.userWrongEmail
-            )
-        }
-}
-
-class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
-
-class AuthServiceFactory @Inject constructor(private val application: Application) {
-    fun create(): AuthorizationService = AuthorizationService(application)
-}
