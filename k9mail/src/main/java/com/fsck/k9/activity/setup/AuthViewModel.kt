@@ -121,7 +121,9 @@ class AuthViewModel @Inject constructor(
 
     @Synchronized
     private fun getAuthService(): AuthorizationService {
-        return authService ?: authServiceFactory.create().also { authService = it }
+        return authService ?: authServiceFactory.create(
+            account?.mandatoryOAuthProviderType != null && account?.mandatoryOAuthProviderType != OAuthProviderType.MICROSOFT
+        ).also { authService = it }
     }
 
     fun init(activityResultRegistry: ActivityResultRegistry, lifecycle: Lifecycle) {
@@ -413,11 +415,11 @@ sealed interface AuthFlowState {
 class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
 
 class AuthServiceFactory @Inject constructor(private val application: Application) {
-    fun create(): AuthorizationService {
+    fun create(allowMsBrowser: Boolean): AuthorizationService {
         val (unsuitable, suitable) =
             BrowserSelector.getAllBrowsers(application)
                 .filter { it.packageName != null }
-                .partition { it.isMicrosoftBrowser()  }
+                .partition { !allowMsBrowser && it.isMicrosoftBrowser() }
         if (unsuitable.isNotEmpty() && suitable.isEmpty()) {
             throw UnsuitableBrowserFound()
         }

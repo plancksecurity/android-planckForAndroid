@@ -128,7 +128,7 @@ class OAuthFlowActivity : K9Activity(), ConfirmationDialogFragment.ConfirmationD
                 displayErrorText(R.string.account_setup_failed_dlg_browser_not_found)
             }
             AuthFlowState.UnsuitableBrowserFound -> {
-                displayErrorText(R.string.account_setup_failed_dlg_non_valid_browser_found)
+                displayErrorText(R.string.account_setup_failed_dlg_unsuitable_browser_found)
             }
             is AuthFlowState.WrongEmailAddress -> {
                 showWrongEmailErrorDialog(state.adminEmail, state.userWrongEmail)
