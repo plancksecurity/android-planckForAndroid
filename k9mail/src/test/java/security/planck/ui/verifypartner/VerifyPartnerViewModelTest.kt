@@ -19,6 +19,7 @@ import com.fsck.k9.planck.models.mappers.PlanckIdentityMapper
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
+import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -215,6 +216,18 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
     @Test
+    fun `initialize() sets state to ErrorLoadingMessage if MessageReference is null for incoming message`() = runTest {
+        initializeViewModel(incoming = true, messageReference = null)
+        advanceUntilIdle()
+
+
+        verify(exactly = 0) { Address.create(any()) }
+        verify(exactly = 0) { PlanckUtils.createIdentity(any(), any()) }
+        verify(exactly = 0) { planckProvider.myself(any()) }
+        assertObservedValues(Idle, LoadingHandshakeData, ErrorLoadingMessage)
+    }
+
+    @Test
     fun `initialize() creates the identity for myself`() = runTest {
         initializeViewModel()
         advanceUntilIdle()
@@ -224,6 +237,24 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         verify { Address.create(partner.address) }
         verify { PlanckUtils.createIdentity(myselfAddress, context) }
         verify { planckProvider.myself(myself) }
+    }
+
+    @Test
+    fun `initialize() calls MessagingController_loadMessage if message reference is provided`() = runTest {
+        initializeViewModel()
+        advanceUntilIdle()
+
+
+        coVerify { controller.loadMessage(account, testMessageReference.folderName, testMessageReference.uid) }
+    }
+
+    @Test
+    fun `initialize() does not call MessagingController_loadMessage if message reference is not provided`() = runTest {
+        initializeViewModel(incoming = false, messageReference = null)
+        advanceUntilIdle()
+
+
+        coVerify { controller.wasNot(called) }
     }
 
     @Test
@@ -382,6 +413,24 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                     any()
                 )
             }.returns(ResultCompat.success(null))
+
+
+            initializeViewModel()
+            advanceUntilIdle()
+
+
+            assertObservedValues(
+                Idle,
+                LoadingHandshakeData,
+                LoadingHandshakeData,
+                ErrorGettingTrustwords
+            )
+        }
+
+    @Test
+    fun `initialize() sets state to ErrorGettingTrustwords if PlanckIdentityMapper call fails`() =
+        runTest {
+            coEvery { mapper.updateAndMapRecipient(any()) }.throws(RuntimeException("test"))
 
 
             initializeViewModel()
@@ -1159,12 +1208,15 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
 
-    private fun initializeViewModel(incoming: Boolean = true) {
+    private fun initializeViewModel(
+        incoming: Boolean = true,
+        messageReference: MessageReference? = testMessageReference,
+    ) {
         viewModel.initialize(
             sender = if (incoming) partner.address
             else myself.address,
             myself = myself.address,
-            messageReference = testMessageReference,
+            messageReference = messageReference,
             isMessageIncoming = incoming
         )
     }
