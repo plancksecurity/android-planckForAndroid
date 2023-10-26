@@ -37,23 +37,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
-import net.openid.appauth.BuildConfig
 import net.openid.appauth.ResponseTypeValues
-import net.openid.appauth.browser.BrowserDescriptor
-import net.openid.appauth.browser.BrowserSelector
 import timber.log.Timber
 import javax.inject.Inject
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
 private const val ACCESS_DENIED_BY_USER = "access_denied"
-private const val MICROSOFT_BROWSER = "microsoft"
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -375,62 +370,3 @@ private data class AuthorizationResult(
     val exception: AuthorizationException?
 )
 
-sealed interface AuthFlowState {
-    object Idle : AuthFlowState
-
-    object Success : AuthFlowState
-
-    object NotSupported : AuthFlowState
-
-    object BrowserNotFound : AuthFlowState
-
-    object UnsuitableBrowserFound : AuthFlowState
-
-    object Canceled : AuthFlowState
-
-    data class Failed(val errorCode: String?, val errorMessage: String?) : AuthFlowState {
-
-        constructor(throwable: Throwable): this(
-            errorCode = null,
-            errorMessage = if (BuildConfig.DEBUG) throwable.stackTraceToString()
-            else throwable.message
-        )
-
-        override fun toString(): String {
-            return listOfNotNull(errorCode, errorMessage).joinToString(separator = " - ")
-        }
-    }
-
-    data class WrongEmailAddress(
-        val adminEmail: String,
-        val userWrongEmail: String
-        ): AuthFlowState {
-            constructor(exception: WrongEmailAddressException) : this(
-                exception.adminEmail,
-                exception.userWrongEmail
-            )
-        }
-}
-
-class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
-
-class AuthServiceFactory @Inject constructor(private val application: Application) {
-    fun create(allowMsBrowser: Boolean): AuthorizationService {
-        val (unsuitable, suitable) =
-            BrowserSelector.getAllBrowsers(application)
-                .filter { it.packageName != null }
-                .partition { !allowMsBrowser && it.isMicrosoftBrowser() }
-        if (unsuitable.isNotEmpty() && suitable.isEmpty()) {
-            throw UnsuitableBrowserFound()
-        }
-        return AuthorizationService(
-            application,
-            AppAuthConfiguration.Builder()
-                .setBrowserMatcher { matcher -> matcher in suitable }
-                .build()
-        )
-    }
-
-    private fun BrowserDescriptor.isMicrosoftBrowser() =
-        packageName.contains(MICROSOFT_BROWSER, ignoreCase = true)
-}
