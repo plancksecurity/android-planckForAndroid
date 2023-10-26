@@ -111,9 +111,9 @@ constructor(
                         } else {
                             localMessage = message
                             currentRating = message.planckRating
+                            getHandshakeData()
                         }
-                    }
-                    getHandshakeData()
+                    } ?: getHandshakeData()
                 }.onFailure {
                     // display error
                     stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
