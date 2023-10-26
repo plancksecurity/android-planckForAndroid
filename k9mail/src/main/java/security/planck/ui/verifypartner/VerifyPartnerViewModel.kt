@@ -179,7 +179,7 @@ constructor(
     }
 
     private suspend fun updateIdentity() = withContext(dispatcherProvider.planckDispatcher()) {
-        partner = identityMapper.updateAndMapRecipient(cache.recipients.first())
+        ResultCompat.of { partner = identityMapper.updateAndMapRecipient(cache.recipients.first()) }
     }
 
     private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
@@ -273,13 +273,16 @@ constructor(
 
     private suspend fun getHandshakeData() {
         stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
-        updateIdentity()
-        if (PlanckUtils.isPEpUser(partner)) {
-            getOrRefreshTrustWords()
-        } else {
-            stateLiveData.value = handshakeReady(
-                trustwords = "" // no trustwords available for non-planck user
-            )
+        updateIdentity().onFailure {
+            stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords
+        }.onSuccessSuspend {
+            if (PlanckUtils.isPEpUser(partner)) {
+                getOrRefreshTrustWords()
+            } else {
+                stateLiveData.value = handshakeReady(
+                    trustwords = "" // no trustwords available for non-planck user
+                )
+            }
         }
     }
 
