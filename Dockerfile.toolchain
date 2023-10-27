@@ -17,11 +17,11 @@ RUN apt-get update -yqq && ret_code=$? && echo $ret_code && \
     apt-get install -yqq apt-transport-https ca-certificates wget dirmngr gnupg2 software-properties-common && ret_code=$? && echo $ret_code && \
     mkdir -p /etc/apt/keyrings && ret_code=$? && echo "checkpoint 1: $ret_code" && \
     wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && ret_code=$? && echo "checkpoint 2: $ret_code" && \
-    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && ret_code=$? && echo $ret_code && \
-    apt-get update -yqq && ret_code=$? && echo "checkpoint 3: $ret_code" && \
-    apt-get install -yqq temurin-11-jdk && ret_code=$? && echo "checkpoint 4: $ret_code" && \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && ret_code=$? && echo "checkpoint 3: $ret_code" && \
+    apt-get update -yqq && ret_code=$? && echo "checkpoint 4: $ret_code" && \
+    apt-get install -yqq temurin-11-jdk && ret_code=$? && echo "checkpoint 5: $ret_code" && \
     rm -rf /var/lib/apt/lists/* \
-    && ret_code=$? && echo "checkpoint 5: $ret_code"
+    && ret_code=$? && echo "checkpoint 6: $ret_code"
 RUN update-java-alternatives -s temurin-11-jdk-amd64
 
 # setup locales
