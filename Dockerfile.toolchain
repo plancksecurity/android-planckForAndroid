@@ -3,7 +3,7 @@ FROM debian:bullseye
 # dependencies 
 RUN apt-get update && apt-get upgrade -yqq && ret_code=$? && echo $ret_code
 # RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
-RUN apt-get install -yqq wget
+RUN apt-get install -yqq apt-utils pkg-config wget
 
 #RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
 #RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq asn1c
