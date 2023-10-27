@@ -1,22 +1,20 @@
 FROM debian:bullseye
 
 # dependencies 
-RUN apt-get update && apt-get upgrade -yqq && ret_code=$? && echo $ret_code
+#RUN apt-get update && apt-get upgrade -yqq && ret_code=$? && echo $ret_code
 # RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
-RUN apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
-    capnproto libsqlite3-dev build-essential curl wget software-properties-common libtool patch \
-    ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales
+RUN apt-get install -yqq wget
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
-RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq asn1c
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
+#RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
+#RUN DEBIAN_FRONTEND="noninteractive" apt-get install -yqq asn1c
+#RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+#RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
 
 # Install Java 11
 RUN apt-get update -yqq && ret_code=$? && echo $ret_code && \
     apt-get install -yqq apt-transport-https ca-certificates wget dirmngr gnupg2 software-properties-common && ret_code=$? && echo $ret_code && \
     wget wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.20.1%2B1/OpenJDK11U-jdk_x64_linux_hotspot_11.0.20.1_1.tar.gz && \
-    tar -xvf OpenJDK11U-jdk_x64_linux_hotspot_11.0.20.1_1.tar.gz && \
+    tar -xvf OpenJDK11U-jdk_x64_linux_hotspot_11.0.20.1_1.tar.gz && ls -la && \
     cp -r jdk-11.0.20.1+1 /usr/lib/jvm/
 #RUN update-java-alternatives -l
 RUN update-java-alternatives -s jdk-11.0.20.1+1
