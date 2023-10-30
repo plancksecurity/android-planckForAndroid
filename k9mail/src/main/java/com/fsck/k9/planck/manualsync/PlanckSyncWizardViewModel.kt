@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.sync.SyncRepository
-import timber.log.Timber
 import javax.inject.Inject
 
 private const val DEFAULT_TRUSTWORDS_LANGUAGE = "en"
@@ -40,23 +39,12 @@ class PlanckSyncWizardViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val initialState = syncRepository.syncStateFlow.value
-            if (initialState != SyncState.Idle) {
-                Timber.e("unexpected initial state: ${syncRepository.syncStateFlow.value}")
-            }
-            if (initialState is SyncState.HandshakeReadyAwaitingUser) {
-                populateDataFromHandshakeReadyState(initialState)
-                syncState.value = initialState
-            } else {
-                setState(SyncState.AwaitingOtherDevice)
-                syncRepository.allowTimedManualSync()
-            }
-            observeSyncDelegate()
+            syncRepository.userConnected()
+            observeSyncRepository()
         }
-
     }
 
-    private suspend fun observeSyncDelegate() {
+    private suspend fun observeSyncRepository() {
         syncRepository.syncStateFlow.onEach { appState ->
             if (appState is SyncScreenState) {
                 when (appState) {
@@ -82,6 +70,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     fun next() {
         when (syncState.value) {
             is SyncState.HandshakeReadyAwaitingUser -> {
+                syncRepository.lockHandshake()
                 getOrRefreshTrustWords()
             }
 
@@ -102,11 +91,7 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private fun finish() {
-        syncRepository.setCurrentState(SyncState.Idle)
-    }
-
-    private fun setState(state: SyncScreenState) {
-        syncState.value = state.also { syncRepository.setCurrentState(it as SyncAppState) }
+        syncRepository.userDisconnected()
     }
 
     fun rejectHandshake() {

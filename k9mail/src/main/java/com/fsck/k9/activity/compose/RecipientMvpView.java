@@ -24,7 +24,6 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.ActionRecipientSelectView;
-import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
 import foundation.pEp.jniadapter.Rating;
@@ -350,8 +349,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     void onPlanckPrivacyStatus() {
-        PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
-        launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
+        activity.launchVerifyPartnerIdentity(getFrom(), messageReference);
     }
 
     public void setMessageReference(MessageReference reference) {

@@ -60,7 +60,7 @@
     <string name="pep_confirm_trustwords">Confirm</string>
     <string name="pep_wrong_trustwords">Reject</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
-    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords\? Then compare to the correct answer shown below.</string>
+    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords or fingerprints\? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
@@ -380,6 +380,7 @@
     <string name="account_setup_failed_dlg_oauth_flow_failed">Authorization failed with the following error: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
     <string name="account_setup_failed_dlg_browser_not_found">planck couldn\'t find a browser to use for granting access to your account.</string>
+    <string name="account_setup_failed_dlg_unsuitable_browser_found">planck couldn\'t find a suitable browser to use for granting access to your account. Please install a browser other than Microsoft Edge.</string>
     <string name="account_setup_oauth_title_retry_login">Retry login</string>
     <string name="account_setup_oauth_description_retry_login">planck could not log in to account %s. Please try login again below.</string>
     <string name="mdm_settings_feedback_title" translatable="false">Current settings from MDM</string>
@@ -418,16 +419,17 @@
     <string name="reject_trust_dialog_progress">Rejecting trust with %s…</string>
     <string name="confirm_trust_dialog_confirmation">
         Trustwords or fingerprints are matching, this means that it is secure to communicate with "%1$s" identity.\n\n
-        We recommend to press "Yes, Confirm", marking "%1$s" as Trusted.
+        We recommend to press "Yes, Confirm", marking "%1$s" as Verified.
     </string>
     <string name="reject_trust_dialog_confirmation">
         Trustwords or fingerprints are not matching, this could indicate that someone is trying to imitate yours or "%1$s" identity.\n\n
         We recommend to press "Yes, Reject", marking "%1$s" as Dangerous, and to contact your IT support or your operational security team to investigate.
     </string>
-    <string name="confirm_trust_dialog_success">%s is now trusted.</string>
-    <string name="reject_trust_dialog_success">%s is now mistrusted.</string>
+    <string name="confirm_trust_dialog_success">%s is now a Verified email partner.</string>
+    <string name="reject_trust_dialog_success">%s is now a Dangerous email partner.\n
+        We recommend to contact your IT support or your operational security team to investigate.</string>
     <string name="confirm_trust_dialog_failure">
-        An error has occurred while marking %s as Trusted.\n\n
+        An error has occurred while marking %s as Verified.\n\n
         Please contact your IT support or your operational security team.
     </string>
     <string name="reject_trust_dialog_failure">
@@ -444,5 +446,8 @@
     <string name="audit_log_tamper_dialog_title">Audit Log Issue Detected</string>
     <string name="audit_log_tamper_dialog_description">The audit log file seems to have been tampered. Please inform your IT administrator.</string>
     <string name="audit_log_tamper_dialog_positive_button">Close application</string>
+    <string name="verify_partner_dialog_title">Verify identity</string>
+    <string name="verify_partner_dialog_go_back">Previous</string>
+    <string name="verify_partner_dialog_error_getting_trustwords">There was an error retrieving trustwords for this message.</string>
 
 </resources>

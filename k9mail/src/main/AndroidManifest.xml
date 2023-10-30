@@ -500,10 +500,6 @@
                 <data android:scheme="msauth" android:host="${oAuthAppId}"/>
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".planck.ui.privacy.status.PlanckStatus"
-            android:label="@string/pep_title_activity_privacy_status" />
         <activity
             android:name=".planck.ui.blacklist.PlanckBlacklist"
             android:label="@string/blacklist_title"

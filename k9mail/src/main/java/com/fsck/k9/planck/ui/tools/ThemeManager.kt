@@ -3,6 +3,7 @@ package com.fsck.k9.planck.ui.tools
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.TypedArray
+import android.graphics.drawable.Drawable
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
@@ -98,6 +99,12 @@ object ThemeManager {
     fun getColorFromAttributeResource(context: Context, @AttrRes resource: Int): Int {
         val resourceId = getAttributeResource(context, resource)
         return ContextCompat.getColor(context, resourceId)
+    }
+
+
+    fun getDrawableFromAttributeResource(context: Context, @AttrRes resource: Int): Drawable? {
+        val resourceId = getAttributeResource(context, resource)
+        return ContextCompat.getDrawable(context, resourceId)
     }
 
     fun setCurrentTheme(value: String?) {

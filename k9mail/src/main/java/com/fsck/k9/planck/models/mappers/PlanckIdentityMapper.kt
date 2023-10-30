@@ -8,20 +8,24 @@ import javax.inject.Inject
 class PlanckIdentityMapper @Inject constructor(private val planckProvider: PlanckProvider) {
 
     fun mapRecipients(recipients: List<Identity>): List<PlanckIdentity> {
-        return recipients.map { recipient -> mapRecipient(planckProvider.updateIdentity(recipient)) }
+        return recipients.map { recipient -> updateAndMapRecipient(recipient) }
     }
 
-    private fun mapRecipient(recipient: Identity): PlanckIdentity {
+    fun updateAndMapRecipient(recipient: Identity): PlanckIdentity {
+        val updatedRecipient = planckProvider.updateIdentity(recipient)
         return PlanckIdentity().apply {
-            address = recipient.address
-            comm_type = recipient.comm_type
-            flags = recipient.flags
-            fpr = recipient.fpr
-            lang = recipient.lang
-            user_id = recipient.user_id
-            username = recipient.username
-            me = recipient.me
-            rating = recipient.rating
+            address = updatedRecipient.address
+            comm_type = updatedRecipient.comm_type
+            flags = updatedRecipient.flags
+            fpr = updatedRecipient.fpr
+            lang = updatedRecipient.lang
+            user_id = updatedRecipient.user_id
+            username = updatedRecipient.username
+            me = updatedRecipient.me
+            rating = updatedRecipient.rating
+            major_ver = updatedRecipient.major_ver
+            minor_ver = updatedRecipient.minor_ver
+            enc_format = updatedRecipient.enc_format
         }
     }
 }

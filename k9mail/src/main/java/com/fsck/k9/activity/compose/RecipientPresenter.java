@@ -1,9 +1,6 @@
 package com.fsck.k9.activity.compose;
 
 
-import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.CURRENT_RATING;
-import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.REQUEST_STATUS;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -547,9 +544,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_STATUS:
-                handlepEpDataIfNeeded(requestCode, data, resultCode);
-                break;
             case CONTACT_PICKER_TO:
             case CONTACT_PICKER_CC:
             case CONTACT_PICKER_BCC:
@@ -565,17 +559,8 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         }
     }
 
-    private void handlepEpDataIfNeeded(int requestCode, Intent data, int resultCode) {
-        if (requestCode == REQUEST_STATUS && resultCode == Activity.RESULT_OK && data.hasExtra(CURRENT_RATING)) {
-            boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
-            boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
-            if (forceUncrypted != this.forceUnencrypted) {
-                switchPrivacyProtection(PlanckProvider.ProtectionScope.MESSAGE);
-            }
-            if (alwaysSecure != this.isAlwaysSecure) {
-                setAlwaysSecure(alwaysSecure);
-            }
-        }
+    public void handleVerifyPartnerIdentityResult() {
+        loadPEpStatus();
     }
 
     private static int recipientTypeToRequestCode(RecipientType type) {
@@ -953,7 +938,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         List<Address> candidates = new ArrayList<>();
         candidates.addAll(newToAdresses);
         candidates.addAll(newCcAdresses);
-        return candidates.size() == ONE_ADDRESS && PlanckUtils.isHandshakeRating(privacyState);
+        return candidates.size() == ONE_ADDRESS && PlanckUtils.isRatingReliable(privacyState);
     }
 
     private int getUnsecureRecipientsCount() {

@@ -12,7 +12,7 @@ fun Message.getRatingFromHeader() =
 fun LocalMessage?.isValidForHandshake() = this != null
         && from != null
         && from.size == 1
-        && PlanckUtils.isHandshakeRating(planckRating)
+        && PlanckUtils.isRatingReliable(planckRating)
         && getRecipients(RecipientType.CC).isNullOrEmpty()
         && getRecipients(RecipientType.BCC).isNullOrEmpty()
         && !getRecipients(RecipientType.TO).isNullOrEmpty()

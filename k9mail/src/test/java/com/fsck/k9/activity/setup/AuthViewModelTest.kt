@@ -60,7 +60,6 @@ import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenRequest.GRANT_TYPE_PASSWORD
 import net.openid.appauth.TokenResponse
-import net.openid.appauth.browser.BrowserSelector
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -165,7 +164,7 @@ class AuthViewModelTest : RobolectricTest() {
 
     @Before
     fun setUp() {
-        every { authServiceFactory.create() }.returns(authService)
+        every { authServiceFactory.create(any()) }.returns(authService)
         receivedDiscoveredSettings.clear()
         receivedUiStates.clear()
         stubAuthResultRegistry() // simulates the test result arrives instantly
@@ -198,7 +197,6 @@ class AuthViewModelTest : RobolectricTest() {
     fun tearDown() {
         unmockkStatic(AuthState::class)
         unmockkStatic(RemoteStore::class)
-        unmockkStatic(BrowserSelector::class)
         unmockkStatic(AuthorizationResponse::class)
         unmockkStatic(AuthorizationException::class)
         launcher = null
@@ -729,6 +727,63 @@ class AuthViewModelTest : RobolectricTest() {
         }
 
     @Test
+    fun `login() cals AuthServiceFactory_create(false) for Microsof`() =
+        runTest {
+            every { authServiceFactory.create(any()) }.throws(UnsuitableBrowserFoundException())
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authServiceFactory.create(false) }
+        }
+
+    @Test
+    fun `login() cals AuthServiceFactory_create(false) for Google`() =
+        runTest {
+            every { authServiceFactory.create(any()) }.throws(UnsuitableBrowserFoundException())
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.GOOGLE)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authServiceFactory.create(true) }
+        }
+
+    @Test
+    fun `login() sets state to UnsuitableBrowserFound if AuthServiceFactory_create() throws UnsuitableBrowserFoundException`() =
+        runTest {
+            every { authServiceFactory.create(any()) }.throws(UnsuitableBrowserFoundException())
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            verify { account.email }
+            verify { authServiceFactory.create(false) }
+            verify { authService.wasNot(called) }
+            verify(exactly = 0) { launcher!!.launch(any()) }
+            verify(exactly = 0) { activityResultRegistry.dispatchResult(any(), any(), any()) }
+            assertObservedStates(
+                AuthFlowState.Idle,
+                AuthFlowState.UnsuitableBrowserFound
+            )
+        }
+
+    @Test
     fun `login() updates AuthState with authorization response`() = runTest {
         stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
         stubOnCreateEvent()
@@ -804,7 +859,7 @@ class AuthViewModelTest : RobolectricTest() {
 
         verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
         verify { account.email }
-        verify { authServiceFactory.create() }
+        verify { authServiceFactory.create(false) }
         verify { authService.getAuthorizationRequestIntent(any()) }
         verify { launcher!!.launch(any()) }
         verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
@@ -1132,6 +1187,7 @@ class AuthViewModelTest : RobolectricTest() {
             OAuthProviderType.GOOGLE ->
                 every { oAuthConfigurationProvider.googleConfiguration }
                     .returns(testOAuthConfig)
+
             OAuthProviderType.MICROSOFT ->
                 every { oAuthConfigurationProvider.microsoftConfiguration }
                     .returns(testOAuthConfig)
@@ -1193,7 +1249,7 @@ class AuthViewModelTest : RobolectricTest() {
 
     private fun assertReceivedDiscoveredSettings(expected: List<Event<ConnectionSettings?>>) {
         assertEquals(expected.size, receivedDiscoveredSettings.size)
-        receivedDiscoveredSettings.forEachIndexed() { index, event ->
+        receivedDiscoveredSettings.forEachIndexed { index, event ->
             val expectedEvent = expected[index]
             assertEquals(expectedEvent.isReady, event.isReady)
             assertEquals(expectedEvent.hasBeenHandled, event.hasBeenHandled)
@@ -1221,6 +1277,10 @@ class AuthViewModelTest : RobolectricTest() {
         assertEquals(expected.password, actual.password)
         assertEquals(expected.type, actual.type)
         assertEquals(expected.username, actual.username)
+    }
+
+    private fun assertObservedStates(vararg states: AuthFlowState) {
+        assertEquals(states.toList(), receivedUiStates)
     }
 
     private fun observeViewModel(viewModel: AuthViewModel) {

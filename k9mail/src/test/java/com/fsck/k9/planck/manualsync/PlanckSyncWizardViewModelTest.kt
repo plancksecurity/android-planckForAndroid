@@ -8,7 +8,6 @@ import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Identity
-import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -101,12 +100,9 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         advanceUntilIdle()
 
 
-        assertEquals(
-            listOf(
-                SyncState.AwaitingOtherDevice,
-                SyncState.Done,
-            ),
-            receivedSyncStates
+        assertStates(
+            SyncState.Idle,
+            SyncState.Done,
         )
     }
 
@@ -118,7 +114,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
 
         assertStates(
-            SyncState.AwaitingOtherDevice,
+            SyncState.Idle,
             SyncState.Done,
         )
         verify(exactly = 0) { planckProvider.cancelSync() }
@@ -130,27 +126,28 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         viewModel.cancelIfNotDone()
 
 
-        assertStates(SyncState.AwaitingOtherDevice)
+        assertStates(SyncState.Idle)
         verify { planckProvider.cancelSync() }
         verify { syncRepository.cancelSync() }
     }
 
 
     @Test
-    fun `initial call to syncStateChanged() sets state and formingGroup in ViewModel`() = runTest {
-        syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
-        advanceUntilIdle()
+    fun `repository flow with value of HandshakeReadyAwaitingUser sets state and formingGroup in ViewModel`() =
+        runTest {
+            syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+            advanceUntilIdle()
 
 
-        assertStates(
-            SyncState.AwaitingOtherDevice,
-            SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
-        )
-        assertEquals(true, viewModel.formingGroup)
-    }
+            assertStates(
+                SyncState.Idle,
+                SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+            )
+            assertEquals(true, viewModel.formingGroup)
+        }
 
     @Test
-    fun `next() sets state to UserHandshaking with identities received from SyncDelegate's flow and trustwords from PlanckProvider`() =
+    fun `next() sets state to UserHandshaking with identities received from SyncRepository's flow and trustwords from PlanckProvider`() =
         runTest {
             syncStateFlow.value = SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
             advanceUntilIdle()
@@ -160,7 +157,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
             coVerify { planckProvider.trustwords(myself, partner, ENGLISH_LANGUAGE, true) }
             assertStates(
-                SyncState.AwaitingOtherDevice,
+                SyncState.Idle,
                 SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS)
             )
@@ -178,7 +175,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
             coVerify { planckProvider.acceptSync() }
             assertStates(
-                SyncState.AwaitingOtherDevice,
+                SyncState.Idle,
                 SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
                 SyncState.AwaitingHandshakeCompletion(MYSELF_FPR, PARTNER_FPR)
@@ -187,7 +184,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         }
 
     @Test
-    fun `cancelHandshake() uses PlanckProvider and SyncDelegate to cancel handshake`() {
+    fun `cancelHandshake() uses PlanckProvider and SyncRepository to cancel handshake`() {
         viewModel.cancelHandshake()
 
 
@@ -225,7 +222,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         coVerify { planckProvider.trustwords(myself, partner, ENGLISH_LANGUAGE, true) }
         coVerify { planckProvider.trustwords(myself, partner, GERMAN_LANGUAGE, true) }
         assertStates(
-            SyncState.AwaitingOtherDevice,
+            SyncState.Idle,
             SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
             SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
             SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, GERMAN_TRUSTWORDS)
@@ -252,7 +249,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         coVerify { planckProvider.trustwords(myself, partner, any(), false) }
         assertEquals(
             listOf(
-                SyncState.AwaitingOtherDevice,
+                SyncState.Idle,
                 SyncState.HandshakeReadyAwaitingUser(myself, partner, true),
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, TEST_TRUSTWORDS),
                 SyncState.UserHandshaking(MYSELF_FPR, PARTNER_FPR, LONG_TRUSTWORDS)
@@ -277,27 +274,24 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
 
         coVerify { planckProvider.trustwords(myself, partner, ENGLISH_LANGUAGE, true) }
         assertStates(
-            SyncState.AwaitingOtherDevice,
+            SyncState.Idle,
             SyncState.HandshakeReadyAwaitingUser(myself, partner, false),
             SyncState.Error(expectedError)
         )
     }
 
     @Test
-    fun `when screen finishes, SyncDelegate has syncState set to Idle and SyncStateChangeListener set to null`() {
+    fun `when screen finishes, SyncRepository_userDisconnected() is called`() {
         val method = viewModel.javaClass.getDeclaredMethod("onCleared")
         method.isAccessible = true
         method.invoke(viewModel)
 
 
-        verify { syncRepository.setCurrentState(SyncState.Idle) }
+        verify { syncRepository.userDisconnected() }
     }
 
     private fun assertionsOnViewModelCreation() {
-        coVerify { syncRepository.setCurrentState(SyncState.AwaitingOtherDevice) }
-        coVerify { syncRepository.allowTimedManualSync() }
-        assertStates(SyncState.AwaitingOtherDevice)
-        clearMocks(syncRepository, planckProvider, answers = false, childMocks = false)
+        coVerify { syncRepository.userConnected() }
     }
 
     private fun assertStates(vararg states: SyncScreenState) {

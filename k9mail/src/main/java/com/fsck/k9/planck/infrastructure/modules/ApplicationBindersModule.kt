@@ -10,6 +10,8 @@ import security.planck.audit.AuditLogger
 import security.planck.audit.PlanckAuditLogger
 import security.planck.sync.PlanckSyncRepository
 import security.planck.sync.SyncRepository
+import security.planck.timer.PlanckTimer
+import security.planck.timer.Timer
 
 @Suppress("unused")
 @Module
@@ -19,6 +21,8 @@ interface ApplicationBindersModule {
     fun bindSyncRepository(repository: PlanckSyncRepository): SyncRepository
     @Binds
     fun bindClock(clock: RealClock): Clock
+    @Binds
+    fun bindTimer(timer: PlanckTimer): Timer
     @Binds
     fun bindAuditLogger(auditLogger: PlanckAuditLogger): AuditLogger
 }

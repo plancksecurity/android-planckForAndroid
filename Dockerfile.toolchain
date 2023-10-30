@@ -15,13 +15,15 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
 # Install Java 11
 RUN apt-get update -yqq && \
     apt-get install -yqq apt-transport-https ca-certificates wget dirmngr gnupg2 software-properties-common && \
-    mkdir -p /etc/apt/keyrings && \
-    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
-    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
-    apt-get update -yqq && \
-    apt-get install -yqq temurin-11-jdk && \
-    rm -rf /var/lib/apt/lists/*
-RUN update-java-alternatives -s temurin-11-jdk-amd64
+    wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.20.1%2B1/OpenJDK11U-jdk_x64_linux_hotspot_11.0.20.1_1.tar.gz && \
+    tar -xvf OpenJDK11U-jdk_x64_linux_hotspot_11.0.20.1_1.tar.gz && ls -la && \
+    cp -r jdk-11.0.20.1+1 /usr/lib/jvm/
+RUN update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk-11.0.20.1+1/bin/javac 2222
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-11.0.20.1+1/bin/java 2222
+RUN update-alternatives --install /usr/bin/jar jar /usr/lib/jvm/jdk-11.0.20.1+1/bin/jar 2222
+RUN update-alternatives --list java --verbose
+RUN update-alternatives --set java /usr/lib/jvm/jdk-11.0.20.1+1/bin/java
+#RUN update-alternatives --config java # can be used to see the priority of each alternative just in case.
 
 # setup locales
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update -yqq && \

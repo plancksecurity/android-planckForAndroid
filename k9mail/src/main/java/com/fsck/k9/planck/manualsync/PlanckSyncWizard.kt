@@ -1,12 +1,11 @@
 package com.fsck.k9.planck.manualsync
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -38,6 +37,7 @@ class PlanckSyncWizard : WizardActivity() {
         setUpToolbar(false)
         setUpFloatingWindowWrapHeight()
         setupViews()
+        onBackPressedDispatcher.addCallback { viewModel.cancelIfNotDone() }
         observeViewModel()
     }
 
@@ -84,10 +84,9 @@ class PlanckSyncWizard : WizardActivity() {
     private fun renderSyncState(syncState: SyncScreenState) {
         val stateDebugText = "State: ${syncState::class.java.simpleName}"
         binding.syncStateFeedback.text = stateDebugText
-        binding.showLongTrustwords.isVisible = viewModel.shortTrustWords
         when (syncState) {
             SyncState.Idle,
-            SyncState.AwaitingOtherDevice -> {
+            is SyncState.AwaitingOtherDevice -> {
                 showAwaitingOtherDevice()
             }
 
@@ -196,6 +195,7 @@ class PlanckSyncWizard : WizardActivity() {
     private fun showHandshake(syncState: SyncState.UserHandshaking) {
         invalidateOptionsMenu()
         showLangIcon()
+        binding.showLongTrustwords.isVisible = syncState.trustwords.isNotBlank() && viewModel.shortTrustWords
         showScreen(
             description = R.string.keysync_wizard_handshake_message,
             ownFpr = syncState.ownFpr,
@@ -313,16 +313,5 @@ class PlanckSyncWizard : WizardActivity() {
     private fun getLoadingAnimationDrawable(): Int {
         return if (viewModel.formingGroup) R.drawable.add_second_device
         else R.drawable.add_device_to_group
-    }
-
-    override fun onBackPressed() {
-        viewModel.cancelIfNotDone()
-    }
-
-    companion object {
-        fun startKeySync(context: Activity) {
-            val intent = Intent(context, PlanckSyncWizard::class.java)
-            context.startActivity(intent)
-        }
     }
 }
