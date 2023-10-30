@@ -12,24 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:paddingHorizontal="16dp">
 
         <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/loading"
             style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/feedbackText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:visibility="gone" />
 
         <HorizontalScrollView
@@ -45,5 +46,5 @@
                 tools:listitem="@layout/audit_log_item" />
 
         </HorizontalScrollView>
-    </LinearLayout>
+    </FrameLayout>
 </LinearLayout>
