@@ -14,7 +14,7 @@ abstract class LiveDataBaseTest<BaseType, LiveDataType> {
     protected abstract val testLivedata: LiveData<LiveDataType>
 
     @Before
-    fun liveDataTestSetup() {
+    open fun liveDataTestSetup() {
         observedValues.clear()
         initialize()
         observeLiveData()
