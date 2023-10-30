@@ -12,11 +12,12 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.databinding.ActivityAuditLogDisplayBinding
 import com.fsck.k9.planck.infrastructure.ListState
+import com.fsck.k9.planck.infrastructure.extensions.dpToPx
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
-private const val LONGEST_ITEM_EXTRA = 100
+private const val LONGEST_ITEM_EXTRA = 24f
 
 @AndroidEntryPoint
 class AuditLogDisplayActivity : K9Activity() {
@@ -48,7 +49,6 @@ class AuditLogDisplayActivity : K9Activity() {
                     setRecyclerViewWidth()
                     adapter.submitList(listState.list)
                     binding.auditLogRecyclerView.isVisible = true
-                    //binding.auditLogRecyclerView.invalidate()
                     stopLoading()
                 }
 
@@ -69,7 +69,7 @@ class AuditLogDisplayActivity : K9Activity() {
     private fun setRecyclerViewWidth() {
         binding.auditLogRecyclerView.maxWidth = Layout.getDesiredWidth(
             viewModel.longestItem, binding.feedbackText.paint
-        ).roundToInt() + LONGEST_ITEM_EXTRA
+        ).roundToInt() + dpToPx(LONGEST_ITEM_EXTRA)
     }
 
     private fun showFeedback(message: String) {
