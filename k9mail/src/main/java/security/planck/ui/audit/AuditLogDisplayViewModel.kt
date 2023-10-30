@@ -49,11 +49,12 @@ class AuditLogDisplayViewModel(
                     if (auditFile.exists()) auditFile.readText().split(NEW_LINE)
                     else emptyList()
                 }.onSuccess { list ->
-                    longestItem = list.maxByOrNull { it.length }.orEmpty()
-                    auditTextLD.postValue(
-                        if (list.any { it.isNotBlank() }) ListState.Ready(list)
-                        else ListState.EmptyList
-                    )
+                    if (list.any { it.isNotBlank() }) {
+                        auditTextLD.postValue(ListState.Ready(list))
+                        longestItem = list.maxByOrNull { it.length }.orEmpty()
+                    } else {
+                        auditTextLD.postValue(ListState.EmptyList)
+                    }
                 }.onFailure {
                     auditTextLD.postValue(ListState.Error(it))
                 }
