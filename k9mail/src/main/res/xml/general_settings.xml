@@ -69,6 +69,10 @@
         android:summary="%s"
         android:title="@string/audit_log_data_time_retention_title" />
 
+    <Preference
+        android:key="display_audit_log"
+        android:title="@string/audit_log_display_preference_title"/>
+
     <PreferenceScreen
         android:key="support"
         android:title="@string/support_settings_title">
