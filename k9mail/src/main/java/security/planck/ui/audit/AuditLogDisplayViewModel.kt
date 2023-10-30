@@ -46,11 +46,12 @@ class AuditLogDisplayViewModel(
             auditTextLD.value = ListState.Loading
             withContext(dispatcherProvider.io()) {
                 kotlin.runCatching {
-                    auditFile.readText().split(NEW_LINE)
+                    if (auditFile.exists()) auditFile.readText().split(NEW_LINE)
+                    else emptyList()
                 }.onSuccess { list ->
                     longestItem = list.maxByOrNull { it.length }.orEmpty()
                     auditTextLD.postValue(
-                        if (list.isNotEmpty()) ListState.Ready(list)
+                        if (list.any { it.isNotBlank() }) ListState.Ready(list)
                         else ListState.EmptyList
                     )
                 }.onFailure {
