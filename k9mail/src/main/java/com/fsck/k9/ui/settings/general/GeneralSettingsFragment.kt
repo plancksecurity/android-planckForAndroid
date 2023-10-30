@@ -337,6 +337,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             initializeGlobalpEpKeyReset()
             updateLeaveDeviceGroupPreferenceVisibility()
             loading?.visibility = View.GONE
+            k9.markDeviceJustLeftGroup()
         }
     }
 
