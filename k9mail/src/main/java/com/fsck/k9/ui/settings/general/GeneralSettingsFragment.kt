@@ -329,6 +329,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         uiScope.launch {
             ownKeyReset()
+            if (syncRepository.isGrouped) {
+                k9.markDeviceJustLeftGroup()
+            }
             syncRepository.isGrouped = false
             context?.applicationContext?.let {
                 FeedbackTools.showLongFeedback(view,
@@ -337,7 +340,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             initializeGlobalpEpKeyReset()
             updateLeaveDeviceGroupPreferenceVisibility()
             loading?.visibility = View.GONE
-            k9.markDeviceJustLeftGroup()
         }
     }
 
