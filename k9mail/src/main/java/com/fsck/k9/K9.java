@@ -72,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -106,7 +107,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
 
-    private boolean deviceJustLeftGroup = false;
+    private AtomicBoolean deviceJustLeftGroup = new AtomicBoolean(false);
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static ManageableSetting<Long> auditLogDataTimeRetention =
             new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
@@ -485,11 +486,11 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public boolean deviceJustLeftGroup() {
-        return deviceJustLeftGroup;
+        return deviceJustLeftGroup.get();
     }
 
     public void markDeviceJustLeftGroup() {
-        deviceJustLeftGroup = true;
+        deviceJustLeftGroup.set(true);
     }
 
     private static void setServicesEnabled(Context context, boolean enabled) {

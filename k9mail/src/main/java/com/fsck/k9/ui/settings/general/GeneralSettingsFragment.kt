@@ -329,9 +329,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         uiScope.launch {
             ownKeyReset()
-            if (syncRepository.isGrouped) {
-                k9.markDeviceJustLeftGroup()
-            }
             syncRepository.isGrouped = false
             context?.applicationContext?.let {
                 FeedbackTools.showLongFeedback(view,
@@ -350,6 +347,9 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private suspend fun ownKeyReset() = withContext(PlanckDispatcher) {
         val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         pEpProvider.keyResetAllOwnKeys()
+        if (syncRepository.isGrouped) {
+            k9.markDeviceJustLeftGroup()
+        }
     }
 
     private fun initializeUnsecureDeliveryWarning() {
