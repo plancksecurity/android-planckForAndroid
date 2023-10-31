@@ -1748,7 +1748,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                             Timber.d("pep in download loop (nr= %s ) post", number);
-                            if (ratingToSave.value < Rating.pEpRatingUndefined.value && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+                            if (PlanckUtils.isRatingDangerous(ratingToSave) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
                                 moveDangerousMessageToSuspiciousFolder(
                                         localMessage,
                                         account,
