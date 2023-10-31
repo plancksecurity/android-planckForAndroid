@@ -1674,6 +1674,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 fp, new MessageRetrievalListener<T>() {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
+                        LocalFolder suspiciousFolder = null;
+                        Folder<? extends Message> suspiciousRemoteFolder = null;
                         try {
                             if (storage.getOngoingDecryptMessages().contains(message.getMessageId())) {
                                 throw new CrashedWhileDecryptingException(message.getMessageId());
@@ -1748,8 +1750,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                             Timber.d("pep in download loop (nr= %s ) post", number);
-                            updateStatus(account, folder, localFolder, progress, newMessages, todo,
-                                    localMessage, message, true, messagesToNotify, storageEditor);
+                            if (ratingToSave.value < Rating.pEpRatingUndefined.value && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+                                moveOrCopyMessageSynchronous(account, folder, Collections.singletonList(localMessage), Store.PLANCK_SUSPICIOUS_FOLDER, false, true);
+                                Store remoteStore = account.getRemoteStore();
+                                suspiciousRemoteFolder = remoteStore.getFolder(Store.PLANCK_SUSPICIOUS_FOLDER);
+                                suspiciousRemoteFolder.open(Folder.OPEN_MODE_RO);
+                                String newUid = suspiciousRemoteFolder.getUidFromMessageId(localMessage);
+                                suspiciousFolder = account.getLocalStore().getFolder(Store.PLANCK_SUSPICIOUS_FOLDER);
+                                suspiciousFolder.open(Folder.OPEN_MODE_RO);
+                                LocalMessage movedMessage = suspiciousFolder.getMessage(newUid);
+                                updateStatus(account, folder, suspiciousFolder, progress, newMessages, todo,
+                                        movedMessage, movedMessage, true, messagesToNotify, storageEditor);
+                            } else {
+                                updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                        localMessage, message, true, messagesToNotify, storageEditor);
+                            }
                             //End message Store
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: failed to pEpProcess small messages " +
@@ -1771,6 +1786,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 }
                             }
                             storageEditor.clearOngoingDecryptMessageTempFilePaths();
+                            closeFolder(suspiciousFolder);
+                            closeFolder(suspiciousRemoteFolder);
                         }
                     }
 
