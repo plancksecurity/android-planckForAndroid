@@ -37,6 +37,7 @@ import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
 import security.planck.mdm.RestrictionsViewModel
 import security.planck.sync.SyncRepository
+import security.planck.ui.audit.AuditLogDisplayActivity
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
@@ -117,6 +118,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeDebugLogging()
         initializeAuditLogDataTimeRetention()
         initializeLeaveDeviceGroup()
+        initializeDisplayAuditLogPreference()
     }
 
     private fun updateLeaveDeviceGroupPreferenceVisibility() {
@@ -127,6 +129,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeDisplayAuditLogPreference() {
+        findPreference<Preference>(PREFERENCE_DISPLAY_AUDIT_LOG)?.onClick {
+            displayAuditLog()
+        }
+    }
+
+    private fun displayAuditLog() {
+        AuditLogDisplayActivity.displayAuditLog(requireActivity())
     }
 
     private fun initializeNewKeysPassphrase() {
@@ -375,6 +387,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_DEBUG_LOGGING = "debug_logging"
         private const val PREFERENCE_AUDIT_LOG_TIME_RETENTION = "audit_log_data_time_retention"
         private const val PREFERENCE_LEAVE_DEVICE_GROUP = "leave_device_group"
+        private const val PREFERENCE_DISPLAY_AUDIT_LOG = "display_audit_log"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
