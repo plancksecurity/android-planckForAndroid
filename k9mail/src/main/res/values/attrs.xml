@@ -105,6 +105,7 @@
         <attr name="iconConfigureAccount" format="reference"/>
         <attr name="iconAddAccount" format="reference"/>
         <attr name="answeredForwardedIconColor" format="reference|color"/>
+        <attr name="folderListBackgroundColor" format="reference|color"/>
         <attr name="defaultToolbarTextColor" format="reference|color"/>
         <attr name="messageListSeparatorColor" format="reference|color"/>
         <attr name="defaultButtonTextColor" format="reference|color"/>

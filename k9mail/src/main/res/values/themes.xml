@@ -80,6 +80,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="folderListBackgroundColor">@color/white</item>
         <item name="iconFolder">@drawable/ic_folder_light</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_light</item>
         <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
@@ -231,6 +232,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/dark_theme_default_background</item>
         <item name="iconFolder">@drawable/ic_folder_dark</item>
+        <item name="folderListBackgroundColor">@color/dark_theme_default_toolbar_background</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_dark</item>
         <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
         <item name="iconActionAddAttachment">@drawable/ic_attachment</item>
