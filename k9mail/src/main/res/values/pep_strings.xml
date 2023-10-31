@@ -9,7 +9,7 @@
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
     <string name="pEp_trustwords">planck Trustwords</string>
-    <string name="device_group_rejoin_warning">You need to restart the app in order to re-join a device group.</string>
+    <string name="device_group_rejoin_warning">The app must be restarted in order to join a device group after leaving one.</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
