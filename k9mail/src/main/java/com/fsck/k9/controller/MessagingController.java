@@ -3519,6 +3519,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void moveOrCopyMessageSynchronous(final Account account, final String srcFolder,
                                               final List<? extends Message> inMessages, final String destFolder, final boolean isCopy) {
+        moveOrCopyMessageSynchronous(account, srcFolder, inMessages, destFolder, isCopy, false);
+    }
+
+    private void moveOrCopyMessageSynchronous(
+            final Account account,
+            final String srcFolder,
+            final List<? extends Message> inMessages,
+            final String destFolder,
+            final boolean isCopy,
+            final boolean processImmediate
+    ) {
 
         try {
             LocalStore localStore = account.getLocalStore();
@@ -3604,7 +3615,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 queueMoveOrCopy(account, srcFolder, destFolder, isCopy, origUidKeys, uidMap);
             }
 
-            processPendingCommands(account);
+            if (processImmediate) {
+                try {
+                    processPendingCommandsSynchronous(account);
+                } catch (Exception e) {
+                    Timber.e(e, "Failure processing command");
+                }
+            } else {
+                processPendingCommands(account);
+            }
         } catch (UnavailableStorageException e) {
             Timber.i("Failed to move/copy message because storage is not available - trying again later.");
             throw new UnavailableAccountException(e);
