@@ -1748,21 +1748,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                             Timber.d("pep in download loop (nr= %s ) post", number);
-                            if (PlanckUtils.isRatingDangerous(ratingToSave) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
-                                moveDangerousMessageToSuspiciousFolder(
-                                        localMessage,
-                                        account,
-                                        folder,
-                                        progress,
-                                        newMessages,
-                                        todo,
-                                        messagesToNotify,
-                                        storageEditor
-                                );
-                            } else {
-                                updateStatus(account, folder, localFolder, progress, newMessages, todo,
-                                        localMessage, message, true, messagesToNotify, storageEditor);
-                            }
+                            moveDangerousFolderIfNeededAndUpdateStatus(
+                                    message,
+                                    localMessage,
+                                    account,
+                                    folder,
+                                    progress,
+                                    newMessages,
+                                    todo,
+                                    messagesToNotify,
+                                    storageEditor,
+                                    localFolder
+                            );
                             //End message Store
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: failed to pEpProcess small messages " +
@@ -1801,7 +1798,36 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
     }
 
-    private void moveDangerousMessageToSuspiciousFolder(
+    private <T extends Message> void moveDangerousFolderIfNeededAndUpdateStatus(
+            T message,
+            LocalMessage localMessage,
+            Account account,
+            String folder,
+            AtomicInteger progress,
+            AtomicInteger newMessages,
+            int todo,
+            List<LocalMessage> messagesToNotify,
+            StorageEditor storageEditor,
+            LocalFolder localFolder
+    ) throws MessagingException {
+        if (PlanckUtils.isRatingDangerous(localMessage.getPlanckRating()) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+            moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
+                    localMessage,
+                    account,
+                    folder,
+                    progress,
+                    newMessages,
+                    todo,
+                    messagesToNotify,
+                    storageEditor
+            );
+        } else {
+            updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                    localMessage, message, true, messagesToNotify, storageEditor);
+        }
+    }
+
+    private void moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
             LocalMessage localMessage,
             Account account,
             String folder,
