@@ -141,8 +141,6 @@ public class ChooseFolder extends K9ListActivity {
                 finish();
             }
         });
-
-        getListView().setBackgroundColor(ThemeManager.getColorFromAttributeResource(this, R.attr.folderListBackgroundColor));
     }
 
     class ChooseFolderHandler extends Handler {
