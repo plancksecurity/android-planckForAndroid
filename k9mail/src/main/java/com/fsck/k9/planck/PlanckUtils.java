@@ -21,6 +21,7 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -588,24 +589,53 @@ public class PlanckUtils {
         return recipients.size() > 0 && rating.value >= Rating.pEpRatingReliable.value;
     }
 
-    public static boolean isRatingUnsecure(Rating rating){
-        return rating.value < Rating.pEpRatingUnreliable.value;
+    public static boolean isRatingUnsecure(@NotNull Rating rating) {
+        switch (rating) {
+            case pEpRatingUnderAttack:
+            case pEpRatingB0rken:
+            case pEpRatingMistrust:
+            case pEpRatingUndefined:
+            case pEpRatingCannotDecrypt:
+            case pEpRatingHaveNoKey:
+            case pEpRatingUnencrypted:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
-    public static boolean isHandshakeRating(Rating rating) {
+    public static boolean isHandshakeRating(@NotNull Rating rating) {
         return rating.value == Rating.pEpRatingReliable.value;
     }
 
-    public static boolean isRatingTrusted(Rating rating){
-        return rating.value >= Rating.pEpRatingTrusted.value;
+    public static boolean isRatingTrusted(@NotNull Rating rating) {
+        switch (rating) {
+            case pEpRatingTrusted:
+            case pEpRatingTrustedAndAnonymized:
+            case pEpRatingFullyAnonymous:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
-    public static boolean isRatingReliable(Rating rating) {
-        return rating.value >= Rating.pEpRatingReliable.value;
+    public static boolean isRatingReliable(@NotNull Rating rating) {
+        return rating.value == Rating.pEpRatingReliable.value
+                || isRatingTrusted(rating);
     }
 
-    public static boolean isRatingDangerous(Rating rating) {
-        return rating.value < Rating.pEpRatingUndefined.value;
+    public static boolean isRatingDangerous(@NotNull Rating rating) {
+        switch (rating) {
+            case pEpRatingMistrust:
+            case pEpRatingB0rken:
+            case pEpRatingUnderAttack:
+                return true;
+
+            default:
+                return false;
+        }
     }
 }
 
