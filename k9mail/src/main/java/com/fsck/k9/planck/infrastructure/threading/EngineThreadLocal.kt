@@ -3,7 +3,6 @@ package com.fsck.k9.planck.infrastructure.threading
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
-import foundation.pEp.jniadapter.CipherSuite
 import foundation.pEp.jniadapter.Engine
 import foundation.pEp.jniadapter.exceptions.pEpException
 import security.planck.ui.PassphraseProvider
@@ -57,8 +56,6 @@ class EngineThreadLocal private constructor(
         engine.setMessageToSendCallback(MessagingController.getInstance(k9))
         engine.setNotifyHandshakeCallback(k9.notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(k9))
-        engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        engine.config_cipher_suite(CipherSuite.pEpCipherSuiteRsa4k)
 
         if (k9.isRunningOnWorkProfile) {
             engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
