@@ -30,7 +30,6 @@ import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
