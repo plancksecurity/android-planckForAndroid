@@ -285,6 +285,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void loadMessageIfNeeded() {
         mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
+        mInitialized = true;
         if (!PassphraseProvider.INSTANCE.getRunning()) {
             Context context = requireActivity().getApplicationContext();
             messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
@@ -369,7 +370,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
-        mInitialized = true;
         mFragmentListener.updateMenu();
     }
 
