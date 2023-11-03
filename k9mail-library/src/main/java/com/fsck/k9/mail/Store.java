@@ -24,6 +24,7 @@ public abstract class Store {
      * Folder name for the pEp management messages
      */
     public static final String PLANCK_FOLDER = "planck";
+    public static final String PLANCK_SUSPICIOUS_FOLDER = "Suspicious";
 
     /**
      * OAuth provider for this store

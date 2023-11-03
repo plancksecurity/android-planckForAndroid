@@ -59,7 +59,7 @@ constructor(
 ) : ViewModel() {
     private lateinit var sender: Address
     private lateinit var myself: Identity
-    private lateinit var messageReference: MessageReference
+    private var messageReference: MessageReference? = null
     private var isMessageIncoming = false
     private lateinit var localMessage: LocalMessage
     private lateinit var partner: PlanckIdentity
@@ -97,7 +97,7 @@ constructor(
     fun initialize(
         sender: String,
         myself: String,
-        messageReference: MessageReference,
+        messageReference: MessageReference?,
         isMessageIncoming: Boolean
     ) {
         viewModelScope.launch {
@@ -110,10 +110,10 @@ constructor(
                             stateLiveData.value = VerifyPartnerState.DeletedMessage
                         } else {
                             localMessage = message
-                            currentRating = localMessage.planckRating
+                            currentRating = message.planckRating
                             getHandshakeData()
                         }
-                    }
+                    } ?: getHandshakeData()
                 }.onFailure {
                     // display error
                     stateLiveData.value = VerifyPartnerState.ErrorLoadingMessage
@@ -179,7 +179,7 @@ constructor(
     }
 
     private suspend fun updateIdentity() = withContext(dispatcherProvider.planckDispatcher()) {
-        partner = identityMapper.updateAndMapRecipient(cache.recipients.first())
+        ResultCompat.of { partner = identityMapper.updateAndMapRecipient(cache.recipients.first()) }
     }
 
     private suspend fun onRatingChanged(rating: Rating): ResultCompat<Unit> {
@@ -273,13 +273,16 @@ constructor(
 
     private suspend fun getHandshakeData() {
         stateLiveData.value = VerifyPartnerState.LoadingHandshakeData
-        updateIdentity()
-        if (PlanckUtils.isPEpUser(partner)) {
-            getOrRefreshTrustWords()
-        } else {
-            stateLiveData.value = handshakeReady(
-                trustwords = "" // no trustwords available for non-planck user
-            )
+        updateIdentity().onFailure {
+            stateLiveData.value = VerifyPartnerState.ErrorGettingTrustwords
+        }.onSuccessSuspend {
+            if (PlanckUtils.isPEpUser(partner)) {
+                getOrRefreshTrustWords()
+            } else {
+                stateLiveData.value = handshakeReady(
+                    trustwords = "" // no trustwords available for non-planck user
+                )
+            }
         }
     }
 
@@ -294,8 +297,7 @@ constructor(
             partnerFpr = PlanckUtils.formatFpr(partner.fpr),
             trustwords = trustwords,
             shortTrustwords = shortTrustwords,
-            allowChangeTrust = currentRating?.let { PlanckUtils.isHandshakeRating(currentRating) }
-                ?: false
+            allowChangeTrust = PlanckUtils.isHandshakeRating(partner.rating)
         )
 
 
@@ -322,10 +324,13 @@ constructor(
     private suspend fun populateData(
         sender: String,
         myself: String,
-        messageReference: MessageReference,
+        messageReference: MessageReference?,
         isMessageIncoming: Boolean
     ): ResultCompat<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         ResultCompat.of {
+            if (isMessageIncoming && messageReference == null) {
+                error("incoming message needs a message reference always")
+            }
             this@VerifyPartnerViewModel.sender = Address.create(sender)
             this@VerifyPartnerViewModel.myself =
                 planckProvider.myself(PlanckUtils.createIdentity(Address.create(myself), context))
@@ -337,8 +342,14 @@ constructor(
     private suspend fun loadMessage(): ResultCompat<LocalMessage?> =
         withContext(dispatcherProvider.io()) {
             ResultCompat.of {
-                val account = preferences.getAccount(messageReference.accountUuid)
-                controller.loadMessage(account, messageReference.folderName, messageReference.uid)
+                messageReference?.let { messageReference ->
+                    val account = preferences.getAccount(messageReference.accountUuid)
+                    controller.loadMessage(
+                        account,
+                        messageReference.folderName,
+                        messageReference.uid
+                    )
+                }
             }
         }
 

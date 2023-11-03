@@ -52,22 +52,6 @@
                 android:title="@string/pep_enable_privacy_protection"
                 android:defaultValue="false"
                 android:summary="@string/pep_account_privacy_protection_explanation" />
-
-            <PreferenceCategory
-                android:key="advanced_accounts_pep"
-                app:initialExpandedChildrenCount="0"
-                app:allowDividerAbove="false">
-
-                <SwitchPreferenceCompat
-                    android:key="pep_enable_sync_account"
-                    android:title="@string/pep_sync_enable_account"
-                    android:defaultValue="true" />
-
-                <Preference
-                    android:key="pep_key_reset_account"
-                    android:title="@string/reset" />
-
-            </PreferenceCategory>
         </PreferenceCategory>
     </PreferenceScreen>
 

@@ -9,6 +9,7 @@
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
     <string name="pEp_trustwords">planck Trustwords</string>
+    <string name="device_group_rejoin_warning">The app must be restarted in order to join a device group after leaving one.</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
@@ -194,6 +195,8 @@
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="sync_title">planck sync wizard</string>
     <string name="sync_action">Sync</string>
+    <string name="action_restart">Restart</string>
+    <string name="action_postpone">Later</string>
     <string name="reset">Reset</string>
     <string name="offline">Device is offline. Please fix internet connection and try again.</string>
     <string name="reset_all">Yes, Reset</string>
@@ -377,6 +380,7 @@
     <string name="account_setup_failed_dlg_oauth_flow_failed">Authorization failed with the following error: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
     <string name="account_setup_failed_dlg_browser_not_found">planck couldn\'t find a browser to use for granting access to your account.</string>
+    <string name="account_setup_failed_dlg_unsuitable_browser_found">planck couldn\'t find a suitable browser to use for granting access to your account. Please install a browser other than Microsoft Edge.</string>
     <string name="account_setup_oauth_title_retry_login">Retry login</string>
     <string name="account_setup_oauth_description_retry_login">planck could not log in to account %s. Please try login again below.</string>
     <string name="mdm_settings_feedback_title" translatable="false">Current settings from MDM</string>
@@ -445,5 +449,10 @@
     <string name="verify_partner_dialog_title">Verify identity</string>
     <string name="verify_partner_dialog_go_back">Previous</string>
     <string name="verify_partner_dialog_error_getting_trustwords">There was an error retrieving trustwords for this message.</string>
+    <string name="audit_log_display_title">Audit Log</string>
+    <string name="audit_log_display_preference_title">Display audit log</string>
+    <string name="audit_log_display_no_logs">There are no logs to display.</string>
+    <string name="audit_log_display_error">An error happened: %s\nPlease contact your IT admin.</string>
+    <string name="dangerous_message_moved_to_suspicious_folder">planck has rated this message as Dangerous. It was moved to the Suspicious folder to ensure your safety.</string>
 
 </resources>

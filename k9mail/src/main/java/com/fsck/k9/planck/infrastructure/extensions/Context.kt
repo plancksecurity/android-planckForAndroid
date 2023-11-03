@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.Service
 import android.content.Context
 import android.content.ContextWrapper
+import android.util.TypedValue
 
 val Context.rootContext: Context
     get() {
@@ -14,3 +15,7 @@ val Context.rootContext: Context
         }
         return context
     }
+
+fun Context.dpToPx(px: Float): Int =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, resources.displayMetrics)
+        .toInt()
