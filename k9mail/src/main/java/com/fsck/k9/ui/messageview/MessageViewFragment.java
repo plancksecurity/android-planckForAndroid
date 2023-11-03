@@ -291,7 +291,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             ((MessageList) requireActivity()).setMessageViewVisible(true);
             setupSwipeDetector();
             ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
-            mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
             Context context = requireActivity().getApplicationContext();
             messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
                     getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
@@ -368,6 +367,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void displayMessage() {
+        mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         Bundle arguments = getArguments();
         String messageReferenceString = arguments.getString(ARG_REFERENCE);
         mMessageReference = MessageReference.parse(messageReferenceString);
