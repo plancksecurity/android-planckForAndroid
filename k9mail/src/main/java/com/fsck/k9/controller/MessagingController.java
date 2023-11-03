@@ -1748,8 +1748,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                             Timber.d("pep in download loop (nr= %s ) post", number);
-                            updateStatus(account, folder, localFolder, progress, newMessages, todo,
-                                    localMessage, message, true, messagesToNotify, storageEditor);
+                            moveDangerousFolderIfNeededAndUpdateStatus(
+                                    message,
+                                    localMessage,
+                                    account,
+                                    folder,
+                                    progress,
+                                    newMessages,
+                                    todo,
+                                    messagesToNotify,
+                                    storageEditor,
+                                    localFolder
+                            );
                             //End message Store
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: failed to pEpProcess small messages " +
@@ -1786,6 +1796,64 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 });
 
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
+    }
+
+    private <T extends Message> void moveDangerousFolderIfNeededAndUpdateStatus(
+            T message,
+            LocalMessage localMessage,
+            Account account,
+            String folder,
+            AtomicInteger progress,
+            AtomicInteger newMessages,
+            int todo,
+            List<LocalMessage> messagesToNotify,
+            StorageEditor storageEditor,
+            LocalFolder localFolder
+    ) throws MessagingException {
+        if (PlanckUtils.isRatingDangerous(localMessage.getPlanckRating()) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+            moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
+                    localMessage,
+                    account,
+                    folder,
+                    progress,
+                    newMessages,
+                    todo,
+                    messagesToNotify,
+                    storageEditor
+            );
+        } else {
+            updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                    localMessage, message, true, messagesToNotify, storageEditor);
+        }
+    }
+
+    private void moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
+            LocalMessage localMessage,
+            Account account,
+            String folder,
+            AtomicInteger progress,
+            AtomicInteger newMessages,
+            int todo,
+            List<LocalMessage> messagesToNotify,
+            StorageEditor storageEditor
+    ) throws MessagingException {
+        LocalFolder suspiciousFolder = null;
+        Folder<? extends Message> suspiciousRemoteFolder = null;
+        try {
+            moveOrCopyMessageSynchronous(account, folder, Collections.singletonList(localMessage), Store.PLANCK_SUSPICIOUS_FOLDER, false, true);
+            Store remoteStore = account.getRemoteStore();
+            suspiciousRemoteFolder = remoteStore.getFolder(Store.PLANCK_SUSPICIOUS_FOLDER);
+            suspiciousRemoteFolder.open(Folder.OPEN_MODE_RO);
+            String newUid = suspiciousRemoteFolder.getUidFromMessageId(localMessage);
+            suspiciousFolder = account.getLocalStore().getFolder(Store.PLANCK_SUSPICIOUS_FOLDER);
+            suspiciousFolder.open(Folder.OPEN_MODE_RO);
+            LocalMessage movedMessage = suspiciousFolder.getMessage(newUid);
+            updateStatus(account, folder, suspiciousFolder, progress, newMessages, todo,
+                    movedMessage, movedMessage, true, messagesToNotify, storageEditor);
+        } finally {
+            closeFolder(suspiciousFolder);
+            closeFolder(suspiciousRemoteFolder);
+        }
     }
 
     private AuditLogger getAuditLogger() {
@@ -3519,6 +3587,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void moveOrCopyMessageSynchronous(final Account account, final String srcFolder,
                                               final List<? extends Message> inMessages, final String destFolder, final boolean isCopy) {
+        moveOrCopyMessageSynchronous(account, srcFolder, inMessages, destFolder, isCopy, false);
+    }
+
+    private void moveOrCopyMessageSynchronous(
+            final Account account,
+            final String srcFolder,
+            final List<? extends Message> inMessages,
+            final String destFolder,
+            final boolean isCopy,
+            final boolean processImmediate
+    ) {
 
         try {
             LocalStore localStore = account.getLocalStore();
@@ -3604,7 +3683,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 queueMoveOrCopy(account, srcFolder, destFolder, isCopy, origUidKeys, uidMap);
             }
 
-            processPendingCommands(account);
+            if (processImmediate) {
+                try {
+                    processPendingCommandsSynchronous(account);
+                } catch (Exception e) {
+                    Timber.e(e, "Failure processing command");
+                }
+            } else {
+                processPendingCommands(account);
+            }
         } catch (UnavailableStorageException e) {
             Timber.i("Failed to move/copy message because storage is not available - trying again later.");
             throw new UnavailableAccountException(e);
