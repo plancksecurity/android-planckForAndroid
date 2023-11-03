@@ -506,7 +506,7 @@ public class MessageLoaderHelper {
                     LocalFolder folder = message.getFolder();
                     folder.storeSmallMessage(decryptedMessage, () -> {
                         if (decryptCallback != null)
-                            decryptCallback.onMessageDecrypted();
+                            decryptCallback.onMessageDecrypted(decryptResult);
                     });
                 } catch (MessagingException e) {
                     Timber.e("pEp %s", "decryptMessage: view", e);
@@ -546,7 +546,7 @@ public class MessageLoaderHelper {
     // decrypt callback interface
 
     public interface MessageLoaderDecryptCallbacks {
-        void onMessageDecrypted();
+        void onMessageDecrypted(PlanckProvider.DecryptResult decryptResult);
         void onMessageDataDecryptFailed(String errorMessage);
     }
 

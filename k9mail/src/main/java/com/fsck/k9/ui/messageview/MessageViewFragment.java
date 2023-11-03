@@ -46,6 +46,7 @@ import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -79,7 +80,6 @@ import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
-import security.planck.ui.PassphraseProvider;
 import security.planck.ui.message_compose.PlanckFabMenu;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
@@ -92,6 +92,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderPlanckHelperView {
 
     private static final String ARG_REFERENCE = "reference";
+    private static final String ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER = "moveMessageToSuspiciousFolder";
 
     private static final int ACTIVITY_CHOOSE_FOLDER_MOVE = 1;
     private static final int ACTIVITY_CHOOSE_FOLDER_COPY = 2;
@@ -101,15 +102,25 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
     private static final int LOCAL_MESSAGE_LOADER_ID = 1;
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
+    private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION = 5000;
+    private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES = 10;
     private Rating pEpRating;
     private PlanckUIArtefactCache planckUIArtefactCache;
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
+        return newInstance(reference, false);
+    }
+
+    public static MessageViewFragment newInstance(
+            MessageReference reference,
+            boolean moveMessageToSuspiciousFolder
+    ) {
         MessageViewFragment fragment = new MessageViewFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_REFERENCE, reference.toIdentityString());
+        args.putBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER, moveMessageToSuspiciousFolder);
         fragment.setArguments(args);
 
         return fragment;
@@ -186,6 +197,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Inject
     SenderPlanckHelper senderPlanckHelper;
 
+    private boolean justStarted;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -230,7 +243,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                                 Timber.e(ex, "wrong rating");
                             }
                         }
-                        loadMessageIfNeeded();
+                        displayMessage();
                     }
                 }
         );
@@ -275,20 +288,22 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((MessageList) getActivity()).setMessageViewVisible(true);
-        setupSwipeDetector();
-        ((DrawerLocker) getActivity()).setDrawerEnabled(false);
-        loadMessageIfNeeded();
+    public void onStart() {
+        super.onStart();
+        justStarted = true;
     }
 
-    private void loadMessageIfNeeded() {
-        mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
-        if (!PassphraseProvider.INSTANCE.getRunning()) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (justStarted) {
+            justStarted = false;
+            ((MessageList) requireActivity()).setMessageViewVisible(true);
+            setupSwipeDetector();
+            ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
             Context context = requireActivity().getApplicationContext();
             messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                    getParentFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
+                    getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                     displayHtml);
             displayMessage();
         }
@@ -362,28 +377,22 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void displayMessage() {
-        Bundle arguments = getArguments();
-        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
+        String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
         mMessageReference = MessageReference.parse(messageReferenceString);
         Timber.d("MessageView displaying message %s", mMessageReference);
-
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
-        messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
         mInitialized = true;
+        messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
         mFragmentListener.updateMenu();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
         ((MessageList) ContextKt.getRootContext(requireActivity())).removeGestureDetector();
         if (messageLoaderHelper != null) {
             messageLoaderHelper.cancelAndClearLocalMessageLoader();
         }
-    }
-
-    @Override
-    public void onStop() {
         planckSecurityStatusLayout.setVisibility(View.GONE);
         super.onStop();
     }
@@ -501,9 +510,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void refileMessage(String dstFolder) {
+        refileMessage(dstFolder, false);
+    }
+
+    private void refileMessage(String dstFolder, boolean forceGoBack) {
         String srcFolder = mMessageReference.getFolderName();
         MessageReference messageToMove = mMessageReference;
-        mFragmentListener.showNextMessageOrReturn();
+        if (forceGoBack) {
+            mFragmentListener.goBack();
+        } else {
+            mFragmentListener.showNextMessageOrReturn();
+        }
         mController.moveMessage(mAccount, srcFolder, messageToMove, dstFolder);
     }
 
@@ -782,7 +799,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
      * Get the {@link MessageReference} of the currently displayed message.
      */
     public MessageReference getMessageReference() {
-        return mMessageReference;
+        return mMessageReference != null ? mMessageReference : MessageReference.parse(requireArguments().getString(ARG_REFERENCE));
     }
 
     public boolean isMessageFlagged() {
@@ -937,11 +954,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         void showNextMessageOrReturn();
 
+        void goBack();
+
         void messageHeaderViewAvailable(MessageHeader messageHeaderView);
 
         void updateMenu();
 
-        void refreshMessageViewFragment();
+        void refreshMessageViewFragment(boolean moveMessageToSuspiciousFolder);
     }
 
     public boolean isInitialized() {
@@ -951,8 +970,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessageLoaderDecryptCallbacks messageLoaderDecryptCallbacks = new MessageLoaderDecryptCallbacks() {
 
         @Override
-        public void onMessageDecrypted() {
-            refreshMessage();
+        public void onMessageDecrypted(PlanckProvider.DecryptResult decryptResult) {
+            refreshMessage(PlanckUtils.isRatingDangerous(decryptResult.rating));
         }
 
         @Override
@@ -980,6 +999,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             boolean alreadyDecrypted = !LocalMessageKt.hasToBeDecrypted(mMessage);
             if (alreadyDecrypted) {
+                boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
+                if (moveToSuspiciousFolder) {
+                    refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
+                    FeedbackTools.showLongFeedback(
+                            getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
+                            DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
+                            DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
+                    );
+                }
                 senderPlanckHelper.initialize(message, MessageViewFragment.this);
                 mMessageView.displayViewOnLoadFinished(true);
                 senderPlanckHelper.checkCanHandshakeSender();
@@ -1072,10 +1100,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
     }
 
-    private void refreshMessage() {
+    private void refreshMessage(boolean moveMessageToSuspiciousFolder) {
         //If get support manager is null, it means that you don't have a fragment to refresh
         if (mFragmentListener != null) {
-            mFragmentListener.refreshMessageViewFragment();
+            mFragmentListener.refreshMessageViewFragment(moveMessageToSuspiciousFolder);
         }
     }
 

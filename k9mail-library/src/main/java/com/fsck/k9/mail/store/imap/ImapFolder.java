@@ -113,7 +113,9 @@ class ImapFolder extends Folder<ImapMessage> {
         }
 
         //P4A-1098 PATCH
-        if (prefixedName.equals("") && name.equals(Store.PLANCK_FOLDER)) {
+        if (prefixedName.isEmpty() && name.equals(Store.PLANCK_FOLDER)) {
+            prefixedName = Store.INBOX + store.getPathDelimiter();
+        } else if (prefixedName.isEmpty() && name.equals(Store.PLANCK_SUSPICIOUS_FOLDER)) {
             prefixedName = Store.INBOX + store.getPathDelimiter();
         }
         prefixedName += name;

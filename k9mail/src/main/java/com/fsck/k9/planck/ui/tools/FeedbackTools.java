@@ -24,8 +24,18 @@ public class FeedbackTools {
     }
 
     public static void showLongFeedback(View rootView, String message) {
+        showLongFeedback(rootView, message, Snackbar.LENGTH_LONG, 0);
+    }
+
+    public static void showLongFeedback(View rootView, String message, int duration, int maxLines) {
         if (rootView != null) {
-            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar.make(rootView, message, duration);
+            View snackbarView = snackbar.getView();
+            TextView snackTextView = snackbarView.findViewById(R.id.snackbar_text);
+            if (maxLines > 0) {
+                snackTextView.setMaxLines(maxLines);
+            }
+            snackbar.show();
         } else {
             Timber.e(message);
         }
