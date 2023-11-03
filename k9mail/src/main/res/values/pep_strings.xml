@@ -450,5 +450,6 @@
     <string name="audit_log_display_preference_title">Display audit log</string>
     <string name="audit_log_display_no_logs">There are no logs to display.</string>
     <string name="audit_log_display_error">An error happened: %s\nPlease contact your IT admin.</string>
+    <string name="dangerous_message_moved_to_suspicious_folder">This message is Dangerous and it was moved to Suspicious folder.</string>
 
 </resources>
