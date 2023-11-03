@@ -114,7 +114,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
-        initializeGlobalpEpSync()
+        initializeGlobalPlanckSync()
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
         initializeManualSync()
@@ -276,15 +276,19 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun initializeGlobalpEpSync() {
-
-        (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
-            this.onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference, newValue ->
-                    processKeySyncSwitchClick(preference, newValue)
-                }
+    private fun initializeGlobalPlanckSync() {
+        (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as? SwitchPreferenceCompat)?.apply {
+            if (K9.getPlanckSyncEnabled().locked) {
+                isEnabled = false
+                summaryOff = getString(R.string.preference_summary_locked_by_it_manager, summaryOff)
+                summaryOn = getString(R.string.preference_summary_locked_by_it_manager, summaryOn)
+            } else {
+                onPreferenceChangeListener =
+                    Preference.OnPreferenceChangeListener { preference, newValue ->
+                        processKeySyncSwitchClick(preference, newValue)
+                    }
+            }
         }
-
     }
 
     private fun initializeExportPEpSupportDataPreference() {
