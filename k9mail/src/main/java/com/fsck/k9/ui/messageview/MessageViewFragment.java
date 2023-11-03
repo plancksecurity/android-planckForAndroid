@@ -21,6 +21,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -279,6 +281,19 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
+        boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
+        mMessageReference = MessageReference.parse(messageReferenceString);
+        mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
+        if (moveToSuspiciousFolder) {
+            refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
+            FeedbackTools.showLongFeedback(getRootView(), "We found this message is Dangerous after decrypting it and it has been moved to Suspicious folder.");
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         if (planckSecurityStatusLayout != null) {
             planckSecurityStatusLayout.hideRating();
@@ -377,19 +392,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void displayMessage() {
         mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
-        String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
-        boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
-        mMessageReference = MessageReference.parse(messageReferenceString);
         Timber.d("MessageView displaying message %s", mMessageReference);
-        mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         mInitialized = true;
-        if (moveToSuspiciousFolder) {
-            refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
-            FeedbackTools.showLongFeedback(getRootView(), "We found this message is Dangerous after decrypting it and it has been moved to Suspicious folder.");
-        } else {
-            messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
-            mFragmentListener.updateMenu();
-        }
+        messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
+        mFragmentListener.updateMenu();
     }
 
     @Override
