@@ -46,6 +46,7 @@ import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -940,8 +941,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessageLoaderDecryptCallbacks messageLoaderDecryptCallbacks = new MessageLoaderDecryptCallbacks() {
 
         @Override
-        public void onMessageDecrypted() {
-            refreshMessage();
+        public void onMessageDecrypted(PlanckProvider.DecryptResult decryptResult) {
+            if (PlanckUtils.isRatingDangerous(decryptResult.rating)) {
+                refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER);
+                FeedbackTools.showLongFeedback(getRootView(), "We found this message is Dangerous after decrypting it and it has been moved to Suspicious folder.");
+            } else {
+                refreshMessage();
+            }
         }
 
         @Override
