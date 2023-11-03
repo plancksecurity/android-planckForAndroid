@@ -2,13 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:orientation="vertical">
 
     <include layout="@layout/simple_toolbar_layout" />
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawSelectorOnTop="false" />
+
 </LinearLayout>
