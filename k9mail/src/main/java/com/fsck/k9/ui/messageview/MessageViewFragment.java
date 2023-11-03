@@ -80,7 +80,6 @@ import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
-import security.planck.ui.PassphraseProvider;
 import security.planck.ui.message_compose.PlanckFabMenu;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
@@ -103,6 +102,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
     private static final int LOCAL_MESSAGE_LOADER_ID = 1;
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
+    private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION = 5000;
+    private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES = 10;
     private Rating pEpRating;
     private PlanckUIArtefactCache planckUIArtefactCache;
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
@@ -1001,7 +1002,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
                 if (moveToSuspiciousFolder) {
                     refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
-                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder));
+                    FeedbackTools.showLongFeedback(
+                            getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
+                            DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
+                            DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
+                    );
                 }
                 senderPlanckHelper.initialize(message, MessageViewFragment.this);
                 mMessageView.displayViewOnLoadFinished(true);

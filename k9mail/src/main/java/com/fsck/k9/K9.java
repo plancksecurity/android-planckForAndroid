@@ -1825,8 +1825,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
             --activityCount;
             if (activityCount == 0) {
                 KeySyncCleaner.queueAutoConsumeMessages();
-                //if (planckProvider.isSyncRunning()) planckProvider.stopSync();
-                //planckProvider.close(); // Close the Engine instance running on main thread
             }
         }
     };
