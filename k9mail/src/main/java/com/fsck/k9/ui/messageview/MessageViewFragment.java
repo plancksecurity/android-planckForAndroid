@@ -230,7 +230,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                                 Timber.e(ex, "wrong rating");
                             }
                         }
-                        loadMessageIfNeeded();
+                        displayMessage();
                     }
                 }
         );
@@ -275,24 +275,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         ((MessageList) getActivity()).setMessageViewVisible(true);
         setupSwipeDetector();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
-        loadMessageIfNeeded();
-    }
-
-    private void loadMessageIfNeeded() {
         mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
-        mInitialized = true;
-        if (!PassphraseProvider.INSTANCE.getRunning()) {
-            Context context = requireActivity().getApplicationContext();
-            messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                    getParentFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
-                    displayHtml);
-            displayMessage();
-        }
+        Context context = getActivity().getApplicationContext();
+        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
+                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
+                displayHtml);
+        displayMessage();
     }
 
     @Override
@@ -370,20 +363,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
+        mInitialized = true;
         mFragmentListener.updateMenu();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
         ((MessageList) ContextKt.getRootContext(requireActivity())).removeGestureDetector();
         if (messageLoaderHelper != null) {
             messageLoaderHelper.cancelAndClearLocalMessageLoader();
         }
-    }
-
-    @Override
-    public void onStop() {
         planckSecurityStatusLayout.setVisibility(View.GONE);
         super.onStop();
     }
