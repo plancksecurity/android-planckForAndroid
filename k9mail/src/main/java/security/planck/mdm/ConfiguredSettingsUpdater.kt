@@ -78,41 +78,67 @@ class ConfiguredSettingsUpdater @Inject constructor(
             RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION ->
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS ->
+                saveAccountsSettings(restrictions, entry)
+        }
+    }
+
+    private fun saveAccountsSettings(restrictions: Bundle, entry: RestrictionEntry) {
+        restrictions.getParcelableArray(entry.key)
+            ?.forEach { // get the parcelable array for accounts settings
+                saveAccountSettings(entry.restrictions.first(), it as Bundle)
+            }
+    }
+
+    private fun saveAccountSettings(
+        accountEntry: RestrictionEntry,
+        accountBundle: Bundle
+    ) {
+        accountEntry.restrictions.forEach { accountSettingEntry ->
+            saveAccountSetting(accountSettingEntry, accountBundle)
+        }
+    }
+
+    private fun saveAccountSetting(
+        accountSettingEntry: RestrictionEntry,
+        accountBundle: Bundle
+    ) {
+        when (accountSettingEntry.key) {
             RESTRICTION_ACCOUNT_DESCRIPTION ->
-                saveAccountDescription(restrictions, entry)
+                saveAccountDescription(accountBundle, accountSettingEntry)
 
             RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION ->
-                savePrivacyProtection(restrictions, entry)
+                savePrivacyProtection(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
-                saveAccountLocalFolderSize(restrictions, entry)
+                saveAccountLocalFolderSize(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
-                saveAccountMaxPushFolders(restrictions, entry)
+                saveAccountMaxPushFolders(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
-                saveAccountCompositionDefaults(restrictions, entry)
+                saveAccountCompositionDefaults(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
-                saveAccountQuoteMessagesWhenReply(restrictions, entry)
+                saveAccountQuoteMessagesWhenReply(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
-                saveAccountDefaultFolders(restrictions, entry)
+                saveAccountDefaultFolders(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
-                saveAccountEnableServerSearch(restrictions, entry)
+                saveAccountEnableServerSearch(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
-                saveAccountSeverSearchLimit(restrictions, entry)
+                saveAccountSeverSearchLimit(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
-                saveAccountSaveMessagesSecurely(restrictions, entry)
+                saveAccountSaveMessagesSecurely(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
-                saveAccountEnableSync(restrictions, entry)
+                saveAccountEnableSync(accountBundle, accountSettingEntry)
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
-                saveAccountMailSettings(restrictions, entry)
+                saveAccountMailSettings(accountBundle, accountSettingEntry)
         }
     }
 
