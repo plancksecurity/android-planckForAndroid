@@ -168,7 +168,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeLeaveDeviceGroup() {
         findPreference<Preference>(PREFERENCE_LEAVE_DEVICE_GROUP)?.apply {
-            if (syncRepository.isGrouped) {
+            if (K9.isPlanckSyncEnabled() && syncRepository.isGrouped) {
                 isVisible = true
                 onClick {
                     showLeaveDeviceGroupConfirmation()
@@ -312,6 +312,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
                                 preference.isChecked = false
                                 initializeManualSync()
+                                updateLeaveDeviceGroupPreferenceVisibility()
                             }
                             .setNegativeButton(R.string.cancel_action) { _, _ -> }
                             .create()
