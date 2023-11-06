@@ -161,6 +161,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (!shouldDisplayManualSyncButton()) {
             preference?.isVisible = false
         } else {
+            preference?.isVisible = true
             configureManualSync(preference)
         }
     }
@@ -308,13 +309,17 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             .setTitle(R.string.keysync_disable_warning_title)
                             .setMessage(R.string.keysync_disable_warning_explanation)
                             .setCancelable(false)
-                            .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
+                            .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
+                                preference.isChecked = false
+                                initializeManualSync()
+                            }
                             .setNegativeButton(R.string.cancel_action) { _, _ -> }
                             .create()
                 }
                 syncSwitchDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
             } else {
                 preference.isChecked = true
+                initializeManualSync()
             }
         }
 
