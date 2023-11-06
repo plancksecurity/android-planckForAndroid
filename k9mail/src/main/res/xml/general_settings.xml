@@ -31,35 +31,11 @@
 
     </PreferenceScreen>
 
-    <Preference
-        android:key="planck_key_sync"
-        android:summary="@string/planck_key_sync_device_summary"
-        android:title="@string/sync_title" />
-    <Preference
-        android:key="leave_device_group"
-        app:isPreferenceVisible="false"
-        android:title="@string/pep_sync_leave_device_group" />
-
-    <Preference
-        android:key="pep_key_reset"
-        android:summary="@string/pep_key_reset_all_own_ids_summary"
-        android:title="@string/reset" />
-
-    <CheckBoxPreference
-        android:key="pep_forward_warning"
-        android:summary="@string/pep_forward_warning_description"
-        android:title="@string/pep_forward_warning" />
-
     <CheckBoxPreference
         android:icon="?attr/iconPreferencesDebug"
         android:key="debug_logging"
         android:summary="@string/debug_enable_debug_logging_summary"
         android:title="@string/debug_enable_debug_logging_title" />
-
-    <SwitchPreferenceCompat
-        android:key="pep_use_passphrase_for_new_keys"
-        android:title="@string/passhphrase_new_keys_settings_title"
-        app:isPreferenceVisible="false"/>
 
     <ListPreference
         android:dialogTitle="@string/audit_log_data_time_retention_title"
@@ -81,6 +57,43 @@
             android:key="support_export_pep_data"
             android:title="@string/export_pep_support_data_preference_title">
         </Preference>
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:icon="?attr/iconplanckShield"
+        android:key="pep_global"
+        android:title="@string/privacy_preferences">
+
+        <CheckBoxPreference
+            android:key="pep_forward_warning"
+            android:summary="@string/pep_forward_warning_description"
+            android:title="@string/pep_forward_warning" />
+
+        <Preference
+            android:key="pep_key_reset"
+            android:summary="@string/pep_key_reset_all_own_ids_summary"
+            android:title="@string/reset" />
+
+        <Preference
+            android:key="planck_key_sync"
+            android:summary="@string/planck_key_sync_device_summary"
+            android:title="@string/sync_title" />
+
+        <Preference
+            android:key="leave_device_group"
+            app:isPreferenceVisible="false"
+            android:title="@string/pep_sync_leave_device_group" />
+
+        <SwitchPreferenceCompat
+            android:key="pep_enable_sync"
+            android:summaryOff="@string/pep_sync_is_disabled_global"
+            android:summaryOn="@string/pep_sync_is_enabled_global"
+            android:title="@string/enable_planck_sync" />
+
+        <SwitchPreferenceCompat
+            android:key="pep_use_passphrase_for_new_keys"
+            android:title="@string/passhphrase_new_keys_settings_title" />
 
     </PreferenceScreen>
 

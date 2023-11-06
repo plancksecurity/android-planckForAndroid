@@ -98,6 +98,25 @@
     </restriction>
 
     <restriction
+        android:description="@string/enable_planck_sync_description"
+        android:key="enable_planck_sync"
+        android:restrictionType="bundle"
+        android:title="@string/enable_planck_sync">
+        <restriction
+            android:defaultValue="@bool/default_enable_planck_sync"
+            android:description="@string/value_restriction_description"
+            android:key="enable_planck_sync_value"
+            android:restrictionType="bool"
+            android:title="@string/value_restriction_title"/>
+        <restriction
+            android:defaultValue="@bool/managed_settings_locked_by_default"
+            android:description="@string/locked_restriction_description"
+            android:key="enable_planck_sync_locked"
+            android:restrictionType="bool"
+            android:title="@string/locked_restriction_title"/>
+    </restriction>
+
+    <restriction
         android:defaultValue="@bool/default_use_pep_sync_folder"
         android:description="@string/pep_sync_folder_description"
         android:key="planck_sync_folder"

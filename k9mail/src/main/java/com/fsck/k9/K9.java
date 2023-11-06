@@ -126,7 +126,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     Provider<AuditLogger> auditLogger;
 
     @Inject
-    Provider<SyncRepository> syncDelegate;
+    Provider<SyncRepository> syncRepository;
 
     public static K9JobManager jobManager;
 
@@ -370,7 +370,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean planckSubjectProtection = true;
     private static ManageableSetting<Boolean> planckForwardWarningEnabled =
             new ManageableSetting<>(BuildConfig.IS_ENTERPRISE);
-    private static boolean planckSyncEnabled = true;
+    private static ManageableSetting<Boolean> planckSyncEnabled = new ManageableSetting<>(true);
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
     private static boolean planckUsePassphraseForNewKeys = BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS;
@@ -668,7 +668,10 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
                 "pEpForwardWarningEnabled",
                 ManageableSettingKt.serializeBooleanManageableSetting(planckForwardWarningEnabled)
         );
-        editor.putBoolean("pEpEnableSync", planckSyncEnabled);
+        editor.putString(
+                "pEpEnableSync",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckSyncEnabled)
+        );
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
@@ -835,8 +838,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         });
 
         refreshFoldersForAllAccounts();
-        syncDelegate.get().planckInitSyncEnvironment();
-        syncDelegate.get().setupFastPoller();
+        syncRepository.get().planckInitSyncEnvironment();
+        syncRepository.get().setupFastPoller();
 
         notifyObservers();
 
@@ -869,7 +872,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public void pEpInitSyncEnvironment() {
-        syncDelegate.get().planckInitSyncEnvironment();
+        syncRepository.get().planckInitSyncEnvironment();
     }
 
     private void pEpSetupUiEngineSession() {
@@ -1032,8 +1035,15 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
                         )
                 )
         );
-        planckSyncEnabled = storage.getBoolean("pEpEnableSync", true);
-        usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", planckSyncEnabled);
+        planckSyncEnabled = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        "pEpEnableSync",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(true)
+                        )
+                )
+        );
+        usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", planckSyncEnabled.getValue());
         appVersionCode = storage.getLong("appVersionCode", -1);
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", false);
         sThreadedViewEnabled = storage.getBoolean("threadedView", true);
@@ -1906,23 +1916,36 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         K9.planckForwardWarningEnabled.setValue(planckForwardWarningEnabled);
     }
 
-    public static boolean isPlanckSyncEnabled() {
+    public static ManageableSetting<Boolean> getPlanckSyncEnabled() {
         return planckSyncEnabled;
+    }
+
+    public void setPlanckSyncEnabled(ManageableSetting<Boolean> planckSyncEnabled) {
+        K9.planckSyncEnabled = planckSyncEnabled;
+        setPlanckSyncEnabledInRepository(planckSyncEnabled.getValue());
+    }
+
+    public static boolean isPlanckSyncEnabled() {
+        return planckSyncEnabled.getValue();
     }
 
 
     public void setPlanckSyncEnabled(boolean enabled) {
-        planckSyncEnabled = enabled;
-        syncDelegate.get().setPlanckSyncEnabled(enabled);
+        planckSyncEnabled.setValue(enabled);
+        setPlanckSyncEnabledInRepository(enabled);
+    }
+
+    private void setPlanckSyncEnabledInRepository(boolean enabled) {
+        syncRepository.get().setPlanckSyncEnabled(enabled);
         forceSaveAppSettings();
     }
 
     public void markSyncEnabled(boolean enabled) {
-        planckSyncEnabled = enabled;
+        planckSyncEnabled.setValue(enabled);
     }
 
     public Sync.NotifyHandshakeCallback getNotifyHandshakeCallback() {
-        return syncDelegate.get().getNotifyHandshakeCallback();
+        return syncRepository.get().getNotifyHandshakeCallback();
     }
 
     public void showHandshakeSignalOnDebug(String signalName) {
@@ -1941,7 +1964,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public void persistentShutDown() {
-        syncDelegate.get().shutdownSync();
+        syncRepository.get().shutdownSync();
         forceSaveAppSettings();
     }
 
