@@ -80,27 +80,20 @@
         android:key="pep_global"
         android:title="@string/privacy_preferences">
 
-        <PreferenceCategory
-            android:key="advanced_pep_global"
-            app:allowDividerAbove="false"
-            app:initialExpandedChildrenCount="0">
+        <SwitchPreferenceCompat
+            android:key="pep_use_passphrase_for_new_keys"
+            android:title="@string/passhphrase_new_keys_settings_title" />
 
-            <SwitchPreferenceCompat
-                android:key="pep_use_passphrase_for_new_keys"
-                android:title="@string/passhphrase_new_keys_settings_title" />
+        <SwitchPreferenceCompat
+            android:key="pep_enable_sync"
+            android:summaryOff="@string/pep_sync_is_disabled_global"
+            android:summaryOn="@string/pep_sync_is_enabled_global"
+            android:title="@string/enable_planck_sync" />
 
-            <SwitchPreferenceCompat
-                android:key="pep_enable_sync"
-                android:summaryOff="@string/pep_sync_is_disabled_global"
-                android:summaryOn="@string/pep_sync_is_enabled_global"
-                android:title="@string/enable_planck_sync" />
-
-            <Preference
-                android:key="planck_key_sync"
-                android:summary="@string/planck_key_sync_device_summary"
-                android:title="@string/sync_title" />
-
-        </PreferenceCategory>
+        <Preference
+            android:key="planck_key_sync"
+            android:summary="@string/planck_key_sync_device_summary"
+            android:title="@string/sync_title" />
 
     </PreferenceScreen>
 
