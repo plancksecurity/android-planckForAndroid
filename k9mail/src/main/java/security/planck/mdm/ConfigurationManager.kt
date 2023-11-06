@@ -66,20 +66,7 @@ class ConfigurationManager @Inject constructor(
                     if (!isProvisionAvailable(restrictions)) {
                         throw ProvisioningFailedException("Provisioning data is missing")
                     }
-                    entries = restrictionsManager.manifestRestrictions
-                        // ignore media keys from MDM before PlanckProvider has been initialized
-                        .filter { it.key in PROVISIONING_RESTRICTIONS }
-                        .modifyItems( // filter account settings needed
-                            findItem = { it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS }
-                        ) { item ->
-                            item.apply {
-                                this.restrictions.first().apply {
-                                    this.restrictions = this.restrictions.filter {
-                                        it.key in ACCOUNT_PROVISIONING_RESTRICTIONS
-                                    }.toTypedArray()
-                                }
-                            }
-                        }
+                    entries = provisioningEntries
                 }
 
                 ProvisioningScope.InitializedEngine -> {
@@ -103,6 +90,22 @@ class ConfigurationManager @Inject constructor(
             saveAccounts()
         }
     }
+
+    private val provisioningEntries
+        get() = restrictionsManager.manifestRestrictions
+            // ignore media keys from MDM before PlanckProvider has been initialized
+            .filter { it.key in PROVISIONING_RESTRICTIONS }
+            .modifyItems( // filter account settings needed
+                findItem = { it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS }
+            ) { item ->
+                item.apply {
+                    this.restrictions.first().apply {
+                        this.restrictions = this.restrictions.filter {
+                            it.key in ACCOUNT_PROVISIONING_RESTRICTIONS
+                        }.toTypedArray()
+                    }
+                }
+            }
 
     private fun isProvisionAvailable(restrictions: Bundle): Boolean {
         return restrictions.keySet().containsAll(
