@@ -93,7 +93,7 @@
                 android:key="pep_enable_sync"
                 android:summaryOff="@string/pep_sync_is_disabled_global"
                 android:summaryOn="@string/pep_sync_is_enabled_global"
-                android:title="@string/pep_sync" />
+                android:title="@string/enable_planck_sync" />
 
             <Preference
                 android:key="planck_key_sync"
