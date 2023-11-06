@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.DispatcherProvider
+import com.fsck.k9.planck.infrastructure.extensions.modifyItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,6 +69,17 @@ class ConfigurationManager @Inject constructor(
                     entries = restrictionsManager.manifestRestrictions
                         // ignore media keys from MDM before PlanckProvider has been initialized
                         .filter { it.key in PROVISIONING_RESTRICTIONS }
+                        .modifyItems( // filter account settings needed
+                            findItem = { it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS }
+                        ) { item ->
+                            item.apply {
+                                this.restrictions.first().apply {
+                                    this.restrictions = this.restrictions.filter {
+                                        it.key in ACCOUNT_PROVISIONING_RESTRICTIONS
+                                    }.toTypedArray()
+                                }
+                            }
+                        }
                 }
 
                 ProvisioningScope.InitializedEngine -> {
@@ -77,7 +89,7 @@ class ConfigurationManager @Inject constructor(
 
                 ProvisioningScope.AllAccountSettings -> {
                     entries = restrictionsManager.manifestRestrictions.filter {
-                        it.key in ALL_ACCOUNT_RESTRICTIONS
+                        it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
                     }
                 }
 
@@ -95,9 +107,11 @@ class ConfigurationManager @Inject constructor(
     private fun isProvisionAvailable(restrictions: Bundle): Boolean {
         return restrictions.keySet().containsAll(
             setOf(
-                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+                RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
             )
-        )
+        ) && (restrictions.getParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS)
+            ?.firstOrNull() as? Bundle)
+            ?.containsKey(RESTRICTION_ACCOUNT_MAIL_SETTINGS) ?: false
     }
 
     private fun mapRestrictions(
