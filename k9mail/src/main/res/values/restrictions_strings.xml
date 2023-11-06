@@ -102,4 +102,8 @@
     <string name="value_restriction_description">Value for this setting</string>
     <string name="locked_restriction_title">Locked</string>
     <string name="locked_restriction_description">Whether this setting is locked so user cannot manually change it on the app.</string>
+    <string name="planck_accounts_settings_description">Accounts in the app. At least one account is needed to start the app.</string>
+    <string name="planck_accounts_settings_title">Accounts</string>
+    <string name="planck_account_settings_description">Settings for this account.</string>
+    <string name="planck_account_settings_title">Account</string>
 </resources>
