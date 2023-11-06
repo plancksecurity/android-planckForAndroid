@@ -25,6 +25,8 @@ const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION = "audit_log_data_time_reten
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE = "audit_log_data_time_retention_value"
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED = "audit_log_data_time_retention_locked"
 
+const val RESTRICTION_PLANCK_ACCOUNTS_SETTINGS = "planck_accounts_settings"
+const val RESTRICTION_PLANCK_ACCOUNT_SETTINGS = "planck_account_settings"
 const val RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION = "planck_enable_privacy_protection"
 const val RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE = "planck_enable_privacy_protection_value"
 const val RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED = "planck_enable_privacy_protection_locked"
