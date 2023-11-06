@@ -63,6 +63,9 @@ class ConfiguredSettingsUpdater @Inject constructor(
             RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
                 saveUnsecureDeliveryWarning(restrictions, entry)
 
+            RESTRICTION_ENABLE_PLANCK_SYNC ->
+                saveEnablePlanckSync(restrictions, entry)
+
             RESTRICTION_PLANCK_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
 
@@ -110,6 +113,17 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
                 saveAccountMailSettings(restrictions, entry)
+        }
+    }
+
+    private fun saveEnablePlanckSync(restrictions: Bundle, entry: RestrictionEntry) {
+        saveBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_ENABLE_PLANCK_SYNC_VALUE,
+            lockedKey = RESTRICTION_ENABLE_PLANCK_SYNC_LOCKED
+        ) {
+            k9.setPlanckSyncEnabled(it)
         }
     }
 

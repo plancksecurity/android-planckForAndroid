@@ -169,6 +169,7 @@
     <string name="key_import_reject">Reject</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
     <string name="pep_sync">planck Sync</string>
+    <string name="enable_planck_sync">Enable planck Sync</string>
     <string name="pep_sync_enable_account">planck Sync this account</string>
     <string name="pep_sync_is_enabled_global">planck Sync is enabled</string>
     <string name="pep_sync_is_disabled_global">planck Sync is disabled</string>
