@@ -210,26 +210,29 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 provisioningSettings.accountDescription = it
             }
         }
-        val firstAccount = preferences.accounts.firstOrNull() ?: return
-        var (value: String?, locked: Boolean) = firstAccount.lockableDescription
+        val allowModifyCurrentAccountsProvisioningSettings = !restrictions.getBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION)
+        if (allowModifyCurrentAccountsProvisioningSettings) {
+            val firstAccount = preferences.accounts.firstOrNull() ?: return
+            var (value: String?, locked: Boolean) = firstAccount.lockableDescription
 
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_ACCOUNT_DESCRIPTION_VALUE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        default = { firstAccount.email }
-                    ) {
-                        value = it
-                    }
+            entry.restrictions.forEach { restriction ->
+                when (restriction.key) {
+                    RESTRICTION_ACCOUNT_DESCRIPTION_VALUE ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            default = { firstAccount.email }
+                        ) {
+                            value = it
+                        }
 
-                RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED ->
-                    locked = getBooleanOrDefault(bundle, restriction)
+                    RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED ->
+                        locked = getBooleanOrDefault(bundle, restriction)
+                }
             }
-        }
-        preferences.accounts.forEach {
-            it.setDescription(ManageableSetting(value = value, locked = locked))
+            preferences.accounts.forEach {
+                it.setDescription(ManageableSetting(value = value, locked = locked))
+            }
         }
     }
 

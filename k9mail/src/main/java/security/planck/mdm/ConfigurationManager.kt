@@ -67,6 +67,12 @@ class ConfigurationManager @Inject constructor(
                         throw ProvisioningFailedException("Provisioning data is missing")
                     }
                     entries = provisioningEntries
+                    restrictions.putBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION, true)
+                }
+
+                ProvisioningScope.Startup -> {
+                    entries = provisioningEntries
+                    restrictions.putBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION, true)
                 }
 
                 ProvisioningScope.InitializedEngine -> {
