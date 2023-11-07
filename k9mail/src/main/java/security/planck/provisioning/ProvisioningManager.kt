@@ -93,7 +93,7 @@ class ProvisioningManager @Inject constructor(
         }
         areProvisionedMailSettingsInvalid() -> {
             Log.e("MDM", "mail settings not valid: " +
-                    "${provisioningSettings.provisionedMailSettings}")
+                    "${provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings}")
             Result.failure(
                 ProvisioningFailedException(
                     "Provisioned mail settings are not valid"
