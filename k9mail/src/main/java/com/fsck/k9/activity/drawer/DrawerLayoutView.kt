@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.BuildConfig
+import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -38,15 +39,19 @@ import security.planck.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import security.planck.foldable.folders.displayers.LevelItemActionListener
 import security.planck.foldable.folders.model.LevelListItem
 import security.planck.foldable.folders.util.LevelListBuilder
+import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.findNextAccountToInstall
 import security.planck.ui.PlanckUIUtils
 import security.planck.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
 
 class DrawerLayoutView @Inject constructor(
     @ActivityContext private val context: Context,
-    private var drawerFolderPopulator: DrawerFolderPopulator,
-    private var drawerLayoutPresenter: DrawerLayoutPresenter,
-    private var messagingController: MessagingController
+    private val drawerFolderPopulator: DrawerFolderPopulator,
+    private val drawerLayoutPresenter: DrawerLayoutPresenter,
+    private val messagingController: MessagingController,
+    private val provisioningSettings: ProvisioningSettings,
+    private val preferences: Preferences,
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -406,7 +411,7 @@ class DrawerLayoutView @Inject constructor(
             messageListView.editAccount()
         }
 
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_ENTERPRISE && provisioningSettings.findNextAccountToInstall(preferences) == null) {
             addAccountContainer.visibility = View.GONE
         } else {
             addAccountContainer.setOnClickListener {
