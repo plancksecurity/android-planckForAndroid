@@ -723,16 +723,16 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             realAccount?.let {
                 when (item.itemId) {
                     R.id.delete_account -> onDeleteAccount(it)
-                    R.id.account_settings -> onEditAccount(it)
-                    R.id.activate -> onActivateAccount(it)
-                    R.id.clear_pending -> onClearCommands(it)
-                    R.id.empty_trash -> onEmptyTrash(it)
-                    R.id.clear -> onClear(it)
-                    R.id.recreate -> onRecreate(it)
-                    R.id.export -> onExport(false, it)
-                    R.id.move_up -> onMove(it, true)
-                    R.id.move_down -> onMove(it, false)
-                    R.id.import_PGP_key_from_SD -> onImportPGPKeyFromFileSystem(it)
+                    //R.id.account_settings -> onEditAccount(it)
+                    //R.id.activate -> onActivateAccount(it)
+                    //R.id.clear_pending -> onClearCommands(it)
+                    //R.id.empty_trash -> onEmptyTrash(it)
+                    //R.id.clear -> onClear(it)
+                    //R.id.recreate -> onRecreate(it)
+                    //R.id.export -> onExport(false, it)
+                    //R.id.move_up -> onMove(it, true)
+                    //R.id.move_down -> onMove(it, false)
+                    //R.id.import_PGP_key_from_SD -> onImportPGPKeyFromFileSystem(it)
                 }
             }
 
@@ -826,12 +826,12 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
                 item.isVisible = false
             }
         } else {
-            val accountLocation = accountLocation(account)
-            menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.TOP)
-            menu.findItem(R.id.move_down).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)
+            //val accountLocation = accountLocation(account)
+            //menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.TOP)
+            //menu.findItem(R.id.move_down).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)
         }
         if (syncRepository.isGrouped) {
-            menu.findItem(R.id.import_PGP_key_from_SD)?.isEnabled = false
+            //menu.findItem(R.id.import_PGP_key_from_SD)?.isEnabled = false
         }
     }
 
