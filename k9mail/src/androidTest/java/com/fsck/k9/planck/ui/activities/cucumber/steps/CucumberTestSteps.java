@@ -86,8 +86,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.planck.ui.activities.TestUtils.json;
-import static com.fsck.k9.planck.ui.activities.TestUtils.swipeDownList;
-import static com.fsck.k9.planck.ui.activities.TestUtils.swipeDownScreen;
 import static com.fsck.k9.planck.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.exists;
@@ -99,7 +97,6 @@ import static com.fsck.k9.planck.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -390,7 +387,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(1);
         String address = "@any.mail";
         if (isBot) {
-            address = "@bot.planck.dev";
+            address = "@sq.pep.security";
         }
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (int loop = 0; loop < recipients; loop++) {
@@ -617,7 +614,7 @@ public class CucumberTestSteps {
 
     @When("^I compare (\\S+) from json file with (\\S+)")
     public void I_compare_json_file_with_string(String name, String stringToCompare) {
-        waitForIdle();
+        timeRequiredForThisMethod(10);
         TestUtils.getJSONObject(name);
         switch (name) {
             case "rating":
@@ -630,9 +627,7 @@ public class CucumberTestSteps {
                 }
             case "messageBody":
                 if (stringToCompare.contains("longText")) {
-                    while (!stringToCompare.equals(testUtils.longText())) {
-                        stringToCompare = testUtils.longText();
-                    }
+                    stringToCompare = testUtils.longText();
                 }
                 if (json == null || json.equals("")) {
                     BySelector selector = By.clazz("android.widget.MessageWebView");
@@ -656,32 +651,6 @@ public class CucumberTestSteps {
         testUtils.compareMessageBodyWithText(cucumberBody);
     }
 
-    @When("^I save (\\S+) from JSON")
-    public void I_save_from_JSON(String fieldName) {
-        try {
-            testUtils.saveFromJSON(fieldName);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @When("^I save (\\S+) from JSON of (\\d+) messages")
-    public void I_save_from_JSON_of_messages(String fieldName, int messages) {
-        StringBuilder savedJSON = new StringBuilder();
-        for (int i = 0; i < messages; i++) {
-            I_send_message_to_address(1, "bot1", "message " + (i + 1), "saving the field " + fieldName + " " + messages + " times.");
-            I_click_the_last_message_received();
-            try {
-                savedJSON.append(testUtils.saveFromJSON(fieldName) + "\n");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            testUtils.pressBack();
-        }
-        Timber.i("***** " + fieldName + " saved from " + messages + " messages *****");
-        Timber.i("***** " + "\n" + String.valueOf(savedJSON));
-    }
-
     @When("^I check that the Calendar is correct and body text is (\\S+)")
     public void I_check_calendar(String bodyText) {
         timeRequiredForThisMethod(10);
@@ -690,7 +659,7 @@ public class CucumberTestSteps {
         waitForIdle();
         if (!getTextFromView(onView(withId(R.id.eventSummary))).equals("EVENT FINDE") ||
                 !getTextFromView(onView(withId(R.id.eventLocation))).equals("KAME-HOUSE\n" +
-                        "Southern Island, NBI 8250012 B, https://www.planck.security") ||
+                        "Southern Island, NBI 8250012 B, https://www.pep.security") ||
                 !getTextFromView(onView(withId(R.id.eventTime))).contains("Sat Nov 13") ||
                 !getTextFromView(onView(withId(R.id.shortInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
                         "Master Roshi (turtle@mail.es)\n" +
@@ -707,15 +676,15 @@ public class CucumberTestSteps {
         }
         waitForIdle();
         ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
-        onView(withId(R.id.eventLocation)).perform(openLinkWithText("https://www.planck.security"));
+        onView(withId(R.id.eventLocation)).perform(openLinkWithText("https://www.pep.security"));
         waitForIdle();
         for (int i = 0; i < 1500; i++) {
             waitForIdle();
         }
-        if (testUtils.textExistsOnScreen("EVENT FINDE")) {
+        if (testUtils.textExistsOnScreen("https://www.pep.security")) {
             fail("URLs has not been clicked");
         }
-        while (!testUtils.textExistsOnScreen("EVENT FINDE")) {
+        while (!testUtils.textExistsOnScreen("https://www.pep.security")) {
             device.pressBack();
             waitForIdle();
         }
@@ -724,10 +693,8 @@ public class CucumberTestSteps {
         if (viewIsDisplayed(calendarButton)) {
             fail("Calendar Button is not openning the calendar");
         }
-        while (!viewIsDisplayed(calendarButton)) {
-            device.pressBack();
-            waitForIdle();
-        }
+        device.pressBack();
+        waitForIdle();
         if (!viewIsDisplayed(calendarButton)) {
             fail("Calendar Button???");
         }
@@ -837,7 +804,7 @@ public class CucumberTestSteps {
     @When("^I reset partner key$")
     public void I_reset_partner_key() {
         waitForIdle();
-        testUtils.selectFromMenu(testUtils.stringToID("reset_partner_key_action"));
+        testUtils.selectFromMenu(testUtils.stringToID("reset_sender_key_action"));
         waitForIdle();
         onView(withId(R.id.acceptButton)).perform(click());
         waitForIdle();
@@ -1308,7 +1275,6 @@ public class CucumberTestSteps {
     @When("^I reset own key$")
     public void I_reset_own_key() {
         testUtils.selectFromMenu(R.string.action_settings);
-        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
         testUtils.selectFromScreen(testUtils.stringToID("reset"));
         testUtils.pressOKButtonInDialog();
         try {
@@ -1316,8 +1282,6 @@ public class CucumberTestSteps {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        testUtils.pressBack();
-        waitForIdle();
         testUtils.pressBack();
         waitForIdle();
 
@@ -1629,13 +1593,12 @@ public class CucumberTestSteps {
 
     @When("^I check the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
-        waitForIdle();
-        checkPrivacyStatus(status);
+        timeRequiredForThisMethod(20);
+         checkPrivacyStatus(status);
         waitForIdle();
     }
 
     private void checkPrivacyStatus(String status) {
-        waitForIdle();
         if (!status.equals("Undefined")) {
             while (!viewIsDisplayed(R.id.securityStatusIcon)) {
                 try {
@@ -1766,8 +1729,7 @@ public class CucumberTestSteps {
         int scroll = 0;
         int visibleCenterX = 0;
         boolean verticalLeftScroll = true;
-        int totalWidgets = 2;
-        for (int widgetToDrag = 1; widgetToDrag <= totalWidgets; widgetToDrag++) {
+        for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             waitForIdle();
             device.pressBack();
             String text;
@@ -1777,6 +1739,9 @@ public class CucumberTestSteps {
                     break;
                 case 2:
                     text = brand + " Message List";
+                    break;
+                case 3:
+                    text = brand + " Accounts";
                     break;
                 default:
                     text = brand;
@@ -1903,7 +1868,7 @@ public class CucumberTestSteps {
                 }
             }
         }
-        if (widgets != totalWidgets) {
+        if (widgets != 3) {
             fail("Missing a Widget");
         }
         if (!testUtils.textExistsOnScreen("WidTest")) {
@@ -1948,14 +1913,9 @@ public class CucumberTestSteps {
                 fail("Cannot find the folder: " + folder);
         }
         waitForIdle();
-        //testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
-        //waitForIdle();
+        testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
+        waitForIdle();
         testUtils.selectFromMenu(testUtils.stringToID(action));
-        while (!testUtils.textExistsOnScreen(resources.getString(testUtils.stringToID(folder)))) {
-            waitForIdle();
-            swipeDownList();
-            waitForIdle();
-        }
         waitForIdle();
         testUtils.selectFromScreen(testUtils.stringToID(folder));
         waitForIdle();
@@ -2337,46 +2297,44 @@ public class CucumberTestSteps {
 
     @When("^I go to (\\S+) folder from navigation menu")
     public void I_go_to_folder_from_navigation_menu(String folder) {
-        while (!getTextFromView(onView(withId(R.id.actionbar_title_first))).toLowerCase().contains(folder.toLowerCase())) {
-            int folderID = 0;
-            switch (folder) {
-                case "inbox":
-                case "Inbox":
-                    folderID = R.string.special_mailbox_name_inbox;
-                    break;
-                case "drafts":
-                case "Drafts":
-                    folderID = R.string.special_mailbox_name_drafts;
-                    break;
-                case "sent":
-                case "Sent":
-                    folderID = R.string.special_mailbox_name_sent;
-                    break;
-                case "outbox":
-                case "Outbox":
-                    folderID = R.string.special_mailbox_name_outbox;
-                    break;
-                case "spam":
-                case "Spam":
-                    folderID = R.string.special_mailbox_name_spam;
-                    break;
-                case "trash":
-                case "Trash":
-                    folderID = R.string.special_mailbox_name_trash;
-                    break;
-                case "archive":
-                case "Archive":
-                    folderID = R.string.special_mailbox_name_archive;
-                    break;
+        int folderID = 0;
+        switch (folder){
+            case "inbox":
+            case "Inbox":
+                folderID = R.string.special_mailbox_name_inbox;
+                break;
+            case "drafts":
+            case "Drafts":
+                folderID = R.string.special_mailbox_name_drafts;
+                break;
+            case "sent":
+            case "Sent":
+                folderID = R.string.special_mailbox_name_sent;
+                break;
+            case "outbox":
+            case "Outbox":
+                folderID = R.string.special_mailbox_name_outbox;
+                break;
+            case "spam":
+            case "Spam":
+                folderID = R.string.special_mailbox_name_spam;
+                break;
+            case "trash":
+            case "Trash":
+                folderID = R.string.special_mailbox_name_trash;
+                break;
+            case "archive":
+            case "Archive":
+                folderID = R.string.special_mailbox_name_archive;
+                break;
 
-            }
-            testUtils.openHamburgerMenu();
-            if (folder.equals("Suspicious") || folder.equals("suspicious")) {
-                testUtils.scrollUpNavigation();
-                testUtils.selectFromScreen("Suspicious");
-            } else {
-                testUtils.selectFromScreen(folderID);
-            }
+        }
+        testUtils.openHamburgerMenu();
+        if (folder.equals("Suspicious")||folder.equals("suspicious")) {
+            testUtils.scrollUpNavigation();
+            testUtils.selectFromScreen("Suspicious");
+        } else {
+            testUtils.selectFromScreen(folderID);
         }
     }
 
@@ -2634,7 +2592,7 @@ public class CucumberTestSteps {
             default:
                 break;
         }
-        //testUtils.selectFromMenu(R.string.single_message_options_action);
+        testUtils.selectFromMenu(R.string.single_message_options_action);
         testUtils.clickTextOnScreen(R.string.compose_title_forward);
         I_enter_text_in_field(testUtils.getFormatAccount(), "messageTo");
         //I_fill_subject_field("New");
@@ -3115,7 +3073,7 @@ public class CucumberTestSteps {
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
         waitForIdle();
-        while (!testUtils.textExistsOnScreen(resources.getString(testUtils.stringToID("save_or_discard_draft_message_instructions_fmt")))) {
+        while (!testUtils.textExistsOnScreen(resources.getString(R.string.discard_action))) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
