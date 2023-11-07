@@ -70,9 +70,9 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun updateUiFromProvisioningSettings() {
-        provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings?.let { mailSettings ->
+        accountProvisioningSettings?.provisionedMailSettings?.let { mailSettings ->
             binding.pleaseChooseSignInOption.isVisible = false
-            val buttonsToHide = getButtonsToHide(mailSettings, provisioningSettings.accountsProvisionList.firstOrNull()?.oAuthType)
+            val buttonsToHide = getButtonsToHide(mailSettings, accountProvisioningSettings?.oAuthType)
             hideViews(*buttonsToHide)
         }
     }

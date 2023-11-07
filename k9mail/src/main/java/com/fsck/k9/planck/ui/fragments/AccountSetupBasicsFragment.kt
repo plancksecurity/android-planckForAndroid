@@ -112,9 +112,9 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun updateUiFromProvisioningSettings() {
-        emailView.setText(provisioningSettings.accountsProvisionList.firstOrNull()?.email)
+        emailView.setText(accountProvisioningSettings?.email)
         emailView.isFocusable = false
-        val provisionSettings = provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings
+        val provisionSettings = accountProvisioningSettings?.provisionedMailSettings
         if (provisionSettings != null) {
             val isExternalAuth =
                 provisionSettings.incoming.authType === security.planck.mdm.AuthType.EXTERNAL

@@ -21,7 +21,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.provisioning.AccountProvisioningSettings
 import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.findNextAccountToInstall
 import security.planck.ui.toolbar.ToolBarCustomizer
 import timber.log.Timber
 import java.net.URISyntaxException
@@ -50,6 +52,10 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
 
     @Inject
     lateinit var k9: K9
+
+    protected val accountProvisioningSettings: AccountProvisioningSettings? by lazy {
+        provisioningSettings.findNextAccountToInstall(preferences)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,8 +144,8 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         if (k9.isRunningOnWorkProfile) {
             account.name = account.name ?: email
             account.description =
-                if (!Utility.isNullOrBlank(provisioningSettings.accountsProvisionList.firstOrNull()?.accountDescription))
-                    provisioningSettings.accountsProvisionList.firstOrNull()?.accountDescription
+                if (!Utility.isNullOrBlank(accountProvisioningSettings?.accountDescription))
+                    accountProvisioningSettings?.accountDescription
                 else email
         }
         return account
@@ -168,7 +174,7 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         get() {
             var name = ""
             if (k9.isRunningOnWorkProfile) {
-                provisioningSettings.accountsProvisionList.firstOrNull()?.senderName?.let {
+                accountProvisioningSettings?.senderName?.let {
                     name = it
                 }
             } else {
