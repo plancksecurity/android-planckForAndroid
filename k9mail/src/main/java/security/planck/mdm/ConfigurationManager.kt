@@ -83,6 +83,18 @@ class ConfigurationManager @Inject constructor(
                 ProvisioningScope.AllSettings -> {
                     entries = restrictionsManager.manifestRestrictions
                 }
+
+                is ProvisioningScope.SingleAccountSettings -> {
+                    entries = restrictionsManager.manifestRestrictions.filter {
+                        it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+                    }
+                    restrictions.getParcelableArray(
+                        RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+                    )?.filter {
+                        (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)?.getString(
+                            RESTRICTION_ACCOUNT_EMAIL_ADDRESS) == provisioningScope.email
+                    }.also { restrictions.putParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS, it?.toTypedArray()) }
+                }
             }
 
             mapRestrictions(entries, restrictions)
