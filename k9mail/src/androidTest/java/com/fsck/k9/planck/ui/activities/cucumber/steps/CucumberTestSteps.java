@@ -36,7 +36,6 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.EspressoTestingIdlingResource;
 import com.fsck.k9.planck.ui.activities.SplashActivity;
 import com.fsck.k9.planck.ui.activities.TestUtils;
-//import com.fsck.k9.planck.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +49,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
@@ -66,7 +64,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
-import security.planck.mdm.MailSettings;
 import timber.log.Timber;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
@@ -100,7 +97,6 @@ import static com.fsck.k9.planck.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -633,7 +629,7 @@ public class CucumberTestSteps {
                 if (stringToCompare.contains("longText")) {
                     stringToCompare = testUtils.longText();
                 }
-                if (json == null) {
+                if (json == null || json.equals("")) {
                     BySelector selector = By.clazz("android.widget.MessageWebView");
                     for (UiObject2 object : device.findObjects(selector)) {
                         if (!object.getText().contains(stringToCompare)) {
@@ -791,12 +787,12 @@ public class CucumberTestSteps {
     public void I_click_mistrust_words() {
         timeRequiredForThisMethod(30);
         testUtils.goToHandshakeDialog();
-        testUtils.waitForView(R.id.rejectHandshake);
-        onView(withId(R.id.rejectHandshake)).perform(click());
+        testUtils.waitForView(R.id.negativeActionButton);
+        onView(withId(R.id.negativeActionButton)).perform(click());
         waitForIdle();
-        onView(withId(R.id.acceptButton)).perform(click());
+        onView(withId(R.id.afirmativeActionButton)).perform(click());
         waitForIdle();
-        onView(withId(R.id.cancelButton)).perform(click());
+        onView(withId(R.id.afirmativeActionButton)).perform(click());
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -846,8 +842,9 @@ public class CucumberTestSteps {
     private void confirmAllTrustWords(JSONArray array) {
         checkTrustWords(array, "short");
         waitForIdle();
-        onView(withId(R.id.trustwords)).perform(click());
+        onView(withId(R.id.show_long_trustwords)).perform(click());
         checkTrustWords(array, "long");
+        waitForIdle();
     }
 
     private void checkTrustWords(JSONArray array, String words) {
@@ -855,18 +852,17 @@ public class CucumberTestSteps {
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             waitForIdle();
-            Espresso.onIdle();
-            onView(withId(R.id.change_language)).perform(click());
+            testUtils.openOptionsMenu();
             if (size == 1) {
                 size = calculateNewSize(size, selector);
             }
             waitForIdle();
-            Espresso.onIdle();
             selectLanguage(positionToClick, size, selector);
+            waitForIdle();
             if (words.equals("short")) {
-                getTrustWords(R.id.shortTrustwords);
+                getTrustWords();
             } else {
-                getTrustWords(R.id.longTrustwords);
+                getTrustWords();
             }
             assertTextInJSONArray(trustWords, array, words);
         }
@@ -960,15 +956,17 @@ public class CucumberTestSteps {
         }
     }
 
-    private void getTrustWords(int trustWordsId) {
-        do {
-            try {
-                waitForIdle();
-                trustWords = getTextFromView(onView(withId(trustWordsId)));
-            } catch (Exception ex) {
-                Timber.i("Cannot find trustWords: " + ex.getMessage());
+    private void getTrustWords() {
+        waitForIdle();
+        BySelector acceptButton = By.clazz("android.widget.TextView");
+        while (true) {
+            for (UiObject2 object : device.findObjects(acceptButton)) {
+                if (object.getResourceName() != null && object.getResourceName().equals("security.planck.test.enterprise.debug:id/trustwords")) {
+                    trustWords = object.getText();
+                    return;
+                }
             }
-        } while (trustWords == null);
+        }
     }
 
     private void checkWordIsInText(String[] arrayToCompare, String webViewText) {
@@ -1034,44 +1032,30 @@ public class CucumberTestSteps {
     public void I_click_stop_trusting_words() {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
-        testUtils.waitForView(R.id.rejectHandshake);
-        onView(withId(R.id.rejectHandshake)).perform(click());
         waitForIdle();
-        onView(withId(R.id.acceptButton)).perform(click());
-        waitForIdle();
-        onView(withId(R.id.cancelButton)).perform(click());
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        testUtils.clickNegativeButton();
+        testUtils.clickAfirmativeButton();
+        testUtils.clickAfirmativeButton();
+        for (int i = 0; i < 500; i++) {
+            waitForIdle();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        waitForIdle();
     }
 
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
-        while (!viewIsDisplayed(R.id.confirmHandshake)) {
-            TestUtils.swipeUpScreen();
-        }
-        while (!exists(onView(withId(R.id.confirmHandshake)))) {
-            waitForIdle();
-        }
-        onView(withId(R.id.confirmHandshake)).check(matches(isCompletelyDisplayed()));
-        while (exists(onView(withId(R.id.confirmHandshake)))) {
-            onView(withId(R.id.confirmHandshake)).perform(click());
-            waitForIdle();
-            onView(withId(R.id.acceptButton)).perform(click());
-            waitForIdle();
-            onView(withId(R.id.cancelButton)).perform(click());
-            waitForIdle();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        waitForIdle();
+        //onView(withId(R.id.affirmativeActionButton)).check(matches(isCompletelyDisplayed()));
+
+        testUtils.clickAfirmativeButton();
+        testUtils.clickAfirmativeButton();
+        testUtils.clickAfirmativeButton();
         for (int i = 0; i < 500; i++) {
             waitForIdle();
             try {
@@ -2346,7 +2330,12 @@ public class CucumberTestSteps {
 
         }
         testUtils.openHamburgerMenu();
-        testUtils.selectFromScreen(folderID);
+        if (folder.equals("Suspicious")||folder.equals("suspicious")) {
+            testUtils.scrollUpNavigation();
+            testUtils.selectFromScreen("Suspicious");
+        } else {
+            testUtils.selectFromScreen(folderID);
+        }
     }
 
 
