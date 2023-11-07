@@ -19,6 +19,10 @@ class ProvisioningSettings @Inject constructor() {
     fun getAccountSettingsByAddress(address: String): AccountProvisioningSettings? =
         accountsProvisionList.find { it.email == address }
 
+    fun removeAccountSettingsByAddress(address: String) {
+        accountsProvisionList.removeIf { it.email == address }
+    }
+
     fun modifyOrAddAccountSettingsByAddress(
         address: String,
         change: (AccountProvisioningSettings) -> Unit

@@ -58,12 +58,24 @@ class ProvisioningManager @Inject constructor(
 
             else -> {
                 firstStartup = preferences.accounts.isEmpty()
-                configurationManager.loadConfigurationsSuspend(
+                configurationManager.loadConfigurationsSuspend( // TODO: Should we check if the device is online on every startup? If we are online the app is supposed to keep last restrictions it has so it should not be needed.
                     if (firstStartup) ProvisioningScope.FirstStartup
                     else ProvisioningScope.Startup
-                ).flatMapSuspend {
+                ).mapCatching {
+                    removeAccountsRemovedFromMDM()
+                }.flatMapSuspend {
                     finalizeSetupAfterChecks()
                 }
+            }
+        }
+    }
+
+    private fun removeAccountsRemovedFromMDM() {
+        if (!firstStartup) {
+            provisioningSettings.findAccountsToRemove(preferences).forEach { account ->
+                account.localStore.delete()
+                preferences.deleteAccount(account)
+                provisioningSettings.removeAccountSettingsByAddress(account.email)
             }
         }
     }
@@ -80,12 +92,12 @@ class ProvisioningManager @Inject constructor(
     }
 
     private suspend fun finalizeSetupAfterChecks(): Result<Unit> {
-        return performChecks().flatMapSuspend {
+        return performChecksAfterProvisioning().flatMapSuspend {
             finalizeSetup(true)
         }
     }
 
-    private fun performChecks(): Result<Unit> = when {
+    private fun performChecksAfterProvisioning(): Result<Unit> = when {
         !isDeviceOnline() -> {
             Result.failure(ProvisioningFailedException("Device is offline"))
         }

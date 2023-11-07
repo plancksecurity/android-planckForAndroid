@@ -1,6 +1,7 @@
 package security.planck.provisioning
 
 import android.util.Patterns
+import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
@@ -41,3 +42,9 @@ fun ProvisioningSettings.findNextAccountToInstall(
     accountsProvisionList.firstOrNull {
         it.email !in preferences.accounts.map { account -> account.email }
     }
+
+fun ProvisioningSettings.findAccountsToRemove(
+    preferences: Preferences
+): List<Account> = preferences.accounts.filter { account ->
+    account.email != null && accountsProvisionList.none { it.email == account.email }
+}
