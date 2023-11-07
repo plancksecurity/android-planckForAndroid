@@ -1207,7 +1207,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun updatedRestrictions() {
-        //refresh() todo something similar is needed
         setupAddAccountButton()
         val fragment = supportFragmentManager
             .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
