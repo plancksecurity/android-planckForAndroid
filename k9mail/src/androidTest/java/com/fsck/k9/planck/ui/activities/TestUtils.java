@@ -57,7 +57,6 @@ import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
 import com.fsck.k9.BuildConfig;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
@@ -71,7 +70,6 @@ import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -126,7 +124,6 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.planck.ui.activities.UtilsPackage.forceFail;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.saveSizeInInt;
@@ -1031,6 +1028,32 @@ public class TestUtils {
         clickStatus();
         doWaitForResource(R.id.toolbar);
         clickHandShakeButton();
+    }
+
+    public void clickAfirmativeButton () {
+        BySelector acceptButton = By.clazz("android.widget.Button");
+        while (true) {
+            for (UiObject2 object : device.findObjects(acceptButton)) {
+                if (object.getResourceName() != null && object.getResourceName().equals("security.planck.test.enterprise.debug:id/afirmativeActionButton")) {
+                    object.click();
+                    waitForIdle();
+                    return;
+                }
+            }
+        }
+    }
+
+    public void clickNegativeButton () {
+        BySelector acceptButton = By.clazz("android.widget.Button");
+        while (true) {
+            for (UiObject2 object : device.findObjects(acceptButton)) {
+                if (object.getResourceName() != null && object.getResourceName().equals("security.planck.test.enterprise.debug:id/negativeActionButton")) {
+                    object.click();
+                    waitForIdle();
+                    return;
+                }
+            }
+        }
     }
 
     public void resetHandshake() {
@@ -2405,7 +2428,14 @@ public class TestUtils {
         if (viewIsDisplayed(R.id.securityStatusText)) {
             waitForIdle();
             onView(withId(R.id.securityStatusText)).check(matches(isDisplayed()));
-            onView(withId(R.id.securityStatusText)).perform(click());
+            waitForIdle();
+            while (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                try {
+                    onView(withId(R.id.securityStatusText)).perform(click());
+                } catch (Exception exception) {
+                    waitForIdle();
+                }
+            }
         }
         waitForIdle();
     }
@@ -2939,9 +2969,11 @@ public class TestUtils {
                             return;
                     }
                 } catch (Exception ex) {
-                    Timber.i("Cannot find text on screen: " + ex);
+                    Timber.i("Cannot find text " + text +" on the screen: " + ex);
                 }
             }
+            swipeUpScreen();
+            waitForIdle();
         }
     }
 
@@ -3559,8 +3591,7 @@ public class TestUtils {
                             Thread.sleep(2000);
                             downloadAttachedFile("results.json");
                             waitForIdle();
-                            String js = readJsonFile("results.json");
-                            json = new JSONObject(js);
+                            json = getJSON();
                         } catch (Exception ex) {
                             swipeUpScreen();
                             boolean jsonExists = false;
@@ -3588,6 +3619,16 @@ public class TestUtils {
         }
     }
 
+    private static JSONObject getJSON(){
+        try {
+            String js = readJsonFile("results.json");
+            JSONObject jsonObject = new JSONObject(js);
+            return jsonObject;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void downloadAttachedFile(String fileName) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
@@ -3599,6 +3640,24 @@ public class TestUtils {
                     object.getParent().getChildren().get(0).click();
                     waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+                    return;
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find text on screen: " + ex);
+            }
+        }
+    }
+
+    public void expandFolderFromNavigationMenu (String folderName) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        for (UiObject2 object : device.findObjects(selector)) {
+            try {
+                if (object.getText().equals(folderName)) {
+                    waitForIdle();
+                    object.getParent().getChildren().get(1).longClick();
+                    waitForIdle();
+                    //object.getParent().getChildren().get(1).click();
+                    waitForIdle();
                     return;
                 }
             } catch (Exception ex){
@@ -4126,6 +4185,18 @@ public class TestUtils {
         Espresso.onIdle();
         try {
             textView.dragTo(1000,1000,40);
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+        waitForIdle();
+    }
+
+    public void scrollUpNavigation (){
+        waitForIdle();
+        UiObject textView = device.findObject(new UiSelector().text("Inbox").className("android.widget.TextView"));
+        waitForIdle();
+        try {
+            textView.dragTo(1000,100,40);
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
@@ -4961,6 +5032,9 @@ public class TestUtils {
                 String keys = null;
                 while (keys == null) {
                     try {
+                        if (json == null) {
+                            json = getJSON();
+                        }
                         keys = json.getJSONObject("decryption_results").get(object).toString();
                     } catch (JSONException e) {
                         Timber.i("JSON file: " +e.getMessage());
@@ -4974,6 +5048,9 @@ public class TestUtils {
             case "rating":
             case "rating_string":
                 try {
+                    if (json == null) {
+                        json = getJSON();
+                    }
                     rating = json.getJSONObject("decryption_results").get(object).toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -4987,7 +5064,7 @@ public class TestUtils {
                         if (js.equals("no json file")) {
                             return;
                         }
-                        json = new JSONObject(js);
+                        json = getJSON();
                     }
                     json = json.getJSONObject("attributes");
                     object = "decrypted";
@@ -4996,6 +5073,9 @@ public class TestUtils {
                 }
             default:
                 try {
+                    if (json == null) {
+                        json = getJSON();
+                    }
                     json = json.getJSONObject(object);
                     Iterator x = json.keys();
                     jsonArray = new JSONArray();
