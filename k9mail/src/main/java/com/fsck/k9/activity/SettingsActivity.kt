@@ -20,6 +20,7 @@ import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.activity.viewModels
 import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
@@ -56,6 +57,8 @@ import kotlinx.coroutines.*
 import security.planck.mdm.RestrictionsViewModel
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
+import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.findNextAccountToInstall
 import security.planck.sync.SyncRepository
 import security.planck.ui.about.AboutActivity
 import security.planck.ui.intro.startOnBoarding
@@ -116,6 +119,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     lateinit var resourcesProvider: ResourcesProvider
     @Inject
     lateinit var syncRepository: SyncRepository
+    @Inject
+    lateinit var provisioningSettings: ProvisioningSettings
+    @Inject
+    lateinit var preferences: Preferences
+
     private val restrictionsViewModel: RestrictionsViewModel by viewModels()
 
     private val storageListener = object : StorageManager.StorageListener {
@@ -214,6 +222,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         bindViews(R.layout.accounts)
         accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
         termsAndConditionsTextView = findViewById<TextView>(R.id.terms_and_conditions)
+        addAccountButton = findViewById(R.id.add_account_container)
 
         termsAndConditionsTextView.text = HtmlCompat.fromHtml(
             "<a href=\"#\">Terms and Conditions</a>",
@@ -274,7 +283,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             }
         }
 
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!k9.isRunningOnWorkProfile) {
             registerForContextMenu(accountsList)
         }
 
@@ -315,11 +324,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun setupAddAccountButton() {
-        addAccountButton = findViewById(R.id.add_account_container)
 
-        if (BuildConfig.IS_ENTERPRISE) {
-            addAccountButton?.visibility = View.GONE
+        if (k9.isRunningOnWorkProfile && provisioningSettings.findNextAccountToInstall(preferences) == null) {
+            addAccountButton?.isVisible = false
         } else {
+            addAccountButton?.isVisible = true
             addAccountButton?.setOnClickListener { onAddNewAccount() }
         }
     }
@@ -1198,6 +1207,8 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun updatedRestrictions() {
+        //refresh() todo something similar is needed
+        setupAddAccountButton()
         val fragment = supportFragmentManager
             .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
         fragment?.refreshPreferences()
