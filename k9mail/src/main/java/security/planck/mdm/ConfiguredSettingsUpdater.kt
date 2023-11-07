@@ -262,6 +262,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
         val allowModifyCurrentAccountsProvisioningSettings =
             !restrictions.getBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION)
+        Log.e("EFA-150", "ALLOW MODIFY CURRENT ACCOUNT: $allowModifyCurrentAccountsProvisioningSettings")
         if (allowModifyCurrentAccountsProvisioningSettings) {
             val account = preferences.accounts.find { it.email == accountEmail } ?: return
             var (value: String?, locked: Boolean) = account.lockableDescription // take current value as default

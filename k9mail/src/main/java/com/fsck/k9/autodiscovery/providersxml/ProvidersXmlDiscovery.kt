@@ -24,7 +24,7 @@ class ProvidersXmlDiscovery @Inject constructor(
 ) : ConnectionSettingsDiscovery {
 
     private val provisionedProvider: Provider?
-        get() = provisioningSettings.provisionedMailSettings?.let { mailSettings ->
+        get() = provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings?.let { mailSettings ->
             Provider(
                 incomingUriTemplate = mailSettings.incoming.toSeverUriTemplate(outgoing = false),
                 incomingUsernameTemplate = mailSettings.incoming.userName!!,

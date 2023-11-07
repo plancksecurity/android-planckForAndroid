@@ -70,9 +70,9 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun updateUiFromProvisioningSettings() {
-        provisioningSettings.provisionedMailSettings?.let { mailSettings ->
+        provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings?.let { mailSettings ->
             binding.pleaseChooseSignInOption.isVisible = false
-            val buttonsToHide = getButtonsToHide(mailSettings, provisioningSettings.oAuthType)
+            val buttonsToHide = getButtonsToHide(mailSettings, provisioningSettings.accountsProvisionList.firstOrNull()?.oAuthType)
             hideViews(*buttonsToHide)
         }
     }
@@ -147,7 +147,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun startOAuthFlow(oAuthProviderType: OAuthProviderType) {
-        val email = if (k9.isRunningOnWorkProfile) provisioningSettings.email else null
+        val email = if (k9.isRunningOnWorkProfile) provisioningSettings.accountsProvisionList.firstOrNull()?.email else null
         val account = initAccount(email).also { it.mandatoryOAuthProviderType = oAuthProviderType }
         val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
