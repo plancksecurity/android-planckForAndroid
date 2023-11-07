@@ -55,16 +55,14 @@ class ProvisioningManager @Inject constructor(
             !k9.isRunningOnWorkProfile -> {
                 finalizeSetup()
             }
+
             else -> {
                 firstStartup = preferences.accounts.isEmpty()
-                if (firstStartup) {
-                    configurationManager.loadConfigurationsSuspend(
-                        ProvisioningScope.FirstStartup
-                    ).flatMapSuspend {
-                        finalizeSetupAfterChecks()
-                    }
-                } else {
-                    finalizeSetup()
+                configurationManager.loadConfigurationsSuspend(
+                    if (firstStartup) ProvisioningScope.FirstStartup
+                    else ProvisioningScope.Startup
+                ).flatMapSuspend {
+                    finalizeSetupAfterChecks()
                 }
             }
         }
@@ -91,15 +89,19 @@ class ProvisioningManager @Inject constructor(
         !isDeviceOnline() -> {
             Result.failure(ProvisioningFailedException("Device is offline"))
         }
+
         areProvisionedMailSettingsInvalid() -> {
-            Log.e("MDM", "mail settings not valid: " +
-                    "${provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings}")
+            Log.e(
+                "MDM", "mail settings not valid: " +
+                        "${provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings}"
+            )
             Result.failure(
                 ProvisioningFailedException(
                     "Provisioned mail settings are not valid"
                 )
             )
         }
+
         else -> Result.success(Unit)
     }
 
