@@ -11,8 +11,14 @@ Feature: Handshake wrong trustwords
     Then I click mistrust words
     Then I check if the privacy status is Dangerous
     When I go back to the Inbox
-    And I send 1 message to bot1 with subject TM-19A and body handshakeWrongTrustwordsA
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter TM-19A in the messageSubject field
+    And I enter handshakeWrongTrustWords-A in the messageBody field
+    When I click the send message button
+    And I go to suspicious folder from navigation menu
     Then I check the badge color of the first message is Dangerous
     When I click the last message received
     Then I check if the privacy status is Dangerous
+    And I press back
 
