@@ -398,18 +398,18 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     }
                 }
 
-                preferences.accounts.find { it.email == accountEmail }?.let {
+                preferences.accounts.find { it.email == accountEmail }?.let { account ->
                     updateAccountString(
-                        account = it,
+                        account = account,
                         bundle,
                         restriction,
                         accepted = { newValue ->
                             !newValue.isNullOrBlank() &&
                                     newValue in OAuthProviderType.values().map { it.toString() }
                         },
-                    ) { account, newValue ->
+                    ) { newValue ->
                         newValue?.let {
-                            account.mandatoryOAuthProviderType = OAuthProviderType.valueOf(newValue)
+                            mandatoryOAuthProviderType = OAuthProviderType.valueOf(newValue)
                         }
                     }
                 }
@@ -445,8 +445,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 accepted = { newValue ->
                     !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
                 }
-            ) { account, newValue ->
-                account.email = newValue
+            ) { newValue ->
+                email = newValue
             }
         }
     }
@@ -494,8 +494,10 @@ class ConfiguredSettingsUpdater @Inject constructor(
             }
         }
 
-        if (incoming) applyNewIncomingMailSettings(currentSettings, simpleSettings)
-        else applyNewOutgoingMailSettings(currentSettings, simpleSettings)
+        account?.let {
+            if (incoming) applyNewIncomingMailSettings(account, currentSettings, simpleSettings)
+            else applyNewOutgoingMailSettings(account, currentSettings, simpleSettings)
+        }
         return simpleSettings
     }
 
@@ -580,24 +582,23 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun applyNewIncomingMailSettings(
+        account: Account,
         currentSettings: ServerSettings?,
-        simpleSettings: SimpleMailSettings
+        simpleSettings: SimpleMailSettings,
     ) {
-        preferences.accounts.forEach { account ->
-            val currentStoreUri = account.storeUri
-            val settings = currentSettings ?: RemoteStore.decodeStoreUri(currentStoreUri)
-            val newSettings = settings.newFromProvisionValues(
-                simpleSettings.server,
-                simpleSettings.connectionSecurity,
-                simpleSettings.port,
-                simpleSettings.userName,
-                simpleSettings.authType?.toAppAuthType()
-            )
-            account.storeUri = try {
-                RemoteStore.createStoreUri(newSettings)
-            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible
-                currentStoreUri
-            }
+        val currentStoreUri = account.storeUri
+        val settings = currentSettings ?: RemoteStore.decodeStoreUri(currentStoreUri)
+        val newSettings = settings.newFromProvisionValues(
+            simpleSettings.server,
+            simpleSettings.connectionSecurity,
+            simpleSettings.port,
+            simpleSettings.userName,
+            simpleSettings.authType?.toAppAuthType()
+        )
+        account.storeUri = try {
+            RemoteStore.createStoreUri(newSettings)
+        } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible
+            currentStoreUri
         }
     }
 
@@ -619,24 +620,23 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun applyNewOutgoingMailSettings(
+        account: Account,
         currentSettings: ServerSettings?,
         simpleSettings: SimpleMailSettings
     ) {
-        preferences.accounts.forEach { account ->
-            val currentTransportUri = account.transportUri
-            val settings = currentSettings ?: Transport.decodeTransportUri(currentTransportUri)
-            val newSettings = settings.newFromProvisionValues(
-                simpleSettings.server,
-                simpleSettings.connectionSecurity,
-                simpleSettings.port,
-                simpleSettings.userName,
-                simpleSettings.authType?.toAppAuthType()
-            )
-            account.transportUri = try {
-                Transport.createTransportUri(newSettings)
-            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM outgoing server settings could not be applied, if possible
-                currentTransportUri
-            }
+        val currentTransportUri = account.transportUri
+        val settings = currentSettings ?: Transport.decodeTransportUri(currentTransportUri)
+        val newSettings = settings.newFromProvisionValues(
+            simpleSettings.server,
+            simpleSettings.connectionSecurity,
+            simpleSettings.port,
+            simpleSettings.userName,
+            simpleSettings.authType?.toAppAuthType()
+        )
+        account.transportUri = try {
+            Transport.createTransportUri(newSettings)
+        } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM outgoing server settings could not be applied, if possible
+            currentTransportUri
         }
     }
 
@@ -850,9 +850,9 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 val acceptedValues = k9.resources.getStringArray(R.array.push_limit_values)
                 acceptedValues.contains(newValue)
             }
-        ) { account, newValue ->
+        ) { newValue ->
             try {
-                newValue?.let { account.maxPushFolders = newValue.toInt() }
+                newValue?.let { maxPushFolders = newValue.toInt() }
             } catch (nfe: NumberFormatException) {
                 Timber.e(nfe)
             }
@@ -927,7 +927,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 entry,
                 default = { it.email },
                 accepted = { !it.isNullOrBlank() }
-            ) { account, newValue ->
+            ) { newValue ->
                 account.name = newValue
             }
         }
@@ -938,8 +938,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
         account: Account
     ) {
-        updateAccountBoolean(account, bundle, entry) { account, newValue ->
-            account.isSignatureBeforeQuotedText = newValue
+        updateAccountBoolean(account, bundle, entry) { newValue ->
+            isSignatureBeforeQuotedText = newValue
         }
     }
 
@@ -949,8 +949,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
             bundle,
             entry,
             accepted = { !it.isNullOrBlank() }
-        ) { account, newValue ->
-            account.signature = newValue
+        ) { newValue ->
+            signature = newValue
         }
     }
 
@@ -959,8 +959,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
         account: Account
     ) {
-        updateAccountBoolean(account, bundle, entry) { account, newValue ->
-            account.signatureUse = newValue
+        updateAccountBoolean(account, bundle, entry) { newValue ->
+            signatureUse = newValue
         }
     }
 
@@ -1091,9 +1091,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     locked = getBooleanOrDefault(bundle, restriction)
             }
         }
-        preferences.accounts.forEach {
-            it.updateSetting(ManageableSetting(value = value, locked = locked))
-        }
+        account.updateSetting(ManageableSetting(value = value, locked = locked))
     }
 
     private fun saveAccountSaveMessagesSecurely(
@@ -1105,8 +1103,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
             account,
             restrictions,
             entry,
-        ) { account, newValue ->
-            account.setPlanckStoreEncryptedOnServer(newValue)
+        ) { newValue ->
+            setPlanckStoreEncryptedOnServer(newValue)
         }
     }
 
@@ -1201,12 +1199,12 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
         crossinline default: (Account) -> String? = { entry.selectedString },
         crossinline accepted: (String?) -> Boolean = { true },
-        crossinline block: (account: Account, newValue: String?) -> Unit
+        crossinline block: Account.(newValue: String?) -> Unit
     ) {
         kotlin.runCatching {
             val newValue = restrictions?.getString(entry.key) ?: default(account)
             if (accepted(newValue)) {
-                block(account, newValue)
+                account.block(newValue)
             }
         }.onFailure { Timber.e(it) }
     }
@@ -1215,11 +1213,11 @@ class ConfiguredSettingsUpdater @Inject constructor(
         account: Account,
         restrictions: Bundle?,
         entry: RestrictionEntry,
-        crossinline block: (account: Account, newValue: Boolean) -> Unit
+        crossinline block: Account.(newValue: Boolean) -> Unit
     ) {
         kotlin.runCatching {
             val newValue = getBooleanOrDefault(restrictions, entry)
-            block(account, newValue)
+            account.block(newValue)
         }.onFailure { Timber.e(it) }
     }
 
