@@ -15,6 +15,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningScope
+import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.findAccountsToRemove
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,6 +26,7 @@ class ConfigurationManager @Inject constructor(
     private val preferences: Preferences,
     private val restrictionsManager: RestrictionsProvider,
     private val settingsUpdater: ConfiguredSettingsUpdater,
+    private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
@@ -33,6 +36,12 @@ class ConfigurationManager @Inject constructor(
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
             loadConfigurationsSuspend()
+                .mapCatching {
+                    if (provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()) {
+                        // update a flow saying that the account was deleted
+
+                    }
+                }
                 .onSuccess { sendRemoteConfig() }
                 .onFailure {
                     Timber.e(
