@@ -16,14 +16,19 @@ Feature: Reset Handshake
     When I go back to the Inbox
     Then I check the badge color of the first message is Dangerous
     And I click compose message
-    And I send 1 message to bot4 with subject TM-18A and body cucumberStopTrustingMistrust
+    And I enter bot4 in the messageTo field
+    And I enter TM-18A in the messageSubject field
+    And I enter cucumberStopTrustingMistrust in the messageBody field
+    When I click the send message button
+    And I go to suspicious folder from navigation menu
     Then I check the badge color of the first message is Dangerous
     When I click the last message received
     Then I check if the privacy status is Dangerous
     When I reset partner key
     And I go back to the Inbox
+    And I press back
     And I click compose message
-    And I send 1 message to bot4 with subject TM-18B and body cucumberStopTrustingReseted
+    And I send 1 message to bot4 with subject TM-18B and body cucumberStopTrustingReset
     Then I check the badge color of the first message is Encrypted
     When I click the last message received
     Then I check if the privacy status is Encrypted
