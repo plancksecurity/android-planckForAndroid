@@ -55,7 +55,6 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
-import androidx.webkit.WebViewCompat;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
@@ -179,7 +178,7 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
     private String emailForDevice;
-    private static final String HOST = "@bot.planck.dev";
+    private static final String HOST = "@sq.planck.security";
     private Connection connection;
 
 
@@ -213,7 +212,7 @@ public class TestUtils {
     }
 
     private void trustedServer() {
-  /*      if (testConfig.getTrusted_server(account)) {
+        if (testConfig.getTrusted_server(account)) {
             waitForIdle();
             clickView(R.id.manual_setup);
             waitForIdle();
@@ -235,7 +234,7 @@ public class TestUtils {
             }
         } else {
             clickNextButton();
-        }*/
+        }
     }
 
     private void clickNextButton() {
@@ -1196,17 +1195,6 @@ public class TestUtils {
     public static void swipeDownScreen() {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            waitForIdle();
-            scroll.swipe(Direction.DOWN, 1.0f);
-            waitForIdle();
-        } catch (Exception swipe) {
-            Timber.i("Cannot do swipeDown");
-        }
-    }
-
-    public static void swipeDownList() {
-        try {
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ListView"));
             waitForIdle();
             scroll.swipe(Direction.DOWN, 1.0f);
             waitForIdle();
@@ -2525,7 +2513,7 @@ public class TestUtils {
 
     public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
-        for (int i = 0; i < 1500; i ++) {
+        for (int i = 0; i < 500; i ++) {
             waitForIdle();
         }
         for (UiObject2 object : device.findObjects(selector)) {
@@ -2775,13 +2763,11 @@ public class TestUtils {
 
     public void openHamburgerMenu () {
         waitForIdle();
-        if (!viewIsDisplayed(onView(withId(R.id.navigation_bar_folders_layout)))) {
-            while (!exists(onView(withContentDescription("Open navigation drawer")))) {
-                waitForIdle();
-            }
-            onView(withContentDescription("Open navigation drawer")).perform(click());
+        while (!exists(onView(withContentDescription("Open navigation drawer")))) {
             waitForIdle();
         }
+        onView(withContentDescription("Open navigation drawer")).perform(click());
+        waitForIdle();
     }
 
     public void typeTextToForceRatingCalculation(int view) {
@@ -2879,16 +2865,12 @@ public class TestUtils {
     public boolean textExistsOnScreen (String text) {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
-        try {
-            for (UiObject2 view : device.findObjects(selector)) {
-                if (view.getText() != null) {
-                    if (view.getText().equals(text) || view.getText().contains("(" + text + ")")) {
-                        return true;
-                    }
+        for (UiObject2 view : device.findObjects(selector)) {
+            if (view.getText() != null) {
+                if (view.getText().contains(text)) {
+                    return true;
                 }
             }
-        } catch (Exception exception) {
-            return false;
         }
         return false;
     }
@@ -3638,14 +3620,12 @@ public class TestUtils {
     }
 
     private static JSONObject getJSON(){
-        while (true) {
-            try {
-                String js = readJsonFile("results.json");
-                JSONObject jsonObject = new JSONObject(js);
-                return jsonObject;
-            } catch (JSONException e) {
-
-            }
+        try {
+            String js = readJsonFile("results.json");
+            JSONObject jsonObject = new JSONObject(js);
+            return jsonObject;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -3685,24 +3665,6 @@ public class TestUtils {
             }
         }
     }
-
-    /*public void expandFolderFromNavigationMenu (String folderName) {
-        BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 object : device.findObjects(selector)) {
-            try {
-                if (object.getText().equals(folderName)) {
-                    waitForIdle();
-                    object.getParent().getChildren().get(1).longClick();
-                    waitForIdle();
-                    //object.getParent().getChildren().get(1).click();
-                    waitForIdle();
-                    return;
-                }
-            } catch (Exception ex){
-                Timber.i("Cannot find text on screen: " + ex);
-            }
-        }
-    }*/
 
     public JSONObject returnJSON (){
         return json;
@@ -4010,16 +3972,6 @@ public class TestUtils {
             }
         }
         waitUntilIdle();
-    }
-
-    public String saveFromJSON(String keyWordFromBody) throws JSONException {
-        if (json.toString().contains(keyWordFromBody)) {
-            String s = json.toString().substring(json.toString().lastIndexOf(keyWordFromBody ) + 14);
-            return s.substring(0,64);
-        } else {
-            fail("Couldn't find " + keyWordFromBody + " in the JSON file! ");
-        }
-        return "";
     }
 
     private void compareTextWithWebViewText(String textToCompare) {
