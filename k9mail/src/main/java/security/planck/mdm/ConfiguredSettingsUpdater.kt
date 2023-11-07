@@ -103,42 +103,86 @@ class ConfiguredSettingsUpdater @Inject constructor(
         accountSettingEntry: RestrictionEntry,
         accountBundle: Bundle
     ) {
+        val accountEmail = getAccountEmail(accountBundle) ?: return
+        val account = preferences.accounts.find { it.email == accountEmail }
         when (accountSettingEntry.key) {
             RESTRICTION_ACCOUNT_DESCRIPTION ->
-                saveAccountDescription(accountBundle, accountSettingEntry)
+                saveAccountDescription(accountBundle, accountSettingEntry, accountEmail)
 
             RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION ->
-                savePrivacyProtection(accountBundle, accountSettingEntry)
+                account?.let { savePrivacyProtection(accountBundle, accountSettingEntry, account) }
 
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
-                saveAccountLocalFolderSize(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountLocalFolderSize(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
-                saveAccountMaxPushFolders(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountMaxPushFolders(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
-                saveAccountCompositionDefaults(accountBundle, accountSettingEntry)
+                saveAccountCompositionDefaults(accountBundle, accountSettingEntry, accountEmail)
 
             RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
-                saveAccountQuoteMessagesWhenReply(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountQuoteMessagesWhenReply(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
-                saveAccountDefaultFolders(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountDefaultFolders(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
-                saveAccountEnableServerSearch(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountEnableServerSearch(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
-                saveAccountSeverSearchLimit(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountSeverSearchLimit(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
-                saveAccountSaveMessagesSecurely(accountBundle, accountSettingEntry)
+                account?.let {
+                    saveAccountSaveMessagesSecurely(
+                        accountBundle,
+                        accountSettingEntry,
+                        account
+                    )
+                }
 
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
-                saveAccountEnableSync(accountBundle, accountSettingEntry)
+                account?.let { saveAccountEnableSync(accountBundle, accountSettingEntry, account) }
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
-                saveAccountMailSettings(accountBundle, accountSettingEntry)
+                saveAccountMailSettings(accountBundle, accountSettingEntry, accountEmail)
         }
     }
 
@@ -197,7 +241,11 @@ class ConfiguredSettingsUpdater @Inject constructor(
         updateSetting(ManageableSetting(value = value, locked = locked))
     }
 
-    private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountDescription(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        accountEmail: String
+    ) {
         val bundle = restrictions.getBundle(entry.key)
         entry.restrictions.find {
             it.key == RESTRICTION_ACCOUNT_DESCRIPTION_VALUE
@@ -206,14 +254,17 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 bundle,
                 valueEntry,
                 default = { null }
-            ) {
-                provisioningSettings.accountDescription = it
+            ) { newDescription ->
+                provisioningSettings.modifyOrAddAccountSettingsByAddress(accountEmail) {
+                    it.accountDescription = newDescription
+                }
             }
         }
-        val allowModifyCurrentAccountsProvisioningSettings = !restrictions.getBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION)
+        val allowModifyCurrentAccountsProvisioningSettings =
+            !restrictions.getBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION)
         if (allowModifyCurrentAccountsProvisioningSettings) {
-            val firstAccount = preferences.accounts.firstOrNull() ?: return
-            var (value: String?, locked: Boolean) = firstAccount.lockableDescription
+            val account = preferences.accounts.find { it.email == accountEmail } ?: return
+            var (value: String?, locked: Boolean) = account.lockableDescription // take current value as default
 
             entry.restrictions.forEach { restriction ->
                 when (restriction.key) {
@@ -221,7 +272,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         updateString(
                             bundle,
                             restriction,
-                            default = { firstAccount.email }
+                            default = { accountEmail }
                         ) {
                             value = it
                         }
@@ -230,27 +281,36 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         locked = getBooleanOrDefault(bundle, restriction)
                 }
             }
-            preferences.accounts.forEach {
-                it.setDescription(ManageableSetting(value = value, locked = locked))
-            }
+            account.setDescription(ManageableSetting(value = value, locked = locked))
         }
     }
 
-    private fun saveAccountMailSettings(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun getAccountEmail(
+        accountBundle: Bundle
+    ): String? = accountBundle.getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
+        ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+
+    private fun saveAccountMailSettings(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        accountEmail: String
+    ) {
+        val account = preferences.accounts.find { it.email == accountEmail }
         val bundle = restrictions.getBundle(entry.key)
         var incoming = SimpleMailSettings()
         var outgoing = SimpleMailSettings()
-        saveOAuthProviderType(entry, bundle)
-        val oAuthProviderType = getCurrentOAuthProvider()
+        saveOAuthProviderType(entry, bundle, accountEmail)
+        val oAuthProviderType = getCurrentOAuthProvider(accountEmail)
 
-        saveEmail(entry, bundle)
+        saveEmail(entry, bundle, accountEmail)
 
-        val email = getCurrentEmail()
+        val email = getCurrentEmail(accountEmail)
 
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                     incoming = saveAccountMailSettings(
+                        account,
                         bundle,
                         restriction,
                         oAuthProviderType,
@@ -261,6 +321,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
                     outgoing = saveAccountMailSettings(
+                        account,
                         bundle,
                         restriction,
                         oAuthProviderType,
@@ -270,23 +331,26 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 }
             }
         }
-        provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-            incoming,
-            outgoing,
-        )
+        provisioningSettings.modifyOrAddAccountSettingsByAddress(accountEmail) {
+            it.provisionedMailSettings = AccountMailSettingsProvision(
+                incoming,
+                outgoing,
+            )
+        }
     }
 
-    private fun saveEmail(entry: RestrictionEntry, bundle: Bundle?) {
+    private fun saveEmail(entry: RestrictionEntry, bundle: Bundle?, accountEmail: String) {
         entry.restrictions
             .firstOrNull {
                 it.key == RESTRICTION_ACCOUNT_EMAIL_ADDRESS
             }?.let { restriction ->
-                saveAccountEmailAddress(bundle, restriction)
+                saveAccountEmailAddress(bundle, restriction, accountEmail)
             }
     }
 
-    private fun getCurrentEmail(): String? =
-        preferences.accounts.firstOrNull()?.email ?: provisioningSettings.email
+    private fun getCurrentEmail(accountEmail: String): String? =
+        preferences.accounts.find { it.email == accountEmail }?.email
+            ?: provisioningSettings.getAccountSettingsByAddress(accountEmail)?.email
 
     private fun updateAuthType(
         entry: RestrictionEntry,
@@ -315,7 +379,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
     private fun saveOAuthProviderType(
         entry: RestrictionEntry,
-        bundle: Bundle?
+        bundle: Bundle?,
+        accountEmail: String,
     ) {
         entry.restrictions
             .firstOrNull { it.key == RESTRICTION_ACCOUNT_OAUTH_PROVIDER }
@@ -327,30 +392,39 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         newValue.isNotBlank() &&
                                 newValue in OAuthProviderType.values().map { it.toString() }
                     },
-                ) {
-                    provisioningSettings.oAuthType = OAuthProviderType.valueOf(it)
+                ) { newOAuthType ->
+                    provisioningSettings.modifyOrAddAccountSettingsByAddress(accountEmail) {
+                        it.oAuthType = OAuthProviderType.valueOf(newOAuthType)
+                    }
                 }
 
-                updateAccountString(
-                    bundle,
-                    restriction,
-                    accepted = { newValue ->
-                        !newValue.isNullOrBlank() &&
-                                newValue in OAuthProviderType.values().map { it.toString() }
-                    },
-                ) { account, newValue ->
-                    newValue?.let {
-                        account.mandatoryOAuthProviderType = OAuthProviderType.valueOf(newValue)
+                preferences.accounts.find { it.email == accountEmail }?.let {
+                    updateAccountString(
+                        account = it,
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            !newValue.isNullOrBlank() &&
+                                    newValue in OAuthProviderType.values().map { it.toString() }
+                        },
+                    ) { account, newValue ->
+                        newValue?.let {
+                            account.mandatoryOAuthProviderType = OAuthProviderType.valueOf(newValue)
+                        }
                     }
                 }
             }
     }
 
-    private fun getCurrentOAuthProvider(): OAuthProviderType? =
-        preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType
-            ?: provisioningSettings.oAuthType
+    private fun getCurrentOAuthProvider(accountEmail: String): OAuthProviderType? =
+        preferences.accounts.find { it.email == accountEmail }?.mandatoryOAuthProviderType
+            ?: provisioningSettings.getAccountSettingsByAddress(accountEmail)?.oAuthType
 
-    private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
+    private fun saveAccountEmailAddress(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+        accountEmail: String
+    ) { // TODO: Email is never modified, we need to add account to provisioning and remove account...
         updateNullableString(
             restrictions,
             entry,
@@ -358,21 +432,27 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
             },
             default = { null }
-        ) {
-            provisioningSettings.email = it
-        }
-        updateAccountString(
-            restrictions,
-            entry,
-            accepted = { newValue ->
-                !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
+        ) { newEmail ->
+            provisioningSettings.modifyOrAddAccountSettingsByAddress(accountEmail) {
+                it.email = newEmail
             }
-        ) { account, newValue ->
-            account.email = newValue
+        }
+        preferences.accounts.find { it.email == accountEmail }?.let {
+            updateAccountString(
+                account = it,
+                restrictions,
+                entry,
+                accepted = { newValue ->
+                    !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
+                }
+            ) { account, newValue ->
+                account.email = newValue
+            }
         }
     }
 
     private fun saveAccountMailSettings(
+        account: Account?,
         restrictions: Bundle?,
         entry: RestrictionEntry,
         oAuthProviderType: OAuthProviderType?,
@@ -380,8 +460,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
         incoming: Boolean
     ): SimpleMailSettings {
         val currentSettings: ServerSettings? =
-            if (incoming) getCurrentIncomingSettings()
-            else getCurrentOutgoingSettings()
+            if (incoming) getCurrentIncomingSettings(account)
+            else getCurrentOutgoingSettings(account)
         var simpleSettings = currentSettings?.toSimpleMailSettings() ?: SimpleMailSettings()
         val bundle = restrictions?.getBundle(entry.key)
         updateAuthType(entry, bundle, simpleSettings, incoming)
@@ -521,16 +601,16 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun getCurrentIncomingSettings(): ServerSettings? {
-        return preferences.accounts.firstOrNull()?.let {
+    private fun getCurrentIncomingSettings(account: Account?): ServerSettings? {
+        return account?.let {
             kotlin.runCatching { RemoteStore.decodeStoreUri(it.storeUri) }
                 .onFailure { Timber.e(it) }
                 .getOrNull()
         }
     }
 
-    private fun getCurrentOutgoingSettings(): ServerSettings? {
-        return preferences.accounts.firstOrNull()?.let {
+    private fun getCurrentOutgoingSettings(account: Account?): ServerSettings? {
+        return account?.let {
             kotlin.runCatching { Transport.decodeTransportUri(it.transportUri) }
                 .onFailure {
                     Timber.e(it)
@@ -723,8 +803,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         k9.auditLogDataTimeRetention = ManageableSetting(value = value, locked = locked)
     }
 
-    private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun savePrivacyProtection(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         saveAccountBooleanLockableSetting(
+            account,
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
@@ -734,8 +819,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountLocalFolderSize(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountLocalFolderSize(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         saveAccountIntChoiceLockableSetting(
+            account,
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE_VALUE,
@@ -747,8 +837,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountMaxPushFolders(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountMaxPushFolders(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         updateAccountString(
+            account,
             restrictions,
             entry,
             accepted = { newValue ->
@@ -764,8 +859,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountQuoteMessagesWhenReply(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountQuoteMessagesWhenReply(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         saveAccountBooleanLockableSetting(
+            account,
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY_VALUE,
@@ -775,51 +875,77 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountCompositionDefaults(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountCompositionDefaults(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        accountEmail: String
+    ) {
         val bundle = restrictions.getBundle(entry.key)
+        val account = preferences.accounts.find { it.email == accountEmail }
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME ->
-                    saveAccountSenderName(bundle, restriction)
+                    saveAccountSenderName(bundle, restriction, accountEmail)
 
                 RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
-                    saveAccountUseSignature(bundle, restriction)
+                    account?.let { saveAccountUseSignature(bundle, restriction, account) }
 
                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
-                    saveAccountSignature(bundle, restriction)
+                    account?.let { saveAccountSignature(bundle, restriction, account) }
 
                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE ->
-                    saveAccountSignatureBeforeQuotedMessage(bundle, restriction)
+                    account?.let {
+                        saveAccountSignatureBeforeQuotedMessage(
+                            bundle,
+                            restriction,
+                            account
+                        )
+                    }
             }
         }
     }
 
-    private fun saveAccountSenderName(bundle: Bundle?, entry: RestrictionEntry) {
+    private fun saveAccountSenderName(
+        bundle: Bundle?,
+        entry: RestrictionEntry,
+        accountEmail: String
+    ) {
         updateNullableString(
             bundle,
             entry,
             default = { null }
-        ) {
-            provisioningSettings.senderName = it
+        ) { newSenderName ->
+            provisioningSettings.modifyOrAddAccountSettingsByAddress(accountEmail) {
+                it.senderName = newSenderName
+            }
         }
-        updateAccountString(
-            bundle,
-            entry,
-            default = { it.email },
-            accepted = { !it.isNullOrBlank() }
-        ) { account, newValue ->
-            account.name = newValue
+
+        preferences.accounts.find { it.email == accountEmail }?.let { account ->
+            updateAccountString(
+                account = account,
+                bundle,
+                entry,
+                default = { it.email },
+                accepted = { !it.isNullOrBlank() }
+            ) { account, newValue ->
+                account.name = newValue
+            }
         }
     }
 
-    private fun saveAccountSignatureBeforeQuotedMessage(bundle: Bundle?, entry: RestrictionEntry) {
-        updateAccountBoolean(bundle, entry) { account, newValue ->
+    private fun saveAccountSignatureBeforeQuotedMessage(
+        bundle: Bundle?,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
+        updateAccountBoolean(account, bundle, entry) { account, newValue ->
             account.isSignatureBeforeQuotedText = newValue
         }
     }
 
-    private fun saveAccountSignature(bundle: Bundle?, entry: RestrictionEntry) {
+    private fun saveAccountSignature(bundle: Bundle?, entry: RestrictionEntry, account: Account) {
         updateAccountString(
+            account,
             bundle,
             entry,
             accepted = { !it.isNullOrBlank() }
@@ -828,13 +954,21 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountUseSignature(bundle: Bundle?, entry: RestrictionEntry) {
-        updateAccountBoolean(bundle, entry) { account, newValue ->
+    private fun saveAccountUseSignature(
+        bundle: Bundle?,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
+        updateAccountBoolean(account, bundle, entry) { account, newValue ->
             account.signatureUse = newValue
         }
     }
 
-    private fun saveAccountDefaultFolders(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountDefaultFolders(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         val firstAccount = preferences.accounts.firstOrNull()
         if (firstAccount != null) {
             kotlin.runCatching {
@@ -859,6 +993,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         block: (Account, String?) -> Unit
                     ) {
                         updateAccountString(
+                            account,
                             bundle,
                             restriction,
                             accepted = acceptable,
@@ -887,8 +1022,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountEnableServerSearch(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountEnableServerSearch(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         saveAccountBooleanLockableSetting(
+            account,
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH_VALUE,
@@ -898,8 +1038,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountSeverSearchLimit(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountSeverSearchLimit(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         saveAccountIntChoiceLockableSetting(
+            account,
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT_VALUE,
@@ -912,6 +1057,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountIntChoiceLockableSetting(
+        account: Account,
         restrictions: Bundle,
         entry: RestrictionEntry,
         valueKey: String,
@@ -950,8 +1096,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountSaveMessagesSecurely(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountSaveMessagesSecurely(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         updateAccountBoolean(
+            account,
             restrictions,
             entry,
         ) { account, newValue ->
@@ -959,8 +1110,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun saveAccountEnableSync(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveAccountEnableSync(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        account: Account
+    ) {
         saveAccountBooleanLockableSetting(
+            account,
             restrictions = restrictions,
             entry = entry,
             valueKey = RESTRICTION_ACCOUNT_ENABLE_SYNC_VALUE,
@@ -971,13 +1127,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountBooleanLockableSetting(
+        account: Account,
         restrictions: Bundle,
         entry: RestrictionEntry,
         valueKey: String,
         lockedKey: String,
         updateSetting: Account.(ManageableSetting<Boolean>) -> Unit,
     ) {
-        if (preferences.accounts.isEmpty()) return
         val bundle = restrictions.getBundle(entry.key)
         var value = false
         var locked = true
@@ -992,9 +1148,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
             }
         }
 
-        preferences.accounts.forEach {
-            it.updateSetting(ManageableSetting(value = value, locked = locked))
-        }
+        account.updateSetting(ManageableSetting(value = value, locked = locked))
     }
 
     private inline fun updateNullableString(
@@ -1042,6 +1196,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private inline fun updateAccountString(
+        account: Account,
         restrictions: Bundle?,
         entry: RestrictionEntry,
         crossinline default: (Account) -> String? = { entry.selectedString },
@@ -1049,25 +1204,22 @@ class ConfiguredSettingsUpdater @Inject constructor(
         crossinline block: (account: Account, newValue: String?) -> Unit
     ) {
         kotlin.runCatching {
-            preferences.accounts.forEach { account ->
-                val newValue = restrictions?.getString(entry.key) ?: default(account)
-                if (accepted(newValue)) {
-                    block(account, newValue)
-                }
+            val newValue = restrictions?.getString(entry.key) ?: default(account)
+            if (accepted(newValue)) {
+                block(account, newValue)
             }
         }.onFailure { Timber.e(it) }
     }
 
     private inline fun updateAccountBoolean(
+        account: Account,
         restrictions: Bundle?,
         entry: RestrictionEntry,
         crossinline block: (account: Account, newValue: Boolean) -> Unit
     ) {
         kotlin.runCatching {
             val newValue = getBooleanOrDefault(restrictions, entry)
-            preferences.accounts.forEach { account ->
-                block(account, newValue)
-            }
+            block(account, newValue)
         }.onFailure { Timber.e(it) }
     }
 

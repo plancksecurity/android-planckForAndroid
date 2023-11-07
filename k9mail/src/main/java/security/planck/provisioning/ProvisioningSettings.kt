@@ -8,13 +8,27 @@ import javax.inject.Singleton
 @Singleton
 class ProvisioningSettings @Inject constructor() {
     var provisioningUrl: String? = null
-    var senderName: String? = null
-    var accountDescription: String? = null
-    var email: String? = null
-    var oAuthType: OAuthProviderType? = null
-    var provisionedMailSettings: AccountMailSettingsProvision? = null
+    var accountsProvisionList = mutableListOf<AccountProvisioningSettings>()
 
     fun hasValidMailSettings(urlChecker: UrlChecker): Boolean =
-        email?.isValidEmailAddress() == true &&
-                provisionedMailSettings?.isValidForProvision(urlChecker) == true
+        accountsProvisionList.firstOrNull()?.let { accountProvision ->
+            accountProvision.email?.isValidEmailAddress() == true &&
+                    accountProvision.provisionedMailSettings?.isValidForProvision(urlChecker) == true
+        } ?: false
+
+    fun getAccountSettingsByAddress(address: String): AccountProvisioningSettings? =
+        accountsProvisionList.find { it.email == address }
+
+    fun modifyOrAddAccountSettingsByAddress(address: String, change: (AccountProvisioningSettings) -> Unit) {
+        accountsProvisionList.find { it.email == address }?.let(change)
+            ?:let { accountsProvisionList.add(AccountProvisioningSettings().also(change)) }
+    }
 }
+
+data class AccountProvisioningSettings(
+    var senderName: String? = null,
+    var accountDescription: String? = null,
+    var email: String? = null,
+    var oAuthType: OAuthProviderType? = null,
+    var provisionedMailSettings: AccountMailSettingsProvision? = null
+)
