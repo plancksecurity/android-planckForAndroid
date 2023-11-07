@@ -103,7 +103,6 @@ import static com.fsck.k9.planck.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
