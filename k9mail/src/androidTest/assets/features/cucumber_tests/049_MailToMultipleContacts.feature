@@ -42,7 +42,7 @@ Feature: Mail to multiple contacts
     When I click the send message button
     And I wait for the new message
     And I go to sent folder from navigation menu
-    And I click the last message received
+    And I click the first message
     Then I check the privacy status is NotEncrypted
     And I compare messageBody with multipleContacts
     And I go back to the Inbox
