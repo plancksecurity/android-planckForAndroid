@@ -11,10 +11,7 @@ class ProvisioningSettings @Inject constructor() {
     var accountsProvisionList = mutableListOf<AccountProvisioningSettings>()
 
     fun hasValidMailSettings(urlChecker: UrlChecker): Boolean =
-        accountsProvisionList.firstOrNull()?.let { accountProvision ->
-            accountProvision.email?.isValidEmailAddress() == true &&
-                    accountProvision.provisionedMailSettings?.isValidForProvision(urlChecker) == true
-        } ?: false
+        accountsProvisionList.firstOrNull()?.isValid(urlChecker) ?: false
 
     fun getAccountSettingsByAddress(address: String): AccountProvisioningSettings? =
         accountsProvisionList.find { it.email == address }
@@ -44,4 +41,7 @@ data class AccountProvisioningSettings(
     var email: String? = null,
     var oAuthType: OAuthProviderType? = null,
     var provisionedMailSettings: AccountMailSettingsProvision? = null
-)
+) {
+    fun isValid(urlChecker: UrlChecker): Boolean = email?.isValidEmailAddress() == true &&
+            provisionedMailSettings?.isValidForProvision(urlChecker) == true
+}
