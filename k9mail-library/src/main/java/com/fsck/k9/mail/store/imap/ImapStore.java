@@ -27,6 +27,7 @@ import com.fsck.k9.mail.NetworkType;
 import com.fsck.k9.mail.PushReceiver;
 import com.fsck.k9.mail.Pusher;
 import com.fsck.k9.mail.ServerSettings;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.RemoteStore;
@@ -292,6 +293,11 @@ public class ImapStore extends RemoteStore {
         String prefix = getCombinedPrefix();
         int prefixLength = prefix.length();
         if (prefixLength == 0) {
+            if (folderName.equals(Store.INBOX + pathDelimiter + Store.PLANCK_FOLDER)) {
+                return Store.PLANCK_FOLDER;
+            } else if (folderName.equals(Store.INBOX + pathDelimiter + Store.PLANCK_SUSPICIOUS_FOLDER)) {
+                return Store.PLANCK_SUSPICIOUS_FOLDER;
+            }
             return folderName;
         }
 
