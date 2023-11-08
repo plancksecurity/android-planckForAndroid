@@ -37,9 +37,10 @@ fun String.toConnectionSecurity(): ConnectionSecurity? = when {
 }
 
 fun ProvisioningSettings.findNextAccountToInstall(
-    preferences: Preferences
+    preferences: Preferences,
+    urlChecker: UrlChecker,
 ): AccountProvisioningSettings? =
-    accountsProvisionList.firstOrNull {
+    accountsProvisionList.filter { it.isValid(urlChecker) }.firstOrNull {
         it.email !in preferences.accounts.map { account -> account.email }
     }
 
