@@ -167,9 +167,9 @@ class ProvidersXmlDiscoveryTest : RobolectricTest() {
     private fun stubDnsRecordsResolver(shouldFail: Boolean) {
         if (shouldFail) {
             val slot = slot<String>()
-            every { dnsRecordsResolver.getRealDomain(capture(slot)) }.answers { slot.captured }
+            every { dnsRecordsResolver.getRealOrFallbackDomain(capture(slot), any()) }.answers { slot.captured }
         } else {
-            every { dnsRecordsResolver.getRealDomain(any()) }.returns(OUTLOOK_PROTECTION_DOMAIN)
+            every { dnsRecordsResolver.getRealOrFallbackDomain(any(), any()) }.returns(OUTLOOK_PROTECTION_DOMAIN)
         }
     }
 
