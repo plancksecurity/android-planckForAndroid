@@ -2,7 +2,6 @@ package com.fsck.k9.autodiscovery.providersxml
 
 import android.content.res.XmlResourceParser
 import android.net.Uri
-import com.fsck.k9.K9
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.api.ConnectionSettingsDiscovery
 import com.fsck.k9.autodiscovery.api.DiscoveredServerSettings
@@ -39,7 +38,7 @@ class ProvidersXmlDiscovery @Inject constructor(
 
         val provider = provisionedProvider
             ?: findProviderForDomain(domain)
-            ?: findProviderForDomain(dnsRecordsResolver.getRealDomain(domain))
+            ?: findProviderForDomain(dnsRecordsResolver.getRealOrFallbackDomain(domain, oAuthProviderType))
             ?: return null
 
         val incomingSettings = provider.toIncomingServerSettings(email) ?: return null
