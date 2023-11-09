@@ -399,9 +399,9 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     public override fun onPause() {
-        super.onPause()
         stopObservingRestrictionsChanges()
         StorageManager.getInstance(application).removeListener(storageListener)
+        super.onPause()
     }
 
     private fun stopObservingRestrictionsChanges() {
