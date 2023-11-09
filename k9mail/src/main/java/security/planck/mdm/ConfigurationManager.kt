@@ -76,24 +76,21 @@ class ConfigurationManager @Inject constructor(
                     if (!isProvisionAvailable(restrictions)) {
                         throw ProvisioningFailedException("Provisioning data is missing")
                     }
-                    entries = provisioningEntries
+                    entries = provisioningManifestEntries
                     allowModifyAccountProvisioningSettings = false
                 }
 
                 ProvisioningScope.Startup -> {
-                    entries = provisioningEntries
+                    entries = provisioningManifestEntries
                     allowModifyAccountProvisioningSettings = false
                 }
 
                 ProvisioningScope.InitializedEngine -> {
-                    entries = restrictionsManager.manifestRestrictions
-                        .filter { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
+                    entries = initializedEngineManifestEntries
                 }
 
                 ProvisioningScope.AllAccountSettings -> {
-                    entries = restrictionsManager.manifestRestrictions.filter {
-                        it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
-                    }
+                    entries = accountsManifestEntries
                 }
 
                 ProvisioningScope.AllSettings -> {
@@ -101,15 +98,8 @@ class ConfigurationManager @Inject constructor(
                 }
 
                 is ProvisioningScope.SingleAccountSettings -> {
-                    entries = restrictionsManager.manifestRestrictions.filter {
-                        it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
-                    }
-                    restrictions.getParcelableArray(
-                        RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
-                    )?.filter {
-                        (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)?.getString(
-                            RESTRICTION_ACCOUNT_EMAIL_ADDRESS) == provisioningScope.email
-                    }.also { restrictions.putParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS, it?.toTypedArray()) }
+                    entries = accountsManifestEntries
+                    filterAccountsRestrictionsToSingleAccount(restrictions, provisioningScope.email)
                 }
             }
 
@@ -119,7 +109,32 @@ class ConfigurationManager @Inject constructor(
         }
     }
 
-    private val provisioningEntries
+    private val initializedEngineManifestEntries: List<RestrictionEntry>
+        get() = restrictionsManager.manifestRestrictions
+            .filter { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
+
+    private val accountsManifestEntries: List<RestrictionEntry>
+        get() = restrictionsManager.manifestRestrictions.filter {
+            it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+        }
+
+    private fun filterAccountsRestrictionsToSingleAccount(
+        restrictions: Bundle,
+        accountEmail: String,
+    ) {
+        restrictions.putParcelableArray(
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
+            restrictions.getParcelableArray(
+                RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+            )?.filter {
+                (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)?.getString(
+                    RESTRICTION_ACCOUNT_EMAIL_ADDRESS
+                ) == accountEmail
+            }?.toTypedArray()
+        )
+    }
+
+    private val provisioningManifestEntries: List<RestrictionEntry>
         get() = restrictionsManager.manifestRestrictions
             // ignore media keys from MDM before PlanckProvider has been initialized
             .filter { it.key in PROVISIONING_RESTRICTIONS }
