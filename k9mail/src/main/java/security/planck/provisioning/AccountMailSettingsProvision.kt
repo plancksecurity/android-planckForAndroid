@@ -2,14 +2,13 @@ package security.planck.provisioning
 
 import com.fsck.k9.mail.ConnectionSecurity
 import security.planck.mdm.AuthType
-import security.planck.network.UrlChecker
 
 data class AccountMailSettingsProvision(
     val incoming: SimpleMailSettings,
     val outgoing: SimpleMailSettings,
 ) {
-    fun isValidForProvision(urlChecker: UrlChecker): Boolean =
-        incoming.isValid(urlChecker) && outgoing.isValid(urlChecker)
+    fun isValidForProvision(): Boolean =
+        incoming.isValid() && outgoing.isValid()
 }
 
 data class SimpleMailSettings(
@@ -25,9 +24,9 @@ data class SimpleMailSettings(
         ConnectionSecurity.STARTTLS_REQUIRED -> "tls"
     }
 
-    fun isValid(urlChecker: UrlChecker): Boolean =
+    fun isValid(): Boolean =
         port.isValidPort()
-                && server != null && (server?.isValidServer(urlChecker) ?: false)
+                && !server.isNullOrBlank()
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
                 && authType != null
