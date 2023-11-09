@@ -9,7 +9,6 @@ import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import kotlinx.coroutines.runBlocking
 import security.planck.mdm.ConfigurationManager
-import security.planck.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +16,6 @@ import javax.inject.Singleton
 class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
-    private val urlChecker: UrlChecker,
     private val configurationManager: ConfigurationManager,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
@@ -118,7 +116,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun areProvisionedMailSettingsInvalid(): Boolean {
-        return !provisioningSettings.hasValidMailSettings(urlChecker)
+        return !provisioningSettings.hasValidMailSettings()
     }
 
     private fun isDeviceOnline(): Boolean =

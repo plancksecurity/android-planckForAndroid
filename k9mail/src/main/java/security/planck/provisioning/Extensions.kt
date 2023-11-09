@@ -6,7 +6,6 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import security.planck.mdm.toMdmAuthType
-import security.planck.network.UrlChecker
 
 const val CONNECTION_SECURITY_NONE = "NONE"
 const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
@@ -17,9 +16,6 @@ fun ServerSettings.toSimpleMailSettings(): SimpleMailSettings = SimpleMailSettin
 )
 
 fun Int.isValidPort() = this in 1..65535
-
-fun String.isValidServer(urlChecker: UrlChecker) =
-    this.isNotBlank() && urlChecker.isValidUrl(this)
 
 fun String.isValidEmailAddress() = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
@@ -38,9 +34,8 @@ fun String.toConnectionSecurity(): ConnectionSecurity? = when {
 
 fun ProvisioningSettings.findNextAccountToInstall(
     preferences: Preferences,
-    urlChecker: UrlChecker,
 ): AccountProvisioningSettings? =
-    accountsProvisionList.filter { it.isValid(urlChecker) }.firstOrNull {
+    accountsProvisionList.filter { it.isValid() }.firstOrNull {
         it.email !in preferences.accounts.map { account -> account.email }
     }
 

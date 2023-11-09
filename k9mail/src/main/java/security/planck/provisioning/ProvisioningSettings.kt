@@ -1,7 +1,6 @@
 package security.planck.provisioning
 
 import com.fsck.k9.auth.OAuthProviderType
-import security.planck.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -10,8 +9,8 @@ class ProvisioningSettings @Inject constructor() {
     var provisioningUrl: String? = null
     var accountsProvisionList = mutableListOf<AccountProvisioningSettings>()
 
-    fun hasValidMailSettings(urlChecker: UrlChecker): Boolean =
-        accountsProvisionList.firstOrNull()?.isValid(urlChecker) ?: false
+    fun hasValidMailSettings(): Boolean =
+        accountsProvisionList.firstOrNull()?.isValid() ?: false
 
     fun getAccountSettingsByAddress(address: String): AccountProvisioningSettings? =
         accountsProvisionList.find { it.email == address }
@@ -42,6 +41,6 @@ data class AccountProvisioningSettings(
     var oAuthType: OAuthProviderType? = null,
     var provisionedMailSettings: AccountMailSettingsProvision? = null
 ) {
-    fun isValid(urlChecker: UrlChecker): Boolean = email?.isValidEmailAddress() == true &&
-            provisionedMailSettings?.isValidForProvision(urlChecker) == true
+    fun isValid(): Boolean = email?.isValidEmailAddress() == true &&
+            provisionedMailSettings?.isValidForProvision() == true
 }
