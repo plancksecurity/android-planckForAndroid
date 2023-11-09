@@ -70,18 +70,19 @@ class ConfigurationManager @Inject constructor(
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
             val entries: List<RestrictionEntry>
+            var allowModifyAccountProvisioningSettings = true
             when (provisioningScope) {
                 ProvisioningScope.FirstStartup -> {
                     if (!isProvisionAvailable(restrictions)) {
                         throw ProvisioningFailedException("Provisioning data is missing")
                     }
                     entries = provisioningEntries
-                    restrictions.putBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION, true)
+                    allowModifyAccountProvisioningSettings = false
                 }
 
                 ProvisioningScope.Startup -> {
                     entries = provisioningEntries
-                    restrictions.putBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION, true)
+                    allowModifyAccountProvisioningSettings = false
                 }
 
                 ProvisioningScope.InitializedEngine -> {
@@ -112,7 +113,7 @@ class ConfigurationManager @Inject constructor(
                 }
             }
 
-            mapRestrictions(entries, restrictions)
+            mapRestrictions(entries, restrictions, allowModifyAccountProvisioningSettings)
             saveAppSettings()
             saveAccounts()
         }
@@ -147,9 +148,10 @@ class ConfigurationManager @Inject constructor(
     private fun mapRestrictions(
         entries: List<RestrictionEntry>,
         restrictions: Bundle,
+        allowModifyAccountProvisioningSettings: Boolean,
     ) {
         entries.forEach { entry ->
-            settingsUpdater.update(restrictions, entry)
+            settingsUpdater.update(restrictions, entry, allowModifyAccountProvisioningSettings)
         }
     }
 

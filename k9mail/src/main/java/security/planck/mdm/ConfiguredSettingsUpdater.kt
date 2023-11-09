@@ -47,6 +47,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     fun update(
         restrictions: Bundle,
         entry: RestrictionEntry,
+        allowModifyAccountProvisioningSettings: Boolean,
     ) {
         when (entry.key) {
             RESTRICTION_PROVISIONING_URL ->
@@ -79,19 +80,21 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS ->
-                saveAccountsSettings(restrictions, entry)
+                saveAccountsSettings(restrictions, entry, allowModifyAccountProvisioningSettings)
         }
     }
 
-    private fun saveAccountsSettings(restrictions: Bundle, entry: RestrictionEntry) {
-        val allowModifyCurrentAccountsProvisioningSettings =
-            !restrictions.getBoolean(ACCOUNT_SETTINGS_ONLY_PROVISION)
+    private fun saveAccountsSettings(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        allowModifyAccountProvisioningSettings: Boolean,
+    ) {
         restrictions.getParcelableArray(entry.key)
             ?.forEach { // get the parcelable array for accounts settings
                 saveAccountSettings(
                     entry.restrictions.first(),
                     it as Bundle,
-                    allowModifyCurrentAccountsProvisioningSettings
+                    allowModifyAccountProvisioningSettings
                 )
             }
     }
