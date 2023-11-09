@@ -33,17 +33,26 @@ class ConfigurationManager @Inject constructor(
     private val restrictionsUpdatedMF: MutableStateFlow<Int> = MutableStateFlow(0)
     val restrictionsUpdatedFlow = restrictionsUpdatedMF.asStateFlow()
 
+    private val accountRemovedMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val accountRemovedFlow = accountRemovedMF.asStateFlow()
+
+    private val wrongAccountSettingsMF: MutableStateFlow<Int> = MutableStateFlow(0)
+    val wrongAccountSettingsFlow = wrongAccountSettingsMF.asStateFlow()
+
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
             loadConfigurationsSuspend()
-                .mapCatching {
-                    if (provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()) {
-                        // update a flow saying that the account was deleted
+                .onSuccess {
+                    if (provisioningSettings.findAccountsToRemove(preferences)
+                            .isNotEmpty()
+                    ) { // removing accounts takes priority over other warnings
+                        accountRemovedMF.value = true
 
+                    } else if (provisioningSettings.hasAnyAccountWithWrongSettings()) {
+                        wrongAccountSettingsMF.value = wrongAccountSettingsMF.value + 1
                     }
-                }
-                .onSuccess { sendRemoteConfig() }
-                .onFailure {
+                    sendRemoteConfig()
+                }.onFailure {
                     Timber.e(
                         it,
                         "Could not load configurations after registering the receiver"
