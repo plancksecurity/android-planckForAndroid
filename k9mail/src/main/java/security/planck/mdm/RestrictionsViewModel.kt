@@ -38,9 +38,7 @@ class RestrictionsViewModel @Inject constructor(
     init {
         configurationManager.restrictionsUpdatedFlow
             .onEach {
-                if (it > 0) {
-                    restrictionsUpdatedLiveData.value = Event(true)
-                }
+                restrictionsUpdatedLiveData.value = Event(it > 0)
             }.launchIn(viewModelScope)
 
         configurationManager.accountRemovedFlow.onEach {
@@ -48,9 +46,7 @@ class RestrictionsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
 
         configurationManager.wrongAccountSettingsFlow.onEach {
-            if (it > 0) {
-                wrongAccountSettingsLiveData.value = Event(true)
-            }
+            wrongAccountSettingsLiveData.value = Event(it)
         }.launchIn(viewModelScope)
     }
 }
