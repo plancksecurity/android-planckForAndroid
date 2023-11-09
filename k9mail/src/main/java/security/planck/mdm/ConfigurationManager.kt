@@ -20,6 +20,7 @@ import security.planck.provisioning.findAccountsToRemove
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.system.exitProcess
 
 @Singleton
 class ConfigurationManager @Inject constructor(
@@ -27,6 +28,7 @@ class ConfigurationManager @Inject constructor(
     private val restrictionsManager: RestrictionsProvider,
     private val settingsUpdater: ConfiguredSettingsUpdater,
     private val provisioningSettings: ProvisioningSettings,
+    private val k9: K9,
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
@@ -36,21 +38,13 @@ class ConfigurationManager @Inject constructor(
     private val accountRemovedMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val accountRemovedFlow = accountRemovedMF.asStateFlow()
 
-    private val wrongAccountSettingsMF: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val wrongAccountSettingsMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val wrongAccountSettingsFlow = wrongAccountSettingsMF.asStateFlow()
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
             loadConfigurationsSuspend()
                 .onSuccess {
-                    if (provisioningSettings.findAccountsToRemove(preferences)
-                            .isNotEmpty()
-                    ) { // removing accounts takes priority over other warnings
-                        accountRemovedMF.value = true
-
-                    } else if (provisioningSettings.hasAnyAccountWithWrongSettings()) {
-                        wrongAccountSettingsMF.value = wrongAccountSettingsMF.value + 1
-                    }
                     sendRemoteConfig()
                 }.onFailure {
                     Timber.e(
@@ -115,8 +109,26 @@ class ConfigurationManager @Inject constructor(
             mapRestrictions(entries, restrictions, allowModifyAccountProvisioningSettings)
             saveAppSettings()
             saveAccounts()
+        }.onSuccess {
+            if (shouldActOnAccountsRemoved(provisioningScope)) {
+                if (k9.isRunningInForeground) {
+                    accountRemovedMF.value = true
+                } else {
+                    exitProcess(0)
+                }
+            }
+            if (provisioningSettings.hasAnyAccountWithWrongSettings()
+                && !wrongAccountSettingsMF.value
+            ) {
+                wrongAccountSettingsMF.value = true
+            }
         }
     }
+
+    private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
+        provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()
+                && provisioningScope != ProvisioningScope.FirstStartup
+                && provisioningScope != ProvisioningScope.Startup
 
     private val initializedEngineManifestEntries: List<RestrictionEntry>
         get() = restrictionsManager.manifestRestrictions
