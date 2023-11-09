@@ -1,7 +1,10 @@
 package com.fsck.k9.activity;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -29,6 +32,7 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.ui.activities.SplashActivity;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.scottyab.rootbeer.RootBeer;
@@ -45,6 +49,7 @@ import butterknife.OnTextChanged;
 import security.planck.auth.OAuthTokenRevokedListener;
 import security.planck.dialog.ConfirmationDialog;
 import security.planck.dialog.ConfirmationDialogKt;
+import security.planck.mdm.RestrictionsViewModel;
 import security.planck.ui.audit.AuditLogViewModel;
 import timber.log.Timber;
 
@@ -67,6 +72,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
     private static final String AUDIT_LOG_TAMPER_DIALOG_TAG = "auditLogTamperConfirmationDialog";
+    private static final String MDM_ACCOUNTS_REMOVED_DIALOG_TAG = "mdmAccountsRemovedConfirmationDialog";
+    private static final String WRONG_MDM_ACCOUNT_SETTINGS_DIALOG_TAG = "wrongMdmAccountSettingsConfirmationDialog";
 
     @Inject
     K9ActivityCommon mBase;
@@ -76,6 +83,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     public static final int NO_ANIMATION = 0;
     protected AuditLogViewModel auditLogViewModel;
+    protected RestrictionsViewModel restrictionsViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +101,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
         }
         auditLogViewModel = new ViewModelProvider(this).get(AuditLogViewModel.class);
+        restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
+        initializeFragmentListeners();
+    }
+
+    private void initializeFragmentListeners() {
         initializeAuditLogAlertFragmentListener();
+        initializeAccountsRemovedFragmentListener();
     }
 
     private void initializeAuditLogAlertFragmentListener() {
@@ -114,6 +128,25 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                         }
                     }
                 });
+    }
+
+    private void initializeAccountsRemovedFragmentListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                MDM_ACCOUNTS_REMOVED_DIALOG_TAG,
+                this,
+                (requestKey, bundle) -> {
+                    if (requestKey.equals(MDM_ACCOUNTS_REMOVED_DIALOG_TAG)) {
+                        restartApp();
+                    }
+                });
+    }
+
+    private void restartApp() {
+        Intent intent = new Intent(this, SplashActivity.class);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finishAndRemoveTask();
+        System.exit(0);
     }
 
     @Override
@@ -295,7 +328,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             Timber.i("Device is (possibly) rooted: %s", isRoot);
         }
 
-        observeAuditLogViewModel();
+        observeViewModels();
 
         mBase.registerPassphraseReceiver();
         mBase.registerOAuthTokenRevokedReceiver();
@@ -303,6 +336,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             showSearchView();
         } else {
             KeyboardUtils.hideKeyboard(this);
+        }
+    }
+
+    private void observeViewModels() {
+        observeAuditLogViewModel();
+        if (getK9().isRunningOnWorkProfile()) {
+            observeRestrictionsViewModel();
         }
     }
 
@@ -322,6 +362,33 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         });
     }
 
+    private void observeRestrictionsViewModel() {
+        restrictionsViewModel.getAccountRemoved().observe(this, event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                ConfirmationDialogKt.showConfirmationDialog(
+                        this,
+                        MDM_ACCOUNTS_REMOVED_DIALOG_TAG,
+                        getString(R.string.mdm_account_removed_dialog_title),
+                        getString(R.string.mdm_account_removed_dialog_description),
+                        getString(R.string.ok)
+                );
+            }
+        });
+        restrictionsViewModel.getWrongAccountSettings().observe(this, event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                ConfirmationDialogKt.showConfirmationDialog(
+                        this,
+                        WRONG_MDM_ACCOUNT_SETTINGS_DIALOG_TAG,
+                        getString(R.string.mdm_wrong_account_settings_dialog_title),
+                        getString(R.string.mdm_wrong_account_settings_dialog_description),
+                        getString(R.string.ok)
+                );
+            }
+        });
+    }
+
     @Override
     public void onTokenRevoked(@NonNull String accountUuid) {
         blockAppInOAuthScreen(accountUuid);
@@ -334,13 +401,19 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     protected void onPause() {
-        auditLogViewModel.getTamperAlert().removeObservers(this);
+        stopObservingViewModels();
         mBase.unregisterPassphraseReceiver();
         mBase.unregisterOAuthTokenRevokedReceiver();
         if (isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }
         super.onPause();
+    }
+
+    private void stopObservingViewModels() {
+        auditLogViewModel.getTamperAlert().removeObservers(this);
+        restrictionsViewModel.getAccountRemoved().removeObservers(this);
+        restrictionsViewModel.getWrongAccountSettings().removeObservers(this);
     }
 
     @Override
