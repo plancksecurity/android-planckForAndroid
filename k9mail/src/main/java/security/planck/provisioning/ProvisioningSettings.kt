@@ -12,6 +12,9 @@ class ProvisioningSettings @Inject constructor() {
     fun hasValidMailSettings(): Boolean =
         accountsProvisionList.firstOrNull()?.isValid() ?: false
 
+    fun hasAnyAccountWithWrongSettings(): Boolean =
+        accountsProvisionList.any { !it.isValid() }
+
     fun getAccountSettingsByAddress(address: String): AccountProvisioningSettings? =
         accountsProvisionList.find { it.email == address }
 
