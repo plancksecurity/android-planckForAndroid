@@ -109,6 +109,7 @@ class ConfigurationManager @Inject constructor(
             mapRestrictions(entries, restrictions, allowModifyAccountProvisioningSettings)
             saveAppSettings()
             saveAccounts()
+            purgeProvisioningAccountSettings()
         }.onSuccess {
             if (shouldActOnAccountsRemoved(provisioningScope)) {
                 if (k9.isRunningInForeground) {
@@ -124,6 +125,21 @@ class ConfigurationManager @Inject constructor(
             }
         }
     }
+
+    private fun purgeProvisioningAccountSettings() {
+        provisioningSettings.accountsProvisionList.removeIf {
+            it.email != null && it.email !in getNewMailAddresses()
+        }
+    }
+
+    private fun getNewMailAddresses(): List<String> =
+        restrictionsManager.applicationRestrictions.getParcelableArray(
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+        )?.mapNotNull {
+            (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
+                ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+        }.orEmpty()
+
 
     private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
         provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()
