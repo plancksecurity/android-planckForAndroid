@@ -27,6 +27,14 @@ class RestrictionsViewModel @Inject constructor(
      */
     val restrictionsUpdated: LiveData<Event<Boolean>> = restrictionsUpdatedLiveData
 
+    private val accountRemovedLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val accountRemoved: LiveData<Event<Boolean>> = accountRemovedLiveData
+
+    private val wrongAccountSettingsLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val wrongAccountSettings: LiveData<Event<Boolean>> = wrongAccountSettingsLiveData
+
     init {
         configurationManager.restrictionsUpdatedFlow
             .onEach {
@@ -34,5 +42,15 @@ class RestrictionsViewModel @Inject constructor(
                     restrictionsUpdatedLiveData.value = Event(true)
                 }
             }.launchIn(viewModelScope)
+
+        configurationManager.accountRemovedFlow.onEach {
+            accountRemovedLiveData.value = Event(it)
+        }.launchIn(viewModelScope)
+
+        configurationManager.wrongAccountSettingsFlow.onEach {
+            if (it > 0) {
+                wrongAccountSettingsLiveData.value = Event(true)
+            }
+        }.launchIn(viewModelScope)
     }
 }
