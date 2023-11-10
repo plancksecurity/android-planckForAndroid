@@ -16,6 +16,9 @@ sealed class ProvisioningScope {
     open val allowModifyAccountProvisioningSettings = true
     open val purgeAccountSettings = true
 
+    val isStartup
+        get() = this == FirstStartup || this == Startup
+
     object FirstStartup : ProvisioningScope() {
         override val manifestEntryFilter = ::getProvisioningManifestEntries
         override val restrictionFilter: Bundle.() -> Unit = {
