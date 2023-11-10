@@ -17,6 +17,7 @@ import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningScope
 import security.planck.provisioning.ProvisioningSettings
 import security.planck.provisioning.findAccountsToRemove
+import security.planck.provisioning.isValidEmailAddress
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -115,13 +116,12 @@ class ConfigurationManager @Inject constructor(
                 if (k9.isRunningInForeground) {
                     accountRemovedMF.value = true
                 } else {
-                    exitProcess(0)
+                    exitProcess(0) // if running in background just exit the app to remove accounts.
                 }
             }
-            if (provisioningSettings.hasAnyAccountWithWrongSettings()
-                && !wrongAccountSettingsMF.value
-            ) {
-                wrongAccountSettingsMF.value = true
+
+            if (!wrongAccountSettingsMF.value && shouldWarnWrongAccountSettings()) {
+                wrongAccountSettingsMF.value = true // only set once and seen if app in foreground.
             }
         }
     }
@@ -140,6 +140,22 @@ class ConfigurationManager @Inject constructor(
                 ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS) // Missing email address means missing account...
         }.orEmpty()
 
+    private fun shouldWarnWrongAccountSettings(): Boolean =
+        // Inform that there are some MDM accounts that cannot be setup, since they dont have right email.
+        !newLenientMailAddresses.all { it?.isValidEmailAddress() ?: false } ||
+                // Here we are checking for wrong settings that are not fatally wrong, since they
+                // arrived to the provisioning settings.
+                // This means the case of an account not yet set on the device with wrong settings,
+                // which is actually a stopper for this account setup.
+                provisioningSettings.hasAnyAccountWithWrongSettings()
+
+    private val newLenientMailAddresses: List<String?> =
+        restrictionsManager.applicationRestrictions.getParcelableArray(
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+        )?.map {
+            (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
+                ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+        }.orEmpty()
 
     private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
         provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()
