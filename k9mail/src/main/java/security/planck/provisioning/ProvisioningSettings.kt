@@ -7,7 +7,7 @@ import javax.inject.Singleton
 @Singleton
 class ProvisioningSettings @Inject constructor() {
     var provisioningUrl: String? = null
-    var accountsProvisionList = mutableListOf<AccountProvisioningSettings>()
+    val accountsProvisionList = mutableListOf<AccountProvisioningSettings>()
 
     fun hasValidMailSettings(): Boolean =
         accountsProvisionList.firstOrNull()?.isValid() ?: false
@@ -44,6 +44,14 @@ data class AccountProvisioningSettings(
     var oAuthType: OAuthProviderType? = null,
     var provisionedMailSettings: AccountMailSettingsProvision? = null
 ) {
-    fun isValid(): Boolean = email.isValidEmailAddress() &&
-            provisionedMailSettings?.isValidForProvision() == true
+    /**
+     * isValid
+     *
+     * Check for validity of these settings.
+     * Note that the email address regex is **not** checked because no settings are
+     * created with an invalid address.
+     *
+     * @return true if valid, false otherwise.
+     */
+    fun isValid(): Boolean = provisionedMailSettings?.isValidForProvision() == true
 }
