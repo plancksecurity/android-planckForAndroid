@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningScope
 import security.planck.provisioning.ProvisioningSettings
 import security.planck.provisioning.findAccountsToRemove
@@ -71,16 +70,10 @@ class ConfigurationManager @Inject constructor(
         provisioningScope: ProvisioningScope = ProvisioningScope.AllSettings,
     ): Result<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         kotlin.runCatching {
-            val restrictions = restrictionsManager.applicationRestrictions
-            if (provisioningScope == ProvisioningScope.FirstStartup
-                && !isProvisionAvailable(restrictions)
-            ) {
-                throw ProvisioningFailedException("Provisioning data is missing")
-            }
-
             mapRestrictions(
                 provisioningScope.manifestEntryFilter(restrictionsManager.manifestRestrictions),
-                restrictions.apply { provisioningScope.restrictionFilter(this) },
+                restrictionsManager.applicationRestrictions
+                    .apply { provisioningScope.restrictionFilter(this) },
                 provisioningScope.allowModifyAccountProvisioningSettings
             )
             saveAppSettings()
@@ -123,16 +116,6 @@ class ConfigurationManager @Inject constructor(
         provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()
                 && provisioningScope != ProvisioningScope.FirstStartup
                 && provisioningScope != ProvisioningScope.Startup
-
-    private fun isProvisionAvailable(restrictions: Bundle): Boolean {
-        return restrictions.keySet().containsAll(
-            setOf(
-                RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
-            )
-        ) && (restrictions.getParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS)
-            ?.firstOrNull() as? Bundle)
-            ?.containsKey(RESTRICTION_ACCOUNT_MAIL_SETTINGS) ?: false
-    }
 
     private fun mapRestrictions(
         entries: List<RestrictionEntry>,

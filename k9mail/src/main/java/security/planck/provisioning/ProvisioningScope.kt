@@ -17,6 +17,10 @@ sealed class ProvisioningScope {
 
     object FirstStartup : ProvisioningScope() {
         override val manifestEntryFilter = ::getProvisioningManifestEntries
+        override val restrictionFilter: Bundle.() -> Unit = {
+            if (!isProvisionAvailable())
+                throw ProvisioningFailedException("Provisioning data is missing")
+        }
         override val allowModifyAccountProvisioningSettings: Boolean = false
     }
 
@@ -81,5 +85,15 @@ sealed class ProvisioningScope {
                 ) == accountEmail
             }?.toTypedArray()
         )
+    }
+
+    protected fun Bundle.isProvisionAvailable(): Boolean {
+        return keySet().containsAll(
+            setOf(
+                RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
+            )
+        ) && (getParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS)
+            ?.firstOrNull() as? Bundle)
+            ?.containsKey(RESTRICTION_ACCOUNT_MAIL_SETTINGS) ?: false
     }
 }
