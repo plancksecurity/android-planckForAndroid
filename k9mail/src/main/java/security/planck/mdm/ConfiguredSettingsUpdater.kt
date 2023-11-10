@@ -78,7 +78,12 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS ->
-                saveAccountsSettings(restrictions, entry, allowModifyAccountProvisioningSettings, purgeAccountSettings)
+                saveAccountsSettings(
+                    restrictions,
+                    entry,
+                    allowModifyAccountProvisioningSettings,
+                    purgeAccountSettings
+                )
         }
     }
 
@@ -88,6 +93,9 @@ class ConfiguredSettingsUpdater @Inject constructor(
         allowModifyAccountProvisioningSettings: Boolean,
         purgeAccountSettings: Boolean,
     ) {
+        if (purgeAccountSettings) {
+            resetProvisioningAccountSettingsInitially()
+        }
         val newMailAddresses = mutableListOf<String>()
         restrictions.getParcelableArray(entry.key)
             ?.forEach { // get the parcelable array for accounts settings
@@ -104,6 +112,13 @@ class ConfiguredSettingsUpdater @Inject constructor(
             }
         if (purgeAccountSettings) {
             purgeProvisioningAccountSettings(newMailAddresses)
+        }
+    }
+
+    private fun resetProvisioningAccountSettingsInitially() {
+        provisioningSettings.accountsProvisionList.removeIf { setting ->
+            setting.email !in preferences.accountsAllowingIncomplete
+                .mapNotNull { it.email }
         }
     }
 
