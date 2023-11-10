@@ -45,6 +45,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         restrictions: Bundle,
         entry: RestrictionEntry,
         allowModifyAccountProvisioningSettings: Boolean,
+        purgeAccountSettings: Boolean,
     ) {
         when (entry.key) {
             RESTRICTION_PROVISIONING_URL ->
@@ -77,7 +78,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS ->
-                saveAccountsSettings(restrictions, entry, allowModifyAccountProvisioningSettings)
+                saveAccountsSettings(restrictions, entry, allowModifyAccountProvisioningSettings, purgeAccountSettings)
         }
     }
 
@@ -85,6 +86,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         restrictions: Bundle,
         entry: RestrictionEntry,
         allowModifyAccountProvisioningSettings: Boolean,
+        purgeAccountSettings: Boolean,
     ) {
         val newMailAddresses = mutableListOf<String>()
         restrictions.getParcelableArray(entry.key)
@@ -100,7 +102,9 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     )
                 }
             }
-        purgeProvisioningAccountSettings(newMailAddresses)
+        if (purgeAccountSettings) {
+            purgeProvisioningAccountSettings(newMailAddresses)
+        }
     }
 
     private fun purgeProvisioningAccountSettings(newEmailAddresses: List<String>) {

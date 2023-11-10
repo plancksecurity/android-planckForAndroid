@@ -74,7 +74,8 @@ class ConfigurationManager @Inject constructor(
                 provisioningScope.manifestEntryFilter(restrictionsManager.manifestRestrictions),
                 restrictionsManager.applicationRestrictions
                     .apply { provisioningScope.restrictionFilter(this) },
-                provisioningScope.allowModifyAccountProvisioningSettings
+                provisioningScope.allowModifyAccountProvisioningSettings,
+                provisioningScope.purgeAccountSettings
             )
             saveAppSettings()
             saveAccounts()
@@ -121,9 +122,15 @@ class ConfigurationManager @Inject constructor(
         entries: List<RestrictionEntry>,
         restrictions: Bundle,
         allowModifyAccountProvisioningSettings: Boolean,
+        purgeAccountSettings: Boolean,
     ) {
         entries.forEach { entry ->
-            settingsUpdater.update(restrictions, entry, allowModifyAccountProvisioningSettings)
+            settingsUpdater.update(
+                restrictions,
+                entry,
+                allowModifyAccountProvisioningSettings,
+                purgeAccountSettings
+            )
         }
     }
 

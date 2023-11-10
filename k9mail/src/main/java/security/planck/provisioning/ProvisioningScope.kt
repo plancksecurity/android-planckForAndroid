@@ -14,6 +14,7 @@ sealed class ProvisioningScope {
     open val manifestEntryFilter: (List<RestrictionEntry>) -> List<RestrictionEntry> = { it }
     open val restrictionFilter: Bundle.() -> Unit = {}
     open val allowModifyAccountProvisioningSettings = true
+    open val purgeAccountSettings = true
 
     object FirstStartup : ProvisioningScope() {
         override val manifestEntryFilter = ::getProvisioningManifestEntries
@@ -42,6 +43,7 @@ sealed class ProvisioningScope {
         override val manifestEntryFilter = ::getAccountsManifestEntries
         override val restrictionFilter: Bundle.() -> Unit =
             { filterAccountsRestrictionsToSingleAccount(email) }
+        override val purgeAccountSettings: Boolean = false
     }
 
     protected fun getProvisioningManifestEntries(
