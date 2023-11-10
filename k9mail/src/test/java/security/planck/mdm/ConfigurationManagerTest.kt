@@ -137,7 +137,7 @@ class ConfigurationManagerTest : RobolectricTest() {
     @Test
     fun `loadConfigurationsSuspend() with AllAccountSettings updates settings with account restrictions`() =
         runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.AllAccountSettings)
+            val result = manager.loadConfigurationsSuspend(ProvisioningScope.AllAccountsSettings)
 
 
             assertTrue(result.isSuccess)
