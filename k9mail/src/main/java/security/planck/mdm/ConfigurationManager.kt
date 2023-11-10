@@ -103,7 +103,7 @@ class ConfigurationManager @Inject constructor(
 
                 is ProvisioningScope.SingleAccountSettings -> {
                     entries = accountsManifestEntries
-                    filterAccountsRestrictionsToSingleAccount(restrictions, provisioningScope.email)
+                    restrictions.filterAccountsRestrictionsToSingleAccount(provisioningScope.email)
                 }
             }
 
@@ -158,13 +158,12 @@ class ConfigurationManager @Inject constructor(
             it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
         }
 
-    private fun filterAccountsRestrictionsToSingleAccount(
-        restrictions: Bundle,
+    private fun Bundle.filterAccountsRestrictionsToSingleAccount(
         accountEmail: String,
     ) {
-        restrictions.putParcelableArray(
+        putParcelableArray(
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
-            restrictions.getParcelableArray(
+            getParcelableArray(
                 RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
             )?.filter {
                 (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)?.getString(
