@@ -38,12 +38,12 @@ class ProvisioningSettings @Inject constructor() {
 }
 
 data class AccountProvisioningSettings(
+    val email: String,
     var senderName: String? = null,
     var accountDescription: String? = null,
-    var email: String? = null,
     var oAuthType: OAuthProviderType? = null,
     var provisionedMailSettings: AccountMailSettingsProvision? = null
 ) {
-    fun isValid(): Boolean = email?.isValidEmailAddress() == true &&
+    fun isValid(): Boolean = email.isValidEmailAddress() &&
             provisionedMailSettings?.isValidForProvision() == true
 }
