@@ -1,13 +1,14 @@
 package security.planck.network
 
-import android.webkit.URLUtil
+import android.util.Patterns
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.inject.Inject
 
 class UrlChecker @Inject constructor() {
 
-    fun isValidUrl(url: String?): Boolean = URLUtil.isValidUrl(URLUtil.guessUrl(url))
+    fun isValidUrl(url: String?): Boolean =
+        url?.let { Patterns.WEB_URL.matcher(url).matches() } ?: false
 
     fun isUrlReachable(urlString: String?): Boolean {
         return kotlin.runCatching {
