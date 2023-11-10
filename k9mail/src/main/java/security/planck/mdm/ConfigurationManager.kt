@@ -5,7 +5,6 @@ import android.os.Bundle
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.DispatcherProvider
-import com.fsck.k9.planck.infrastructure.extensions.modifyItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,41 +72,17 @@ class ConfigurationManager @Inject constructor(
     ): Result<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
-            val entries: List<RestrictionEntry>
-            var allowModifyAccountProvisioningSettings = true
-            when (provisioningScope) {
-                ProvisioningScope.FirstStartup -> {
-                    if (!isProvisionAvailable(restrictions)) {
-                        throw ProvisioningFailedException("Provisioning data is missing")
-                    }
-                    entries = provisioningManifestEntries
-                    allowModifyAccountProvisioningSettings = false
-                }
-
-                ProvisioningScope.Startup -> {
-                    entries = provisioningManifestEntries
-                    allowModifyAccountProvisioningSettings = false
-                }
-
-                ProvisioningScope.InitializedEngine -> {
-                    entries = initializedEngineManifestEntries
-                }
-
-                ProvisioningScope.AllAccountSettings -> {
-                    entries = accountsManifestEntries
-                }
-
-                ProvisioningScope.AllSettings -> {
-                    entries = restrictionsManager.manifestRestrictions
-                }
-
-                is ProvisioningScope.SingleAccountSettings -> {
-                    entries = accountsManifestEntries
-                    restrictions.filterAccountsRestrictionsToSingleAccount(provisioningScope.email)
-                }
+            if (provisioningScope == ProvisioningScope.FirstStartup
+                && !isProvisionAvailable(restrictions)
+            ) {
+                throw ProvisioningFailedException("Provisioning data is missing")
             }
 
-            mapRestrictions(entries, restrictions, allowModifyAccountProvisioningSettings)
+            mapRestrictions(
+                provisioningScope.manifestEntryFilter(restrictionsManager.manifestRestrictions),
+                restrictions.apply { provisioningScope.restrictionFilter(this) },
+                provisioningScope.allowModifyAccountProvisioningSettings
+            )
             saveAppSettings()
             saveAccounts()
         }.onSuccess {
@@ -126,7 +101,7 @@ class ConfigurationManager @Inject constructor(
     }
 
     private fun shouldWarnWrongAccountSettings(): Boolean =
-        // Inform that there are some MDM accounts that cannot be setup, since they dont have right email.
+    // Inform that there are some MDM accounts that cannot be setup, since they dont have right email.
         // This is done mainly because we don't have yet feedback to MDM implemented.
         newMailAddressesIncludingFailures.any { it == null } ||
                 // Here we are checking for wrong settings that are not fatally wrong, since they
@@ -148,46 +123,6 @@ class ConfigurationManager @Inject constructor(
         provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()
                 && provisioningScope != ProvisioningScope.FirstStartup
                 && provisioningScope != ProvisioningScope.Startup
-
-    private val initializedEngineManifestEntries: List<RestrictionEntry>
-        get() = restrictionsManager.manifestRestrictions
-            .filter { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
-
-    private val accountsManifestEntries: List<RestrictionEntry>
-        get() = restrictionsManager.manifestRestrictions.filter {
-            it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
-        }
-
-    private fun Bundle.filterAccountsRestrictionsToSingleAccount(
-        accountEmail: String,
-    ) {
-        putParcelableArray(
-            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
-            getParcelableArray(
-                RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
-            )?.filter {
-                (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)?.getString(
-                    RESTRICTION_ACCOUNT_EMAIL_ADDRESS
-                ) == accountEmail
-            }?.toTypedArray()
-        )
-    }
-
-    private val provisioningManifestEntries: List<RestrictionEntry>
-        get() = restrictionsManager.manifestRestrictions
-            // ignore media keys from MDM before PlanckProvider has been initialized
-            .filter { it.key in PROVISIONING_RESTRICTIONS }
-            .modifyItems( // filter account settings needed
-                findItem = { it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS }
-            ) { item ->
-                item.apply {
-                    this.restrictions.first().apply {
-                        this.restrictions = this.restrictions.filter {
-                            it.key in ACCOUNT_PROVISIONING_RESTRICTIONS
-                        }.toTypedArray()
-                    }
-                }
-            }
 
     private fun isProvisionAvailable(restrictions: Bundle): Boolean {
         return restrictions.keySet().containsAll(
