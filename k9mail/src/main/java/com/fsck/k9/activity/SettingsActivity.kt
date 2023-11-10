@@ -18,7 +18,6 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
-import androidx.activity.viewModels
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceFragmentCompat
@@ -54,11 +53,8 @@ import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
-import security.planck.mdm.RestrictionsViewModel
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
-import security.planck.provisioning.ProvisioningSettings
-import security.planck.provisioning.findNextAccountToInstall
 import security.planck.sync.SyncRepository
 import security.planck.ui.about.AboutActivity
 import security.planck.ui.intro.startOnBoarding
@@ -119,12 +115,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     lateinit var resourcesProvider: ResourcesProvider
     @Inject
     lateinit var syncRepository: SyncRepository
-    @Inject
-    lateinit var provisioningSettings: ProvisioningSettings
-    @Inject
-    lateinit var preferences: Preferences
-
-    private val restrictionsViewModel: RestrictionsViewModel by viewModels()
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -324,13 +314,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun setupAddAccountButton() {
+        addAccountButton?.setOnClickListener { onAddNewAccount() }
+    }
 
-        if (k9.isRunningOnWorkProfile && provisioningSettings.findNextAccountToInstall(preferences) == null) {
-            addAccountButton?.isVisible = false
-        } else {
-            addAccountButton?.isVisible = true
-            addAccountButton?.setOnClickListener { onAddNewAccount() }
-        }
+    private fun displayAddAccountButton(displayButton: Boolean) {
+        addAccountButton?.isVisible = displayButton
     }
 
     private fun initializeActionBar() {
@@ -385,7 +373,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
         refresh()
         StorageManager.getInstance(application).addListener(storageListener)
-        startObservingRestrictionsChanges()
+        if (k9.isRunningOnWorkProfile) {
+            startObservingRestrictionsChanges()
+        } else {
+            displayAddAccountButton(true)
+        }
     }
 
     private fun startObservingRestrictionsChanges() {
@@ -395,6 +387,9 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
                     updatedRestrictions()
                 }
             }
+        }
+        restrictionsViewModel.nextAccountToInstall.observe(this) {
+            displayAddAccountButton(it != null)
         }
     }
 
@@ -406,6 +401,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
     private fun stopObservingRestrictionsChanges() {
         restrictionsViewModel.restrictionsUpdated.removeObservers(this)
+        restrictionsViewModel.nextAccountToInstall.removeObservers(this)
     }
 
     private enum class ACCOUNT_LOCATION {
@@ -1207,7 +1203,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun updatedRestrictions() {
-        setupAddAccountButton()
         val fragment = supportFragmentManager
             .findFragmentById(R.id.generalSettingsContainer) as? GeneralSettingsFragment
         fragment?.refreshPreferences()

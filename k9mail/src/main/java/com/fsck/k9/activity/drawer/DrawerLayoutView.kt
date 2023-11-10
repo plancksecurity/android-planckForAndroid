@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -19,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.BuildConfig
-import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -39,8 +39,6 @@ import security.planck.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import security.planck.foldable.folders.displayers.LevelItemActionListener
 import security.planck.foldable.folders.model.LevelListItem
 import security.planck.foldable.folders.util.LevelListBuilder
-import security.planck.provisioning.ProvisioningSettings
-import security.planck.provisioning.findNextAccountToInstall
 import security.planck.ui.PlanckUIUtils
 import security.planck.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
@@ -50,8 +48,6 @@ class DrawerLayoutView @Inject constructor(
     private val drawerFolderPopulator: DrawerFolderPopulator,
     private val drawerLayoutPresenter: DrawerLayoutPresenter,
     private val messagingController: MessagingController,
-    private val provisioningSettings: ProvisioningSettings,
-    private val preferences: Preferences,
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -410,15 +406,14 @@ class DrawerLayoutView @Inject constructor(
             drawerLayout.closeDrawers()
             messageListView.editAccount()
         }
-
-        if (BuildConfig.IS_ENTERPRISE && provisioningSettings.findNextAccountToInstall(preferences) == null) {
-            addAccountContainer.visibility = View.GONE
-        } else {
-            addAccountContainer.setOnClickListener {
-                drawerLayout.closeDrawers()
-                AccountSetupBasics.actionNewAccount(context)
-            }
+        addAccountContainer.setOnClickListener {
+            drawerLayout.closeDrawers()
+            AccountSetupBasics.actionNewAccount(context)
         }
+    }
+
+    fun displayAddAccountButton(display: Boolean) {
+        addAccountContainer.isVisible = display
     }
 
     fun setDrawerEnabled(enabled: Boolean) {
