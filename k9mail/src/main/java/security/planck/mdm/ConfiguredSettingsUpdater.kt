@@ -101,8 +101,10 @@ class ConfiguredSettingsUpdater @Inject constructor(
         accountBundle: Bundle,
         allowModifyAccountProvisioningSettings: Boolean
     ) {
+        val accountEmail = getAccountEmail(accountBundle) ?: return
         accountEntry.restrictions.forEach { accountSettingEntry ->
             saveAccountSetting(
+                accountEmail,
                 accountSettingEntry,
                 accountBundle,
                 allowModifyAccountProvisioningSettings
@@ -111,11 +113,11 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveAccountSetting(
+        accountEmail: String,
         accountSettingEntry: RestrictionEntry,
         accountBundle: Bundle,
         allowModifyAccountProvisioningSettings: Boolean
     ) {
-        val accountEmail = getAccountEmail(accountBundle) ?: return
         val account = preferences.accounts.find { it.email == accountEmail }
         when (accountSettingEntry.key) {
             RESTRICTION_ACCOUNT_DESCRIPTION ->
