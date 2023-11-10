@@ -110,7 +110,6 @@ class ConfigurationManager @Inject constructor(
             mapRestrictions(entries, restrictions, allowModifyAccountProvisioningSettings)
             saveAppSettings()
             saveAccounts()
-            purgeProvisioningAccountSettings()
         }.onSuccess {
             if (shouldActOnAccountsRemoved(provisioningScope)) {
                 if (k9.isRunningInForeground) {
@@ -126,35 +125,23 @@ class ConfigurationManager @Inject constructor(
         }
     }
 
-    private fun purgeProvisioningAccountSettings() {
-        provisioningSettings.accountsProvisionList.removeIf {
-            it.email !in getNewMailAddresses()
-        }
-    }
-
-    private fun getNewMailAddresses(): List<String> =
-        restrictionsManager.applicationRestrictions.getParcelableArray(
-            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
-        )?.mapNotNull {
-            (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
-                ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS) // Missing email address means missing account...
-        }.orEmpty()
-
     private fun shouldWarnWrongAccountSettings(): Boolean =
         // Inform that there are some MDM accounts that cannot be setup, since they dont have right email.
-        !newLenientMailAddresses.all { it?.isValidEmailAddress() ?: false } ||
+        // This is done mainly because we don't have yet feedback to MDM implemented.
+        newMailAddressesIncludingFailures.any { it == null } ||
                 // Here we are checking for wrong settings that are not fatally wrong, since they
                 // arrived to the provisioning settings.
                 // This means the case of an account not yet set on the device with wrong settings,
                 // which is actually a stopper for this account setup.
                 provisioningSettings.hasAnyAccountWithWrongSettings()
 
-    private val newLenientMailAddresses: List<String?> =
+    private val newMailAddressesIncludingFailures: List<String?> =
         restrictionsManager.applicationRestrictions.getParcelableArray(
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
         )?.map {
             (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
                 ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+                ?.takeIf { email -> email.isValidEmailAddress() }
         }.orEmpty()
 
     private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
