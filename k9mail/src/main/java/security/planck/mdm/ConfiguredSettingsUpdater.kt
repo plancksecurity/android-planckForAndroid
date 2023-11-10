@@ -379,10 +379,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
         }
     }
 
-    private fun getCurrentEmail(accountEmail: String): String? =
-        preferences.accounts.find { it.email == accountEmail }?.email
-            ?: provisioningSettings.getAccountSettingsByAddress(accountEmail)?.email
-
     private fun updateAuthType(
         entry: RestrictionEntry,
         bundle: Bundle?,
