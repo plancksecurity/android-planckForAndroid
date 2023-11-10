@@ -19,6 +19,7 @@ import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings
 import security.planck.provisioning.SimpleMailSettings
+import security.planck.provisioning.isValidEmailAddress
 import security.planck.provisioning.isValidPort
 import security.planck.provisioning.toConnectionSecurity
 import security.planck.provisioning.toSimpleMailSettings
@@ -317,7 +318,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun getAccountEmail(
         accountBundle: Bundle
     ): String? = accountBundle.getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
-        ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+        ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)?.takeIf { it.isValidEmailAddress() } // missing or wrong email means account is ignored
 
     private fun saveAccountMailSettings(
         restrictions: Bundle,
