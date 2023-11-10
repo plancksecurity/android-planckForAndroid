@@ -34,7 +34,7 @@ sealed class ProvisioningScope {
     }
 
     object AllSettings : ProvisioningScope()
-    object AllAccountSettings : ProvisioningScope() {
+    object AllAccountsSettings : ProvisioningScope() {
         override val manifestEntryFilter = ::getAccountsManifestEntries
     }
 
