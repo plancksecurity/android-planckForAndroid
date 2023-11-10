@@ -19,7 +19,6 @@ import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings
 import security.planck.provisioning.SimpleMailSettings
-import security.planck.provisioning.isValidEmailAddress
 import security.planck.provisioning.isValidPort
 import security.planck.provisioning.toConnectionSecurity
 import security.planck.provisioning.toSimpleMailSettings
@@ -326,26 +325,20 @@ class ConfiguredSettingsUpdater @Inject constructor(
         accountEmail: String,
         allowModifyAccountProvisioningSettings: Boolean,
     ) {
-        val account = preferences.accounts.find { it.email == accountEmail }
         val bundle = restrictions.getBundle(entry.key)
         var incoming = SimpleMailSettings()
         var outgoing = SimpleMailSettings()
         saveOAuthProviderType(entry, bundle, accountEmail, allowModifyAccountProvisioningSettings)
         val oAuthProviderType = getCurrentOAuthProvider(accountEmail)
 
-        saveEmail(entry, bundle, accountEmail, allowModifyAccountProvisioningSettings)
-
-        val email = getCurrentEmail(accountEmail)
-
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                     incoming = saveAccountMailSettings(
-                        account,
                         bundle,
                         restriction,
                         oAuthProviderType,
-                        email,
+                        accountEmail,
                         true,
                         allowModifyAccountProvisioningSettings
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
@@ -353,11 +346,10 @@ class ConfiguredSettingsUpdater @Inject constructor(
 
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
                     outgoing = saveAccountMailSettings(
-                        account,
                         bundle,
                         restriction,
                         oAuthProviderType,
-                        email,
+                        accountEmail,
                         false,
                         allowModifyAccountProvisioningSettings
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
@@ -370,25 +362,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 outgoing,
             )
         }
-    }
-
-    private fun saveEmail(
-        entry: RestrictionEntry,
-        bundle: Bundle?,
-        accountEmail: String,
-        allowModifyAccountProvisioningSettings: Boolean,
-    ) {
-        entry.restrictions
-            .firstOrNull {
-                it.key == RESTRICTION_ACCOUNT_EMAIL_ADDRESS
-            }?.let { restriction ->
-                saveAccountEmailAddress(
-                    bundle,
-                    restriction,
-                    accountEmail,
-                    allowModifyAccountProvisioningSettings
-                )
-            }
     }
 
     private fun getCurrentEmail(accountEmail: String): String? =
@@ -466,42 +439,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         preferences.accounts.find { it.email == accountEmail }?.mandatoryOAuthProviderType
             ?: provisioningSettings.getAccountSettingsByAddress(accountEmail)?.oAuthType
 
-    private fun saveAccountEmailAddress(
-        restrictions: Bundle?,
-        entry: RestrictionEntry,
-        accountEmail: String,
-        allowModifyAccountProvisioningSettings: Boolean,
-    ) { // TODO: Email is never modified, we need to add account to provisioning and remove account...
-        updateNullableString(
-            restrictions,
-            entry,
-            accepted = { newValue ->
-                !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
-            },
-            default = { null }
-        ) { newEmail ->
-            provisioningSettings.modifyOrAddAccountSettingsByAddress(accountEmail) {
-                it.email = newEmail
-            }
-        }
-        if (allowModifyAccountProvisioningSettings) {
-            preferences.accounts.find { it.email == accountEmail }?.let {
-                updateAccountString(
-                    account = it,
-                    restrictions,
-                    entry,
-                    accepted = { newValue ->
-                        !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
-                    }
-                ) { newValue ->
-                    email = newValue
-                }
-            }
-        }
-    }
-
     private fun saveAccountMailSettings(
-        account: Account?,
         restrictions: Bundle?,
         entry: RestrictionEntry,
         oAuthProviderType: OAuthProviderType?,
@@ -509,6 +447,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         incoming: Boolean,
         allowModifyAccountProvisioningSettings: Boolean,
     ): SimpleMailSettings {
+        val account = preferences.accounts.find { it.email == email }
         val currentSettings: ServerSettings? =
             if (incoming) getCurrentIncomingSettings(account)
             else getCurrentOutgoingSettings(account)
