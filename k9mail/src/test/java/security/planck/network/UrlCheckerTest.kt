@@ -14,6 +14,7 @@ class UrlCheckerTest : RobolectricTest() {
         assertTrue(urlChecker.isValidUrl("outlook.office365.com"))
         assertFalse(urlChecker.isValidUrl("planck"))
         assertFalse(urlChecker.isValidUrl(" "))
+        assertFalse(urlChecker.isValidUrl(""))
         assertFalse(urlChecker.isValidUrl(null))
     }
 
