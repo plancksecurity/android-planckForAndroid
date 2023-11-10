@@ -86,22 +86,35 @@ class ConfiguredSettingsUpdater @Inject constructor(
         entry: RestrictionEntry,
         allowModifyAccountProvisioningSettings: Boolean,
     ) {
+        val newMailAddresses = mutableListOf<String>()
         restrictions.getParcelableArray(entry.key)
             ?.forEach { // get the parcelable array for accounts settings
-                saveAccountSettings(
-                    entry.restrictions.first(),
-                    it as Bundle,
-                    allowModifyAccountProvisioningSettings
-                )
+                val accountBundle = it as Bundle
+                getAccountEmail(accountBundle)?.let { accountEmail ->
+                    newMailAddresses.add(accountEmail)
+                    saveAccountSettings(
+                        accountEmail,
+                        entry.restrictions.first(),
+                        accountBundle,
+                        allowModifyAccountProvisioningSettings
+                    )
+                }
             }
+        purgeProvisioningAccountSettings(newMailAddresses)
+    }
+
+    private fun purgeProvisioningAccountSettings(newEmailAddresses: List<String>) {
+        provisioningSettings.accountsProvisionList.removeIf {
+            it.email !in newEmailAddresses
+        }
     }
 
     private fun saveAccountSettings(
+        accountEmail: String,
         accountEntry: RestrictionEntry,
         accountBundle: Bundle,
         allowModifyAccountProvisioningSettings: Boolean
     ) {
-        val accountEmail = getAccountEmail(accountBundle) ?: return
         accountEntry.restrictions.forEach { accountSettingEntry ->
             saveAccountSetting(
                 accountEmail,
@@ -318,7 +331,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private fun getAccountEmail(
         accountBundle: Bundle
     ): String? = accountBundle.getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
-        ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)?.takeIf { it.isValidEmailAddress() } // missing or wrong email means account is ignored
+        ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+        ?.takeIf { it.isValidEmailAddress() } // missing or wrong email means account is ignored
 
     private fun saveAccountMailSettings(
         restrictions: Bundle,
