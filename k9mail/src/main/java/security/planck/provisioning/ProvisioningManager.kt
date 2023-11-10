@@ -70,7 +70,7 @@ class ProvisioningManager @Inject constructor(
 
     private fun removeAccountsRemovedFromMDM() {
         if (!firstStartup) {
-            provisioningSettings.findAccountsToRemove(preferences).forEach { account ->
+            provisioningSettings.findAccountsToRemove().forEach { account ->
                 account.localStore.delete()
                 preferences.deleteAccount(account)
                 provisioningSettings.removeAccountSettingsByAddress(account.email)

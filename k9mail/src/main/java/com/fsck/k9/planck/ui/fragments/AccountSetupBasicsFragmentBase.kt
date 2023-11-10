@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.provisioning.AccountProvisioningSettings
 import security.planck.provisioning.ProvisioningSettings
-import security.planck.provisioning.findNextAccountToInstall
 import security.planck.ui.toolbar.ToolBarCustomizer
 import timber.log.Timber
 import java.net.URISyntaxException
@@ -54,7 +53,7 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
     lateinit var k9: K9
 
     protected val accountProvisioningSettings: AccountProvisioningSettings? by lazy {
-        provisioningSettings.findNextAccountToInstall(preferences)
+        provisioningSettings.findNextAccountToInstall()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

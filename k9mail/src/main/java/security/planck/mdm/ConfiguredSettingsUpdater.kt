@@ -16,11 +16,13 @@ import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
+import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings
 import security.planck.provisioning.SimpleMailSettings
 import security.planck.provisioning.isValidEmailAddress
 import security.planck.provisioning.isValidPort
+import security.planck.provisioning.isValidServer
 import security.planck.provisioning.toConnectionSecurity
 import security.planck.provisioning.toSimpleMailSettings
 import timber.log.Timber
@@ -37,6 +39,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val planck: Provider<PlanckProvider>,
+    private val urlChecker: UrlChecker = UrlChecker(),
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings,
 ) {
@@ -557,7 +560,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
         updateString(
             bundle,
             restriction,
-            accepted = { it.isNotBlank() }
+            accepted = { it.isValidServer(urlChecker) }
         ) {
             simpleSettings.server = it
         }
