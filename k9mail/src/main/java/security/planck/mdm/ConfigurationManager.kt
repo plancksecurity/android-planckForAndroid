@@ -128,7 +128,7 @@ class ConfigurationManager @Inject constructor(
 
     private fun purgeProvisioningAccountSettings() {
         provisioningSettings.accountsProvisionList.removeIf {
-            it.email != null && it.email !in getNewMailAddresses()
+            it.email !in getNewMailAddresses()
         }
     }
 
@@ -137,7 +137,7 @@ class ConfigurationManager @Inject constructor(
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
         )?.mapNotNull {
             (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
-                ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+                ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS) // Missing email address means missing account...
         }.orEmpty()
 
 
