@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.fsck.k9.Account
 import com.fsck.k9.R
-import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
+import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
@@ -106,6 +106,22 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     private fun configureSelectAuthScreen() {
         setWelcomeBackground()
         hideNavigationBar()
+        setupTermsAndConditionsView()
+    }
+
+    private fun setupTermsAndConditionsView() {
+        termsAndConditionTextView.text = HtmlCompat.fromHtml(
+            "<a href=\"#\">Terms and Conditions</a>",
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+        termsAndConditionTextView.setOnClickListener {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(MessageList.TERMS_AND_CONDITIONS_LINK)
+                )
+            )
+        }
     }
 
     private fun hideNavigationBar() {
@@ -114,13 +130,6 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
             requireActivity().window.decorView
         ).apply {
             hide(WindowInsetsCompat.Type.navigationBars())
-        }
-        termsAndConditionTextView.text = HtmlCompat.fromHtml(
-            "<a href=\"#\">Terms and Conditions</a>",
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        )
-        termsAndConditionTextView.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
         }
     }
 
