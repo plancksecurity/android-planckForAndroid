@@ -108,6 +108,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private void initializeFragmentListeners() {
         initializeAuditLogAlertFragmentListener();
         initializeAccountsRemovedFragmentListener();
+        initializeWrongMdmAccountSettingsFragmentListener();
     }
 
     private void initializeAuditLogAlertFragmentListener() {
@@ -137,6 +138,17 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 (requestKey, bundle) -> {
                     if (requestKey.equals(MDM_ACCOUNTS_REMOVED_DIALOG_TAG)) {
                         restartApp();
+                    }
+                });
+    }
+
+    private void initializeWrongMdmAccountSettingsFragmentListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                WRONG_MDM_ACCOUNT_SETTINGS_DIALOG_TAG,
+                this,
+                (requestKey, bundle) -> {
+                    if (requestKey.equals(WRONG_MDM_ACCOUNT_SETTINGS_DIALOG_TAG)) {
+                        restrictionsViewModel.resetWrongAccountSettingsWarning();
                     }
                 });
     }

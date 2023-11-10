@@ -19,7 +19,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class RestrictionsViewModel @Inject constructor(
-    configurationManager: ConfigurationManager,
+    private val configurationManager: ConfigurationManager,
     private val preferences: Preferences,
     private val provisioningSettings: ProvisioningSettings,
 ) : ViewModel() {
@@ -68,4 +68,8 @@ class RestrictionsViewModel @Inject constructor(
 
     private fun findNextAccountToInstall() =
         provisioningSettings.findNextAccountToInstall(preferences)
+
+    fun resetWrongAccountSettingsWarning() {
+        configurationManager.resetWrongAccountSettingsWarning()
+    }
 }
