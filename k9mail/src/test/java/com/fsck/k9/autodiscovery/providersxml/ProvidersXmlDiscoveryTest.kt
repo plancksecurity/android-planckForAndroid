@@ -1,6 +1,7 @@
 package com.fsck.k9.autodiscovery.providersxml
 
 import androidx.test.core.app.ApplicationProvider
+import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.AuthType
@@ -12,6 +13,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Test
+import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings
 import security.planck.provisioning.SimpleMailSettings
@@ -22,7 +24,9 @@ class ProvidersXmlDiscoveryTest : RobolectricTest() {
     private val xmlProvider = ProvidersXmlProvider(ApplicationProvider.getApplicationContext())
     private val oAuthConfigurationProvider = createOAuthConfigurationProvider()
     private val dnsRecordsResolver: MiniDnsRecordsResolver = mockk(relaxed = true)
-    private val provisioningSettings = ProvisioningSettings()
+    private val preferences: Preferences = mockk()
+    private val urlChecker: UrlChecker = mockk()
+    private val provisioningSettings = ProvisioningSettings(preferences, urlChecker)
     private val providersXmlDiscovery = ProvidersXmlDiscovery(xmlProvider, oAuthConfigurationProvider, dnsRecordsResolver, provisioningSettings)
 
     @Test
@@ -111,7 +115,9 @@ class ProvidersXmlDiscoveryTest : RobolectricTest() {
 
     @Test
     fun `discover should take into account the provisioned settings`() {
-        provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(sampleSettings, sampleSettings)
+        provisioningSettings.modifyOrAddAccountSettingsByAddress("user@unknown.com" ) {
+            it.provisionedMailSettings = AccountMailSettingsProvision(sampleSettings, sampleSettings)
+        }
         val connectionSettings =
             providersXmlDiscovery.discover("user@unknown.com", null)
 
