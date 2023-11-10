@@ -41,6 +41,6 @@ fun ProvisioningSettings.findNextAccountToInstall(
 
 fun ProvisioningSettings.findAccountsToRemove(
     preferences: Preferences
-): List<Account> = preferences.accounts.filter { account ->
+): List<Account> = preferences.accountsAllowingIncomplete.filter { account ->
     account.email != null && accountsProvisionList.none { it.email == account.email }
 }
