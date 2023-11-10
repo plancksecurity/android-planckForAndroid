@@ -39,6 +39,7 @@ class ConfigurationManager @Inject constructor(
 
     private val wrongAccountSettingsMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val wrongAccountSettingsFlow = wrongAccountSettingsMF.asStateFlow()
+    private var wrongAccountSettingsWarningDone = false
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -88,7 +89,8 @@ class ConfigurationManager @Inject constructor(
                 }
             }
 
-            if (!wrongAccountSettingsMF.value && shouldWarnWrongAccountSettings()) {
+            if (!wrongAccountSettingsWarningDone && shouldWarnWrongAccountSettings()) {
+                wrongAccountSettingsWarningDone = true
                 wrongAccountSettingsMF.value = true // only set once and seen if app in foreground.
             }
         }
@@ -148,5 +150,9 @@ class ConfigurationManager @Inject constructor(
 
     private fun sendRemoteConfig() {
         restrictionsUpdatedMF.value = restrictionsUpdatedMF.value + 1
+    }
+
+    fun resetWrongAccountSettingsWarning() {
+        wrongAccountSettingsMF.value = false
     }
 }
