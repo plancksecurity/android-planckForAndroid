@@ -1,11 +1,10 @@
 package security.planck.provisioning
 
 import android.util.Patterns
-import com.fsck.k9.Account
-import com.fsck.k9.Preferences
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import security.planck.mdm.toMdmAuthType
+import security.planck.network.UrlChecker
 
 const val CONNECTION_SECURITY_NONE = "NONE"
 const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
@@ -16,6 +15,8 @@ fun ServerSettings.toSimpleMailSettings(): SimpleMailSettings = SimpleMailSettin
 )
 
 fun Int.isValidPort() = this in 1..65535
+
+fun String.isValidServer(urlChecker: UrlChecker) = urlChecker.isValidUrl(this)
 
 fun String.isValidEmailAddress() = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
@@ -30,17 +31,4 @@ fun String.toConnectionSecurity(): ConnectionSecurity? = when {
         ConnectionSecurity.SSL_TLS_REQUIRED
 
     else -> null
-}
-
-fun ProvisioningSettings.findNextAccountToInstall(
-    preferences: Preferences,
-): AccountProvisioningSettings? =
-    accountsProvisionList.filter { it.isValid() }.firstOrNull {
-        it.email !in preferences.accounts.map { account -> account.email }
-    }
-
-fun ProvisioningSettings.findAccountsToRemove(
-    preferences: Preferences
-): List<Account> = preferences.accountsAllowingIncomplete.filter { account ->
-    account.email != null && accountsProvisionList.none { it.email == account.email }
 }

@@ -4,14 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fsck.k9.Preferences
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import security.planck.provisioning.AccountProvisioningSettings
 import security.planck.provisioning.ProvisioningSettings
-import security.planck.provisioning.findNextAccountToInstall
 import javax.inject.Inject
 
 /**
@@ -20,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class RestrictionsViewModel @Inject constructor(
     private val configurationManager: ConfigurationManager,
-    private val preferences: Preferences,
     private val provisioningSettings: ProvisioningSettings,
 ) : ViewModel() {
     private val restrictionsUpdatedLiveData: MutableLiveData<Event<Boolean>> =
@@ -67,7 +64,7 @@ class RestrictionsViewModel @Inject constructor(
     }
 
     private fun findNextAccountToInstall() =
-        provisioningSettings.findNextAccountToInstall(preferences)
+        provisioningSettings.findNextAccountToInstall()
 
     fun resetWrongAccountSettingsWarning() {
         configurationManager.resetWrongAccountSettingsWarning()

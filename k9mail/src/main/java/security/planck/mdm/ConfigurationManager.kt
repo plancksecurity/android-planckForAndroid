@@ -14,7 +14,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import security.planck.provisioning.ProvisioningScope
 import security.planck.provisioning.ProvisioningSettings
-import security.planck.provisioning.findAccountsToRemove
 import security.planck.provisioning.isValidEmailAddress
 import timber.log.Timber
 import javax.inject.Inject
@@ -116,7 +115,7 @@ class ConfigurationManager @Inject constructor(
         }.orEmpty()
 
     private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
-        provisioningSettings.findAccountsToRemove(preferences).isNotEmpty()
+        provisioningSettings.findAccountsToRemove().isNotEmpty()
                 && !provisioningScope.isStartup
 
     private fun mapRestrictions(
