@@ -23,6 +23,7 @@ import com.fsck.k9.mailstore.FolderType
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.testutils.ReturnBehavior
 import foundation.pEp.jniadapter.Identity
+import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -31,21 +32,24 @@ import io.mockk.spyk
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import security.planck.network.UrlChecker
+import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.CONNECTION_SECURITY_NONE
 import security.planck.provisioning.CONNECTION_SECURITY_SSL_TLS
 import security.planck.provisioning.CONNECTION_SECURITY_STARTTLS
 import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.toSimpleMailSettings
 import java.util.Vector
 import javax.inject.Provider
 
 class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
-    private val urlChecker: UrlChecker = mockk()
+    private val urlChecker: UrlChecker = spyk(UrlChecker())
     private val account: Account = mockk(relaxed = true)
     private val provisioningSettings: ProvisioningSettings =
         spyk(ProvisioningSettings(preferences, urlChecker))
@@ -117,8 +121,8 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     @Before
     fun setUp() {
         every { preferences.accounts }.answers { listOf(account) }
+        every { preferences.accountsAllowingIncomplete }.answers { listOf(account) }
         every { account.email }.returns(ACCOUNT_EMAIL)
-        every { urlChecker.isValidUrl(any()) }.returns(true)
         every { folderRepositoryManager.getFolderRepository(account) }.returns(folderRepository)
         every { folderRepository.getRemoteFolders() }.returns(
             listOf(
@@ -165,20 +169,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
 
         verify { provisioningSettings.provisioningUrl = "defaultUrl" }
-    }
-
-    private fun callUpdate(
-        restrictions: Bundle,
-        entry: RestrictionEntry,
-        allowModifyAccountProvisioningSettings: Boolean = true,
-        purgeAccountSettings: Boolean = true,
-    ) {
-        updater.update(
-            restrictions,
-            entry,
-            allowModifyAccountProvisioningSettings,
-            purgeAccountSettings
-        )
     }
 
     @Test
@@ -270,7 +260,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     @Test
     fun `update() takes the value for enable planck privacy protection from the restriction entry if not provided in bundle`() {
         stubInitialServerSettings()
-        val restrictions = getAccountsBundle({ putMailSettingsBundle() })
+        val restrictions = getSingleAccountBundle { putMailSettingsBundle() }
         val entry = getEnablePlanckProtectionEntry(value = true)
 
 
@@ -291,7 +281,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         value: Boolean = true,
         locked: Boolean = true
     ): Bundle = getSimpleAccountBooleanLockedSettingBundle(
-        accountEmail = ACCOUNT_EMAIL,
         mainKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION,
         valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
         lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
@@ -303,7 +292,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         value: Boolean = true,
         locked: Boolean = true
     ): RestrictionEntry = getSimpleAccountBooleanLockedSettingEntry(
-        accountEmail = ACCOUNT_EMAIL,
         mainKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION,
         valueKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_VALUE,
         lockedKey = RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION_LOCKED,
@@ -311,6 +299,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         locked = locked
     )
 
+    @Suppress("sameParameterValue")
     private fun getSimpleBooleanLockedSettingBundle(
         mainKey: String,
         valueKey: String,
@@ -324,27 +313,8 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         )
     }
 
-//   private fun getSimpleAccountBooleanLockedSettingBundle(
-//       accountEmail: String = ACCOUNT_EMAIL,
-//       mainKey: String,
-//       valueKey: String,
-//       lockedKey: String,
-//       value: Boolean,
-//       locked: Boolean,
-//   ): Bundle = Bundle().apply {
-//       putParcelableArray(
-//           RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
-//           arrayOf(
-//               Bundle().apply {
-//                   putMailSettingsBundle(accountEmail)
-//                   putSimpleBooleanLockedSettingBundle(mainKey, valueKey, value, lockedKey, locked)
-//               }
-//           )
-//       )
-//   }
-
+    @Suppress("sameParameterValue")
     private fun getSimpleAccountBooleanLockedSettingBundle(
-        accountEmail: String = ACCOUNT_EMAIL,
         mainKey: String,
         valueKey: String,
         lockedKey: String,
@@ -352,30 +322,10 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         locked: Boolean,
     ): Bundle = getAccountsBundle(
         {
-            putMailSettingsBundle(accountEmail)
+            putMailSettingsBundle()
             putSimpleBooleanLockedSettingBundle(mainKey, valueKey, value, lockedKey, locked)
         },
     )
-
-    private fun getSimpleAccountBooleanLockedSettingBundle2(
-        accountEmail: String,
-        mainKey: String,
-        valueKey: String,
-        lockedKey: String,
-        value: Boolean,
-        locked: Boolean,
-    ): Bundle = getSingleAccountBundle(
-        getMailSettingsBundlePair(),
-        getSimpleBooleanLockedSettingBundlePair(mainKey, valueKey, value, lockedKey, locked),
-    )
-
-    private fun getSimpleBooleanLockedSettingBundlePair(
-        mainKey: String,
-        valueKey: String,
-        value: Boolean,
-        lockedKey: String,
-        locked: Boolean
-    ) = mainKey to createSimpleBooleanLockedSettingBundle(valueKey, value, lockedKey, locked)
 
     private fun getAccountsBundle(vararg accountBundles: Bundle.() -> Unit): Bundle =
         Bundle().apply {
@@ -389,18 +339,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     private fun getSingleAccountBundle(accountBlock: Bundle.() -> Unit): Bundle =
         getAccountsBundle(accountBlock)
-
-
-    fun getSingleAccountBundle(vararg pairs: Pair<String, Any?>) =
-        Bundle().apply {
-            putParcelableArray(
-                RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
-                arrayOf(
-                    bundleOf(*pairs)
-                )
-            )
-        }
-
 
     private fun Bundle.putSimpleBooleanLockedSettingBundle(
         mainKey: String,
@@ -440,8 +378,8 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
             )
         )
 
+    @Suppress("sameParameterValue")
     private fun getSimpleAccountBooleanLockedSettingEntry(
-        accountEmail: String,
         mainKey: String,
         valueKey: String,
         lockedKey: String,
@@ -928,46 +866,15 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     @Test
-    fun `update() takes the value for composition defaults from the provided restrictions`() {
+    fun `update() takes the value for account composition defaults from the provided restrictions`() {
         val restrictions = getAccountsBundle(
             {
                 putMailSettingsBundle()
-                putBundle(
-                    RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
-                    Bundle().apply {
-                        putString(RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, "sender name")
-                        putBoolean(RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, false)
-                        putString(RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, "signature")
-                        putBoolean(
-                            RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
-                            true
-                        )
-                    }
-                )
+                putCompositionDefaultsBundle()
             }
         )
         val entry = getAccountsManifestEntry(
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME,
-                        "default sender name"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE,
-                        true
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE,
-                        "default signature"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
-                        false
-                    ),
-                )
-            )
+            getCompositionDefaultsEntry()
         )
 
 
@@ -975,42 +882,144 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
 
         verify {
-            account.name = "sender name"
+            account.name = NEW_SENDER_NAME
             account.signatureUse = false
-            account.signature = "signature"
+            account.signature = NEW_SIGNATURE
             account.isSignatureBeforeQuotedText = true
         }
     }
 
     @Test
-    fun `update() takes the value for composition defaults from the restriction entry if not provided in bundle, and sender name defaults to email`() {
+    fun `update() takes the value for account composition defaults for all accounts in the provided restrictions`() {
+        val secondAccount = stubSecondAccount()
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle(email = ACCOUNT_EMAIL)
+                putCompositionDefaultsBundle()
+            },
+            {
+                putMailSettingsBundle(email = SECOND_EMAIL)
+                putCompositionDefaultsBundle()
+            },
+        )
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry)
+
+
+        verify {
+            account.name = NEW_SENDER_NAME
+            account.signatureUse = false
+            account.signature = NEW_SIGNATURE
+            account.isSignatureBeforeQuotedText = true
+        }
+        verify {
+            secondAccount.name = NEW_SENDER_NAME
+            secondAccount.signatureUse = false
+            secondAccount.signature = NEW_SIGNATURE
+            secondAccount.isSignatureBeforeQuotedText = true
+        }
+    }
+
+    @Test
+    fun `update() does not update account composition defaults sender if false is passed for allowModifyAccountProvisioningSettings`() {
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle()
+                putCompositionDefaultsBundle()
+            }
+        )
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+        verify {
+            account.signatureUse = false
+            account.signature = NEW_SIGNATURE
+            account.isSignatureBeforeQuotedText = true
+        }
+        verify(exactly = 0) { account.name = any() }
+    }
+
+    @Test
+    fun `update() takes the value for provisioning sender name from the provided restrictions`() {
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle()
+                putCompositionDefaultsBundle()
+            }
+        )
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningSenderName(NEW_SENDER_NAME)
+    }
+
+    @Test
+    fun `update() sets or updates account provisioning sender name for all accounts in the provided restrictions`() {
+        stubNoAccounts()
+
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle(email = ACCOUNT_EMAIL)
+                putCompositionDefaultsBundle()
+            },
+            {
+                putMailSettingsBundle(email = SECOND_EMAIL)
+                putCompositionDefaultsBundle()
+            },
+        )
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningSenderName(NEW_SENDER_NAME, NEW_SENDER_NAME)
+    }
+
+    @Test
+    fun `update() takes the value for provisioning sender name even if false is passed for allowModifyAccountProvisioningSettings`() {
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle()
+                putCompositionDefaultsBundle()
+            }
+        )
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+        verifyProvisioningSenderName(NEW_SENDER_NAME)
+    }
+
+    @Test
+    fun `update() takes the value for account composition defaults from the restriction entry if not provided in bundle, and sender name defaults to email`() {
         val restrictions = getAccountsBundle(
             {
                 putMailSettingsBundle()
             }
         )
         val entry = getAccountsManifestEntry(
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME,
-                        "default sender name"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE,
-                        true
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE,
-                        "default signature"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
-                        false
-                    ),
-                )
-            )
+            getCompositionDefaultsEntry()
         )
 
 
@@ -1020,10 +1029,27 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         verify {
             account.name = ACCOUNT_EMAIL
             account.signatureUse = true
-            account.signature = "default signature"
+            account.signature = DEFAULT_SIGNATURE
             account.isSignatureBeforeQuotedText = false
-            //provisioningSettings.accountsProvisionList.firstOrNull()?.senderName = null
         }
+    }
+
+    @Test
+    fun `update() uses null as default for provisioning sender name if not provided in bundle - later it will be set to the email as default so there is no hardcoded default`() {
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle()
+            }
+        )
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningSenderName(null)
     }
 
     @Test
@@ -1031,43 +1057,15 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         val restrictions = getAccountsBundle(
             {
                 putMailSettingsBundle()
-                putBundle(
-                    RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
-                    Bundle().apply {
-                        putString(RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, "")
-                        putBoolean(RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, false)
-                        putString(RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, "    ")
-                        putBoolean(
-                            RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
-                            true
-                        )
-                    }
+                putCompositionDefaultsBundle(
+                    senderName = "",
+                    signature = "    "
                 )
             }
         )
 
         val entry = getAccountsManifestEntry(
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME,
-                        "default sender name"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE,
-                        true
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE,
-                        "default signature"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
-                        false
-                    ),
-                )
-            )
+            getCompositionDefaultsEntry()
         )
 
 
@@ -1084,6 +1082,72 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
             account.signature = any()
         }
     }
+
+    @Test
+    fun `update() accepts nearly any string value for provisioning sender name`() { // TODO: Verify later on it is defaulted to email in this case
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle()
+                putCompositionDefaultsBundle(
+                    senderName = "",
+                    signature = "    "
+                )
+            }
+        )
+
+        val entry = getAccountsManifestEntry(
+            getCompositionDefaultsEntry()
+        )
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningSenderName("")
+    }
+
+    private fun Bundle.putCompositionDefaultsBundle(
+        senderName: String? = NEW_SENDER_NAME,
+        useSignature: Boolean = false,
+        signature: String? = NEW_SIGNATURE,
+        signatureBeforeQuotedMessage: Boolean = true,
+    ) {
+        putBundle(
+            RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
+            Bundle().apply {
+                putString(RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, senderName)
+                putBoolean(RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, useSignature)
+                putString(RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, signature)
+                putBoolean(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
+                    signatureBeforeQuotedMessage
+                )
+            }
+        )
+    }
+
+    private fun getCompositionDefaultsEntry(): RestrictionEntry =
+        RestrictionEntry.createBundleEntry(
+            RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
+            arrayOf(
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME,
+                    DEFAULT_SENDER_NAME
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE,
+                    true
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE,
+                    DEFAULT_SIGNATURE
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
+                    false
+                ),
+            )
+        )
 
     @Test
     fun `update() takes the value for default folders from the provided restrictions`() {
@@ -1233,7 +1297,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     fun `update() takes the value for provisioning mail settings from the provided restrictions`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
-        every { preferences.accounts }.returns(emptyList())
 
         val restrictions = getAccountsBundle(
             { putMailSettingsBundle() }
@@ -1285,10 +1348,148 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     @Test
+    fun `update() updates all accounts mail settings from the provided restrictions`() {
+        stubInitialServerSettings(account = account)
+        stubAccountSettersAndGetters(account)
+        val newAccount: Account = stubSecondAccount()
+
+        val restrictions = getAccountsBundle(
+            { putMailSettingsBundle(email = ACCOUNT_EMAIL) },
+            { putMailSettingsBundle(email = SECOND_EMAIL) }
+        )
+        val entry = getAccountsManifestEntry(
+            getMailRestrictionEntry()
+        )
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            AccountMailSettingsVerification(
+                expectedEmail = ACCOUNT_EMAIL,
+                expectedIncomingPort = NEW_PORT,
+                expectedIncomingServer = NEW_SERVER,
+                expectedConnectionSecurity = NEW_SECURITY_TYPE,
+                expectedUserName = NEW_USER_NAME,
+                expectedAuthType = AuthType.PLAIN,
+                expectedOAuthProvider = OAuthProviderType.GOOGLE,
+                account = account
+            ),
+            AccountMailSettingsVerification(
+                expectedEmail = SECOND_EMAIL,
+                expectedIncomingPort = NEW_PORT,
+                expectedIncomingServer = NEW_SERVER,
+                expectedConnectionSecurity = NEW_SECURITY_TYPE,
+                expectedUserName = NEW_USER_NAME,
+                expectedAuthType = AuthType.PLAIN,
+                expectedOAuthProvider = OAuthProviderType.GOOGLE,
+                account = newAccount
+            ),
+        )
+    }
+
+    private fun stubSecondAccount(): Account {
+        val newAccount: Account = mockk(relaxed = true) {
+            every { email }.returns(SECOND_EMAIL)
+        }
+        stubInitialServerSettings(account = newAccount)
+        stubAccountSettersAndGetters(newAccount)
+
+        every { preferences.accounts }.answers { listOf(account, newAccount) }
+        every { preferences.accountsAllowingIncomplete }.answers { listOf(account, newAccount) }
+        return newAccount
+    }
+
+    @Test
+    fun `update() does not update the mail settings for account if false is passed for allowModifyAccountProvisioningSettings`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getAccountsBundle(
+            { putMailSettingsBundle() }
+        )
+        val entry = getAccountsManifestEntry(
+            getMailRestrictionEntry()
+        )
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+        verify(exactly = 0) {
+            RemoteStore.createStoreUri(any())
+            Transport.createTransportUri(any())
+            account.storeUri = any()
+            account.transportUri = any()
+            account.mandatoryOAuthProviderType = any()
+        }
+        verify { urlChecker.isValidUrl(NEW_SERVER) }
+    }
+
+    @Test
+    fun `update() still takes the value for provisioning mail settings from the provided restrictions even if false is passed for allowModifyAccountProvisioningSettings`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getAccountsBundle(
+            { putMailSettingsBundle() }
+        )
+        val entry = getAccountsManifestEntry(
+            getMailRestrictionEntry()
+        )
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = ACCOUNT_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() takes the default value for provisioning mail settings from current accounts even if false is passed for allowModifyAccountProvisioningSettings`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getAccountsBundle(
+            { putMailSettingsBundle() }
+        )
+        val entry = getAccountsManifestEntry(
+            getMailRestrictionEntry()
+        )
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+
+        verify {
+            RemoteStore.decodeStoreUri("storeUri")
+            Transport.decodeTransportUri("transportUri")
+        }
+        verifyProvisioningMailSettings(
+            expectedEmail = ACCOUNT_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
     fun `update() uses specific values for provisioning mail settings when using a Gmail account with OAuth auth type`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
-        every { preferences.accounts }.returns(emptyList())
 
         val restrictions = getAccountsBundle(
             {
@@ -1357,7 +1558,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     @Test
     fun `update() uses given values for provisioning mail settings when using certificate auth`() {
         stubInitialServerSettings()
-        every { preferences.accounts }.returns(emptyList())
 
         val restrictions = getAccountsBundle(
             {
@@ -1390,7 +1590,6 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     fun `update() uses given values for account mail settings when using certificate auth`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
-
         val restrictions = getAccountsBundle(
             {
                 putMailSettingsBundle(
@@ -1421,17 +1620,16 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     @Test
     fun `update() uses given values for provisioning mail settings when using encrypted password auth`() {
         stubInitialServerSettings()
-        every { preferences.accounts }.returns(emptyList())
-
-        val restrictions = getMailSettingsBundle(authType = AuthType.CRAM_MD5)
-        val entry = getMailRestrictionEntry()
+        val restrictions =
+            getAccountsBundle({ putMailSettingsBundle(authType = AuthType.CRAM_MD5) })
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
 
 
         callUpdate(restrictions, entry)
 
 
         verifyProvisioningMailSettings(
-            expectedEmail = NEW_EMAIL,
+            expectedEmail = ACCOUNT_EMAIL,
             expectedIncomingPort = NEW_PORT,
             expectedIncomingServer = NEW_SERVER,
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
@@ -1474,77 +1672,70 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     @Test
-    fun `update() takes the value for provisioning mail settings from the restriction entry if not provided in bundle`() {
+    fun `update() does not process nor add an account provisioning settings entry if account settings or email address are missing - this means removing that account if it's setup`() {
         stubInitialServerSettings()
-        every { preferences.accounts }.returns(emptyList())
 
-        val restrictions = Bundle()
-        val entry = getMailRestrictionEntry()
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(email = null) })
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
 
 
         callUpdate(restrictions, entry)
 
 
-        verifyProvisioningMailSettings(
-            expectedEmail = null,
-            expectedIncomingPort = DEFAULT_PORT,
-            expectedIncomingServer = DEFAULT_SERVER,
-            expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
-            expectedUserName = DEFAULT_USER_NAME,
-            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = DEFAULT_OAUTH_PROVIDER
-        )
+        verify { urlChecker.wasNot(called) }
+        assertTrue(provisioningSettings.accountsProvisionList.isEmpty())
     }
 
     @Test
-    fun `update() takes the value for account mail settings from the restriction entry if not provided in bundle`() {
+    fun `update() does not process nor add an account if account settings or email address are missing`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
 
-        val restrictions = Bundle()
-        val entry = getMailRestrictionEntry()
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(email = null) })
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
 
 
         callUpdate(restrictions, entry)
 
 
-        verifyAccountMailSettings(
-            expectedEmail = DEFAULT_EMAIL,
-            expectedIncomingPort = DEFAULT_PORT,
-            expectedIncomingServer = DEFAULT_SERVER,
-            expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
-            expectedUserName = DEFAULT_USER_NAME,
-            expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = DEFAULT_OAUTH_PROVIDER,
-        )
+        verify(exactly = 0) {
+            RemoteStore.decodeStoreUri(any())
+            RemoteStore.createStoreUri(any())
+            Transport.decodeTransportUri(any())
+            Transport.createTransportUri(any())
+        }
+        verify { urlChecker.wasNot(called) }
+        verify { account.wasNot(called) }
     }
 
     @Test
-    fun `update() keeps the old provisioning mail setting values for each new value that is not valid`() {
+    fun `update() keeps the provisioning mail setting values from current accounts for each new value that is not valid`() {
         stubInitialServerSettings()
-        every { preferences.accounts }.returns(emptyList())
-        every { urlChecker.isValidUrl("") }.returns(false)
 
-        val restrictions = getMailSettingsBundle(
-            //email = "malformedEmail",
-            server = "",
-            username = " ",
-            security = "wrong security",
-            port = -4
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle(
+                    email = ACCOUNT_EMAIL,
+                    server = "",
+                    username = " ",
+                    security = "wrong security",
+                    port = -4
+                )
+            }
         )
-        val entry = getMailRestrictionEntry()
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
 
 
         callUpdate(restrictions, entry)
 
 
         verifyProvisioningMailSettings(
-            expectedEmail = null,
-            expectedIncomingPort = -1,
-            expectedIncomingServer = null,
-            expectedConnectionSecurity = null,
-            expectedUserName = null,
-            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+            expectedEmail = ACCOUNT_EMAIL,
+            expectedIncomingPort = OLD_PORT,
+            expectedIncomingServer = OLD_SERVER,
+            expectedConnectionSecurity = OLD_SECURITY_TYPE,
+            expectedUserName = OLD_USER_NAME,
+            expectedAuthType = OLD_AUTH_TYPE.toMdmAuthType(),
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1553,12 +1744,11 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     fun `update() keeps the old account mail setting values for each new value that is not valid`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
-        every { urlChecker.isValidUrl("") }.returns(false)
 
         val restrictions = getAccountsBundle(
             {
                 putMailSettingsBundle(
-                    //email = "malformedEmail",
+                    email = ACCOUNT_EMAIL,
                     server = "",
                     username = " ",
                     security = "wrong security",
@@ -1578,18 +1768,46 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
             expectedIncomingServer = OLD_SERVER,
             expectedConnectionSecurity = OLD_SECURITY_TYPE,
             expectedUserName = OLD_USER_NAME,
-            expectedAuthType = AuthType.PLAIN,
+            expectedAuthType = OLD_AUTH_TYPE,
             expectedOAuthProvider = OAuthProviderType.GOOGLE,
         )
     }
 
     @Test
-    fun `update() keeps the old provisioning mail settings server if UrlChecker fails to check it`() {
+    fun `update() keeps the mail provisioning settings server from current accounts if it is badly formatted`() {
         stubInitialServerSettings()
-        every { preferences.accounts }.returns(emptyList())
-        every { urlChecker.isValidUrl(any()) }.returns(false)
 
-        val restrictions = getAccountsBundle({ putMailSettingsBundle() })
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(server = WRONG_SERVER) })
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = ACCOUNT_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = OLD_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() clears previous provisioning data for accounts that are not setup in the app, so wrong values mean default provision mail values which means null server`() {
+        stubNoAccounts()
+
+        provisioningSettings.modifyOrAddAccountSettingsByAddress(ACCOUNT_EMAIL) {
+            it.provisionedMailSettings = AccountMailSettingsProvision(
+                getInitialIncomingSettings().toSimpleMailSettings(),
+                getInitialOutgoingSettings().toSimpleMailSettings()
+            )
+            it.oAuthType = OAuthProviderType.MICROSOFT
+        }
+
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(server = WRONG_SERVER) })
         val entry = getAccountsManifestEntry(getMailRestrictionEntry())
 
 
@@ -1608,12 +1826,118 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     @Test
-    fun `update() keeps the old account mail settings server if UrlChecker fails to check it`() {
+    fun `update() clears provisioning data for accounts that do not come in restrictions bundle`() {
+        stubNoAccounts()
+
+        provisioningSettings.modifyOrAddAccountSettingsByAddress(ACCOUNT_EMAIL) {
+            it.provisionedMailSettings = AccountMailSettingsProvision(
+                getInitialIncomingSettings().toSimpleMailSettings(),
+                getInitialOutgoingSettings().toSimpleMailSettings()
+            )
+            it.oAuthType = OAuthProviderType.MICROSOFT
+        }
+
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(email = NEW_EMAIL) })
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() does not clear previous provisioning data for accounts that are not setup in the app nor accounts that do not come in restrictions bundle if false is passed for purgeAccountSettings`() {
+        stubNoAccounts()
+
+        provisioningSettings.modifyOrAddAccountSettingsByAddress(ACCOUNT_EMAIL) {
+            it.provisionedMailSettings = AccountMailSettingsProvision(
+                getInitialIncomingSettings().toSimpleMailSettings(),
+                getInitialOutgoingSettings().toSimpleMailSettings()
+            )
+            it.oAuthType = OAuthProviderType.MICROSOFT
+        }
+
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(email = NEW_EMAIL) })
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
+
+
+        callUpdate(restrictions, entry, purgeAccountSettings = false)
+
+
+        verifyProvisioningMailSettings(
+            ProvisioningMailSettingsVerification(
+                expectedEmail = ACCOUNT_EMAIL,
+                expectedIncomingPort = OLD_PORT,
+                expectedIncomingServer = OLD_SERVER,
+                expectedConnectionSecurity = OLD_SECURITY_TYPE,
+                expectedUserName = OLD_USER_NAME,
+                expectedAuthType = OLD_AUTH_TYPE.toMdmAuthType(),
+                expectedOAuthProvider = OAuthProviderType.MICROSOFT
+            ),
+            ProvisioningMailSettingsVerification(
+                expectedEmail = NEW_EMAIL,
+                expectedIncomingPort = NEW_PORT,
+                expectedIncomingServer = NEW_SERVER,
+                expectedConnectionSecurity = NEW_SECURITY_TYPE,
+                expectedUserName = NEW_USER_NAME,
+                expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+                expectedOAuthProvider = OAuthProviderType.GOOGLE
+            ),
+        )
+    }
+
+    @Test
+    fun `update() sets or updates provisioning mail settings for all accounts in restrictions bundle`() {
+        stubNoAccounts()
+
+        val restrictions = getAccountsBundle(
+            { putMailSettingsBundle(email = ACCOUNT_EMAIL) },
+            { putMailSettingsBundle(email = NEW_EMAIL) }
+        )
+        val entry = getAccountsManifestEntry(getMailRestrictionEntry())
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            ProvisioningMailSettingsVerification(
+                expectedEmail = ACCOUNT_EMAIL,
+                expectedIncomingPort = NEW_PORT,
+                expectedIncomingServer = NEW_SERVER,
+                expectedConnectionSecurity = NEW_SECURITY_TYPE,
+                expectedUserName = NEW_USER_NAME,
+                expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+                expectedOAuthProvider = OAuthProviderType.GOOGLE
+            ),
+            ProvisioningMailSettingsVerification(
+                expectedEmail = NEW_EMAIL,
+                expectedIncomingPort = NEW_PORT,
+                expectedIncomingServer = NEW_SERVER,
+                expectedConnectionSecurity = NEW_SECURITY_TYPE,
+                expectedUserName = NEW_USER_NAME,
+                expectedAuthType = security.planck.mdm.AuthType.PLAIN,
+                expectedOAuthProvider = OAuthProviderType.GOOGLE
+            ),
+        )
+    }
+
+    @Test
+    fun `update() keeps the old account mail settings server if if its badly formatted`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
-        every { urlChecker.isValidUrl(any()) }.returns(false)
 
-        val restrictions = getAccountsBundle({ putMailSettingsBundle() })
+        val restrictions = getAccountsBundle({ putMailSettingsBundle(server = WRONG_SERVER) })
         val entry = getAccountsManifestEntry(getMailRestrictionEntry())
 
 
@@ -1632,9 +1956,8 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     @Test
-    fun `update() keeps the old provisioning email address if provided email address has no right format`() {
+    fun `update() does not process nor add an account provisioning settings entry if provided email address has no right format`() {
         stubInitialServerSettings()
-        every { preferences.accounts }.returns(emptyList())
 
         val restrictions = getAccountsBundle({ putMailSettingsBundle(email = "malformedEmail") })
         val entry = getAccountsManifestEntry(getMailRestrictionEntry())
@@ -1643,19 +1966,12 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         callUpdate(restrictions, entry)
 
 
-        verifyProvisioningMailSettings(
-            expectedEmail = null,
-            expectedIncomingPort = NEW_PORT,
-            expectedIncomingServer = NEW_SERVER,
-            expectedConnectionSecurity = NEW_SECURITY_TYPE,
-            expectedUserName = NEW_USER_NAME,
-            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
-        )
+        verify { urlChecker.wasNot(called) }
+        assertTrue(provisioningSettings.accountsProvisionList.isEmpty())
     }
 
     @Test
-    fun `update() keeps the old account email address if provided email address has no right format`() {
+    fun `update() does not process nor add an account if provided email address has no right format`() {
         stubInitialServerSettings()
         stubAccountSettersAndGetters()
 
@@ -1666,15 +1982,13 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         callUpdate(restrictions, entry)
 
 
-        verifyAccountMailSettings(
-            expectedEmail = CURRENT_EMAIL,
-            expectedIncomingServer = NEW_SERVER,
-            expectedIncomingPort = NEW_PORT,
-            expectedConnectionSecurity = NEW_SECURITY_TYPE,
-            expectedUserName = NEW_USER_NAME,
-            expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
-        )
+        verify(exactly = 0) {
+            RemoteStore.decodeStoreUri(any())
+            RemoteStore.createStoreUri(any())
+            Transport.decodeTransportUri(any())
+            Transport.createTransportUri(any())
+        }
+        verify { account.wasNot(called) }
     }
 
     @Test
@@ -1824,7 +2138,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     @Test
     fun `update() takes the value for account description from the provided restrictions`() {
         every { account.lockableDescription }.returns(ManageableSetting(null, false))
-        val restrictions = getAccountDescriptionBundle()
+        val restrictions = getAccountDescriptionBundleWithMailSettings()
         val entry = getAccountDescriptionEntry()
 
 
@@ -1832,6 +2146,94 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
 
         verify { account.setDescription(ManageableSetting(NEW_ACCOUNT_DESCRIPTION, true)) }
+    }
+
+    @Test
+    fun `update() takes the value for account description for all accounts in the provided restrictions`() {
+        val secondAccount = stubSecondAccount()
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        every { secondAccount.lockableDescription }.returns(ManageableSetting(null, false))
+
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle(email = ACCOUNT_EMAIL)
+                putAccountDescriptionBundle()
+            },
+            {
+                putMailSettingsBundle(email = SECOND_EMAIL)
+                putAccountDescriptionBundle()
+            },
+        )
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verify { account.setDescription(ManageableSetting(NEW_ACCOUNT_DESCRIPTION, true)) }
+        verify { secondAccount.setDescription(ManageableSetting(NEW_ACCOUNT_DESCRIPTION, true)) }
+    }
+
+    @Test
+    fun `update() does not take the value for account description from the provided restrictions if false is passed for allowModifyAccountProvisioningSettings`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountDescriptionBundleWithMailSettings()
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+        verify(exactly = 0) { account.setDescription(any<ManageableSetting<String?>>()) }
+    }
+
+    @Test
+    fun `update() takes the value for account description in provisioning settings from the provided restrictions`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountDescriptionBundleWithMailSettings()
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningDescription(NEW_ACCOUNT_DESCRIPTION)
+    }
+
+    @Test
+    fun `update() sets or updates account provisioning description for all accounts in the provided restrictions`() {
+        stubNoAccounts()
+
+        val restrictions = getAccountsBundle(
+            {
+                putMailSettingsBundle(email = ACCOUNT_EMAIL)
+                putAccountDescriptionBundle()
+            },
+            {
+                putMailSettingsBundle(email = SECOND_EMAIL)
+                putAccountDescriptionBundle()
+            },
+        )
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningDescription(NEW_ACCOUNT_DESCRIPTION, NEW_ACCOUNT_DESCRIPTION)
+    }
+
+    @Test
+    fun `update() takes the value for account description in provisioning settings from the provided restrictions even if false is passed for allowModifyAccountProvisioningSettings`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountDescriptionBundleWithMailSettings()
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry, allowModifyAccountProvisioningSettings = false)
+
+
+        verifyProvisioningDescription(NEW_ACCOUNT_DESCRIPTION)
     }
 
     @Test
@@ -1847,7 +2249,65 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         verify { account.setDescription(ManageableSetting(ACCOUNT_EMAIL, true)) }
     }
 
-    private fun getAccountDescriptionBundle(
+    @Test
+    fun `update() sets null as default account description in provisioning settings if not provided in restrictions - do not have a default provisioning description because later on it is taken from email`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountsBundle({ putMailSettingsBundle() })
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningDescription(null)
+    }
+
+    @Test
+    fun `update() accepts nearly any value for account description`() { // TODO: check this behavior in the app and contrast with sender name
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountDescriptionBundleWithMailSettings("")
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verify { account.setDescription(ManageableSetting("", true)) }
+    }
+
+    @Test
+    fun `update() accepts nearly any value for account description in provisioning settings`() {
+        every { account.lockableDescription }.returns(ManageableSetting(null, false))
+        val restrictions = getAccountDescriptionBundleWithMailSettings("")
+        val entry = getAccountDescriptionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verifyProvisioningDescription("")
+    }
+
+    private fun stubNoAccounts() {
+        every { preferences.accounts }.answers { emptyList() }
+        every { preferences.accountsAllowingIncomplete }.answers { emptyList() }
+    }
+
+    private fun callUpdate(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+        allowModifyAccountProvisioningSettings: Boolean = true,
+        purgeAccountSettings: Boolean = true,
+    ) {
+        updater.update(
+            restrictions,
+            entry,
+            allowModifyAccountProvisioningSettings,
+            purgeAccountSettings
+        )
+    }
+
+    private fun getAccountDescriptionBundleWithMailSettings(
         value: String = NEW_ACCOUNT_DESCRIPTION,
         locked: Boolean = true
     ) = getSimpleAccountStringLockedSettingBundle(
@@ -1857,6 +2317,19 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         value = value,
         locked = locked
     )
+
+    private fun Bundle.putAccountDescriptionBundle(
+        value: String = NEW_ACCOUNT_DESCRIPTION,
+        locked: Boolean = true
+    ) {
+        putSimpleStringLockerSettingBundle(
+            mainKey = RESTRICTION_ACCOUNT_DESCRIPTION,
+            valueKey = RESTRICTION_ACCOUNT_DESCRIPTION_VALUE,
+            lockedKey = RESTRICTION_ACCOUNT_DESCRIPTION_LOCKED,
+            value = value,
+            locked = locked
+        )
+    }
 
     private fun getAccountDescriptionEntry(
         value: String = "",
@@ -1870,6 +2343,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
             locked = locked
         )
 
+    @Suppress("sameParameterValue")
     private fun getSimpleStringLockedSettingBundle(
         mainKey: String,
         valueKey: String,
@@ -1915,6 +2389,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         )
     }
 
+    @Suppress("sameParameterValue")
     private fun getSimpleStringLockedSettingEntry(
         mainKey: String,
         valueKey: String,
@@ -1947,7 +2422,9 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
             )
         )
 
-    private fun stubAccountSettersAndGetters() {
+    private fun stubAccountSettersAndGetters(
+        account: Account = this.account
+    ) {
         val oAuthProviderSlot = slot<OAuthProviderType>()
         every { account.mandatoryOAuthProviderType = capture(oAuthProviderSlot) }.answers {
             every { account.mandatoryOAuthProviderType }.returns(oAuthProviderSlot.captured)
@@ -1955,6 +2432,30 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         val emailSlot = slot<String>()
         every { account.email = capture(emailSlot) }.answers {
             every { account.email }.returns(emailSlot.captured)
+        }
+    }
+
+    private fun verifyProvisioningDescription(
+        vararg expectedDescription: String?
+    ) {
+        assertEquals(expectedDescription.size, provisioningSettings.accountsProvisionList.size)
+        expectedDescription.forEachIndexed { index, description ->
+            assertEquals(
+                description,
+                provisioningSettings.accountsProvisionList[index].accountDescription
+            )
+        }
+    }
+
+    private fun verifyProvisioningSenderName(
+        vararg expectedSenderName: String?
+    ) {
+        assertEquals(expectedSenderName.size, provisioningSettings.accountsProvisionList.size)
+        expectedSenderName.forEachIndexed { index, senderName ->
+            assertEquals(
+                senderName,
+                provisioningSettings.accountsProvisionList[index].senderName
+            )
         }
     }
 
@@ -1969,45 +2470,56 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         expectedAuthType: security.planck.mdm.AuthType,
         expectedOAuthProvider: OAuthProviderType?
     ) {
-        with(provisioningSettings.accountsProvisionList.first()) {
-            assertEquals(expectedEmail, email)
-            assertEquals(expectedIncomingPort, provisionedMailSettings?.incoming?.port)
-            assertEquals(expectedOutgoingPort, provisionedMailSettings?.outgoing?.port)
-            assertEquals(expectedIncomingServer, provisionedMailSettings?.incoming?.server)
-            assertEquals(expectedOutgoingServer, provisionedMailSettings?.outgoing?.server)
-            assertEquals(expectedConnectionSecurity, provisionedMailSettings?.incoming?.connectionSecurity)
-            assertEquals(expectedConnectionSecurity, provisionedMailSettings?.outgoing?.connectionSecurity)
-            assertEquals(expectedUserName, provisionedMailSettings?.incoming?.userName)
-            assertEquals(expectedUserName, provisionedMailSettings?.outgoing?.userName)
-            assertEquals(expectedAuthType, provisionedMailSettings?.incoming?.authType)
-            assertEquals(expectedAuthType, provisionedMailSettings?.outgoing?.authType)
-            assertEquals(expectedOAuthProvider, oAuthType)
-        }
-//        val slot = slot<AccountMailSettingsProvision>()
-//        verify {
-//            provisioningSettings.accountsProvisionList.first().provisionedMailSettings =
-//                capture(slot)
-//        }
-//
-//        val provision = slot.captured
-//        assertEquals(expectedIncomingPort, provision.incoming.port)
-//        assertEquals(expectedIncomingServer, provision.incoming.server)
-//        assertEquals(expectedConnectionSecurity, provision.incoming.connectionSecurity)
-//        assertEquals(expectedUserName, provision.incoming.userName)
-//        assertEquals(expectedAuthType, provision.incoming.authType)
-//
-//        assertEquals(expectedOutgoingPort, provision.outgoing.port)
-//        assertEquals(expectedOutgoingServer, provision.outgoing.server)
-//        assertEquals(expectedConnectionSecurity, provision.outgoing.connectionSecurity)
-//        assertEquals(expectedUserName, provision.outgoing.userName)
-//        assertEquals(expectedAuthType, provision.outgoing.authType)
-//
-//        assertEquals(
-//            expectedOAuthProvider,
-//            provisioningSettings.accountsProvisionList.first().oAuthType
-//        )
-//        assertEquals(expectedEmail, provisioningSettings.accountsProvisionList.first().email)
+        verifyProvisioningMailSettings(
+            ProvisioningMailSettingsVerification(
+                expectedEmail, expectedIncomingPort, expectedOutgoingPort, expectedIncomingServer,
+                expectedOutgoingServer, expectedConnectionSecurity, expectedUserName,
+                expectedAuthType, expectedOAuthProvider
+            )
+        )
     }
+
+    private fun verifyProvisioningMailSettings(
+        vararg verifications: ProvisioningMailSettingsVerification,
+    ) {
+        assertEquals(provisioningSettings.accountsProvisionList.size, verifications.size)
+        verifications.forEachIndexed { index, verification ->
+            with(verification) {
+                with(provisioningSettings.accountsProvisionList[index]) {
+                    assertEquals(expectedEmail, email)
+                    assertEquals(expectedIncomingPort, provisionedMailSettings?.incoming?.port)
+                    assertEquals(expectedOutgoingPort, provisionedMailSettings?.outgoing?.port)
+                    assertEquals(expectedIncomingServer, provisionedMailSettings?.incoming?.server)
+                    assertEquals(expectedOutgoingServer, provisionedMailSettings?.outgoing?.server)
+                    assertEquals(
+                        expectedConnectionSecurity,
+                        provisionedMailSettings?.incoming?.connectionSecurity
+                    )
+                    assertEquals(
+                        expectedConnectionSecurity,
+                        provisionedMailSettings?.outgoing?.connectionSecurity
+                    )
+                    assertEquals(expectedUserName, provisionedMailSettings?.incoming?.userName)
+                    assertEquals(expectedUserName, provisionedMailSettings?.outgoing?.userName)
+                    assertEquals(expectedAuthType, provisionedMailSettings?.incoming?.authType)
+                    assertEquals(expectedAuthType, provisionedMailSettings?.outgoing?.authType)
+                    assertEquals(expectedOAuthProvider, oAuthType)
+                }
+            }
+        }
+    }
+
+    private data class ProvisioningMailSettingsVerification(
+        val expectedEmail: String?,
+        val expectedIncomingPort: Int,
+        val expectedOutgoingPort: Int = expectedIncomingPort,
+        val expectedIncomingServer: String?,
+        val expectedOutgoingServer: String? = expectedIncomingServer,
+        val expectedConnectionSecurity: ConnectionSecurity?,
+        val expectedUserName: String?,
+        val expectedAuthType: security.planck.mdm.AuthType,
+        val expectedOAuthProvider: OAuthProviderType?
+    )
 
     private fun verifyAccountMailSettings(
         expectedEmail: String?,
@@ -2018,93 +2530,74 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         expectedConnectionSecurity: ConnectionSecurity,
         expectedUserName: String?,
         expectedAuthType: AuthType,
-        expectedOAuthProvider: OAuthProviderType?
+        expectedOAuthProvider: OAuthProviderType?,
+        account: Account = this.account
     ) {
-        val incomingSettingsSlot = slot<ServerSettings>()
-        val outgoingSettingsSlot = slot<ServerSettings>()
-        verify {
-            RemoteStore.decodeStoreUri("storeUri")
-            RemoteStore.createStoreUri(
-                capture(incomingSettingsSlot)
+        verifyAccountMailSettings(
+            AccountMailSettingsVerification(
+                expectedEmail, expectedIncomingPort, expectedOutgoingPort, expectedIncomingServer,
+                expectedOutgoingServer, expectedConnectionSecurity, expectedUserName,
+                expectedAuthType, expectedOAuthProvider, account
             )
-            Transport.decodeTransportUri("transportUri")
-            Transport.createTransportUri(
-                capture(outgoingSettingsSlot)
-            )
-
-            account.storeUri = "incomingUri"
-            account.transportUri = "outgoingUri"
-            account.mandatoryOAuthProviderType = expectedOAuthProvider
-        }
-
-        assertEquals(expectedEmail, account.email)
-
-        val newIncoming = incomingSettingsSlot.captured
-
-        assertEquals(expectedIncomingServer, newIncoming.host)
-        assertEquals(expectedIncomingPort, newIncoming.port)
-        assertEquals(expectedConnectionSecurity, newIncoming.connectionSecurity)
-        assertEquals(expectedUserName, newIncoming.username)
-        assertEquals(expectedAuthType, newIncoming.authenticationType)
-
-        val newOutgoing = outgoingSettingsSlot.captured
-
-        assertEquals(expectedOutgoingServer, newOutgoing.host)
-        assertEquals(expectedOutgoingPort, newOutgoing.port)
-        assertEquals(expectedConnectionSecurity, newOutgoing.connectionSecurity)
-        assertEquals(expectedUserName, newOutgoing.username)
-        assertEquals(expectedAuthType, newOutgoing.authenticationType)
-    }
-
-    private fun getMailSettingsBundle(
-        email: String? = NEW_EMAIL,
-        authType: AuthType = AuthType.PLAIN,
-        oAuthProvider: OAuthProviderType = OAuthProviderType.GOOGLE,
-        server: String? = NEW_SERVER,
-        username: String? = NEW_USER_NAME,
-        security: String? = NEW_SECURITY_TYPE_STRING,
-        port: Int = NEW_PORT,
-    ): Bundle = Bundle().apply {
-        putParcelableArray(
-            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
-            arrayOf()
         )
-        putMailSettingsBundle(email, authType, oAuthProvider, server, username, security, port)
     }
 
-    private fun getMailSettingsBundlePair(
-        email: String? = NEW_EMAIL,
-        authType: AuthType = AuthType.PLAIN,
-        oAuthProvider: OAuthProviderType = OAuthProviderType.GOOGLE,
-        server: String? = NEW_SERVER,
-        username: String? = NEW_USER_NAME,
-        security: String? = NEW_SECURITY_TYPE_STRING,
-        port: Int = NEW_PORT,
-    ) = RESTRICTION_ACCOUNT_MAIL_SETTINGS to
-            Bundle().apply {
-                putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
-                putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, oAuthProvider.toString())
-                putBundle(
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                    bundleOf(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to port,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to security,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
+    private fun verifyAccountMailSettings(
+        vararg verifications: AccountMailSettingsVerification
+    ) {
+        assertEquals(verifications.size, preferences.accounts.size)
+        val incomingSettingsSlot = mutableListOf<ServerSettings>()
+        val outgoingSettingsSlot = mutableListOf<ServerSettings>()
+        verifications.forEachIndexed { index, verification ->
+            with(verification) {
+                verify {
+                    RemoteStore.decodeStoreUri("storeUri")
+                    RemoteStore.createStoreUri(
+                        capture(incomingSettingsSlot)
                     )
-                )
-                putBundle(
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                    bundleOf(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to port,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to security,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
+                    Transport.decodeTransportUri("transportUri")
+                    Transport.createTransportUri(
+                        capture(outgoingSettingsSlot)
                     )
-                )
+
+                    account.storeUri = "incomingUri"
+                    account.transportUri = "outgoingUri"
+                    account.mandatoryOAuthProviderType = expectedOAuthProvider
+                }
+
+                assertEquals(expectedEmail, account.email)
+
+                val newIncoming = incomingSettingsSlot[index]
+
+                assertEquals(expectedIncomingServer, newIncoming.host)
+                assertEquals(expectedIncomingPort, newIncoming.port)
+                assertEquals(expectedConnectionSecurity, newIncoming.connectionSecurity)
+                assertEquals(expectedUserName, newIncoming.username)
+                assertEquals(expectedAuthType, newIncoming.authenticationType)
+
+                val newOutgoing = outgoingSettingsSlot[index]
+
+                assertEquals(expectedOutgoingServer, newOutgoing.host)
+                assertEquals(expectedOutgoingPort, newOutgoing.port)
+                assertEquals(expectedConnectionSecurity, newOutgoing.connectionSecurity)
+                assertEquals(expectedUserName, newOutgoing.username)
+                assertEquals(expectedAuthType, newOutgoing.authenticationType)
             }
+        }
+    }
+
+    private data class AccountMailSettingsVerification(
+        val expectedEmail: String?,
+        val expectedIncomingPort: Int,
+        val expectedOutgoingPort: Int = expectedIncomingPort,
+        val expectedIncomingServer: String?,
+        val expectedOutgoingServer: String? = expectedIncomingServer,
+        val expectedConnectionSecurity: ConnectionSecurity?,
+        val expectedUserName: String?,
+        val expectedAuthType: AuthType,
+        val expectedOAuthProvider: OAuthProviderType?,
+        val account: Account
+    )
 
     private fun Bundle.putMailSettingsBundle(
         email: String? = ACCOUNT_EMAIL,
@@ -2227,7 +2720,10 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         OLD_CERTIFICATE_ALIAS
     )
 
-    private fun stubInitialServerSettings(previousOAuthProviderType: OAuthProviderType? = null) {
+    private fun stubInitialServerSettings(
+        previousOAuthProviderType: OAuthProviderType? = null,
+        account: Account = this.account
+    ) {
         val incomingSettings = getInitialIncomingSettings()
         val outgoingSettings = getInitialOutgoingSettings()
 
@@ -2247,14 +2743,13 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     companion object {
-        private const val OLD_SERVER = "oldServer"
+        private const val OLD_SERVER = "old.valid.server"
         private const val OLD_PORT = 333
         private val OLD_SECURITY_TYPE = ConnectionSecurity.NONE
         private val OLD_AUTH_TYPE = AuthType.PLAIN
         private const val OLD_USER_NAME = "oldUsername"
         private const val OLD_PASSWORD = "oldPassword"
         private const val OLD_CERTIFICATE_ALIAS = "cert"
-        private const val CURRENT_EMAIL = "current.email@example.ch"
         private const val ACCOUNT_EMAIL = "account.email@example.ch"
 
         private const val DEFAULT_SERVER = "serverDefault"
@@ -2265,8 +2760,10 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.MICROSOFT
         private val DEFAULT_AUTH_TYPE = AuthType.PLAIN
 
-        private const val NEW_EMAIL = "email@mail.ch"
+        private const val NEW_EMAIL = "new.email@mail.ch"
+        private const val SECOND_EMAIL = "second.email@mail.ch"
         private const val NEW_SERVER = "mail.server.host"
+        private const val WRONG_SERVER = "wrongserver"
         private const val NEW_USER_NAME = "username"
         private const val NEW_SECURITY_TYPE_STRING = "SSL/TLS"
         private val NEW_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
@@ -2280,5 +2777,9 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         private const val KEY_MATERIAL_2 = "keymaterial2"
         private const val WRONG_FPR = "WRONG_FPR"
         private const val NEW_ACCOUNT_DESCRIPTION = "newAccountDescription"
+        private const val NEW_SENDER_NAME = "new sender name"
+        private const val NEW_SIGNATURE = "new signature"
+        private const val DEFAULT_SENDER_NAME = "default sender name"
+        private const val DEFAULT_SIGNATURE = "default signature"
     }
 }
