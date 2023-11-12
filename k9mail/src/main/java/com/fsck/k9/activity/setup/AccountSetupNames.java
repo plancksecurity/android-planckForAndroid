@@ -172,7 +172,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     }
 
     private void loadConfigurations() {
-        configurationManager.loadConfigurationsBlocking(ProvisioningScope.AllAccountSettings.INSTANCE);
+        configurationManager.loadConfigurationsBlocking(new ProvisioningScope.SingleAccountSettings(mAccount.getEmail()));
     }
 
     @VisibleForTesting

@@ -23,8 +23,8 @@ class ProvidersXmlDiscovery @Inject constructor(
     private val provisioningSettings: ProvisioningSettings,
 ) : ConnectionSettingsDiscovery {
 
-    private val provisionedProvider: Provider?
-        get() = provisioningSettings.provisionedMailSettings?.let { mailSettings ->
+    private fun getProvisionedProvider(email: String): Provider? =
+        provisioningSettings.getAccountSettingsByAddress(email)?.provisionedMailSettings?.let { mailSettings ->
             Provider(
                 incomingUriTemplate = mailSettings.incoming.toSeverUriTemplate(outgoing = false),
                 incomingUsernameTemplate = mailSettings.incoming.userName!!,
@@ -36,7 +36,7 @@ class ProvidersXmlDiscovery @Inject constructor(
     override fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
-        val provider = provisionedProvider
+        val provider = getProvisionedProvider(email)
             ?: findProviderForDomain(domain)
             ?: findProviderForDomain(dnsRecordsResolver.getRealOrFallbackDomain(domain, oAuthProviderType))
             ?: return null

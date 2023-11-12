@@ -9,7 +9,6 @@ import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import kotlinx.coroutines.runBlocking
 import security.planck.mdm.ConfigurationManager
-import security.planck.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +16,6 @@ import javax.inject.Singleton
 class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
-    private val urlChecker: UrlChecker,
     private val configurationManager: ConfigurationManager,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
@@ -55,17 +53,27 @@ class ProvisioningManager @Inject constructor(
             !k9.isRunningOnWorkProfile -> {
                 finalizeSetup()
             }
+
             else -> {
                 firstStartup = preferences.accounts.isEmpty()
-                if (firstStartup) {
-                    configurationManager.loadConfigurationsSuspend(
-                        ProvisioningScope.FirstStartup
-                    ).flatMapSuspend {
-                        finalizeSetupAfterChecks()
-                    }
-                } else {
-                    finalizeSetup()
+                configurationManager.loadConfigurationsSuspend( // TODO: Should we check if the device is online on every startup? If we are online the app is supposed to keep last restrictions it has so it should not be needed.
+                    if (firstStartup) ProvisioningScope.FirstStartup
+                    else ProvisioningScope.Startup
+                ).mapCatching {
+                    removeAccountsRemovedFromMDM()
+                }.flatMapSuspend {
+                    finalizeSetupAfterChecks()
                 }
+            }
+        }
+    }
+
+    private fun removeAccountsRemovedFromMDM() {
+        if (!firstStartup) {
+            provisioningSettings.findAccountsToRemove().forEach { account ->
+                account.localStore.delete()
+                preferences.deleteAccount(account)
+                provisioningSettings.removeAccountSettingsByAddress(account.email)
             }
         }
     }
@@ -82,29 +90,33 @@ class ProvisioningManager @Inject constructor(
     }
 
     private suspend fun finalizeSetupAfterChecks(): Result<Unit> {
-        return performChecks().flatMapSuspend {
+        return performChecksAfterProvisioning().flatMapSuspend {
             finalizeSetup(true)
         }
     }
 
-    private fun performChecks(): Result<Unit> = when {
+    private fun performChecksAfterProvisioning(): Result<Unit> = when {
         !isDeviceOnline() -> {
             Result.failure(ProvisioningFailedException("Device is offline"))
         }
+
         areProvisionedMailSettingsInvalid() -> {
-            Log.e("MDM", "mail settings not valid: " +
-                    "${provisioningSettings.provisionedMailSettings}")
+            Log.e(
+                "MDM", "mail settings not valid: " +
+                        "${provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings}"
+            )
             Result.failure(
                 ProvisioningFailedException(
                     "Provisioned mail settings are not valid"
                 )
             )
         }
+
         else -> Result.success(Unit)
     }
 
     private fun areProvisionedMailSettingsInvalid(): Boolean {
-        return !provisioningSettings.hasValidMailSettings(urlChecker)
+        return !provisioningSettings.hasValidMailSettings()
     }
 
     private fun isDeviceOnline(): Boolean =

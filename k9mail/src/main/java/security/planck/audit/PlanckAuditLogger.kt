@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 /**
@@ -47,7 +48,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class PlanckAuditLogger(
-    private val planckProvider: PlanckProvider,
+    private val planckProvider: Provider<PlanckProvider>,
     private val auditLoggerFile: File,
     private val storage: Storage,
     private val k9: K9,
@@ -57,7 +58,7 @@ class PlanckAuditLogger(
 ) : AuditLogger {
     @Inject
     constructor(
-        planckProvider: PlanckProvider,
+        planckProvider: Provider<PlanckProvider>,
         storage: Storage,
         k9: K9,
         clock: Clock,
@@ -254,7 +255,7 @@ class PlanckAuditLogger(
     private fun addSignature() {
         val signatureLog = MessageAuditLog(currentTimeInSeconds, SIGNATURE_ID, "").toCsv()
         val textToSign = auditLoggerFile.readText() + signatureLog
-        planckProvider.getSignatureForText(textToSign)
+        planckProvider.get().getSignatureForText(textToSign)
             .onSuccess { signature -> // only add the whole signature log line on success
                 auditLoggerFile.appendText(signatureLog)
                 auditLoggerFile.appendText(signature)
@@ -328,7 +329,7 @@ class PlanckAuditLogger(
 
     private fun verifyAuditText(auditText: String, signature: String) {
         if (signature.isBlank()
-            || !planckProvider.verifySignature(auditText, signature)
+            || !planckProvider.get().verifySignature(auditText, signature)
                 .getOrDefault(false) // same as tamper detected on failure
         ) {
             // tamper detected

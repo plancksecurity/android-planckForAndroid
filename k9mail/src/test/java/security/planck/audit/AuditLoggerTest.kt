@@ -33,6 +33,7 @@ import security.planck.audit.PlanckAuditLogger.Companion.SIGNATURE_ID
 import security.planck.audit.PlanckAuditLogger.Companion.START_EVENT
 import security.planck.audit.PlanckAuditLogger.Companion.STOP_EVENT
 import java.io.File
+import javax.inject.Provider
 
 @ExperimentalCoroutinesApi
 class AuditLoggerTest {
@@ -40,6 +41,9 @@ class AuditLoggerTest {
     var coroutinesTestRule = CoroutineTestRule()
     private val auditLoggerFile = File("messageAudit.csv")
     private val planckProvider: PlanckProvider = mockk()
+    private val planckProviderProvider: Provider<PlanckProvider> = mockk {
+        every { get() }.returns(planckProvider)
+    }
     private val storageEditor: StorageEditor = mockk(relaxed = true)
     private val storage: Storage = mockk(relaxed = true) {
         every { edit() }.returns(storageEditor)
@@ -71,7 +75,7 @@ class AuditLoggerTest {
 
     private fun initializeAuditLogger() {
         auditLogger = PlanckAuditLogger(
-            planckProvider,
+            planckProviderProvider,
             auditLoggerFile,
             storage,
             k9,
