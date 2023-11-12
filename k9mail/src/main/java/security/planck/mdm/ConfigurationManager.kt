@@ -115,8 +115,8 @@ class ConfigurationManager @Inject constructor(
         }.orEmpty()
 
     private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
-        provisioningSettings.findAccountsToRemove().isNotEmpty()
-                && !provisioningScope.isStartup
+        !provisioningScope.isStartup
+                && provisioningSettings.findAccountsToRemove().isNotEmpty()
 
     private fun mapRestrictions(
         entries: List<RestrictionEntry>,
