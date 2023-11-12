@@ -2,10 +2,14 @@ package security.planck.mdm
 
 import android.content.RestrictionEntry
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
+import com.fsck.k9.auth.OAuthProviderType
+import com.fsck.k9.mail.AuthType
+import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import com.fsck.k9.preferences.Storage
 import com.fsck.k9.preferences.StorageEditor
@@ -17,11 +21,15 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -30,21 +38,50 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import security.planck.network.UrlChecker
+import security.planck.provisioning.CONNECTION_SECURITY_NONE
+import security.planck.provisioning.CONNECTION_SECURITY_SSL_TLS
+import security.planck.provisioning.CONNECTION_SECURITY_STARTTLS
 import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningScope
+import security.planck.provisioning.ProvisioningSettings
 
 @ExperimentalCoroutinesApi
 class ConfigurationManagerTest : RobolectricTest() {
     @get:Rule
     val coroutineTestRule = CoroutineTestRule(UnconfinedTestDispatcher())
-    private val testRestrictions = INITIALIZED_ENGINE_RESTRICTIONS + ALL_ACCOUNT_RESTRICTIONS
+    private val testRestrictions = PROVISIONING_RESTRICTIONS + INITIALIZED_ENGINE_RESTRICTIONS
     private val applicationRestrictionsBundle = Bundle().apply {
-        testRestrictions.forEach { putString(it, "a") }
+        putParcelableArray(
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
+            arrayOf(
+                Bundle().apply {
+                    putMailSettingsBundle()
+                }
+            )
+        )
+        putString(RESTRICTION_PLANCK_EXTRA_KEYS, "extra keys")
+        putString(RESTRICTION_PLANCK_MEDIA_KEYS, "media keys")
     }
+    private val applicationManifestEntries = listOf<RestrictionEntry>(
+        RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PLANCK_ACCOUNT_SETTINGS,
+                    arrayOf(
+                        getMailRestrictionEntry(),
+                    )
+                )
+            )
+        ),
+        RestrictionEntry(RESTRICTION_PLANCK_EXTRA_KEYS, "extra keys"),
+        RestrictionEntry(RESTRICTION_PLANCK_MEDIA_KEYS, "media keys"),
+    )
     private val restrictionsProvider: RestrictionsProvider = mockk {
         every { applicationRestrictions }.returns(applicationRestrictionsBundle)
         every { manifestRestrictions }.returns(
-            testRestrictions.map { RestrictionEntry(it, "a") }
+            applicationManifestEntries
         )
     }
     private val updater: ConfiguredSettingsUpdater = mockk(relaxed = true)
@@ -54,14 +91,19 @@ class ConfigurationManagerTest : RobolectricTest() {
     }
     private val account: Account = mockk(relaxed = true)
     private val preferences: Preferences = mockk {
-        every { accounts }.returns(listOf(account))
+        every { accounts }.answers { listOf(account) }
         every { storage }.returns(mockStorage)
     }
+    private val urlChecker: UrlChecker = mockk()
+    private val provisioningSettings: ProvisioningSettings = mockk()
+    private val k9: K9 = mockk()
 
     private val manager = ConfigurationManager(
         preferences,
         restrictionsProvider,
         updater,
+        provisioningSettings,
+        k9,
         coroutineTestRule.testDispatcherProvider
     )
     private val restrictionsUpdateValues = mutableListOf<Int>()
@@ -70,6 +112,9 @@ class ConfigurationManagerTest : RobolectricTest() {
     fun setUp() {
         mockkStatic(K9::class)
         every { K9.save(any()) }.just(Runs)
+        every { provisioningSettings.findAccountsToRemove() }.returns(emptyList())
+        every { provisioningSettings.hasAnyAccountWithWrongSettings() }.returns(false)
+        //every { preferences.accountsAllowingIncomplete }.answers { emptyList() }
         restrictionsUpdateValues.clear()
         observeRestrictionsUpdateValues()
     }
@@ -105,29 +150,50 @@ class ConfigurationManagerTest : RobolectricTest() {
     }
 
     @Test
-    fun `loadConfigurationsSuspend() on first startup updates settings with provisioning restrictions`() =
+    fun `loadConfigurationsSuspend() with FirstStartup updates settings with manifest entries filtered to provisioning restrictions`() =
         runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup)
+            val result = manager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup).also {
+                it.exceptionOrNull()
+                    ?.let { throwable -> println("ERROR: ${throwable.stackTraceToString()}") }
+            }
 
 
             assertTrue(result.isSuccess)
             val slot = mutableListOf<RestrictionEntry>()
-            coVerify { updater.update(applicationRestrictionsBundle, capture(slot)) }
-            slot.forEach { restrictionEntry ->
-                assertTrue(restrictionEntry.key in PROVISIONING_RESTRICTIONS)
+            coVerify {
+                updater.update(
+                    applicationRestrictionsBundle,
+                    capture(slot),
+                    allowModifyAccountProvisioningSettings = false,
+                    true
+                )
+            }
+            slot.forEachIndexed { index, restrictionEntry ->
+                assertEquals(PROVISIONING_RESTRICTIONS[index], restrictionEntry.key)
             }
             verifySettingsSaved()
         }
 
     @Test
-    fun `loadConfigurationsSuspend() with InitializedEngine updates settings with intialized engine restrictions`() =
+    fun `loadConfigurationsSuspend() with InitializedEngine updates settings with initialized engine restrictions`() =
         runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine)
+            val result =
+                manager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine).also {
+                    it.exceptionOrNull()
+                        ?.let { throwable -> println("ERROR: ${throwable.stackTraceToString()}") }
+                }
 
 
             assertTrue(result.isSuccess)
             val slot = mutableListOf<RestrictionEntry>()
-            coVerify { updater.update(applicationRestrictionsBundle, capture(slot)) }
+            coVerify {
+                updater.update(
+                    applicationRestrictionsBundle,
+                    capture(slot),
+                    allowModifyAccountProvisioningSettings = true,
+                    true
+                )
+            }
             slot.forEachIndexed { index, restrictionEntry ->
                 assertEquals(INITIALIZED_ENGINE_RESTRICTIONS[index], restrictionEntry.key)
             }
@@ -135,29 +201,91 @@ class ConfigurationManagerTest : RobolectricTest() {
         }
 
     @Test
-    fun `loadConfigurationsSuspend() with AllAccountSettings updates settings with account restrictions`() =
+    fun `loadConfigurationsSuspend() with AllAccountsSettings updates settings with account restrictions for all accounts provided in restrictions`() =
         runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.AllAccountsSettings)
+            val result =
+                manager.loadConfigurationsSuspend(ProvisioningScope.AllAccountsSettings).also {
+                    it.exceptionOrNull()
+                        ?.let { throwable -> println("ERROR: ${throwable.stackTraceToString()}") }
+                }
 
 
             assertTrue(result.isSuccess)
             val slot = mutableListOf<RestrictionEntry>()
-            coVerify { updater.update(applicationRestrictionsBundle, capture(slot)) }
-            slot.forEachIndexed { index, restrictionEntry ->
-                assertEquals(ALL_ACCOUNT_RESTRICTIONS[index], restrictionEntry.key)
+            coVerify {
+                updater.update(
+                    applicationRestrictionsBundle,
+                    capture(slot),
+                    allowModifyAccountProvisioningSettings = true,
+                    true
+                )
+            }
+            slot.forEach { restrictionEntry ->
+                assertTrue(restrictionEntry.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS)
             }
             verifySettingsSaved()
         }
 
     @Test
+    fun `loadConfigurationsSuspend() with SingleAccountSettings updates settings with account restrictions for the single account provided in restrictions`() =
+        runTest {
+            val result = manager.loadConfigurationsSuspend(
+                ProvisioningScope.SingleAccountSettings(ACCOUNT_EMAIL)
+            ).also {
+                it.exceptionOrNull()
+                    ?.let { throwable -> println("ERROR: ${throwable.stackTraceToString()}") }
+            }
+
+
+            assertTrue(result.isSuccess)
+            val restrictionsSlot = mutableListOf<Bundle>()
+            val entriesSlot = slot<RestrictionEntry>()
+            coVerify {
+                updater.update(
+                    capture(restrictionsSlot),
+                    capture(entriesSlot),
+                    allowModifyAccountProvisioningSettings = true,
+                    false
+                )
+            }
+            restrictionsSlot.forEach { restrictions ->
+                assertTrue(restrictions.containsKey(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS))
+                assertEquals(
+                    ACCOUNT_EMAIL,
+                    restrictions.assertSingleAccountAndGetEmail()
+                )
+            }
+            entriesSlot.captured.also { restrictionEntry ->
+                assertTrue(restrictionEntry.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS)
+            }
+            verifySettingsSaved()
+        }
+
+    private fun Bundle.assertSingleAccountAndGetEmail(): String? =
+        (getParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS).also {
+            assertTrue(it!!.size == 1)
+        }!!.first() as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)!!
+            .getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+
+    @Test
     fun `loadConfigurationsSuspend() with AllSettings updates all managed settings`() =
         runTest {
-            val result = manager.loadConfigurationsSuspend(ProvisioningScope.AllSettings)
+            val result = manager.loadConfigurationsSuspend(ProvisioningScope.AllSettings).also {
+                it.exceptionOrNull()
+                    ?.let { throwable -> println("ERROR: ${throwable.stackTraceToString()}") }
+            }
 
 
             assertTrue(result.isSuccess)
             val slot = mutableListOf<RestrictionEntry>()
-            coVerify { updater.update(applicationRestrictionsBundle, capture(slot)) }
+            coVerify {
+                updater.update(
+                    applicationRestrictionsBundle,
+                    capture(slot),
+                    allowModifyAccountProvisioningSettings = true,
+                    true
+                )
+            }
             slot.forEachIndexed { index, restrictionEntry ->
                 assertEquals(testRestrictions[index], restrictionEntry.key)
             }
@@ -199,6 +327,91 @@ class ConfigurationManagerTest : RobolectricTest() {
         }
 
     @Test
+    fun `loadConfigurationsSuspend() sets account removed flow if it detects an account was removed and app is running in foreground`() =
+        runTest {
+            coEvery { provisioningSettings.findAccountsToRemove() }.returns(listOf(mockk()))
+            coEvery { k9.isRunningInForeground }.returns(true)
+            assertFalse(manager.accountRemovedFlow.first())
+
+
+            val result = manager.loadConfigurationsSuspend()
+
+
+            assertTrue(result.isSuccess)
+            verify { provisioningSettings.findAccountsToRemove() }
+            assertTrue(manager.accountRemovedFlow.first())
+        }
+
+    @Test
+    fun `loadConfigurationsSuspend() does not set account removed flow when called on startup`() =
+        runTest {
+            coEvery { provisioningSettings.findAccountsToRemove() }.returns(listOf(mockk()))
+            coEvery { k9.isRunningInForeground }.returns(true)
+            assertFalse(manager.accountRemovedFlow.first())
+
+
+            val result = manager.loadConfigurationsSuspend(ProvisioningScope.Startup)
+
+
+            assertTrue(result.isSuccess)
+            verify(exactly = 0) { provisioningSettings.findAccountsToRemove() }
+            assertFalse(manager.accountRemovedFlow.first())
+        }
+
+    @Test
+    fun `loadConfigurationsSuspend() sets wrong account settings flow if it detects some accounts in provisioning have wrong settings`() =
+        runTest {
+            coEvery { provisioningSettings.hasAnyAccountWithWrongSettings() }.returns(true)
+            assertFalse(manager.wrongAccountSettingsFlow.first())
+
+
+            val result = manager.loadConfigurationsSuspend()
+
+
+            assertTrue(result.isSuccess)
+            verify { provisioningSettings.hasAnyAccountWithWrongSettings() }
+            assertTrue(manager.wrongAccountSettingsFlow.first())
+        }
+
+    @Test
+    fun `resetWrongAccountSettingsWarning() unsets wrong account settings flow`() = runTest {
+        coEvery { provisioningSettings.hasAnyAccountWithWrongSettings() }.returns(true)
+        assertFalse(manager.wrongAccountSettingsFlow.first())
+        manager.loadConfigurationsSuspend()
+        assertTrue(manager.wrongAccountSettingsFlow.first())
+
+
+        manager.resetWrongAccountSettingsWarning()
+        advanceUntilIdle()
+
+
+        assertFalse(manager.wrongAccountSettingsFlow.first())
+    }
+
+    @Test
+    fun `loadConfigurationsSuspend() sets wrong account settings flow if it detects some incoming settings with badly formatted or missing mail address`() =
+        runTest {
+            coEvery { provisioningSettings.hasAnyAccountWithWrongSettings() }.returns(false)
+            assertFalse(manager.wrongAccountSettingsFlow.first())
+            stubBadEmailAddress("ljsfj")
+
+
+            val result = manager.loadConfigurationsSuspend()
+
+
+            assertTrue(result.isSuccess)
+            verify(exactly = 0) { provisioningSettings.hasAnyAccountWithWrongSettings() }
+            assertTrue(manager.wrongAccountSettingsFlow.first())
+        }
+
+    @Suppress("SameParameterValue")
+    private fun stubBadEmailAddress(newEmailAddress: String?) {
+        (applicationRestrictionsBundle.getParcelableArray(RESTRICTION_PLANCK_ACCOUNTS_SETTINGS)!!
+            .first() as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)!!
+            .putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, newEmailAddress)
+    }
+
+    @Test
     fun `loadConfigurationsBlocking() calls loadConfigurationsSuspend()`() {
         manager.loadConfigurationsBlocking(ProvisioningScope.AllSettings)
 
@@ -206,9 +419,16 @@ class ConfigurationManagerTest : RobolectricTest() {
         coVerify { restrictionsProvider.manifestRestrictions }
         coVerify { restrictionsProvider.applicationRestrictions }
         val slot = mutableListOf<RestrictionEntry>()
-        coVerify { updater.update(applicationRestrictionsBundle, capture(slot)) }
-        slot.forEachIndexed { index, restrictionEntry ->
-            assertEquals(testRestrictions[index], restrictionEntry.key)
+        coVerify {
+            updater.update(
+                applicationRestrictionsBundle,
+                capture(slot),
+                allowModifyAccountProvisioningSettings = true,
+                true
+            )
+        }
+        slot.forEach { restrictionEntry ->
+            assertTrue(restrictionEntry.key in testRestrictions)
         }
         verifySettingsSaved()
     }
@@ -222,9 +442,16 @@ class ConfigurationManagerTest : RobolectricTest() {
         coVerify { restrictionsProvider.manifestRestrictions }
         coVerify { restrictionsProvider.applicationRestrictions }
         val slot = mutableListOf<RestrictionEntry>()
-        coVerify { updater.update(applicationRestrictionsBundle, capture(slot)) }
-        slot.forEachIndexed { index, restrictionEntry ->
-            assertEquals(testRestrictions[index], restrictionEntry.key)
+        coVerify {
+            updater.update(
+                applicationRestrictionsBundle,
+                capture(slot),
+                allowModifyAccountProvisioningSettings = true,
+                true
+            )
+        }
+        slot.forEach { restrictionEntry ->
+            assertTrue(restrictionEntry.key in testRestrictions)
         }
         verifySettingsSaved()
     }
@@ -267,5 +494,154 @@ class ConfigurationManagerTest : RobolectricTest() {
 
     private fun assertUpdateValues(vararg states: Int) {
         assertEquals(states.toList(), restrictionsUpdateValues)
+    }
+
+    private fun Bundle.putMailSettingsBundle(
+        email: String? = ACCOUNT_EMAIL,
+        authType: AuthType = AuthType.PLAIN,
+        oAuthProvider: OAuthProviderType = OAuthProviderType.GOOGLE,
+        server: String? = NEW_SERVER,
+        username: String? = NEW_USER_NAME,
+        security: String? = NEW_SECURITY_TYPE_STRING,
+        port: Int = NEW_PORT,
+    ) = apply {
+        putBundle(
+            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+            Bundle().apply {
+                putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
+                putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, oAuthProvider.toString())
+                putBundle(
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                    bundleOf(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to port,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to security,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
+                    )
+                )
+                putBundle(
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                    bundleOf(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to port,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to security,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
+                    )
+                )
+            }
+        )
+    }
+
+    private fun getMailRestrictionEntry(): RestrictionEntry = RestrictionEntry.createBundleEntry(
+        RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+        arrayOf(
+            RestrictionEntry(
+                RESTRICTION_ACCOUNT_EMAIL_ADDRESS,
+                DEFAULT_EMAIL
+            ),
+            RestrictionEntry(
+                RESTRICTION_ACCOUNT_OAUTH_PROVIDER,
+                DEFAULT_OAUTH_PROVIDER.toString()
+            ),
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
+                        DEFAULT_SERVER
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
+                        DEFAULT_PORT
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
+                        DEFAULT_SECURITY_TYPE.toMdmName()
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
+                        DEFAULT_USER_NAME
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE,
+                        DEFAULT_AUTH_TYPE.toString()
+                    )
+                )
+            ),
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
+                        DEFAULT_SERVER
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
+                        DEFAULT_PORT
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
+                        DEFAULT_SECURITY_TYPE.toMdmName()
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
+                        DEFAULT_USER_NAME
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE,
+                        DEFAULT_AUTH_TYPE.toString()
+                    )
+                )
+            ),
+        )
+    )
+
+    private fun ConnectionSecurity.toMdmName(): String = when (this) {
+        ConnectionSecurity.NONE -> CONNECTION_SECURITY_NONE
+        ConnectionSecurity.STARTTLS_REQUIRED -> CONNECTION_SECURITY_STARTTLS
+        ConnectionSecurity.SSL_TLS_REQUIRED -> CONNECTION_SECURITY_SSL_TLS
+    }
+
+    companion object {
+        private const val OLD_SERVER = "old.valid.server"
+        private const val OLD_PORT = 333
+        private val OLD_SECURITY_TYPE = ConnectionSecurity.NONE
+        private val OLD_AUTH_TYPE = AuthType.PLAIN
+        private const val OLD_USER_NAME = "oldUsername"
+        private const val OLD_PASSWORD = "oldPassword"
+        private const val OLD_CERTIFICATE_ALIAS = "cert"
+        private const val ACCOUNT_EMAIL = "account.email@example.ch"
+
+        private const val DEFAULT_SERVER = "serverDefault"
+        private const val DEFAULT_PORT = 888
+        private val DEFAULT_SECURITY_TYPE = ConnectionSecurity.STARTTLS_REQUIRED
+        private const val DEFAULT_USER_NAME = "usernameDefault"
+        private const val DEFAULT_EMAIL = "email@default.ch"
+        private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.MICROSOFT
+        private val DEFAULT_AUTH_TYPE = AuthType.PLAIN
+
+        private const val NEW_EMAIL = "new.email@mail.ch"
+        private const val SECOND_EMAIL = "second.email@mail.ch"
+        private const val NEW_SERVER = "mail.server.host"
+        private const val WRONG_SERVER = "wrongserver"
+        private const val NEW_USER_NAME = "username"
+        private const val NEW_SECURITY_TYPE_STRING = "SSL/TLS"
+        private val NEW_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
+        private const val NEW_PORT = 999
+
+        private const val MEDIA_KEY_PATTERN_1 = "*@test1.test"
+        private const val MEDIA_KEY_PATTERN_2 = "*@test2.test"
+        private const val KEY_FPR_1 = "1111111111111111111111111111111111111111"
+        private const val KEY_FPR_2 = "2222222222222222222222222222222222222222"
+        private const val KEY_MATERIAL_1 = "keymaterial1"
+        private const val KEY_MATERIAL_2 = "keymaterial2"
+        private const val WRONG_FPR = "WRONG_FPR"
+        private const val NEW_ACCOUNT_DESCRIPTION = "newAccountDescription"
+        private const val NEW_SENDER_NAME = "new sender name"
+        private const val NEW_SIGNATURE = "new signature"
+        private const val DEFAULT_SENDER_NAME = "default sender name"
+        private const val DEFAULT_SIGNATURE = "default signature"
     }
 }
