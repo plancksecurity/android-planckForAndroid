@@ -33,7 +33,6 @@ class NonProvisioningManagerTest: RobolectricTest() {
     private val manager = ProvisioningManager(
         k9,
         preferences,
-        urlChecker,
         configurationManager,
         provisioningSettings,
         coroutinesTestRule.testDispatcherProvider,

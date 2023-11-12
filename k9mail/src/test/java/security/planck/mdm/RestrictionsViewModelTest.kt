@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import security.planck.provisioning.ProvisioningSettings
 
 @ExperimentalCoroutinesApi
 class RestrictionsViewModelTest {
@@ -26,13 +27,15 @@ class RestrictionsViewModelTest {
     private val configurationManager: ConfigurationManager = mockk {
         every { restrictionsUpdatedFlow }.returns(testFlow)
     }
+    private val provisioningSettings: ProvisioningSettings = mockk {
+    }
     private lateinit var viewModel: RestrictionsViewModel
     private val observedStates = mutableListOf<Boolean>()
 
     @Before
     fun setUp() {
         observedStates.clear()
-        viewModel = RestrictionsViewModel(configurationManager)
+        viewModel = RestrictionsViewModel(configurationManager, provisioningSettings)
         observeViewModel()
     }
 

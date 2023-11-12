@@ -47,8 +47,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
     fun update(
         restrictions: Bundle,
         entry: RestrictionEntry,
-        allowModifyAccountProvisioningSettings: Boolean,
-        purgeAccountSettings: Boolean,
+        allowModifyAccountProvisioningSettings: Boolean = false,
+        purgeAccountSettings: Boolean = false,
     ) {
         when (entry.key) {
             RESTRICTION_PROVISIONING_URL ->
