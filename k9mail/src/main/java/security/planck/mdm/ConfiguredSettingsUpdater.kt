@@ -119,16 +119,11 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun resetProvisioningAccountSettingsInitially() {
-        provisioningSettings.accountsProvisionList.removeIf { setting ->
-            setting.email !in preferences.accountsAllowingIncomplete
-                .mapNotNull { it.email }
-        }
+        provisioningSettings.purgeAccountsNotInstalledOrInstalling()
     }
 
     private fun purgeProvisioningAccountSettings(newEmailAddresses: List<String>) {
-        provisioningSettings.accountsProvisionList.removeIf {
-            it.email !in newEmailAddresses
-        }
+        provisioningSettings.purgeAccountsNotInRestrictions(newEmailAddresses)
     }
 
     private fun saveAccountSettings(

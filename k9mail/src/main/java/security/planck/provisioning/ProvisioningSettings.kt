@@ -13,7 +13,8 @@ class ProvisioningSettings @Inject constructor(
     private val urlChecker: UrlChecker,
 ) {
     var provisioningUrl: String? = null
-    val accountsProvisionList = mutableListOf<AccountProvisioningSettings>()
+    private val accountsProvisionMutableList = mutableListOf<AccountProvisioningSettings>()
+    val accountsProvisionList: List<AccountProvisioningSettings> = accountsProvisionMutableList
 
     fun hasValidMailSettings(): Boolean =
         accountsProvisionList.firstOrNull()?.isValid(urlChecker) ?: false
@@ -25,7 +26,7 @@ class ProvisioningSettings @Inject constructor(
         accountsProvisionList.find { it.email == address }
 
     fun removeAccountSettingsByAddress(address: String) {
-        accountsProvisionList.removeIf { it.email == address }
+        accountsProvisionMutableList.removeIf { it.email == address }
     }
 
     fun modifyOrAddAccountSettingsByAddress(
@@ -34,7 +35,7 @@ class ProvisioningSettings @Inject constructor(
     ) {
         accountsProvisionList.find { it.email == address }?.let(change)
             ?: let {
-                accountsProvisionList.add(
+                accountsProvisionMutableList.add(
                     AccountProvisioningSettings(email = address).also(
                         change
                     )
@@ -51,6 +52,18 @@ class ProvisioningSettings @Inject constructor(
         preferences.accountsAllowingIncomplete.filter { account ->
             account.email != null && accountsProvisionList.none { it.email == account.email }
         }
+
+    fun purgeAccountsNotInstalledOrInstalling() {
+        accountsProvisionMutableList.removeIf { setting ->
+            preferences.accountsAllowingIncomplete.none { it.email == setting.email }
+        }
+    }
+
+    fun purgeAccountsNotInRestrictions(newEmailAddresses: List<String>) {
+        accountsProvisionMutableList.removeIf {
+            it.email !in newEmailAddresses
+        }
+    }
 }
 
 data class AccountProvisioningSettings(
