@@ -105,8 +105,8 @@ class ConfigurationManager @Inject constructor(
                 // which is actually a stopper for this account setup.
                 provisioningSettings.hasAnyAccountWithWrongSettings()
 
-    private val newMailAddressesIncludingFailures: List<String?> =
-        restrictionsManager.applicationRestrictions.getParcelableArray(
+    private val newMailAddressesIncludingFailures: List<String?>
+        get() = restrictionsManager.applicationRestrictions.getParcelableArray(
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
         )?.map {
             (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
