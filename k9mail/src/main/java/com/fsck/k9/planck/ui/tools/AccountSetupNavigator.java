@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import androidx.annotation.Nullable;
+
 import androidx.fragment.app.FragmentManager;
 
 import com.fsck.k9.Account;
@@ -13,7 +13,6 @@ import com.fsck.k9.planck.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupOutgoingFragment;
-import com.fsck.k9.planck.ui.fragments.ChooseAccountTypeFragment;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -87,17 +86,6 @@ public class AccountSetupNavigator {
                 .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
                 .addToBackStack(null)
                 .commit();
-    }
-
-    private void goFromBasicsToChooseAccountTypesSettings(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
-        if (makeDefault != null) {
-            ChooseAccountTypeFragment chooseAccountTypeFragment = ChooseAccountTypeFragment.actionSelectAccountType(account, makeDefault);
-            fragmentManager.beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, chooseAccountTypeFragment, "chooseAccountTypeFragment")
-                    .addToBackStack(null)
-                    .commit();
-        }
     }
 
     public void goBack(Activity activity, FragmentManager fragmentManager) {
