@@ -7,9 +7,7 @@ import androidx.core.os.bundleOf
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.K9ActivityCommon
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.lang.reflect.Field
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,11 +31,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         val configurationManager = configurationManagerField.get(common) as ConfigurationManager
         runBlocking {
             configurationManager.loadConfigurationsSuspend().onSuccess {
-                if (activity is RestrictionsListener) {
-                    withContext(Dispatchers.Main) {
-                        activity.updatedRestrictions()
-                    }
-                }
+                //if (activity is RestrictionsListener) {
+                //    withContext(Dispatchers.Main) {
+                //        activity.updatedRestrictions()
+                //    }
+                //}
             }
         }.onFailure { throw it }
     }

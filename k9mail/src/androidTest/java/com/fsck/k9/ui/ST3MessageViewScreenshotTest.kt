@@ -135,7 +135,7 @@ class ST3MessageViewScreenshotTest : BaseScreenshotTest() {
     private fun resetCommunication() {
         clickListItem(R.id.message_list, 2)
         openPrivacyStatus()
-        click(R.id.button_identity_key_reset)
+        //click(R.id.button_identity_key_reset)
         TestUtils.waitForIdle()
         getScreenShotCurrentActivity("reset partner's keys confirmation")
         click(context.getString(R.string.reset_partner_keys_confirmation_action))
