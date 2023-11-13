@@ -271,11 +271,18 @@ class AuthViewModel @Inject constructor(
                         errorMessage = authorizationException.errorDescription
                     )
                 } else if (failureUpdatingEmail != null) {
-                    val error = failureUpdatingEmail!!
-                    if (error is WrongEmailAddressException) {
-                        _uiState.value = AuthFlowState.WrongEmailAddress(error)
-                    } else {
-                        _uiState.value = AuthFlowState.Failed(error)
+                    when (val error = failureUpdatingEmail!!) {
+                        is WrongEmailAddressException -> {
+                            _uiState.value = AuthFlowState.WrongEmailAddress(error)
+                        }
+
+                        is AccountAlreadyInstalledException -> {
+                            _uiState.value = AuthFlowState.AccountAlreadyInstalled(error.email)
+                        }
+
+                        else -> {
+                            _uiState.value = AuthFlowState.Failed(error)
+                        }
                     }
                 } else {
                     _uiState.value = AuthFlowState.Success
@@ -289,7 +296,9 @@ class AuthViewModel @Inject constructor(
         jwtTokenDecoder.getEmail(token).onSuccess { newEmail ->
             newEmail?.let {
                 val account = account!!
-                if (account.email != newEmail) {
+                if (isAccountNewButAlreadyInstalled(account, newEmail)) {
+                    error = AccountAlreadyInstalledException(newEmail)
+                } else if (account.email != newEmail) {
                     if (getApplication<K9>().isRunningOnWorkProfile) {
                         error = WrongEmailAddressException(account.email, newEmail)
                     } else {
@@ -306,6 +315,10 @@ class AuthViewModel @Inject constructor(
         }
         return error
     }
+
+    private fun isAccountNewButAlreadyInstalled(account: Account, newEmail: String) =
+        (account.setupState == Account.SetupState.INITIAL
+                && accountManager.accounts.any { it.email == newEmail })
 
     @Synchronized
     override fun onCleared() {

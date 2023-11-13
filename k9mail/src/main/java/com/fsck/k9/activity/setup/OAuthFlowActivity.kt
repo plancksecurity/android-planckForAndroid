@@ -133,6 +133,10 @@ class OAuthFlowActivity : K9Activity(), ConfirmationDialogFragment.ConfirmationD
             is AuthFlowState.WrongEmailAddress -> {
                 showWrongEmailErrorDialog(state.adminEmail, state.userWrongEmail)
             }
+
+            is AuthFlowState.AccountAlreadyInstalled -> {
+                displayErrorText(R.string.account_setup_failed_dlg_account_already_installed, state.email)
+            }
         }
 
         authViewModel.authResultConsumed()
