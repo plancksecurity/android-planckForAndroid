@@ -16,17 +16,19 @@ fun ServerSettings.toSimpleMailSettings(): SimpleMailSettings = SimpleMailSettin
 
 fun Int.isValidPort() = this in 1..65535
 
-fun String.isValidServer(urlChecker: UrlChecker) =
-    this.isNotBlank() && urlChecker.isValidUrl(this)
+fun String.isValidServer(urlChecker: UrlChecker) = urlChecker.isValidUrl(this)
 
 fun String.isValidEmailAddress() = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
 fun String.toConnectionSecurity(): ConnectionSecurity? = when {
     this.equals(CONNECTION_SECURITY_NONE, true) ->
         ConnectionSecurity.NONE
+
     this.equals(CONNECTION_SECURITY_STARTTLS, true) ->
         ConnectionSecurity.STARTTLS_REQUIRED
+
     this.equals(CONNECTION_SECURITY_SSL_TLS, true) ->
         ConnectionSecurity.SSL_TLS_REQUIRED
+
     else -> null
 }

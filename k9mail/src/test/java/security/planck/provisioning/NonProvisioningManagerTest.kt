@@ -6,7 +6,14 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.planck.PlanckProviderImplKotlin
 import com.fsck.k9.planck.testutils.CoroutineTestRule
-import io.mockk.*
+import io.mockk.called
+import io.mockk.clearMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,7 +40,6 @@ class NonProvisioningManagerTest: RobolectricTest() {
     private val manager = ProvisioningManager(
         k9,
         preferences,
-        urlChecker,
         configurationManager,
         provisioningSettings,
         coroutinesTestRule.testDispatcherProvider,

@@ -14,7 +14,6 @@ import org.junit.Test
 import org.minidns.hla.DnssecResolverApi
 import org.minidns.hla.ResolverResult
 import org.minidns.record.MX
-import org.mockito.kotlin.any
 
 private const val MX_NAME = "realhost.realdomain"
 private const val REAL_DOMAIN = "realdomain"
@@ -35,7 +34,7 @@ class MiniDnsRecordsResolverTest {
 
     @Test
     fun `getRealOrFallbackDomain() finds real domain using minidns library`() {
-        val realDomain = dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, any())
+        val realDomain = dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, null)
         assertEquals(REAL_DOMAIN, realDomain)
     }
 

@@ -12,28 +12,40 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningScope
+import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.isValidEmailAddress
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.system.exitProcess
 
 @Singleton
 class ConfigurationManager @Inject constructor(
     private val preferences: Preferences,
     private val restrictionsManager: RestrictionsProvider,
     private val settingsUpdater: ConfiguredSettingsUpdater,
+    private val provisioningSettings: ProvisioningSettings,
+    private val k9: K9,
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
     private val restrictionsUpdatedMF: MutableStateFlow<Int> = MutableStateFlow(0)
     val restrictionsUpdatedFlow = restrictionsUpdatedMF.asStateFlow()
 
+    private val accountRemovedMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val accountRemovedFlow = accountRemovedMF.asStateFlow()
+
+    private val wrongAccountSettingsMF: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val wrongAccountSettingsFlow = wrongAccountSettingsMF.asStateFlow()
+    private var wrongAccountSettingsWarningDone = false
+
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
             loadConfigurationsSuspend()
-                .onSuccess { sendRemoteConfig() }
-                .onFailure {
+                .onSuccess {
+                    sendRemoteConfig()
+                }.onFailure {
                     Timber.e(
                         it,
                         "Could not load configurations after registering the receiver"
@@ -58,54 +70,67 @@ class ConfigurationManager @Inject constructor(
         provisioningScope: ProvisioningScope = ProvisioningScope.AllSettings,
     ): Result<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
         kotlin.runCatching {
-            val restrictions = restrictionsManager.applicationRestrictions
-            val entries: List<RestrictionEntry>
-            when (provisioningScope) {
-                ProvisioningScope.FirstStartup -> {
-                    if (!isProvisionAvailable(restrictions)) {
-                        throw ProvisioningFailedException("Provisioning data is missing")
-                    }
-                    entries = restrictionsManager.manifestRestrictions
-                        // ignore media keys from MDM before PlanckProvider has been initialized
-                        .filter { it.key in PROVISIONING_RESTRICTIONS }
-                }
-
-                ProvisioningScope.InitializedEngine -> {
-                    entries = restrictionsManager.manifestRestrictions
-                        .filter { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
-                }
-
-                ProvisioningScope.AllAccountSettings -> {
-                    entries = restrictionsManager.manifestRestrictions.filter {
-                        it.key in ALL_ACCOUNT_RESTRICTIONS
-                    }
-                }
-
-                ProvisioningScope.AllSettings -> {
-                    entries = restrictionsManager.manifestRestrictions
+            mapRestrictions(
+                provisioningScope.manifestEntryFilter(restrictionsManager.manifestRestrictions),
+                restrictionsManager.applicationRestrictions
+                    .apply { provisioningScope.restrictionFilter(this) },
+                provisioningScope.allowModifyAccountProvisioningSettings,
+                provisioningScope.purgeAccountSettings
+            )
+            saveAppSettings()
+            saveAccounts()
+        }.onSuccess {
+            if (shouldActOnAccountsRemoved(provisioningScope)) {
+                if (k9.isRunningInForeground) {
+                    accountRemovedMF.value = true
+                } else {
+                    exitProcess(0) // if running in background just exit the app to remove accounts.
                 }
             }
 
-            mapRestrictions(entries, restrictions)
-            saveAppSettings()
-            saveAccounts()
+            if (!wrongAccountSettingsWarningDone && shouldWarnWrongAccountSettings()) {
+                wrongAccountSettingsWarningDone = true
+                wrongAccountSettingsMF.value = true // only set once and seen if app in foreground.
+            }
         }
     }
 
-    private fun isProvisionAvailable(restrictions: Bundle): Boolean {
-        return restrictions.keySet().containsAll(
-            setOf(
-                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-            )
-        )
-    }
+    private fun shouldWarnWrongAccountSettings(): Boolean =
+    // Inform that there are some MDM accounts that cannot be setup, since they dont have right email.
+        // This is done mainly because we don't have yet feedback to MDM implemented.
+        newMailAddressesIncludingFailures.any { it == null } ||
+                // Here we are checking for wrong settings that are not fatally wrong, since they
+                // arrived to the provisioning settings.
+                // This means the case of an account not yet set on the device with wrong settings,
+                // which is actually a stopper for this account setup.
+                provisioningSettings.hasAnyAccountWithWrongSettings()
+
+    private val newMailAddressesIncludingFailures: List<String?>
+        get() = restrictionsManager.applicationRestrictions.getParcelableArray(
+            RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
+        )?.map {
+            (it as Bundle).getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
+                ?.getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS)
+                ?.takeIf { email -> email.isValidEmailAddress() }
+        }.orEmpty()
+
+    private fun shouldActOnAccountsRemoved(provisioningScope: ProvisioningScope) =
+        !provisioningScope.isStartup
+                && provisioningSettings.findAccountsToRemove().isNotEmpty()
 
     private fun mapRestrictions(
         entries: List<RestrictionEntry>,
         restrictions: Bundle,
+        allowModifyAccountProvisioningSettings: Boolean,
+        purgeAccountSettings: Boolean,
     ) {
         entries.forEach { entry ->
-            settingsUpdater.update(restrictions, entry)
+            settingsUpdater.update(
+                restrictions,
+                entry,
+                allowModifyAccountProvisioningSettings,
+                purgeAccountSettings
+            )
         }
     }
 
@@ -123,5 +148,9 @@ class ConfigurationManager @Inject constructor(
 
     private fun sendRemoteConfig() {
         restrictionsUpdatedMF.value = restrictionsUpdatedMF.value + 1
+    }
+
+    fun resetWrongAccountSettingsWarning() {
+        wrongAccountSettingsMF.value = false
     }
 }
