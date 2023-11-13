@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -44,9 +45,9 @@ import javax.inject.Inject
 
 class DrawerLayoutView @Inject constructor(
     @ActivityContext private val context: Context,
-    private var drawerFolderPopulator: DrawerFolderPopulator,
-    private var drawerLayoutPresenter: DrawerLayoutPresenter,
-    private var messagingController: MessagingController
+    private val drawerFolderPopulator: DrawerFolderPopulator,
+    private val drawerLayoutPresenter: DrawerLayoutPresenter,
+    private val messagingController: MessagingController,
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -405,15 +406,14 @@ class DrawerLayoutView @Inject constructor(
             drawerLayout.closeDrawers()
             messageListView.editAccount()
         }
-
-        if (BuildConfig.IS_ENTERPRISE) {
-            addAccountContainer.visibility = View.GONE
-        } else {
-            addAccountContainer.setOnClickListener {
-                drawerLayout.closeDrawers()
-                AccountSetupBasics.actionNewAccount(context)
-            }
+        addAccountContainer.setOnClickListener {
+            drawerLayout.closeDrawers()
+            AccountSetupBasics.actionNewAccount(context)
         }
+    }
+
+    fun displayAddAccountButton(display: Boolean) {
+        addAccountContainer.isVisible = display
     }
 
     fun setDrawerEnabled(enabled: Boolean) {

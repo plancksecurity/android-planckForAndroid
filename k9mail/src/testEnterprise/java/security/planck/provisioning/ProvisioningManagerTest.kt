@@ -1,10 +1,12 @@
 package security.planck.provisioning
 
+import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.ConnectionSecurity
+import com.fsck.k9.mailstore.LocalStore
 import com.fsck.k9.planck.PlanckProviderImplKotlin
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.*
@@ -25,15 +27,14 @@ class ProvisioningManagerTest: RobolectricTest() {
     val coroutinesTestRule = CoroutineTestRule(testDispatcher = UnconfinedTestDispatcher())
 
     private val k9: K9 = mockk(relaxed = true)
-    private val urlChecker: UrlChecker = mockk()
+    private val urlChecker: UrlChecker = spyk(UrlChecker())
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
     private val configurationManager: ConfigurationManager = mockk(relaxed = true)
-    private val provisioningSettings: ProvisioningSettings = mockk()
     private val preferences: Preferences = mockk()
+    private val provisioningSettings: ProvisioningSettings = mockk()
     private val manager = ProvisioningManager(
         k9,
         preferences,
-        urlChecker,
         configurationManager,
         provisioningSettings,
         coroutinesTestRule.testDispatcherProvider,
@@ -41,12 +42,11 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Before
     fun setUp() {
-        coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
-        coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(true)
-        coEvery { provisioningSettings.provisionedMailSettings }.returns(null)
-        coEvery { urlChecker.isValidUrl(any()) }.returns(true)
-        coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
-        coEvery { preferences.accounts }.returns(emptyList())
+        coEvery { provisioningSettings.hasValidMailSettings() }.returns(true)
+        coEvery { provisioningSettings.accountsProvisionList }.returns(mutableListOf())
+        coEvery { provisioningSettings.findAccountsToRemove() }.returns(emptyList())
+        coEvery { preferences.accounts }.answers { emptyList() }
+        coEvery { preferences.deleteAccount(any()) }.just(runs)
         coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.success(Unit))
         mockkObject(PlanckProviderImplKotlin)
@@ -109,11 +109,8 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    @Ignore("remove ignore when we know the url for provisioning")
+    @Ignore("provisioning url disabled")
     fun `when provisioning url is not reachable, resulting state is error`() {
-        coEvery { urlChecker.isUrlReachable(any()) }.returns(false)
-
-
         manager.startProvisioning()
 
 
@@ -128,9 +125,6 @@ class ProvisioningManagerTest: RobolectricTest() {
     @Test
     @Ignore("provisioning url disabled")
     fun `when url has bad format, resulting state is error`() {
-        coEvery { urlChecker.isValidUrl(any()) }.returns(false)
-
-
         manager.startProvisioning()
 
 
@@ -180,9 +174,6 @@ class ProvisioningManagerTest: RobolectricTest() {
     @Test
     @Ignore("provisioning url disabled")
     fun `if provisioning url was not provided, provisioning does not happen`() {
-        coEvery { provisioningSettings.provisioningUrl }.returns(null)
-
-
         manager.startProvisioning()
 
 
@@ -194,7 +185,7 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup`() {
+    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter FirstStartup`() {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
 
 
@@ -208,17 +199,44 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `if there are any accounts setup, configurationManager_loadConfigurationsSuspend is not called`() {
+    fun `if there are accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup`() {
+        coEvery { preferences.accounts }.answers { listOf(mockk()) }
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
-
-
-        coEvery { preferences.accounts }.returns(listOf(mockk()))
 
 
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.wasNot(Called) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup) }
+        assertListenerProvisionChangedWithState { state ->
+            assertEquals(ProvisionState.Initialized, state)
+        }
+    }
+
+    @Test
+    fun `if there are accounts setup, accounts in ProvisioningSettings that need deletion are deleted`() {
+        val localStore: LocalStore = mockk {
+            every { delete() }.just(runs)
+        }
+        val account: Account = mockk {
+            every { this@mockk.localStore }.returns(localStore)
+            every { email }.returns("email")
+        }
+        coEvery { preferences.accounts }.answers { listOf(account) }
+        coEvery { provisioningSettings.findAccountsToRemove() }.returns(listOf(account))
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
+        manager.startProvisioning()
+
+
+        coVerifyOrder {
+            configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup)
+            account.localStore
+            localStore.delete()
+            preferences.deleteAccount(account)
+            provisioningSettings.removeAccountSettingsByAddress("email")
+        }
     }
 
     @Test
@@ -234,8 +252,8 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine if it is not the first startup`() {
-        coEvery { preferences.accounts }.returns(listOf(mockk()))
+    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter AllSettings on every startup`() {
+        coEvery { preferences.accounts }.answers { listOf(mockk()) }
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
 
 
@@ -243,7 +261,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.performInitializedEngineProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.AllSettings) }
     }
 
     @Test
@@ -286,7 +304,7 @@ class ProvisioningManagerTest: RobolectricTest() {
     @Test
     fun `if mail settings are not valid, resulting state is error`() {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
-        coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(false)
+        coEvery { provisioningSettings.hasValidMailSettings() }.returns(false)
 
 
         manager.startProvisioning()
@@ -308,7 +326,7 @@ class ProvisioningManagerTest: RobolectricTest() {
     @Ignore("provisioning url disabled")
     fun `if url fails mail settings server url check, resulting state is error`() {
         coEvery { urlChecker.isValidUrl(any()) }.returns(false)
-        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+        coEvery { provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings }.returns(
             AccountMailSettingsProvision(
                 incoming = SimpleMailSettings(
                     700,

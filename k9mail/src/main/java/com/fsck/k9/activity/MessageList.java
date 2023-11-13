@@ -331,7 +331,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Inject
     PermissionChecker permissionChecker;
-    private RestrictionsViewModel restrictionsViewModel;
 
     private void askForContactPermission() {
         if (permissionChecker.doesntHaveContactsPermission()) {
@@ -386,7 +385,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeFragments();
         displayViews();
         channelUtils.updateChannels();
-        restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
@@ -788,6 +786,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void stopObservingRestrictionsChanges() {
         restrictionsViewModel.getRestrictionsUpdated().removeObservers(this);
+        restrictionsViewModel.getNextAccountToInstall().removeObservers(this);
     }
 
     @Override
@@ -816,7 +815,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
         setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
-        startObservingRestrictionsChanges();
+        if (getK9().isRunningOnWorkProfile()) {
+            startObservingRestrictionsChanges();
+        } else {
+            drawerLayoutView.displayAddAccountButton(true);
+        }
     }
 
     private void startObservingRestrictionsChanges() {
@@ -825,6 +828,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             if (value != null && value) {
                 updatedRestrictions();
             }
+        });
+        restrictionsViewModel.getNextAccountToInstall().observe(this, nextAccountToInstall -> {
+            drawerLayoutView.displayAddAccountButton(nextAccountToInstall != null);
         });
     }
 

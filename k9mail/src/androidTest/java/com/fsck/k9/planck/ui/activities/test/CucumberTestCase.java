@@ -1,13 +1,11 @@
 package com.fsck.k9.planck.ui.activities.test;
 
-import android.app.Application;
-import android.content.Context;
 import android.os.Bundle;
 
 import com.fsck.k9.BuildConfig;
-//import com.fsck.k9.planck.infrastructure.TestK9;
 
 import org.junit.Ignore;
+
 import io.cucumber.android.runner.CucumberAndroidJUnitRunner;
 import io.cucumber.junit.CucumberAndroidJUnitArguments;
 import io.cucumber.junit.CucumberOptions;
@@ -56,11 +54,6 @@ public class CucumberTestCase extends CucumberAndroidJUnitRunner {
                 args.putString(ARG_FILTER, filterClassName);
 
                 super.onCreate(args);
-        }
-
-        @Override
-        public Application newApplication(ClassLoader cl, String className, Context context) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-                return super.newApplication(cl, TestK9.class.getName(), context);
         }
 
         enum TestType {

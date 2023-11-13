@@ -8,6 +8,8 @@ import com.fsck.k9.planck.infrastructure.livedata.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import security.planck.provisioning.AccountProvisioningSettings
+import security.planck.provisioning.ProvisioningSettings
 import javax.inject.Inject
 
 /**
@@ -15,7 +17,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class RestrictionsViewModel @Inject constructor(
-    configurationManager: ConfigurationManager,
+    private val configurationManager: ConfigurationManager,
+    private val provisioningSettings: ProvisioningSettings,
 ) : ViewModel() {
     private val restrictionsUpdatedLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
@@ -27,12 +30,43 @@ class RestrictionsViewModel @Inject constructor(
      */
     val restrictionsUpdated: LiveData<Event<Boolean>> = restrictionsUpdatedLiveData
 
+    private val accountRemovedLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val accountRemoved: LiveData<Event<Boolean>> = accountRemovedLiveData
+
+    private val wrongAccountSettingsLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val wrongAccountSettings: LiveData<Event<Boolean>> = wrongAccountSettingsLiveData
+
+    private val nextAccountToInstallLiveData =
+        object : MutableLiveData<AccountProvisioningSettings?>(null) {
+            override fun onActive() {
+                super.onActive()
+                value = findNextAccountToInstall()
+            }
+        }
+    val nextAccountToInstall: LiveData<AccountProvisioningSettings?> = nextAccountToInstallLiveData
+
     init {
         configurationManager.restrictionsUpdatedFlow
             .onEach {
-                if (it > 0) {
-                    restrictionsUpdatedLiveData.value = Event(true)
-                }
+                restrictionsUpdatedLiveData.value = Event(it > 0)
+                nextAccountToInstallLiveData.value = findNextAccountToInstall()
             }.launchIn(viewModelScope)
+
+        configurationManager.accountRemovedFlow.onEach {
+            accountRemovedLiveData.value = Event(it)
+        }.launchIn(viewModelScope)
+
+        configurationManager.wrongAccountSettingsFlow.onEach {
+            wrongAccountSettingsLiveData.value = Event(it)
+        }.launchIn(viewModelScope)
+    }
+
+    private fun findNextAccountToInstall() =
+        provisioningSettings.findNextAccountToInstall()
+
+    fun resetWrongAccountSettingsWarning() {
+        configurationManager.resetWrongAccountSettingsWarning()
     }
 }
