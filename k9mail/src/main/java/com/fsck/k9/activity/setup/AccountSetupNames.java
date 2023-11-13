@@ -123,6 +123,11 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         if (mAccount.getName() != null) {
             mName.setText(mAccount.getName());
         }
+        if (getK9().isRunningOnWorkProfile()) {
+            mDescription.setFocusable(false);
+            mName.setFocusable(false);
+            mDescription.setText(mAccount.getDescription());
+        }
         if (!Utility.requiredFieldValid(mName)) {
             mDoneButton.setEnabled(false);
         }
@@ -172,7 +177,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     }
 
     private void loadConfigurations() {
-        configurationManager.loadConfigurationsBlocking(ProvisioningScope.AllAccountSettings.INSTANCE);
+        configurationManager.loadConfigurationsBlocking(new ProvisioningScope.SingleAccountSettings(mAccount.getEmail()));
     }
 
     @VisibleForTesting

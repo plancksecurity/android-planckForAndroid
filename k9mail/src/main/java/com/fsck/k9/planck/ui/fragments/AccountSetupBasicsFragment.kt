@@ -4,12 +4,20 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.core.view.isVisible
-import com.fsck.k9.*
+import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
+import com.fsck.k9.EmailAddressValidator
+import com.fsck.k9.Preferences
+import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.databinding.FragmentAccountLoginBinding
 import com.fsck.k9.databinding.WizardSetupBinding
@@ -104,9 +112,9 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun updateUiFromProvisioningSettings() {
-        emailView.setText(provisioningSettings.email)
+        emailView.setText(accountProvisioningSettings?.email)
         emailView.isFocusable = false
-        val provisionSettings = provisioningSettings.provisionedMailSettings
+        val provisionSettings = accountProvisioningSettings?.provisionedMailSettings
         if (provisionSettings != null) {
             val isExternalAuth =
                 provisionSettings.incoming.authType === security.planck.mdm.AuthType.EXTERNAL

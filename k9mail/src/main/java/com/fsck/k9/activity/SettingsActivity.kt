@@ -18,8 +18,8 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
-import androidx.activity.viewModels
 import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
@@ -53,7 +53,6 @@ import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
-import security.planck.mdm.RestrictionsViewModel
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
 import security.planck.sync.SyncRepository
@@ -116,7 +115,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     lateinit var resourcesProvider: ResourcesProvider
     @Inject
     lateinit var syncRepository: SyncRepository
-    private val restrictionsViewModel: RestrictionsViewModel by viewModels()
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -214,6 +212,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         bindViews(R.layout.accounts)
         accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
         termsAndConditionsTextView = findViewById<TextView>(R.id.terms_and_conditions)
+        addAccountButton = findViewById(R.id.add_account_container)
 
         termsAndConditionsTextView.text = HtmlCompat.fromHtml(
             "<a href=\"#\">Terms and Conditions</a>",
@@ -274,7 +273,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             }
         }
 
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!k9.isRunningOnWorkProfile) {
             registerForContextMenu(accountsList)
         }
 
@@ -315,13 +314,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun setupAddAccountButton() {
-        addAccountButton = findViewById(R.id.add_account_container)
+        addAccountButton?.setOnClickListener { onAddNewAccount() }
+    }
 
-        if (BuildConfig.IS_ENTERPRISE) {
-            addAccountButton?.visibility = View.GONE
-        } else {
-            addAccountButton?.setOnClickListener { onAddNewAccount() }
-        }
+    private fun displayAddAccountButton(displayButton: Boolean) {
+        addAccountButton?.isVisible = displayButton
     }
 
     private fun initializeActionBar() {
@@ -376,7 +373,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
         refresh()
         StorageManager.getInstance(application).addListener(storageListener)
-        startObservingRestrictionsChanges()
+        if (k9.isRunningOnWorkProfile) {
+            startObservingRestrictionsChanges()
+        } else {
+            displayAddAccountButton(true)
+        }
     }
 
     private fun startObservingRestrictionsChanges() {
@@ -387,16 +388,20 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
                 }
             }
         }
+        restrictionsViewModel.nextAccountToInstall.observe(this) {
+            displayAddAccountButton(it != null)
+        }
     }
 
     public override fun onPause() {
-        super.onPause()
         stopObservingRestrictionsChanges()
         StorageManager.getInstance(application).removeListener(storageListener)
+        super.onPause()
     }
 
     private fun stopObservingRestrictionsChanges() {
         restrictionsViewModel.restrictionsUpdated.removeObservers(this)
+        restrictionsViewModel.nextAccountToInstall.removeObservers(this)
     }
 
     private enum class ACCOUNT_LOCATION {
