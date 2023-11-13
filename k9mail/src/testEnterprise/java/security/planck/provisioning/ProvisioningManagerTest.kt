@@ -31,7 +31,7 @@ class ProvisioningManagerTest: RobolectricTest() {
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
     private val configurationManager: ConfigurationManager = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
-    private val provisioningSettings: ProvisioningSettings = mockk() //ProvisioningSettings(preferences, urlChecker)
+    private val provisioningSettings: ProvisioningSettings = mockk()
     private val manager = ProvisioningManager(
         k9,
         preferences,
@@ -42,7 +42,6 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Before
     fun setUp() {
-        //coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
         coEvery { provisioningSettings.hasValidMailSettings() }.returns(true)
         coEvery { provisioningSettings.accountsProvisionList }.returns(mutableListOf())
         coEvery { provisioningSettings.findAccountsToRemove() }.returns(emptyList())

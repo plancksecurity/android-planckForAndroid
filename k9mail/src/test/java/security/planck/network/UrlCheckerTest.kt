@@ -19,10 +19,9 @@ class UrlCheckerTest : RobolectricTest() {
     }
 
     @Test
-    fun `check reachable urls`() {
+    fun `check reachable urls`() { // not working for imap urls, but it's ok to be used for http-like addresses
         assertTrue(urlChecker.isUrlReachable("http://google.com"))
         assertFalse(urlChecker.isUrlReachable("http://google.jjj"))
-        //assertTrue(urlChecker.isUrlReachable("imap://planck.dev")) not working for imap?...
     }
 
 

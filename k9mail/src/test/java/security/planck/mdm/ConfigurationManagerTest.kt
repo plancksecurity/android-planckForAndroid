@@ -2,13 +2,10 @@ package security.planck.mdm
 
 import android.content.RestrictionEntry
 import android.os.Bundle
-import androidx.core.os.bundleOf
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
-import com.fsck.k9.auth.OAuthProviderType
-import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import com.fsck.k9.preferences.Storage
@@ -38,7 +35,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import security.planck.network.UrlChecker
 import security.planck.provisioning.CONNECTION_SECURITY_NONE
 import security.planck.provisioning.CONNECTION_SECURITY_SSL_TLS
 import security.planck.provisioning.CONNECTION_SECURITY_STARTTLS
@@ -94,7 +90,6 @@ class ConfigurationManagerTest : RobolectricTest() {
         every { accounts }.answers { listOf(account) }
         every { storage }.returns(mockStorage)
     }
-    private val urlChecker: UrlChecker = mockk()
     private val provisioningSettings: ProvisioningSettings = mockk()
     private val k9: K9 = mockk()
 
@@ -114,7 +109,6 @@ class ConfigurationManagerTest : RobolectricTest() {
         every { K9.save(any()) }.just(Runs)
         every { provisioningSettings.findAccountsToRemove() }.returns(emptyList())
         every { provisioningSettings.hasAnyAccountWithWrongSettings() }.returns(false)
-        //every { preferences.accountsAllowingIncomplete }.answers { emptyList() }
         restrictionsUpdateValues.clear()
         observeRestrictionsUpdateValues()
     }
@@ -498,38 +492,11 @@ class ConfigurationManagerTest : RobolectricTest() {
 
     private fun Bundle.putMailSettingsBundle(
         email: String? = ACCOUNT_EMAIL,
-        authType: AuthType = AuthType.PLAIN,
-        oAuthProvider: OAuthProviderType = OAuthProviderType.GOOGLE,
-        server: String? = NEW_SERVER,
-        username: String? = NEW_USER_NAME,
-        security: String? = NEW_SECURITY_TYPE_STRING,
-        port: Int = NEW_PORT,
     ) = apply {
         putBundle(
             RESTRICTION_ACCOUNT_MAIL_SETTINGS,
             Bundle().apply {
                 putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
-                putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, oAuthProvider.toString())
-                putBundle(
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                    bundleOf(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to port,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to security,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
-                    )
-                )
-                putBundle(
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                    bundleOf(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to port,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to security,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
-                    )
-                )
             }
         )
     }
@@ -541,60 +508,6 @@ class ConfigurationManagerTest : RobolectricTest() {
                 RESTRICTION_ACCOUNT_EMAIL_ADDRESS,
                 DEFAULT_EMAIL
             ),
-            RestrictionEntry(
-                RESTRICTION_ACCOUNT_OAUTH_PROVIDER,
-                DEFAULT_OAUTH_PROVIDER.toString()
-            ),
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
-                        DEFAULT_SERVER
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-                        DEFAULT_PORT
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
-                        DEFAULT_SECURITY_TYPE.toMdmName()
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
-                        DEFAULT_USER_NAME
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE,
-                        DEFAULT_AUTH_TYPE.toString()
-                    )
-                )
-            ),
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
-                        DEFAULT_SERVER
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
-                        DEFAULT_PORT
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
-                        DEFAULT_SECURITY_TYPE.toMdmName()
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
-                        DEFAULT_USER_NAME
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE,
-                        DEFAULT_AUTH_TYPE.toString()
-                    )
-                )
-            ),
         )
     )
 
@@ -605,43 +518,7 @@ class ConfigurationManagerTest : RobolectricTest() {
     }
 
     companion object {
-        private const val OLD_SERVER = "old.valid.server"
-        private const val OLD_PORT = 333
-        private val OLD_SECURITY_TYPE = ConnectionSecurity.NONE
-        private val OLD_AUTH_TYPE = AuthType.PLAIN
-        private const val OLD_USER_NAME = "oldUsername"
-        private const val OLD_PASSWORD = "oldPassword"
-        private const val OLD_CERTIFICATE_ALIAS = "cert"
         private const val ACCOUNT_EMAIL = "account.email@example.ch"
-
-        private const val DEFAULT_SERVER = "serverDefault"
-        private const val DEFAULT_PORT = 888
-        private val DEFAULT_SECURITY_TYPE = ConnectionSecurity.STARTTLS_REQUIRED
-        private const val DEFAULT_USER_NAME = "usernameDefault"
         private const val DEFAULT_EMAIL = "email@default.ch"
-        private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.MICROSOFT
-        private val DEFAULT_AUTH_TYPE = AuthType.PLAIN
-
-        private const val NEW_EMAIL = "new.email@mail.ch"
-        private const val SECOND_EMAIL = "second.email@mail.ch"
-        private const val NEW_SERVER = "mail.server.host"
-        private const val WRONG_SERVER = "wrongserver"
-        private const val NEW_USER_NAME = "username"
-        private const val NEW_SECURITY_TYPE_STRING = "SSL/TLS"
-        private val NEW_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
-        private const val NEW_PORT = 999
-
-        private const val MEDIA_KEY_PATTERN_1 = "*@test1.test"
-        private const val MEDIA_KEY_PATTERN_2 = "*@test2.test"
-        private const val KEY_FPR_1 = "1111111111111111111111111111111111111111"
-        private const val KEY_FPR_2 = "2222222222222222222222222222222222222222"
-        private const val KEY_MATERIAL_1 = "keymaterial1"
-        private const val KEY_MATERIAL_2 = "keymaterial2"
-        private const val WRONG_FPR = "WRONG_FPR"
-        private const val NEW_ACCOUNT_DESCRIPTION = "newAccountDescription"
-        private const val NEW_SENDER_NAME = "new sender name"
-        private const val NEW_SIGNATURE = "new signature"
-        private const val DEFAULT_SENDER_NAME = "default sender name"
-        private const val DEFAULT_SIGNATURE = "default signature"
     }
 }
