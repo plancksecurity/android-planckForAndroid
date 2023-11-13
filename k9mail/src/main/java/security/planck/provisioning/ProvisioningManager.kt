@@ -25,7 +25,6 @@ class ProvisioningManager @Inject constructor(
         else ProvisionState.Initializing()
 
     private val listeners = mutableListOf<ProvisioningStateListener>()
-    private var firstStartup = false
 
     fun addListener(listener: ProvisioningStateListener) {
         listeners.add(listener)
@@ -55,9 +54,8 @@ class ProvisioningManager @Inject constructor(
             }
 
             else -> {
-                firstStartup = preferences.accounts.isEmpty()
                 configurationManager.loadConfigurationsSuspend( // TODO: Should we check if the device is online on every startup? If we are online the app is supposed to keep last restrictions it has so it should not be needed.
-                    if (firstStartup) ProvisioningScope.FirstStartup
+                    if (preferences.accounts.isEmpty()) ProvisioningScope.FirstStartup
                     else ProvisioningScope.Startup
                 ).mapCatching {
                     removeAccountsRemovedFromMDM()
@@ -69,12 +67,10 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun removeAccountsRemovedFromMDM() {
-        if (!firstStartup) {
-            provisioningSettings.findAccountsToRemove().forEach { account ->
-                account.localStore.delete()
-                preferences.deleteAccount(account)
-                provisioningSettings.removeAccountSettingsByAddress(account.email)
-            }
+        provisioningSettings.findAccountsToRemove().forEach { account ->
+            account.localStore.delete()
+            preferences.deleteAccount(account)
+            provisioningSettings.removeAccountSettingsByAddress(account.email)
         }
     }
 
@@ -82,8 +78,7 @@ class ProvisioningManager @Inject constructor(
         if (k9.isRunningOnWorkProfile) {
             configurationManager
                 .loadConfigurationsSuspend(
-                    if (firstStartup) ProvisioningScope.AllSettings
-                    else ProvisioningScope.InitializedEngine
+                    ProvisioningScope.AllSettings
                 )
                 .onFailure { throw it }
         }
