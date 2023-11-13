@@ -91,7 +91,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                     return@observe
                 }
                 AuthFlowState.Success -> {
-                    if (authViewModel.needsMailSettingsDiscovery && mailSettingsDiscoveryRequired) { // ONLY CASE OF PASSWORD FLOW THAT ACTUALLY NEEDS OAUTH (GOOGLE)
+                    if (authViewModel.needsMailSettingsDiscovery && mailSettingsDiscoveryRequired) { // ONLY CASE OF PASSWORD FLOW BY USER MISTAKE THAT ACTUALLY NEEDS OAUTH (GOOGLE)
                         discoverMailSettings()
                     } else {
                         startCheckServerSettings()
@@ -114,6 +114,10 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                 }
                 is AuthFlowState.WrongEmailAddress -> {
                     showErrorDialog(R.string.account_setup_failed_dlg_oauth_wrong_email_address, state.userWrongEmail, state.adminEmail)
+                }
+
+                is AuthFlowState.AccountAlreadyInstalled -> {
+                    showErrorDialog(R.string.account_setup_failed_dlg_account_already_installed, state.email)
                 }
             }
 

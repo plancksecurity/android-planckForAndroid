@@ -92,7 +92,7 @@
         <item>365 days</item>
     </string-array>
 
-    <string-array name="audit_log_data_time_retention_values">
+    <string-array name="audit_log_data_time_retention_values" translatable="false">
         <item>2592000</item>
         <item>7776000</item>
         <item>15552000</item>

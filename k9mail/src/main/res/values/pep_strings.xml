@@ -382,6 +382,7 @@
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
     <string name="account_setup_failed_dlg_browser_not_found">planck couldn\'t find a browser to use for granting access to your account.</string>
     <string name="account_setup_failed_dlg_unsuitable_browser_found">planck couldn\'t find a suitable browser to use for granting access to your account. Please install a browser other than Microsoft Edge.</string>
+    <string name="account_setup_failed_dlg_account_already_installed">The account %s is already installed, cannot install it again.</string>
     <string name="account_setup_oauth_title_retry_login">Retry login</string>
     <string name="account_setup_oauth_description_retry_login">planck could not log in to account %s. Please try login again below.</string>
     <string name="mdm_settings_feedback_title" translatable="false">Current settings from MDM</string>

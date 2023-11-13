@@ -37,4 +37,6 @@ sealed interface AuthFlowState {
                 exception.userWrongEmail
             )
         }
+
+    data class AccountAlreadyInstalled(val email: String): AuthFlowState
 }
