@@ -125,6 +125,10 @@ class PlanckUIUtilsTest : RobolectricTest() {
             R.drawable.ico_trusted,
             PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingFullyAnonymous)!!
         )
+        assertDrawableEqualsRes(
+            R.drawable.ico_inactive,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnencrypted, planckInactive = true)!!
+        )
     }
 
     @Test
@@ -198,6 +202,12 @@ class PlanckUIUtilsTest : RobolectricTest() {
             R.string.pep_rating_not_encrypted,
             Rating.pEpRatingUnencrypted,
             false
+        )
+        assertCorrectStringRes(
+            R.string.planck_inactive,
+            Rating.pEpRatingUnencrypted,
+            false,
+            planckInactive = true
         )
         assertCorrectStringRes(
             R.string.pep_rating_forced_unencrypt,
@@ -293,9 +303,10 @@ class PlanckUIUtilsTest : RobolectricTest() {
     private fun assertCorrectStringRes(
         @StringRes expected: Int,
         rating: Rating?,
-        enabled: Boolean = true
+        enabled: Boolean = true,
+        planckInactive: Boolean = false,
     ) {
-        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, enabled))
+        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, enabled, planckInactive))
     }
 
     private fun assertCorrectColorRes(@ColorRes expected: Int, rating: Rating?) {
