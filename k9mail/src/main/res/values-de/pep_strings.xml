@@ -238,7 +238,7 @@
     <string name="global_settings_passive_mode_summary">Keinen Schlüssel mitsenden, wenn der Kommunikationspartner kein planck verwendet</string>
     <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>
     <string name="key_reset_own_identity_feedback_error">Das Konto konnte nicht zurückgesetzt werden.</string>
-    <string name="planck_documentation_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-v3-1-0/user-guide-for-android</string>
+    <string name="planck_documentation_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/user-guide-for-android</string>
     <string name="message_view_message_no_longer_available">Diese Nachricht ist nicht mehr verfügbar, vermutlich wurde sie mittels eines anderen E-Mail-Programmes gelöscht.</string>
     <string name="no_results_found">Kein Ergebnis gefunden</string>
     <string name="pgp_key_import_disabled_summary">Dieses Gerät ist Teil einer Gerätegruppe, Schlüssel kann nicht importiert werden</string>

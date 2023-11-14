@@ -1277,7 +1277,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showUserManual() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_ABOUT_LINK));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url, getFormattedVersionForUserManual())));
         startActivity(browserIntent);
     }
 

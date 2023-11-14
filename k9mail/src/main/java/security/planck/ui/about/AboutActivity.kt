@@ -62,7 +62,7 @@ class AboutActivity : K9Activity() {
         binding.aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         binding.documentationButton.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url))))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url, formattedVersionForUserManual))))
         }
         binding.documentationButton.paintFlags = binding.documentationButton.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
