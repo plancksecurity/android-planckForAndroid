@@ -59,14 +59,20 @@ object PlanckUIUtils {
     }
 
     @JvmStatic
-    fun getDrawableForToolbarRating(context: Context, rating: Rating?): Drawable? {
-        return ratingDisplay.getForRating(rating).getDrawable(context)
+    @JvmOverloads
+    fun getDrawableForToolbarRating(context: Context, rating: Rating?, planckInactive: Boolean = false): Drawable? {
+        return getDrawableForMessage(context, rating, planckInactive)
     }
 
     @JvmStatic
-    fun getDrawableForMessageList(context: Context, rating: Rating?): Drawable? {
-        return ratingDisplay.getForRating(rating).getDrawable(context)
+    @JvmOverloads
+    fun getDrawableForMessageList(context: Context, rating: Rating?, planckInactive: Boolean = false): Drawable? {
+        return getDrawableForMessage(context, rating, planckInactive)
     }
+
+    private fun getDrawableForMessage(context: Context, rating: Rating?, planckInactive: Boolean): Drawable? =
+        if (planckInactive) ContextCompat.getDrawable(context, R.drawable.ico_inactive)
+        else ratingDisplay.getForRating(rating).getDrawable(context)
 
     @JvmStatic
     fun getToolbarRatingVisibility(
@@ -92,8 +98,10 @@ object PlanckUIUtils {
     }
 
     @JvmStatic
-    fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
-        return ratingDisplay.getForRating(rating, pEpEnabled).textRes
+    @JvmOverloads
+    fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true, planckInactive: Boolean = false): Int {
+        return if (planckInactive) R.string.planck_inactive
+        else ratingDisplay.getForRating(rating, pEpEnabled).textRes
     }
 
     @JvmStatic
