@@ -45,16 +45,16 @@ repositories {
 
 dependencies {
     //Required for certification; Only required in enterprise variants
-    implementation "com.scottyab:rootbeer-lib:${versions.rootbeer}"
+    implementation "com.scottyab:rootbeer-lib:${versions.rootbeer}" //Used for root detection
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation project(":planckJNIWrapper")
-    implementation project(':k9mail-library')
-    implementation project(':plugins:HoloColorPicker')
-    implementation project(':plugins:openpgp-api-lib:openpgp-api')
-    implementation project(':foldableFolders')
+    implementation project(":planckJNIWrapper") //JNI wrapper to engine
+    implementation project(':k9mail-library') //k9 native lib
+    implementation project(':plugins:HoloColorPicker') //UI design
+    implementation project(':plugins:openpgp-api-lib:openpgp-api') //Unsure
+    implementation project(':foldableFolders') //UI design
 
     implementation "net.openid:appauth:${versions.appauth}"
     implementation "com.auth0.android:jwtdecode:${versions.jwtDecode}"
@@ -66,7 +66,7 @@ dependencies {
     implementation "com.google.android.material:material:${versions.material}"
     implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
     implementation "androidx.vectordrawable:vectordrawable:${versions.vectordrawable}"
-    implementation "net.jcip:jcip-annotations:${versions.jcipAnnotations}"
+    //implementation "net.jcip:jcip-annotations:${versions.jcipAnnotations}"
     testImplementation "org.apache.ant:ant:${versions.ant}"
 
     implementation "com.squareup.moshi:moshi:${versions.moshi}"
