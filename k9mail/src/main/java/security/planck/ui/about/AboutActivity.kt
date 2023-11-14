@@ -7,17 +7,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
-import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
+import com.fsck.k9.databinding.ActivityAboutBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_about.aboutText
-import kotlinx.android.synthetic.main.activity_about.documentation_button
-import kotlinx.android.synthetic.main.activity_about.librariesText
-import kotlinx.android.synthetic.main.activity_about.terms_and_conditions
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity
 import security.planck.ui.toolbar.ToolBarCustomizer
 import java.util.Calendar
@@ -25,13 +21,13 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AboutActivity : K9Activity() {
+    private lateinit var binding: ActivityAboutBinding
 
     @Inject
     lateinit var toolbarCustomizer: ToolBarCustomizer
     private var iconClickCount = 0
 
-    private//Log.e(TAG, "Package name not found", e);
-    val versionNumber: String
+    private val versionNumber: String
         get() {
             var version = "?"
             try {
@@ -45,10 +41,11 @@ class AboutActivity : K9Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindViews(R.layout.activity_about)
+        binding = ActivityAboutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setUpToolbar(true)
         if (BuildConfig.IS_ENTERPRISE) {
-            findViewById<ImageView>(R.id.icon).setOnClickListener {
+            binding.icon.setOnClickListener {
                 if (++iconClickCount >= UNLOCK_SETTINGS_SCREEN_CLICK_COUNT) {
                     iconClickCount = 0
                     MdmSettingsFeedbackActivity.start(this)
@@ -61,24 +58,24 @@ class AboutActivity : K9Activity() {
         initializeToolbar(true, about)
 
         val aboutString = buildAboutString()
-        aboutText.movementMethod = LinkMovementMethod.getInstance()
-        aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.aboutText.movementMethod = LinkMovementMethod.getInstance()
+        binding.aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-        documentation_button.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.pEp_documentation_url))))
+        binding.documentationButton.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url))))
         }
-        documentation_button.paintFlags = documentation_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.documentationButton.paintFlags = binding.documentationButton.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
         val librariesString = buildLibrariesHtml()
-        librariesText.movementMethod = LinkMovementMethod.getInstance()
-        librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.librariesText.movementMethod = LinkMovementMethod.getInstance()
+        binding.librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-        terms_and_conditions.text = HtmlCompat.fromHtml(
+        binding.termsAndConditions.text = HtmlCompat.fromHtml(
             "<a href=\"#\">Terms and Conditions</a>",
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
 
-        terms_and_conditions.setOnClickListener {
+        binding.termsAndConditions.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
         }
     }
@@ -130,48 +127,61 @@ class AboutActivity : K9Activity() {
         }
 
         val USED_LIBRARIES = mapOf(
+            "planckCoreSequoiaBackend" to "https://git.planck.security/foundation/planckCoreSequoiaBackend",
+            "Sequoia PGP" to "https://gitlab.com/sequoia-pgp/sequoia",
+            "planck core Version 3" to "https://git.planck.security/foundation/planckCoreV3",
+            "planck JNI Wrapper" to "https://git.planck.security/foundation/planckJNIWrapper",
+            "libetpan" to "https://git.planck.security/foundation/libetpan",
+            "libpEpCxx11" to "https://git.planck.security/foundation/libpEpCxx11",
+            "libPlanckWrapper" to "https://git.planck.security/foundation/libPlanckWrapper",
+            "libPlanckTransport" to "https://git.planck.security/foundation/libPlanckTransport",
+            "yml2" to "https://git.planck.security/foundation/yml2",
 
-                "pEpEngine" to "https://pep.foundation/dev/repos/pEpEngine/",
-                "pEpJNIAdapter" to "https://pep.foundation/dev/repos/pEpJNIAdapter/",
-                "libpEpAdapter" to "https://pep.foundation/dev/repos/libpEpAdapter/",
-                "Android X Library" to "https://developer.android.com/jetpack/androidx",
-                "Android-Support-Preference-V7-Fix" to "https://github.com/Gericop/Android-Support-Preference-V7-Fix",
-                "jutf7" to "http://jutf7.sourceforge.net/",
-                "JZlib" to "http://www.jcraft.com/jzlib/",
-                "Commons IO" to "http://commons.apache.org/io/",
-                "Mime4j" to "http://james.apache.org/mime4j/",
-                "HoloColorPicker" to "https://github.com/LarsWerkman/HoloColorPicker",
-                "Glide" to "https://github.com/bumptech/glide",
-                "jsoup" to "https://jsoup.org/",
-                "Moshi" to "https://github.com/square/moshi",
-                "Okio" to "https://github.com/square/okio",
-                "SafeContentResolver" to "https://github.com/cketti/SafeContentResolver",
-                "ShowcaseView" to "https://github.com/amlcurran/ShowcaseView",
-                "Timber" to "https://github.com/JakeWharton/timber",
-                "TokenAutoComplete" to "https://github.com/splitwise/TokenAutoComplete/",
-                "ButterKnife" to "https://github.com/JakeWharton/butterknife",
-                "Calligraphy" to "https://github.com/chrisjenx/Calligraphy",
-                "Libiconv" to "https://www.gnu.org/software/libiconv/",
-                "LibEtPan" to "https://www.etpan.org/libetpan.html",
-                "Sequoia-pgp" to "https://sequoia-pgp.org",
-                "Libnettle" to "https://www.lysator.liu.se/~nisse/nettle",
-                "libgmp" to "https://gmplib.org",
-                "openssl" to "https://www.openssl.org",
-                "Okio" to "https://github.com/square/okio",
-                "jcip-annotations" to "https://github.com/stephenc/jcip-annotations",
-                "Renderers" to "https://github.com/pedrovgs/Renderers",
-                "AppIntro" to "https://github.com/AppIntro/AppIntro",
-                "AndroidSwipeLayout" to "https://github.com/daimajia/AndroidSwipeLayout",
-                "Dexter" to "https://github.com/Karumi/Dexter",
-                "Acra" to "https://github.com/ACRA/acra",
-                "CircleImageView" to "https://github.com/hdodenhof/CircleImageView",
-                "Groupie" to "https://github.com/lisawray/groupie",
-                "Robolectric" to "http://robolectric.org/",
-                "Dagger" to "https://github.com/google/dagger",
-                "Barista" to "https://github.com/AdevintaSpain/Barista",
-                "Spoon" to "https://github.com/square/spoon",
-                "Cucumber" to "https://cucumber.io/"
+            "Kotlin" to "https://github.com/JetBrains/kotlin.git",
+            "Coroutines" to "https://github.com/Kotlin/kotlinx.coroutines",
+            "Serialization" to "https://www.bouncycastle.org/java.html",
+            "Bouncy Castle" to "https://github.com/Kotlin/kotlinx.serialization",
+            "Androidx libraries" to "https://github.com/androidx/androidx",
 
+            "AppAuth" to "https://github.com/openid/AppAuth-Android.git",
+            "JWTDecode" to "https://github.com/auth0/JWTDecode.Android.git",
+            "Okio" to "https://github.com/square/okio.git",
+            "Commons IO" to "https://github.com/apache/commons-io.git",
+            "Ant" to "https://github.com/apache/ant",
+            "James" to "https://github.com/apache/james-mime4j/tree/master",
+            "Java Concurrency In Practice" to "https://jcip.net/",
+            "Moshi" to "https://github.com/square/moshi.git",
+            "TokenAutocomplete" to "https://github.com/splitwise/TokenAutoComplete.git",
+            "ShowCaseView" to "https://github.com/amlcurran/ShowcaseView.git",
+            "Timber" to "https://github.com/JakeWharton/timber.git",
+            "Butterknife" to "https://github.com/JakeWharton/butterknife.git",
+            "Renderers" to "https://github.com/pedrovgs/Renderers.git",
+            "Glide" to "https://github.com/bumptech/glide.git",
+            "AppIntro" to "https://github.com/AppIntro/AppIntro.git",
+            "SwipeLayout" to "https://github.com/daimajia/AndroidSwipeLayout.git",
+            "Dexter" to "https://github.com/Karumi/Dexter.git",
+            "SafeContentResolver" to "https://github.com/cketti/SafeContentResolver.git",
+            "CircleImageView" to "https://github.com/hdodenhof/CircleImageView.git",
+            "Jsoup" to "https://github.com/jhy/jsoup.git",
+            "Preferencex" to "https://github.com/takisoft/preferencex-android.git",
+            "Groupie" to "https://github.com/lisawray/groupie.git",
+            "Biweekly" to "https://github.com/mangstadt/biweekly.git",
+
+            "MiniDNS" to "https://github.com/MiniDNS/minidns.git",
+            "jdom" to "https://github.com/hunterhacker/jdom.git",
+            "Dagger Hilt" to "https://github.com/google/dagger/tree/master/java/dagger/hilt",
+            "Bouncy Castle" to "https://www.bouncycastle.org/java.html",
+
+            "Truth" to "https://github.com/google/truth.git",
+            "Spoon" to "https://github.com/square/spoon",
+            "Mockito" to "https://github.com/mockito/mockito.git",
+            "Mockito Kotlin" to "https://github.com/mockito/mockito-kotlin.git",
+            "Mockk" to "https://github.com/mockk/mockk.git",
+            "Cucumber Android" to "https://github.com/cucumber/cucumber-android.git",
+            "Cucumber Picocontainer" to "https://github.com/cucumber/cucumber-jvm/tree/main/cucumber-picocontainer",
+            "Robolectric" to "https://robolectric.org/",
+            "JUnit" to "https://junit.org/junit4/",
+            "Barista" to "https://github.com/AdevintaSpain/Barista.git",
         )
     }
 }
