@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginStart="4dp"
-                android:text="@string/pEp_documentation_url"
+                android:text="@string/action_user_manual"
                 android:textColor="?attr/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/documentation_label"
                 app:layout_constraintTop_toTopOf="@+id/documentation_label" />
