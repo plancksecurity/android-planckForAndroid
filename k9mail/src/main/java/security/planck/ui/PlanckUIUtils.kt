@@ -60,17 +60,25 @@ object PlanckUIUtils {
 
     @JvmStatic
     @JvmOverloads
-    fun getDrawableForToolbarRating(context: Context, rating: Rating?, planckInactive: Boolean = false): Drawable? {
-        return getDrawableForMessage(context, rating, planckInactive)
-    }
+    fun getDrawableForToolbarRating(
+        context: Context,
+        rating: Rating?,
+        planckInactive: Boolean = false
+    ): Drawable? = getDrawableForMessage(context, rating, planckInactive)
 
     @JvmStatic
     @JvmOverloads
-    fun getDrawableForMessageList(context: Context, rating: Rating?, planckInactive: Boolean = false): Drawable? {
-        return getDrawableForMessage(context, rating, planckInactive)
-    }
+    fun getDrawableForMessageList(
+        context: Context,
+        rating: Rating?,
+        planckInactive: Boolean = false
+    ): Drawable? = getDrawableForMessage(context, rating, planckInactive)
 
-    private fun getDrawableForMessage(context: Context, rating: Rating?, planckInactive: Boolean): Drawable? =
+    private fun getDrawableForMessage(
+        context: Context,
+        rating: Rating?,
+        planckInactive: Boolean
+    ): Drawable? =
         if (planckInactive) ContextCompat.getDrawable(context, R.drawable.ico_inactive)
         else ratingDisplay.getForRating(rating).getDrawable(context)
 
