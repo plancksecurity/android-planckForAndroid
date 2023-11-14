@@ -31,6 +31,7 @@ public final class MLFProjectionInfo {
             SpecialColumns.ACCOUNT_UUID,
             SpecialColumns.FOLDER_NAME,
             MessageColumns.PEP_RATING,
+            MessageColumns.FLAGS,
 
             SpecialColumns.THREAD_COUNT,
     };
@@ -55,7 +56,8 @@ public final class MLFProjectionInfo {
     static final int ACCOUNT_UUID_COLUMN = 17;
     static final int FOLDER_NAME_COLUMN = 18;
     static final int PEP_RATING_COLUMN = 19;
-    static final int THREAD_COUNT_COLUMN = 20;
+    static final int FLAGS_COLUMN = 20;
+    static final int THREAD_COUNT_COLUMN = 21;
 
     static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
