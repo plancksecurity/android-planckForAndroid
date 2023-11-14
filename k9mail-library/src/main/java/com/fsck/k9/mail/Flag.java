@@ -87,4 +87,9 @@ public enum Flag {
      * This flag is used to know if message was encrypted by the engine
      */
     X_PEP_WASNT_ENCRYPTED,
+
+    /**
+     * This flag is used to know if message is S/Mime
+     */
+    X_SMIME_SIGNED,
 }

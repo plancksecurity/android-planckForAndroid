@@ -8,6 +8,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.extensions.isSmime
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.MessagingException
@@ -483,6 +484,10 @@ class PlanckProviderImplKotlin(
     @WorkerThread
     override fun decryptMessage(source: MimeMessage, receivedBy: String): DecryptResult {
         Timber.d("%s %s", TAG, "decryptMessage() enter")
+        if (source.isSmime()) {
+            source.setFlag(Flag.X_SMIME_SIGNED, true)
+            return DecryptResult(source, Rating.pEpRatingUnencrypted, -1, false)
+        }
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         return try {
