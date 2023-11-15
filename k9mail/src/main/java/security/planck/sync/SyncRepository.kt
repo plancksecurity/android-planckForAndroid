@@ -26,13 +26,6 @@ interface SyncRepository {
     val syncStateFlow: StateFlow<SyncAppState>
 
     /**
-     * planckSyncEnvironmentInitialized
-     *
-     * Whether the sync environment was already initialized
-     */
-    val planckSyncEnvironmentInitialized: Boolean
-
-    /**
      * notifyHandshakeCallback
      *
      * A [NotifyHandshakeCallback] to receive sync-related signals from the core.

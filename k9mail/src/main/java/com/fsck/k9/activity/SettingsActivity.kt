@@ -233,7 +233,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         }
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
-        initializeSyncEnvironmentOnStartup()
+        //initializeSyncEnvironmentOnStartup()
 
         val intent = intent
         //onNewIntent(intent);
@@ -299,13 +299,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             startOnBoarding(this)
         } else {
             startWelcomeMessage()
-        }
-    }
-    private fun initializeSyncEnvironmentOnStartup() {
-        if (!syncRepository.planckSyncEnvironmentInitialized) {
-            CoroutineScope(PlanckDispatcher).launch {
-                syncRepository.planckInitSyncEnvironment()
-            }
         }
     }
 

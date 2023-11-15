@@ -43,8 +43,6 @@ class PlanckSyncRepository @Inject constructor(
     private val syncState: SyncAppState
         get() = syncStateMutableFlow.value
     override var isGrouped = false
-    override var planckSyncEnvironmentInitialized = false
-        private set
     private var isPollingMessages = false
     private var poller: Poller? = null
 
@@ -187,7 +185,6 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun planckInitSyncEnvironment() {
-        planckSyncEnvironmentInitialized = true
         queueAutoConsumeMessages()
         if (preferences.accounts.isNotEmpty()) {
             if (K9.isPlanckSyncEnabled()) {
