@@ -47,8 +47,10 @@ class SenderPlanckHelper @Inject constructor(
 
     fun canResetSenderKeys(message: LocalMessage?): Boolean {
         message ?: return false
-        return isInitialized() && messageConditionsForSenderKeyReset(message) &&
-                ratingConditionsForSenderKeyReset(message.planckRating)
+        return (message.account?.isPlanckPrivacyProtected ?: false)
+                && isInitialized()
+                && messageConditionsForSenderKeyReset(message)
+                && ratingConditionsForSenderKeyReset(message.planckRating)
     }
 
     fun checkCanHandshakeSender() {
