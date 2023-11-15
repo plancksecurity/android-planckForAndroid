@@ -141,7 +141,6 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         account.email = email
 
         if (k9.isRunningOnWorkProfile) {
-            account.name = account.name ?: email
             account.description =
                 if (!Utility.isNullOrBlank(accountProvisioningSettings?.accountDescription))
                     accountProvisioningSettings?.accountDescription
@@ -173,8 +172,10 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         get() {
             var name = ""
             if (k9.isRunningOnWorkProfile) {
-                accountProvisioningSettings?.senderName?.let {
-                    name = it
+                if (!accountProvisioningSettings?.senderName.isNullOrBlank()) {
+                    name = accountProvisioningSettings?.senderName!!
+                } else if (!accountProvisioningSettings?.email.isNullOrBlank()) {
+                    name = accountProvisioningSettings?.email!!
                 }
             } else {
                 name = preferences.defaultAccount?.name.orEmpty()
