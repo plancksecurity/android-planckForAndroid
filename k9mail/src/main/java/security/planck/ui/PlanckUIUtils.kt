@@ -79,8 +79,7 @@ object PlanckUIUtils {
         rating: Rating?,
         planckInactive: Boolean
     ): Drawable? =
-        if (planckInactive) ContextCompat.getDrawable(context, R.drawable.ico_inactive)
-        else ratingDisplay.getForRating(rating).getDrawable(context)
+        ratingDisplay.getForRating(rating, planckInactive = planckInactive).getDrawable(context)
 
     @JvmStatic
     fun getToolbarRatingVisibility(
@@ -108,8 +107,7 @@ object PlanckUIUtils {
     @JvmStatic
     @JvmOverloads
     fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true, planckInactive: Boolean = false): Int {
-        return if (planckInactive) R.string.planck_inactive
-        else ratingDisplay.getForRating(rating, pEpEnabled).textRes
+        return ratingDisplay.getForRating(rating, pEpEnabled, planckInactive).textRes
     }
 
     @JvmStatic
