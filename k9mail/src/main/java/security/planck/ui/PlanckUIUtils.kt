@@ -84,30 +84,30 @@ object PlanckUIUtils {
     @JvmStatic
     fun getToolbarRatingVisibility(
         rating: Rating?,
-        pEpEnabled: Boolean = true,
+        planckInactive: Boolean = false,
         forceHide: Boolean = false,
     ): Int {
-        val hide = forceHide || !ratingDisplay.getForRating(rating, pEpEnabled).visible
+        val hide = forceHide || !ratingDisplay.getForRating(rating, planckInactive).visible
         return if (hide) View.GONE else View.VISIBLE
     }
 
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingColor(context: Context, rating: Rating?, pEpEnabled: Boolean = true): Int {
+    fun getRatingColor(context: Context, rating: Rating?, planckInactive: Boolean = false): Int {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-        return ContextCompat.getColor(context, getRatingColorRes(rating, pEpEnabled))
+        return ContextCompat.getColor(context, getRatingColorRes(rating, planckInactive))
     }
 
     @JvmStatic
-    fun getRatingColorRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
-        return ratingDisplay.getForRating(rating, pEpEnabled).colorRes
+    fun getRatingColorRes(rating: Rating?, plnackInactive: Boolean = false): Int {
+        return ratingDisplay.getForRating(rating, plnackInactive).colorRes
     }
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true, planckInactive: Boolean = false): Int {
-        return ratingDisplay.getForRating(rating, pEpEnabled, planckInactive).textRes
+    fun getRatingTextRes(rating: Rating?, planckInactive: Boolean = false): Int {
+        return ratingDisplay.getForRating(rating, planckInactive).textRes
     }
 
     @JvmStatic

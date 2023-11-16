@@ -1,7 +1,6 @@
 package security.planck.ui.toolbar
 
 import android.content.Context
-import android.graphics.PorterDuff
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -22,7 +21,6 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     private var securityStatusIcon: AppCompatImageView? = null
     private var securityStatusText: AppCompatTextView? = null
     private var secondLineText: AppCompatTextView? = null
-    var ispEpEnabled = true
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
@@ -31,7 +29,7 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         secondLineText = findViewById(R.id.securityStatusSecondLine)
     }
 
-    public fun hideRating() {
+    fun hideRating() {
         if (visibility != GONE) {
             visibility = GONE
         }
@@ -39,7 +37,7 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
 
     @JvmOverloads
     fun setRating(rating: Rating?, forceHide: Boolean = false, planckInactive: Boolean = false) {
-        visibility = getToolbarRatingVisibility(rating, ispEpEnabled, forceHide)
+        visibility = getToolbarRatingVisibility(rating, planckInactive, forceHide)
 
         securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating, planckInactive))
 
@@ -48,14 +46,6 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     }
 
     private fun setSecurityStatusColors(rating: Rating?) {
-        if (!ispEpEnabled)
-            securityStatusIcon?.setColorFilter(
-                PlanckUIUtils.getRatingColor(context, rating, ispEpEnabled),
-                PorterDuff.Mode.SRC_IN
-            )
-        else
-            securityStatusIcon?.clearColorFilter()
-
         if (!BuildConfig.IS_ENTERPRISE) {
             setTextColor(rating)
         }
@@ -65,14 +55,13 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         val textColor = PlanckUIUtils.getRatingColor(
             context,
             rating,
-            ispEpEnabled
         )
         securityStatusText?.setTextColor(textColor)
         secondLineText?.setTextColor(textColor)
     }
 
     private fun setSecurityStatusText(rating: Rating?, planckInactive: Boolean) {
-        var firstLine = context.getString(getRatingTextRes(rating, ispEpEnabled, planckInactive))
+        var firstLine = context.getString(getRatingTextRes(rating, planckInactive))
         secondLineText?.let { secondTextView ->
             var secondLine = ""
             secondTextView.text = secondLine
