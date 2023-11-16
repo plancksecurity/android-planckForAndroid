@@ -67,7 +67,7 @@ class PlanckMessageBuilder {
         Body b = mm.getBody();
         Vector<Blob> attachments = new Vector<>();
 
-        if (!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
+        if (!(b instanceof MimeMultipart)) {
 
             String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
             byte[] bodyContent = extractBodyContent(b);
@@ -77,14 +77,18 @@ class PlanckMessageBuilder {
                 addAttachment(attachments, mm.getContentType(), filename, bodyContent);
                 pEpMsg.setLongmsg("");
             }
-
-            String charset = getMessagePartCharset(mm);
-            String text = new String(bodyContent, charset);
-            if (mm.isMimeType("text/html")) {
-                pEpMsg.setLongmsgFormatted(text);
-            } else {
-                pEpMsg.setLongmsg(text);
-            }
+            String mimeType = mm.getMimeType();
+            if (mimeType.startsWith("text")) {
+                String charset = getMessagePartCharset(mm);
+                String text = new String(bodyContent, charset);
+                if (mimeType.equalsIgnoreCase("text/html")) {
+                    pEpMsg.setLongmsgFormatted(text);
+                } else {
+                    pEpMsg.setLongmsg(text);
+                }
+            } /*else {
+                pEpMsg.setAttachments(attachments);
+            }*/
             return;
         }
 
