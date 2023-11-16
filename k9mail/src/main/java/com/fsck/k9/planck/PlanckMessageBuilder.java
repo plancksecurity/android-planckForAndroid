@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MessageExtractor;
@@ -37,6 +38,11 @@ import java.util.Vector;
 class PlanckMessageBuilder {
     private static final String DEFAULT_FILENAME = "noname";
     private static final String INVITE_CALENDAR_FILE_NAME = "invite.ics";
+
+    private static final String MIME_TYPE_X_SMIME_SIGNATURE = "application/x-pkcs7-signature";
+    private static final String MIME_TYPE_SMIME_SIGNATURE = "application/pkcs7-signature";
+    private static final String MIME_TYPE_SMIME = "application/pkcs7-mime";
+    private static final String MIME_TYPE_SMIME_10 = "application/pkcs10";
     private MimeMessage mm;
 
     PlanckMessageBuilder(MimeMessage m) {
@@ -67,7 +73,7 @@ class PlanckMessageBuilder {
         Body b = mm.getBody();
         Vector<Blob> attachments = new Vector<>();
 
-        if (!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
+        if (!(b instanceof MimeMultipart)) {
 
             String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
             byte[] bodyContent = extractBodyContent(b);
@@ -75,23 +81,44 @@ class PlanckMessageBuilder {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 String filename = MimeUtility.getHeaderParameter(disposition, "filename");
                 addAttachment(attachments, mm.getContentType(), filename, bodyContent);
+                markAsSmimeIfNeeded(attachments);
                 pEpMsg.setLongmsg("");
             }
-
-            String charset = getMessagePartCharset(mm);
-            String text = new String(bodyContent, charset);
-            if (mm.isMimeType("text/html")) {
-                pEpMsg.setLongmsgFormatted(text);
-            } else {
-                pEpMsg.setLongmsg(text);
-            }
+            String mimeType = mm.getMimeType();
+            if (mimeType.startsWith("text")) {
+                String charset = getMessagePartCharset(mm);
+                String text = new String(bodyContent, charset);
+                if (mimeType.equalsIgnoreCase("text/html")) {
+                    pEpMsg.setLongmsgFormatted(text);
+                } else {
+                    pEpMsg.setLongmsg(text);
+                }
+            } /*else {
+                pEpMsg.setAttachments(attachments); fixme If this is uncommented, we can get the attachment in the message, but in the case of S/Mime messages this leads EncryptionDetector to think message is encrypted (because it is actually encrypted or signed with S/Mime). This needs to be reviewed probably.
+            }*/
             return;
         }
 
         MimeMultipart mmp = (MimeMultipart) b;
         handleMultipart(pEpMsg, mmp, attachments);           // recurse into the Joys of Mime...
 
+        markAsSmimeIfNeeded(attachments);
+
         pEpMsg.setAttachments(attachments);
+    }
+
+    private void markAsSmimeIfNeeded(Vector<Blob> attachments) throws MessagingException {
+        for (Blob attachment : attachments) {
+            String contentType = MimeUtility.getHeaderParameter(attachment.mime_type, null);
+            if (contentType.equalsIgnoreCase(MIME_TYPE_SMIME)
+                    || contentType.equalsIgnoreCase(MIME_TYPE_SMIME_SIGNATURE)
+                    || contentType.equalsIgnoreCase(MIME_TYPE_X_SMIME_SIGNATURE)
+                    || contentType.equalsIgnoreCase(MIME_TYPE_SMIME_10)
+            ) {
+                mm.setFlag(Flag.X_SMIME_SIGNED, true);
+                break;
+            }
+        }
     }
 
     protected byte[] extractBodyContent(Body body) throws MessagingException, IOException {

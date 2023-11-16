@@ -38,13 +38,13 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     }
 
     @JvmOverloads
-    fun setRating(rating: Rating?, forceHide: Boolean = false) {
+    fun setRating(rating: Rating?, forceHide: Boolean = false, planckInactive: Boolean = false) {
         visibility = getToolbarRatingVisibility(rating, ispEpEnabled, forceHide)
 
-        securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating))
+        securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating, planckInactive))
 
         setSecurityStatusColors(rating)
-        setSecurityStatusText(rating)
+        setSecurityStatusText(rating, planckInactive)
     }
 
     private fun setSecurityStatusColors(rating: Rating?) {
@@ -71,8 +71,8 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         secondLineText?.setTextColor(textColor)
     }
 
-    private fun setSecurityStatusText(rating: Rating?) {
-        var firstLine = context.getString(getRatingTextRes(rating, ispEpEnabled))
+    private fun setSecurityStatusText(rating: Rating?, planckInactive: Boolean) {
+        var firstLine = context.getString(getRatingTextRes(rating, ispEpEnabled, planckInactive))
         secondLineText?.let { secondTextView ->
             var secondLine = ""
             secondTextView.text = secondLine

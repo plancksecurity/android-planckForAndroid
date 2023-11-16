@@ -421,7 +421,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void setToolbar() {
         if (isAdded()) {
-            planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+            planckSecurityStatusLayout.setRating(
+                    mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined,
+                    false,
+                    mMessage.isSet(Flag.X_SMIME_SIGNED)
+            );
             toolBarCustomizer.setMessageToolbarColor();
             toolBarCustomizer.setMessageStatusBarColor();
         }
