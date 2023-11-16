@@ -46,8 +46,11 @@ import security.planck.provisioning.ProvisioningSettings
 class ConfigurationManagerTest : RobolectricTest() {
     @get:Rule
     val coroutineTestRule = CoroutineTestRule(UnconfinedTestDispatcher())
-    private val testRestrictions = PROVISIONING_RESTRICTIONS + INITIALIZED_ENGINE_RESTRICTIONS
+    private val testRestrictions = INITIALIZED_ENGINE_RESTRICTIONS + RESTRICTION_PLANCK_DEBUG_LOG + PROVISIONING_RESTRICTIONS
     private val applicationRestrictionsBundle = Bundle().apply {
+        putString(RESTRICTION_PLANCK_EXTRA_KEYS, "extra keys")
+        putString(RESTRICTION_PLANCK_MEDIA_KEYS, "media keys")
+        putBoolean(RESTRICTION_PLANCK_DEBUG_LOG, true)
         putParcelableArray(
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
             arrayOf(
@@ -56,10 +59,11 @@ class ConfigurationManagerTest : RobolectricTest() {
                 }
             )
         )
-        putString(RESTRICTION_PLANCK_EXTRA_KEYS, "extra keys")
-        putString(RESTRICTION_PLANCK_MEDIA_KEYS, "media keys")
     }
     private val applicationManifestEntries = listOf<RestrictionEntry>(
+        RestrictionEntry(RESTRICTION_PLANCK_EXTRA_KEYS, "extra keys"),
+        RestrictionEntry(RESTRICTION_PLANCK_MEDIA_KEYS, "media keys"),
+        RestrictionEntry(RESTRICTION_PLANCK_DEBUG_LOG, false),
         RestrictionEntry.createBundleArrayEntry(
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS,
             arrayOf(
@@ -71,8 +75,6 @@ class ConfigurationManagerTest : RobolectricTest() {
                 )
             )
         ),
-        RestrictionEntry(RESTRICTION_PLANCK_EXTRA_KEYS, "extra keys"),
-        RestrictionEntry(RESTRICTION_PLANCK_MEDIA_KEYS, "media keys"),
     )
     private val restrictionsProvider: RestrictionsProvider = mockk {
         every { applicationRestrictions }.returns(applicationRestrictionsBundle)
@@ -144,7 +146,7 @@ class ConfigurationManagerTest : RobolectricTest() {
     }
 
     @Test
-    fun `loadConfigurationsSuspend() with FirstStartup updates settings with manifest entries filtered to provisioning restrictions`() =
+    fun `loadConfigurationsSuspend() with FirstStartup updates settings with all manifest entries except the initialized engine entries`() =
         runTest {
             val result = manager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup).also {
                 it.exceptionOrNull()
@@ -158,13 +160,12 @@ class ConfigurationManagerTest : RobolectricTest() {
                 updater.update(
                     applicationRestrictionsBundle,
                     capture(slot),
-                    allowModifyAccountProvisioningSettings = false,
+                    allowModifyAccountProvisioningSettings = true,
                     true
                 )
             }
-            slot.forEachIndexed { index, restrictionEntry ->
-                assertEquals(PROVISIONING_RESTRICTIONS[index], restrictionEntry.key)
-            }
+            assertTrue(slot.containsAll(applicationManifestEntries.filter { it.key !in INITIALIZED_ENGINE_RESTRICTIONS }))
+            assertTrue(slot.none { it.key in INITIALIZED_ENGINE_RESTRICTIONS })
             verifySettingsSaved()
         }
 

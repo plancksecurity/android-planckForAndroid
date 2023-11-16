@@ -1921,8 +1921,11 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public void setPlanckSyncEnabled(ManageableSetting<Boolean> planckSyncEnabled) {
+        boolean changed = K9.planckSyncEnabled.getValue() != planckSyncEnabled.getValue();
         K9.planckSyncEnabled = planckSyncEnabled;
-        setPlanckSyncEnabledInRepository(planckSyncEnabled.getValue());
+        if (planckProvider != null && changed) {
+            setPlanckSyncEnabledInRepository(planckSyncEnabled.getValue());
+        }
     }
 
     public static boolean isPlanckSyncEnabled() {
@@ -1931,8 +1934,10 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
 
     public void setPlanckSyncEnabled(boolean enabled) {
-        planckSyncEnabled.setValue(enabled);
-        setPlanckSyncEnabledInRepository(enabled);
+        if (enabled != planckSyncEnabled.getValue()) {
+            planckSyncEnabled.setValue(enabled);
+            setPlanckSyncEnabledInRepository(enabled);
+        }
     }
 
     private void setPlanckSyncEnabledInRepository(boolean enabled) {

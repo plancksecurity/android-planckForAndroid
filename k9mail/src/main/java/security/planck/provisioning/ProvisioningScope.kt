@@ -2,10 +2,7 @@ package security.planck.provisioning
 
 import android.content.RestrictionEntry
 import android.os.Bundle
-import com.fsck.k9.planck.infrastructure.extensions.modifyItems
-import security.planck.mdm.ACCOUNT_PROVISIONING_RESTRICTIONS
 import security.planck.mdm.INITIALIZED_ENGINE_RESTRICTIONS
-import security.planck.mdm.PROVISIONING_RESTRICTIONS
 import security.planck.mdm.RESTRICTION_ACCOUNT_EMAIL_ADDRESS
 import security.planck.mdm.RESTRICTION_ACCOUNT_MAIL_SETTINGS
 import security.planck.mdm.RESTRICTION_PLANCK_ACCOUNTS_SETTINGS
@@ -25,12 +22,12 @@ sealed class ProvisioningScope {
             if (!isProvisionAvailable())
                 throw ProvisioningFailedException("Provisioning data is missing")
         }
-        override val allowModifyAccountProvisioningSettings: Boolean = false
+        override val allowModifyAccountProvisioningSettings: Boolean = true
     }
 
     object Startup : ProvisioningScope() {
         override val manifestEntryFilter = ::getProvisioningManifestEntries
-        override val allowModifyAccountProvisioningSettings: Boolean = false
+        override val allowModifyAccountProvisioningSettings: Boolean = true
     }
 
     object InitializedEngine : ProvisioningScope() {
@@ -53,18 +50,7 @@ sealed class ProvisioningScope {
         manifestEntries: List<RestrictionEntry>
     ): List<RestrictionEntry> = manifestEntries
         // ignore media keys from MDM before PlanckProvider has been initialized
-        .filter { it.key in PROVISIONING_RESTRICTIONS }
-        .modifyItems( // filter account settings needed
-            findItem = { it.key == RESTRICTION_PLANCK_ACCOUNTS_SETTINGS }
-        ) { item ->
-            item.apply {
-                this.restrictions.first().apply {
-                    this.restrictions = this.restrictions.filter {
-                        it.key in ACCOUNT_PROVISIONING_RESTRICTIONS
-                    }.toTypedArray()
-                }
-            }
-        }
+        .filter { it.key !in INITIALIZED_ENGINE_RESTRICTIONS }
 
     protected fun getInitializedEngineManifestEntries(
         manifestEntries: List<RestrictionEntry>

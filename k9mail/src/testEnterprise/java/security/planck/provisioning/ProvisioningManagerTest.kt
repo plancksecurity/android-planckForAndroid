@@ -240,7 +240,7 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter AllSettings if it is the first startup`() {
+    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine if it is the first startup`() {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
 
 
@@ -248,11 +248,11 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.performInitializedEngineProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.AllSettings) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine) }
     }
 
     @Test
-    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter AllSettings on every startup`() {
+    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine on every startup`() {
         coEvery { preferences.accounts }.answers { listOf(mockk()) }
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
 
@@ -261,7 +261,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.performInitializedEngineProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.AllSettings) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine) }
     }
 
     @Test
