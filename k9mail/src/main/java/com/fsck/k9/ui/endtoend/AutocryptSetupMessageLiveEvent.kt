@@ -9,7 +9,6 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Message
 //import kotlinx.coroutines.experimental.android.UI
 //import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.coroutines.experimental.bg
 import org.openintents.openpgp.util.OpenPgpApi
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
