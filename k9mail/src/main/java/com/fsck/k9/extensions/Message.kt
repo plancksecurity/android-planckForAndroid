@@ -10,6 +10,7 @@ fun Message.getRatingFromHeader() =
     getHeader(MimeHeader.HEADER_PEP_RATING).firstOrNull()?.let { PlanckUtils.stringToRating(it) }
 
 fun LocalMessage?.isValidForHandshake() = this != null
+        && (account?.isPlanckPrivacyProtected ?: false)
         && from != null
         && from.size == 1
         && PlanckUtils.isRatingReliable(planckRating)

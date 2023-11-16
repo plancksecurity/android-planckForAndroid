@@ -75,7 +75,9 @@ class AuthViewModelTest : RobolectricTest() {
     var rule: TestRule = InstantTaskExecutorRule()
 
     private val app: K9 = spyk(ApplicationProvider.getApplicationContext())
-    private val preferences: Preferences = mockk()
+    private val preferences: Preferences = mockk {
+        coEvery { accounts }.coAnswers { emptyList() }
+    }
     private val oAuthConfigurationProvider = spyk(createOAuthConfigurationProvider())
     private val jwtTokenDecoder: JwtTokenDecoder = mockk()
     private val discovery: ProvidersXmlDiscovery = mockk()
@@ -963,6 +965,36 @@ class AuthViewModelTest : RobolectricTest() {
             verify { authService.performTokenRequest(any(), any()) }
             verify { jwtTokenDecoder.getEmail(ID_TOKEN) }
             verify { account.email = TOKEN_RESPONSE_EMAIL }
+        }
+
+    @Test
+    fun `login() sets the state to AccountAlreadyInstalled if the email address from token response is already installed`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+            coEvery { preferences.accounts }.coAnswers { listOf(account) }
+            coEvery { account.setupState }.returns(Account.SetupState.INITIAL)
+            coEvery { jwtTokenDecoder.getEmail(any()) }
+                .returns(Result.success(EMAIL))
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authService.performTokenRequest(any(), any()) }
+            verify { jwtTokenDecoder.getEmail(ID_TOKEN) }
+            verify(exactly = 0) { account.email = TOKEN_RESPONSE_EMAIL }
+            assertEquals(
+                listOf(
+                    AuthFlowState.Idle,
+                    AuthFlowState.AccountAlreadyInstalled(
+                        EMAIL
+                    )
+                ),
+                receivedUiStates
+            )
         }
 
     @Test

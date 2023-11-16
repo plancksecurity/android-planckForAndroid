@@ -62,6 +62,10 @@ class PlanckUIUtilsTest : RobolectricTest() {
 
         assertNull(PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingHaveNoKey))
         assertNull(PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey))
+        assertDrawableEqualsRes(
+            R.drawable.ico_not_encrypted,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)!!
+        )
 
         assertDrawableEqualsRes(
             R.drawable.ico_not_encrypted,
@@ -125,6 +129,14 @@ class PlanckUIUtilsTest : RobolectricTest() {
             R.drawable.ico_trusted,
             PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingFullyAnonymous)!!
         )
+        assertDrawableEqualsRes(
+            R.drawable.ico_inactive,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnencrypted, planckInactive = true)!!
+        )
+        assertDrawableEqualsRes(
+            R.drawable.ico_inactive,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)!!
+        )
     }
 
     @Test
@@ -183,47 +195,47 @@ class PlanckUIUtilsTest : RobolectricTest() {
 
     @Test
     fun `getRatingColorRes returns correct string resource for each rating with protection disabled`() {
-        assertCorrectStringRes(R.string.pep_rating_none, null, false)
-        assertCorrectStringRes(R.string.pep_rating_dangerous, Rating.pEpRatingUnderAttack, false)
-        assertCorrectStringRes(R.string.pep_rating_dangerous, Rating.pEpRatingB0rken, false)
-        assertCorrectStringRes(R.string.pep_rating_dangerous, Rating.pEpRatingMistrust, false)
-        assertCorrectStringRes(R.string.pep_rating_none, Rating.pEpRatingUndefined, false)
+        assertCorrectStringRes(R.string.planck_inactive, null, true)
+        assertCorrectStringRes(R.string.planck_inactive, Rating.pEpRatingUnderAttack, true)
+        assertCorrectStringRes(R.string.planck_inactive, Rating.pEpRatingB0rken, true)
+        assertCorrectStringRes(R.string.planck_inactive, Rating.pEpRatingMistrust, true)
+        assertCorrectStringRes(R.string.planck_inactive, Rating.pEpRatingUndefined, true)
         assertCorrectStringRes(
-            R.string.pep_rating_cannot_decrypt,
+            R.string.planck_inactive,
             Rating.pEpRatingCannotDecrypt,
-            false
+            true
         )
-        assertCorrectStringRes(R.string.pep_rating_none, Rating.pEpRatingHaveNoKey, false)
+        assertCorrectStringRes(R.string.planck_inactive, Rating.pEpRatingHaveNoKey, true)
         assertCorrectStringRes(
-            R.string.pep_rating_not_encrypted,
+            R.string.planck_inactive,
             Rating.pEpRatingUnencrypted,
-            false
+            true
         )
         assertCorrectStringRes(
-            R.string.pep_rating_forced_unencrypt,
+            R.string.planck_inactive,
             Rating.pEpRatingUnreliable,
-            false
+            true
         )
         assertCorrectStringRes(
-            R.string.pep_rating_forced_unencrypt,
+            R.string.planck_inactive,
             Rating.pEpRatingMediaKeyProtected,
-            false
+            true
         )
         assertCorrectStringRes(
-            R.string.pep_rating_forced_unencrypt,
+            R.string.planck_inactive,
             Rating.pEpRatingReliable,
-            false
+            true
         )
-        assertCorrectStringRes(R.string.pep_rating_forced_unencrypt, Rating.pEpRatingTrusted, false)
+        assertCorrectStringRes(R.string.planck_inactive, Rating.pEpRatingTrusted, true)
         assertCorrectStringRes(
-            R.string.pep_rating_forced_unencrypt,
+            R.string.planck_inactive,
             Rating.pEpRatingTrustedAndAnonymized,
-            false
+            true
         )
         assertCorrectStringRes(
-            R.string.pep_rating_forced_unencrypt,
+            R.string.planck_inactive,
             Rating.pEpRatingFullyAnonymous,
-            false
+            true
         )
     }
 
@@ -236,6 +248,7 @@ class PlanckUIUtilsTest : RobolectricTest() {
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingCannotDecrypt)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingHaveNoKey, outgoing = true)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnencrypted)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnreliable)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMediaKeyProtected)
@@ -272,6 +285,7 @@ class PlanckUIUtilsTest : RobolectricTest() {
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingCannotDecrypt, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, forceHide = true)
+        assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, forceHide = true, outgoing = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUnencrypted, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUnreliable, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingMediaKeyProtected, forceHide = true)
@@ -285,17 +299,19 @@ class PlanckUIUtilsTest : RobolectricTest() {
         expected: Int,
         rating: Rating?,
         enabled: Boolean = true,
-        forceHide: Boolean = false
+        forceHide: Boolean = false,
+        outgoing: Boolean = false,
     ) {
-        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, enabled, forceHide))
+        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, outgoing, enabled, forceHide))
     }
 
     private fun assertCorrectStringRes(
         @StringRes expected: Int,
         rating: Rating?,
-        enabled: Boolean = true
+        planckInactive: Boolean = false,
+        outgoing: Boolean = false,
     ) {
-        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, enabled))
+        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, outgoing, planckInactive))
     }
 
     private fun assertCorrectColorRes(@ColorRes expected: Int, rating: Rating?) {

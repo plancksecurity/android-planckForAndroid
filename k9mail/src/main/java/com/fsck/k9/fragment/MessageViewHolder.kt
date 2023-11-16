@@ -13,11 +13,12 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.Address
+import com.fsck.k9.mail.Flag
 import com.fsck.k9.mailstore.DatabasePreviewType
 import com.fsck.k9.planck.ui.PlanckContactBadge
 import foundation.pEp.jniadapter.Rating
 import security.planck.ui.PlanckUIUtils.getDrawableForMessageList
-import java.util.*
+import java.util.Locale
 
 class MessageViewHolder internal constructor(private val fragment: MessageListFragment,
                                              private val fontSizes: FontSizes,
@@ -79,7 +80,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         updateDate(displayDate)
         updateFlagCheckbox(isFlagged)
         updateSelectedCheckbox(cursor)
-        updatePrivacyBadge(account, pEpRating)
+        updatePrivacyBadge(account, pEpRating, cursor)
         updateContactBadge(counterpartyAddress)
         updateAttachment(cursor)
         updateNameAndSubject(displayName, statusHolder, subjectText)
@@ -158,15 +159,17 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         }
     }
 
-    private fun updatePrivacyBadge(account: Account, pEpRating: Rating) {
+    private fun updatePrivacyBadge(account: Account, pEpRating: Rating, cursor: Cursor) {
         if (fragment.context != null) {
-            if (!account.isPlanckPrivacyProtected()) {
-                privacyBadge?.visibility = View.GONE
-            } else {
-                val pEpPrivacyDrawable = getDrawableForMessageList(fragment.requireContext(), pEpRating)
-                privacyBadge?.visibility = if (pEpPrivacyDrawable != null) View.VISIBLE else View.GONE
-                if (pEpPrivacyDrawable != null) privacyBadge?.setImageDrawable(pEpPrivacyDrawable)
-            }
+            val flags = cursor.getString(MLFProjectionInfo.FLAGS_COLUMN).split(',')
+            val pEpPrivacyDrawable = getDrawableForMessageList(
+                fragment.requireContext(),
+                pEpRating,
+                !account.isPlanckPrivacyProtected ||
+                flags.contains(Flag.X_SMIME_SIGNED.toString())
+            )
+            privacyBadge?.visibility = if (pEpPrivacyDrawable != null) View.VISIBLE else View.GONE
+            if (pEpPrivacyDrawable != null) privacyBadge?.setImageDrawable(pEpPrivacyDrawable)
         }
     }
 

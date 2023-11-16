@@ -7,7 +7,7 @@
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
+    <string name="planck_documentation_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/user-guide-for-android</string>
     <string name="pEp_trustwords">planck Trustwords</string>
     <string name="device_group_rejoin_warning">The app must be restarted in order to join a device group after leaving one.</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
@@ -259,6 +259,7 @@
     <string name="pep_rating_weakly_encrypted">Weakly Encrypted</string>
     <string name="pep_rating_cannot_decrypt">Cannot decrypt</string>
     <string name="pep_rating_none" translatable="false"/>
+    <string name="planck_inactive">planck inactive</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
     <!-- Key sync dialog Strings -->
@@ -382,6 +383,7 @@
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
     <string name="account_setup_failed_dlg_browser_not_found">planck couldn\'t find a browser to use for granting access to your account.</string>
     <string name="account_setup_failed_dlg_unsuitable_browser_found">planck couldn\'t find a suitable browser to use for granting access to your account. Please install a browser other than Microsoft Edge.</string>
+    <string name="account_setup_failed_dlg_account_already_installed">The account %s is already installed, cannot install it again.</string>
     <string name="account_setup_oauth_title_retry_login">Retry login</string>
     <string name="account_setup_oauth_description_retry_login">planck could not log in to account %s. Please try login again below.</string>
     <string name="mdm_settings_feedback_title" translatable="false">Current settings from MDM</string>

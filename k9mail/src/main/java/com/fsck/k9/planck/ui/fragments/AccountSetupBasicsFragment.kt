@@ -16,7 +16,6 @@ import androidx.core.view.isVisible
 import com.fsck.k9.Account
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.EmailAddressValidator
-import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.databinding.FragmentAccountLoginBinding
@@ -255,7 +254,6 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun accountAlreadyExists(email: String): Boolean {
-        val preferences = Preferences.getPreferences(activity)
         val accounts = preferences.accounts
         for (account in accounts) {
             if (account.email.equals(email, ignoreCase = true)) {

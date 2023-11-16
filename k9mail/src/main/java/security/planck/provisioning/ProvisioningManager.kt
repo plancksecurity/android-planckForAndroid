@@ -78,7 +78,7 @@ class ProvisioningManager @Inject constructor(
         if (k9.isRunningOnWorkProfile) {
             configurationManager
                 .loadConfigurationsSuspend(
-                    ProvisioningScope.AllSettings
+                    ProvisioningScope.InitializedEngine
                 )
                 .onFailure { throw it }
         }
