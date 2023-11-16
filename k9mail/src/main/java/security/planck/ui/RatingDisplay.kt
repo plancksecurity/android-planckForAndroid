@@ -7,12 +7,21 @@ import foundation.pEp.jniadapter.Rating
 abstract class RatingDisplay {
     protected abstract val ratingDisplayHolderList: List<RatingDisplayHolder>
 
-    fun getForRating(rating: Rating?, pEpEnabled: Boolean = true): RatingDisplayHolder {
+    fun getForRating(
+        rating: Rating?,
+        pEpEnabled: Boolean = true,
+        planckInactive: Boolean = false
+    ): RatingDisplayHolder {
         val originalHolder = ratingDisplayHolderList.first { it.matchesRating(rating) }
         return when {
             rating == null
                     || pEpEnabled
-                    || PlanckUtils.isRatingUnsecure(rating) -> originalHolder
+                    || PlanckUtils.isRatingUnsecure(rating) ->
+                if (planckInactive) originalHolder.copy(
+                    iconRes = R.drawable.ico_inactive,
+                    textRes = R.string.planck_inactive
+                ) else originalHolder
+
             else -> {
                 originalHolder.copy(
                     textRes = DISABLED_TEXT_RESOURCE,
