@@ -161,18 +161,15 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
 
     private fun updatePrivacyBadge(account: Account, pEpRating: Rating, cursor: Cursor) {
         if (fragment.context != null) {
-            if (!account.isPlanckPrivacyProtected) {
-                privacyBadge?.visibility = View.GONE
-            } else {
-                val flags = cursor.getString(MLFProjectionInfo.FLAGS_COLUMN).split(',')
-                val pEpPrivacyDrawable = getDrawableForMessageList(
-                    fragment.requireContext(),
-                    pEpRating,
-                    flags.contains(Flag.X_SMIME_SIGNED.toString())
-                )
-                privacyBadge?.visibility = if (pEpPrivacyDrawable != null) View.VISIBLE else View.GONE
-                if (pEpPrivacyDrawable != null) privacyBadge?.setImageDrawable(pEpPrivacyDrawable)
-            }
+            val flags = cursor.getString(MLFProjectionInfo.FLAGS_COLUMN).split(',')
+            val pEpPrivacyDrawable = getDrawableForMessageList(
+                fragment.requireContext(),
+                pEpRating,
+                !account.isPlanckPrivacyProtected ||
+                flags.contains(Flag.X_SMIME_SIGNED.toString())
+            )
+            privacyBadge?.visibility = if (pEpPrivacyDrawable != null) View.VISIBLE else View.GONE
+            if (pEpPrivacyDrawable != null) privacyBadge?.setImageDrawable(pEpPrivacyDrawable)
         }
     }
 

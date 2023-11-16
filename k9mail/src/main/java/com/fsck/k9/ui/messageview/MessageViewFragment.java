@@ -2,7 +2,6 @@ package com.fsck.k9.ui.messageview;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static foundation.pEp.jniadapter.Rating.pEpRatingUndefined;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -415,15 +414,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void refreshRating(Rating rating) {
         pEpRating = rating;
         setToolbar();
-        mMessage.setPlanckRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+        mMessage.setPlanckRating(pEpRating);
         mMessageView.setHeaders(mMessage, mAccount);
     }
 
     private void setToolbar() {
         if (isAdded()) {
             planckSecurityStatusLayout.setIncomingRating(
-                    mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined,
-                    mMessage.isSet(Flag.X_SMIME_SIGNED)
+                    pEpRating,
+                    !mAccount.isPlanckPrivacyProtected()
+                            || mMessage.isSet(Flag.X_SMIME_SIGNED)
             );
             toolBarCustomizer.setMessageToolbarColor();
             toolBarCustomizer.setMessageStatusBarColor();
@@ -995,10 +995,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             displayHeaderForLoadingMessage(message);
             recoverRating(message);
             ((MessageList) getActivity()).setMessageViewVisible(true);
-
-            if (!mAccount.isPlanckPrivacyProtected()) {
-                pEpRating = pEpRatingUndefined;
-            }
 
             boolean alreadyDecrypted = !LocalMessageKt.hasToBeDecrypted(mMessage);
             if (alreadyDecrypted) {
