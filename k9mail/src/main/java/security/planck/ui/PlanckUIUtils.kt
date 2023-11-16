@@ -63,8 +63,9 @@ object PlanckUIUtils {
     fun getDrawableForToolbarRating(
         context: Context,
         rating: Rating?,
+        outgoing: Boolean = false,
         planckInactive: Boolean = false
-    ): Drawable? = getDrawableForMessage(context, rating, planckInactive)
+    ): Drawable? = getDrawableForMessage(context, rating, outgoing, planckInactive)
 
     @JvmStatic
     @JvmOverloads
@@ -72,42 +73,44 @@ object PlanckUIUtils {
         context: Context,
         rating: Rating?,
         planckInactive: Boolean = false
-    ): Drawable? = getDrawableForMessage(context, rating, planckInactive)
+    ): Drawable? = getDrawableForMessage(context, rating, false, planckInactive)
 
     private fun getDrawableForMessage(
         context: Context,
         rating: Rating?,
-        planckInactive: Boolean
+        outgoing: Boolean = false,
+        planckInactive: Boolean,
     ): Drawable? =
-        ratingDisplay.getForRating(rating, planckInactive = planckInactive).getDrawable(context)
+        ratingDisplay.getForRating(rating, outgoing, planckInactive).getDrawable(context)
 
     @JvmStatic
     fun getToolbarRatingVisibility(
         rating: Rating?,
-        pEpEnabled: Boolean = true,
+        outgoing: Boolean = false,
+        planckInactive: Boolean = false,
         forceHide: Boolean = false,
     ): Int {
-        val hide = forceHide || !ratingDisplay.getForRating(rating, pEpEnabled).visible
+        val hide = forceHide || !ratingDisplay.getForRating(rating, outgoing, planckInactive).visible
         return if (hide) View.GONE else View.VISIBLE
     }
 
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingColor(context: Context, rating: Rating?, pEpEnabled: Boolean = true): Int {
+    fun getRatingColor(context: Context, rating: Rating?, planckInactive: Boolean = false): Int {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-        return ContextCompat.getColor(context, getRatingColorRes(rating, pEpEnabled))
+        return ContextCompat.getColor(context, getRatingColorRes(rating, planckInactive))
     }
 
     @JvmStatic
-    fun getRatingColorRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
-        return ratingDisplay.getForRating(rating, pEpEnabled).colorRes
+    fun getRatingColorRes(rating: Rating?, planckInactive: Boolean = false): Int {
+        return ratingDisplay.getForRating(rating, planckInactive = planckInactive).colorRes
     }
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true, planckInactive: Boolean = false): Int {
-        return ratingDisplay.getForRating(rating, pEpEnabled, planckInactive).textRes
+    fun getRatingTextRes(rating: Rating?, outgoing: Boolean = false, planckInactive: Boolean = false): Int {
+        return ratingDisplay.getForRating(rating, outgoing, planckInactive).textRes
     }
 
     @JvmStatic

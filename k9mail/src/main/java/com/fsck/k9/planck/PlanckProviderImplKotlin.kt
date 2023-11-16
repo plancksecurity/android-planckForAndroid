@@ -13,6 +13,7 @@ import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.mail.internet.MimeUtility
 import com.fsck.k9.message.SimpleMessageFormat
 import com.fsck.k9.planck.PlanckProvider.*
 import com.fsck.k9.planck.infrastructure.ResultCompat
@@ -520,6 +521,10 @@ class PlanckProviderImplKotlin(
             } else {
                 Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
                 Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
+
+                if (isSMime(source, srcMsg.attachments)) {
+                    decMsg.setFlag(Flag.X_SMIME_SIGNED, true)
+                }
             }
 
             val neverUnprotected = (decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).isNotEmpty()
@@ -545,6 +550,23 @@ class PlanckProviderImplKotlin(
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
             Timber.d("%s %s", TAG, "decryptMessage() exit")
         }
+    }
+
+    private fun isSMime(source: MimeMessage, attachments: Vector<Blob>?): Boolean {
+        return source.contentType.isSMimeContentType() ||
+                attachments?.any { attachment ->
+                    attachment.mime_type.isSMimeContentType()
+                } ?: false
+    }
+
+    private fun String?.isSMimeContentType(): Boolean {
+        return this?.let {
+            val contentType = MimeUtility.getHeaderParameter(this, null) ?: return false
+            (contentType.equals(MIME_TYPE_SMIME, ignoreCase = true)
+                    || contentType.equals(MIME_TYPE_SMIME_SIGNATURE, ignoreCase = true)
+                    || contentType.equals(MIME_TYPE_X_SMIME_SIGNATURE, ignoreCase = true)
+                    || contentType.equals(MIME_TYPE_SMIME_10, ignoreCase = true))
+        } ?: false
     }
 
     override fun decryptMessage(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
@@ -1273,6 +1295,10 @@ class PlanckProviderImplKotlin(
         private const val ECHO_PROTOCOL_MESSAGE_SUBJECT = "key management message (Distribution)"
         private const val MESSAGE_CREATION_ATTEMPTS = 20
         private const val MESSAGE_CREATION_ATTEMPT_COOLDOWN = 10L
+        private const val MIME_TYPE_X_SMIME_SIGNATURE = "application/x-pkcs7-signature"
+        private const val MIME_TYPE_SMIME_SIGNATURE = "application/pkcs7-signature"
+        private const val MIME_TYPE_SMIME = "application/pkcs7-mime"
+        private const val MIME_TYPE_SMIME_10 = "application/pkcs10"
 
         @Throws(MessagingException::class)
         private fun getMimeMessage(source: MimeMessage?, message: Message): MimeMessage {
