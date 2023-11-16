@@ -94,7 +94,7 @@ class PlanckMessageBuilder {
                     pEpMsg.setLongmsg(text);
                 }
             } /*else {
-                pEpMsg.setAttachments(attachments);
+                pEpMsg.setAttachments(attachments); fixme If this is uncommented, we can get the attachment in the message, but in the case of S/Mime messages this leads EncryptionDetector to think message is encrypted (because it is actually encrypted or signed with S/Mime). This needs to be reviewed probably.
             }*/
             return;
         }
