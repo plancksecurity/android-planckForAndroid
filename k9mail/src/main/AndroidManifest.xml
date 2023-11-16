@@ -106,9 +106,9 @@
 
         <activity
             android:name=".activity.SettingsActivity"
-            android:configChanges="locale"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:configChanges="keyboardHidden|orientation|locale|screenLayout|screenSize"
             android:uiOptions="splitActionBarWhenNarrow"
             android:exported="true">
             <intent-filter>

@@ -1,53 +1,68 @@
-package com.fsck.k9.planck.manualsync
+package com.fsck.k9.fragment
 
+import android.app.Dialog
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.LinearLayout
-import androidx.activity.addCallback
-import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import butterknife.Bind
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.databinding.ActivityImportWizzardFromPgpBinding
+import com.fsck.k9.planck.manualsync.PlanckSyncWizardViewModel
+import com.fsck.k9.planck.manualsync.SyncScreenState
+import com.fsck.k9.planck.manualsync.SyncState
 import com.fsck.k9.planck.ui.tools.ThemeManager
-import dagger.hilt.android.AndroidEntryPoint
-
 
 private const val EMPTY_SPACE = 0
-
 private const val NO_RESOURCE = 0
-internal const val ENGLISH_POSITION = 0
-internal const val GERMAN_POSITION = 1
+private const val ENGLISH_POSITION = 0
+private const val GERMAN_POSITION = 1
 private const val IGNORE_REJECT_BUTTON = true
 
-@AndroidEntryPoint
-class PlanckSyncWizard : WizardActivity() {
+class SyncWizardDialogFragment : DialogFragment() {
     private lateinit var binding: ActivityImportWizzardFromPgpBinding
     private val viewModel: PlanckSyncWizardViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityImportWizzardFromPgpBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setUpToolbar(false)
-        setUpFloatingWindowWrapHeight()
-        setupViews()
-        onBackPressedDispatcher.addCallback { viewModel.cancelIfNotDone() }
-        observeViewModel()
+    @Bind(R.id.toolbar)
+    var toolbar: Toolbar? = null
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        return dialog
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = ActivityImportWizzardFromPgpBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         if (viewModel.isHandshaking()) {
-            menuInflater.inflate(R.menu.menu_add_device, menu)
+            inflater.inflate(R.menu.menu_add_device, menu)
         }
-        return true
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -64,7 +79,7 @@ class PlanckSyncWizard : WizardActivity() {
         }
         binding.negativeActionButton.setOnClickListener {
             viewModel.rejectHandshake()
-            finish()
+            dismiss()
         }
         binding.showLongTrustwords.setOnClickListener {
             binding.showLongTrustwords.isVisible = false
@@ -180,7 +195,10 @@ class PlanckSyncWizard : WizardActivity() {
             loadingAnimation = getLoadingAnimationDrawable(),
             dismissButtonVisible = true,
         )
-        binding.trustwordsContainer.layoutParams = LinearLayout.LayoutParams(EMPTY_SPACE, EMPTY_SPACE)
+        binding.trustwordsContainer.layoutParams = LinearLayout.LayoutParams(
+            com.fsck.k9.planck.manualsync.EMPTY_SPACE,
+            com.fsck.k9.planck.manualsync.EMPTY_SPACE
+        )
     }
 
     private fun showAwaitingUserToStartHandshake() {
@@ -209,82 +227,6 @@ class PlanckSyncWizard : WizardActivity() {
         ) {
             viewModel.acceptHandshake()
         }
-    }
-
-    private fun showScreen(
-        @StringRes description: Int = NO_RESOURCE,
-        ownFpr: String = "",
-        partnerFpr: String = "",
-        trustwords: String = "",
-        @DrawableRes currentState: Int = NO_RESOURCE,
-        @DrawableRes loadingAnimation: Int = NO_RESOURCE,
-        waitingForSyncVisible: Boolean = false,
-        syncStateFeedbackVisible: Boolean = BuildConfig.DEBUG,
-        negativeButtonVisible: Boolean = false,
-        dismissButtonVisible: Boolean = false,
-        @StringRes positiveButtonText: Int = NO_RESOURCE,
-        positiveButtonClose: Boolean = false,
-        positiveButtonClick: () -> Unit = {},
-    ) {
-        binding.description.apply {
-            isVisible = (description != NO_RESOURCE).also { if (it) setText(description) }
-        }
-        if (ownFpr.isNotBlank()) {
-            showFprs(ownFpr, partnerFpr)
-        } else {
-            binding.fprContainer.isVisible = false
-        }
-        if (trustwords.isNotBlank()) {
-            showTrustwords(trustwords)
-        } else {
-            binding.trustwordsContainer.isVisible = false
-        }
-        binding.currentState.apply {
-            isVisible =
-                (currentState != NO_RESOURCE).also { if (it) setImageResource(currentState) }
-        }
-        binding.loading.apply {
-            isVisible = (loadingAnimation != NO_RESOURCE).also {
-                if (it) indeterminateDrawable = ContextCompat.getDrawable(
-                    this@PlanckSyncWizard, loadingAnimation
-                )
-            }
-        }
-        binding.waitingForSync.isVisible = waitingForSyncVisible
-        binding.waitingForSyncText.isVisible = waitingForSyncVisible
-        binding.syncStateFeedback.isVisible = syncStateFeedbackVisible
-        binding.negativeActionButton.isVisible =
-            if (IGNORE_REJECT_BUTTON) false else negativeButtonVisible
-        binding.dissmissActionButton.visibility =
-            if (dismissButtonVisible) View.VISIBLE else View.INVISIBLE
-        binding.afirmativeActionButton.apply {
-            isVisible =
-                (positiveButtonText != NO_RESOURCE).also { if (it) setText(positiveButtonText) }
-            if (positiveButtonClose) {
-                setTextColor(
-                    ThemeManager.getColorFromAttributeResource(
-                        this@PlanckSyncWizard, R.attr.defaultColorOnBackground
-                    )
-                )
-            }
-            setOnClickListener { positiveButtonClick() }
-        }
-    }
-
-    private fun showTrustwords(trustwords: String) {
-        binding.trustwordsContainer.isVisible = true
-        binding.trustwords.text = trustwords
-    }
-
-    private fun showFprs(ownFpr: String, partnerFpr: String) {
-        binding.fprContainer.isVisible = true
-        binding.fprCurrentDeviceValue.text = ownFpr
-        binding.fprNewDeviceValue.text = partnerFpr
-    }
-
-    private fun showLangIcon() {
-        val resource: Int = ThemeManager.getAttributeResource(this, R.attr.iconLanguageGray)
-        toolbar?.overflowIcon = ContextCompat.getDrawable(this, resource)
     }
 
     @StringRes
@@ -316,4 +258,85 @@ class PlanckSyncWizard : WizardActivity() {
         return if (viewModel.formingGroup) R.drawable.add_second_device
         else R.drawable.add_device_to_group
     }
+
+    private fun showScreen(
+        @StringRes description: Int = com.fsck.k9.planck.manualsync.NO_RESOURCE,
+        ownFpr: String = "",
+        partnerFpr: String = "",
+        trustwords: String = "",
+        @DrawableRes currentState: Int = com.fsck.k9.planck.manualsync.NO_RESOURCE,
+        @DrawableRes loadingAnimation: Int = com.fsck.k9.planck.manualsync.NO_RESOURCE,
+        waitingForSyncVisible: Boolean = false,
+        syncStateFeedbackVisible: Boolean = BuildConfig.DEBUG,
+        negativeButtonVisible: Boolean = false,
+        dismissButtonVisible: Boolean = false,
+        @StringRes positiveButtonText: Int = com.fsck.k9.planck.manualsync.NO_RESOURCE,
+        positiveButtonClose: Boolean = false,
+        positiveButtonClick: () -> Unit = {},
+    ) {
+        binding.description.apply {
+            isVisible = (description != com.fsck.k9.planck.manualsync.NO_RESOURCE).also { if (it) setText(description) }
+        }
+        if (ownFpr.isNotBlank()) {
+            showFprs(ownFpr, partnerFpr)
+        } else {
+            binding.fprContainer.isVisible = false
+        }
+        if (trustwords.isNotBlank()) {
+            showTrustwords(trustwords)
+        } else {
+            binding.trustwordsContainer.isVisible = false
+        }
+        binding.currentState.apply {
+            isVisible =
+                (currentState != com.fsck.k9.planck.manualsync.NO_RESOURCE).also { if (it) setImageResource(currentState) }
+        }
+        binding.loading.apply {
+            isVisible = (loadingAnimation != com.fsck.k9.planck.manualsync.NO_RESOURCE).also {
+                if (it) indeterminateDrawable = ContextCompat.getDrawable(
+                    this@PlanckSyncWizard, loadingAnimation
+                )
+            }
+        }
+        binding.waitingForSync.isVisible = waitingForSyncVisible
+        binding.waitingForSyncText.isVisible = waitingForSyncVisible
+        binding.syncStateFeedback.isVisible = syncStateFeedbackVisible
+        binding.negativeActionButton.isVisible =
+            if (com.fsck.k9.planck.manualsync.IGNORE_REJECT_BUTTON) false else negativeButtonVisible
+        binding.dissmissActionButton.visibility =
+            if (dismissButtonVisible) View.VISIBLE else View.INVISIBLE
+        binding.afirmativeActionButton.apply {
+            isVisible =
+                (positiveButtonText != com.fsck.k9.planck.manualsync.NO_RESOURCE).also { if (it) setText(positiveButtonText) }
+            if (positiveButtonClose) {
+                setTextColor(
+                    ThemeManager.getColorFromAttributeResource(
+                        this@PlanckSyncWizard, R.attr.defaultColorOnBackground
+                    )
+                )
+            }
+            setOnClickListener { positiveButtonClick() }
+        }
+    }
+
+    private fun showTrustwords(trustwords: String) {
+        binding.trustwordsContainer.isVisible = true
+        binding.trustwords.text = trustwords
+    }
+
+    private fun showFprs(ownFpr: String, partnerFpr: String) {
+        binding.fprContainer.isVisible = true
+        binding.fprCurrentDeviceValue.text = ownFpr
+        binding.fprNewDeviceValue.text = partnerFpr
+    }
+
+    private fun showLangIcon() {
+        val resource: Int = ThemeManager.getAttributeResource(requireContext(), R.attr.iconLanguageGray)
+        toolbar?.overflowIcon = ContextCompat.getDrawable(requireContext(), resource)
+    }
+
+    companion object {
+        const val TAG = "SyncWizardDialog"
+    }
+
 }
