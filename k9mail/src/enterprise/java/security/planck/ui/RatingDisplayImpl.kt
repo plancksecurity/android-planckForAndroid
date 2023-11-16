@@ -2,8 +2,6 @@ package security.planck.ui
 
 import com.fsck.k9.R
 import foundation.pEp.jniadapter.Rating
-import security.planck.ui.RatingDisplay
-import security.planck.ui.RatingDisplayHolder
 
 class RatingDisplayImpl : RatingDisplay() {
     override val ratingDisplayHolderList: List<RatingDisplayHolder> = listOf(
@@ -47,6 +45,14 @@ class RatingDisplayImpl : RatingDisplay() {
             textRes = R.string.pep_rating_none,
             colorRes = R.color.planck_no_color,
             visible = false
+        ),
+        RatingDisplayHolder(
+            ratingValue = Rating.pEpRatingHaveNoKey.value,
+            textRes = R.string.pep_rating_not_encrypted,
+            colorRes = R.color.planck_yellow,
+            iconRes = R.drawable.ico_not_encrypted,
+            visible = true,
+            outgoing = true
         ),
         RatingDisplayHolder(
             ratingValue = Rating.pEpRatingUnencrypted.value,

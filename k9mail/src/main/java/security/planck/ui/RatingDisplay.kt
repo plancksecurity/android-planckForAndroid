@@ -8,9 +8,16 @@ abstract class RatingDisplay {
 
     fun getForRating(
         rating: Rating?,
+        outgoing: Boolean = false,
         planckInactive: Boolean = false
     ): RatingDisplayHolder {
-        val originalHolder = ratingDisplayHolderList.first { it.matchesRating(rating) }
+        val ratingMatchingHolders = ratingDisplayHolderList.filter {
+            it.matchesRating(rating)
+        }
+        val originalHolder =
+            ratingMatchingHolders.firstOrNull { it.outgoing == outgoing }
+                ?: ratingMatchingHolders.first()
+
         return if (planckInactive) originalHolder.copy(
             iconRes = R.drawable.ico_inactive,
             textRes = R.string.planck_inactive

@@ -36,13 +36,44 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     }
 
     @JvmOverloads
-    fun setRating(rating: Rating?, forceHide: Boolean = false, planckInactive: Boolean = false) {
-        visibility = getToolbarRatingVisibility(rating, planckInactive, forceHide)
+    fun setIncomingRating(
+        rating: Rating?,
+        planckInactive: Boolean = false
+    ) {
+        setRating(
+            rating = rating,
+            outgoing = false,
+            forceHide = false,
+            planckInactive = planckInactive
+        )
+    }
 
-        securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating, planckInactive))
+    @JvmOverloads
+    fun setOutgoingRating(
+        rating: Rating?,
+        forceHide: Boolean = false,
+        planckInactive: Boolean = false
+    ) {
+        setRating(
+            rating = rating,
+            outgoing = true,
+            forceHide = forceHide,
+            planckInactive = planckInactive
+        )
+    }
+
+    private fun setRating(
+        rating: Rating?,
+        outgoing: Boolean,
+        forceHide: Boolean = false,
+        planckInactive: Boolean = false
+    ) {
+        visibility = getToolbarRatingVisibility(rating, outgoing, planckInactive, forceHide)
+
+        securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating, outgoing, planckInactive))
 
         setSecurityStatusColors(rating)
-        setSecurityStatusText(rating, planckInactive)
+        setSecurityStatusText(rating, outgoing, planckInactive)
     }
 
     private fun setSecurityStatusColors(rating: Rating?) {
@@ -60,8 +91,8 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         secondLineText?.setTextColor(textColor)
     }
 
-    private fun setSecurityStatusText(rating: Rating?, planckInactive: Boolean) {
-        var firstLine = context.getString(getRatingTextRes(rating, planckInactive))
+    private fun setSecurityStatusText(rating: Rating?, outgoing: Boolean, planckInactive: Boolean) {
+        var firstLine = context.getString(getRatingTextRes(rating, outgoing, planckInactive))
         secondLineText?.let { secondTextView ->
             var secondLine = ""
             secondTextView.text = secondLine

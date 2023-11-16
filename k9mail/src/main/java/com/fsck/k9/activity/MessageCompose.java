@@ -2074,7 +2074,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     public void setToolbarRating(Rating rating, boolean forceHide) {
         boolean planckEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.isPlanckPrivacyProtected());
-        planckSecurityStatusLayout.setRating(rating, forceHide, !planckEnabled);
+        planckSecurityStatusLayout.setOutgoingRating(rating, forceHide, !planckEnabled);
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {

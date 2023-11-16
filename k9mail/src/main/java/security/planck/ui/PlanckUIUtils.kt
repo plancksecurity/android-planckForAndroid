@@ -63,8 +63,9 @@ object PlanckUIUtils {
     fun getDrawableForToolbarRating(
         context: Context,
         rating: Rating?,
+        outgoing: Boolean = false,
         planckInactive: Boolean = false
-    ): Drawable? = getDrawableForMessage(context, rating, planckInactive)
+    ): Drawable? = getDrawableForMessage(context, rating, outgoing, planckInactive)
 
     @JvmStatic
     @JvmOverloads
@@ -72,22 +73,24 @@ object PlanckUIUtils {
         context: Context,
         rating: Rating?,
         planckInactive: Boolean = false
-    ): Drawable? = getDrawableForMessage(context, rating, planckInactive)
+    ): Drawable? = getDrawableForMessage(context, rating, false, planckInactive)
 
     private fun getDrawableForMessage(
         context: Context,
         rating: Rating?,
-        planckInactive: Boolean
+        outgoing: Boolean = false,
+        planckInactive: Boolean,
     ): Drawable? =
-        ratingDisplay.getForRating(rating, planckInactive = planckInactive).getDrawable(context)
+        ratingDisplay.getForRating(rating, outgoing, planckInactive).getDrawable(context)
 
     @JvmStatic
     fun getToolbarRatingVisibility(
         rating: Rating?,
+        outgoing: Boolean = false,
         planckInactive: Boolean = false,
         forceHide: Boolean = false,
     ): Int {
-        val hide = forceHide || !ratingDisplay.getForRating(rating, planckInactive).visible
+        val hide = forceHide || !ratingDisplay.getForRating(rating, outgoing, planckInactive).visible
         return if (hide) View.GONE else View.VISIBLE
     }
 
@@ -100,14 +103,14 @@ object PlanckUIUtils {
     }
 
     @JvmStatic
-    fun getRatingColorRes(rating: Rating?, plnackInactive: Boolean = false): Int {
-        return ratingDisplay.getForRating(rating, plnackInactive).colorRes
+    fun getRatingColorRes(rating: Rating?, planckInactive: Boolean = false): Int {
+        return ratingDisplay.getForRating(rating, planckInactive = planckInactive).colorRes
     }
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingTextRes(rating: Rating?, planckInactive: Boolean = false): Int {
-        return ratingDisplay.getForRating(rating, planckInactive).textRes
+    fun getRatingTextRes(rating: Rating?, outgoing: Boolean = false, planckInactive: Boolean = false): Int {
+        return ratingDisplay.getForRating(rating, outgoing, planckInactive).textRes
     }
 
     @JvmStatic

@@ -62,6 +62,10 @@ class PlanckUIUtilsTest : RobolectricTest() {
 
         assertNull(PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingHaveNoKey))
         assertNull(PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey))
+        assertDrawableEqualsRes(
+            R.drawable.ico_not_encrypted,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)!!
+        )
 
         assertDrawableEqualsRes(
             R.drawable.ico_not_encrypted,
@@ -128,6 +132,10 @@ class PlanckUIUtilsTest : RobolectricTest() {
         assertDrawableEqualsRes(
             R.drawable.ico_inactive,
             PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnencrypted, planckInactive = true)!!
+        )
+        assertDrawableEqualsRes(
+            R.drawable.ico_inactive,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)!!
         )
     }
 
@@ -240,6 +248,7 @@ class PlanckUIUtilsTest : RobolectricTest() {
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingCannotDecrypt)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingHaveNoKey, outgoing = true)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnencrypted)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnreliable)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMediaKeyProtected)
@@ -276,6 +285,7 @@ class PlanckUIUtilsTest : RobolectricTest() {
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingCannotDecrypt, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, forceHide = true)
+        assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, forceHide = true, outgoing = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUnencrypted, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUnreliable, forceHide = true)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingMediaKeyProtected, forceHide = true)
@@ -289,17 +299,19 @@ class PlanckUIUtilsTest : RobolectricTest() {
         expected: Int,
         rating: Rating?,
         enabled: Boolean = true,
-        forceHide: Boolean = false
+        forceHide: Boolean = false,
+        outgoing: Boolean = false,
     ) {
-        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, enabled, forceHide))
+        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, outgoing, enabled, forceHide))
     }
 
     private fun assertCorrectStringRes(
         @StringRes expected: Int,
         rating: Rating?,
         planckInactive: Boolean = false,
+        outgoing: Boolean = false,
     ) {
-        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, planckInactive))
+        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, outgoing, planckInactive))
     }
 
     private fun assertCorrectColorRes(@ColorRes expected: Int, rating: Rating?) {

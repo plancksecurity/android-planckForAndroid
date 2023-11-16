@@ -18,6 +18,7 @@ data class RatingDisplayHolder(
     @ColorRes val colorRes: Int = R.color.planck_no_color,
     @DrawableRes val iconRes: Int = NO_RESOURCE,
     val visible: Boolean = false,
+    val outgoing: Boolean = false,
 ) {
     fun matchesRating(rating: Rating?): Boolean {
         return when (rating) {
