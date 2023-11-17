@@ -1,0 +1,185 @@
+name: android/planckForAndroid
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+env:
+  DEMO_KEY_PASSWORD: "${{ secrets.DEMO_KEY_PASSWORD }}"
+  DEMO_STORE_PASSWORD: "${{ secrets.DEMO_STORE_PASSWORD }}"
+  BUILD_FORMAT: apk
+  DEBUG_BUILD: 'false'
+  DEMO_APP_ID_SUFFIX: ".demo"
+  DEMO_APP_VERSION_NAME_SUFFIX: ".demo"
+  ENABLE_END_USER: 'false'
+  APP_ID: security.planck
+jobs:
+  toolchain-image:
+    runs-on: ubuntu-latest
+    container:
+      image: "${DOCKER_REGISTRY_HOST}/docker:20.10.16"
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !(${{ github.event_name }} == "merge_request_event") || always()
+    timeout-minutes: 180
+    services:
+      docker:20.10.16-dind:
+        image: docker:20.10.16-dind
+    env:
+      DOCKER_REGISTRY_HOST: dockerreg.planck.security
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      GIT_SUBMODULE_STRATEGY: recursive
+      IMAGE_NAME: "${DOCKER_REGISTRY_HOST}/${{ github.repository }}"
+      GIT_CLONE_PATH: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+      DOCKER_DRIVER: overlay2
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        lfs: true
+        path: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+        submodules: recursive
+    - run: mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+    - run: docker pull  ${IMAGE_NAME}/toolchain:${{ github.ref }} || true
+    - run: echo "testing stuff??"
+    - run: docker build --cache-from ${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:${{ github.sha }} --tag=${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:latest --file Dockerfile.toolchain .
+    - run: echo "${IMAGE_NAME}"
+    - run: echo "${{ github.sha }}"
+    - run: echo "${{ github.ref }}"
+    - run: docker push  ${IMAGE_NAME}/toolchain:${{ github.sha }}
+    - run: docker push  ${IMAGE_NAME}/toolchain:${{ github.ref }}
+    - run: docker push  ${IMAGE_NAME}/toolchain:latest
+  base-image:
+    needs: toolchain-image
+    runs-on: ubuntu-latest
+    container:
+      image: "${DOCKER_REGISTRY_HOST}/docker:20.10.16"
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !(${{ github.event_name }} == "merge_request_event") || always()
+    timeout-minutes: 180
+    services:
+      docker:20.10.16-dind:
+        image: docker:20.10.16-dind
+    env:
+      DOCKER_REGISTRY_HOST: dockerreg.planck.security
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      GIT_SUBMODULE_STRATEGY: recursive
+      IMAGE_NAME: "${DOCKER_REGISTRY_HOST}/${{ github.repository }}"
+      GIT_CLONE_PATH: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+      DOCKER_DRIVER: overlay2
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        lfs: true
+        path: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+        submodules: recursive
+    - run: mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+    - run: cat DEPENDENCIES
+    - run: source DEPENDENCIES
+    - run: echo "planckJNIWrapper Version = ${pEpJNIAdapter}"
+    - run: wget -q -O - https://git.planck.security/foundation/planckJNIWrapper/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+    - run: echo -e "\n" >> DEPENDENCIES
+    - run: cat DEPENDENCIES
+    - run: source DEPENDENCIES
+    - run: echo "planckCoreV3 Version = ${pEpEngine}"
+    - run: echo "libPlanckWrapper Version = ${libpEpAdapter}"
+    - run: echo "libPlanckCxx11 Version = ${libpEpCxx11}"
+    - run: wget -q -O - https://git.planck.security/foundation/planckCoreV3/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+    - run: echo -e "\n" >> DEPENDENCIES
+    - run: cat DEPENDENCIES
+    - run: source DEPENDENCIES
+    - run: echo "libPlanckTransport Version = ${libpEpTransport}"
+    - run: echo "planckCoreSequoiaBackend Version = ${pEpEngineSequoiaBackend}"
+    - run: cat DEPENDENCIES
+    - run: docker pull  ${IMAGE_NAME}/base:${{ github.ref }} || docker pull  ${IMAGE_NAME}/toolchain:${{ github.ref }}
+    - run: docker build --cache-from ${IMAGE_NAME}/base:${{ github.ref }} --build-arg ENGINE_VERSION=${pEpEngine} --build-arg JNI_ADAPTER_VERSION=${pEpJNIAdapter} --build-arg LIBPEPADAPTER_VERSION=${libpEpAdapter} --build-arg LIBPEPCXX_VERSION=${libpEpCxx11} --build-arg LIBPEPTRANSPORT_VERSION=${libpEpTransport} --build-arg FOLDABLE_FOLDER_VERSION=${foldableFolderList} --build-arg TOOLCHAIN_IMAGE_NAME=${IMAGE_NAME}/toolchain --build-arg YML2_VERSION=${yml2} --tag=${IMAGE_NAME}/base:${{ github.sha }} --tag=${IMAGE_NAME}/base:${{ github.ref }} --tag=${IMAGE_NAME}/base:latest --file Dockerfile.base .
+    - run: docker image inspect ${IMAGE_NAME}/base:${{ github.sha }} | grep Size
+    - run: docker push  ${IMAGE_NAME}/base:${{ github.sha }}
+    - run: docker push  ${IMAGE_NAME}/base:${{ github.ref }}
+    - run: docker push  ${IMAGE_NAME}/base:latest
+  build:
+    needs: base-image
+    runs-on: ubuntu-latest
+    container:
+      image: "${IMAGE_NAME}/base:${{ github.ref }}"
+    if: !(${{ github.event_name }} == "merge_request_event") || always()
+    timeout-minutes: 180
+    env:
+      DOCKER_REGISTRY_HOST: dockerreg.planck.security
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      GIT_SUBMODULE_STRATEGY: recursive
+      IMAGE_NAME: "${DOCKER_REGISTRY_HOST}/${{ github.repository }}"
+      GIT_CLONE_PATH: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        lfs: true
+        path: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+        submodules: recursive
+    - uses: actions/cache@v3.3.2
+      with:
+        path: |-
+          build
+          .gradle
+        key: "${{ github.ref }}"
+    - run: pwd
+    - run: echo ${HOME}
+    - run: echo -e """ext {\n demoAppIdSuffix = '${DEMO_APP_ID_SUFFIX}'\n demoAppVersionNameSuffix = '${DEMO_APP_VERSION_NAME_SUFFIX}'\n enableEndUser = ${ENABLE_END_USER}\n appId = '${APP_ID}'\n demoKeyAlias = 'demo'\n demoKeyPassword = '${DEMO_KEY_PASSWORD}'\n demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')\n demoStorePassword = '${DEMO_STORE_PASSWORD}'\n }""" > gradle/plugins/customConfig.gradle
+    - run: echo "=== Custom gradle config for the demo release ==="
+    - run: cat gradle/plugins/customConfig.gradle
+    - run: for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ; do rm -f ../$i && ln -s ${HOME}/code/$i ../$i ; done
+    - run: ls -la ..
+    - run: |
+        if [[ "$BUILD_FORMAT" == "apk" ]]; then
+          if [[ "$DEBUG_BUILD" == "true" ]]; then
+            ./gradlew --build-cache assembleEnterprisePlayStoreDebug
+          else
+            ./gradlew --build-cache assembleDemoPlayStoreRelease
+          fi
+        else
+          if [[ "$DEBUG_BUILD" == "true" ]]; then
+            ./gradlew --build-cache bundleEnterprisePlayStoreDebug
+          else
+            ./gradlew --build-cache bundleDemoPlayStoreRelease
+          fi
+        fi
+    - run: "./gradlew --build-cache assembleDemoPlayStoreRelease"
+    - run: mkdir -p packages
+    - run: mv k9mail/build/outputs/apk/* packages/
+    - run: du -h packages
+    - uses: actions/upload-artifact@v3.1.3
+      if: success()
+      with:
+        name: "${{ github.job }}"
+        path: packages
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: "${IMAGE_NAME}/base:${{ github.ref }}"
+    if: !(${{ github.event_name }} == "merge_request_event") || always()
+    timeout-minutes: 180
+    env:
+      DOCKER_REGISTRY_HOST: dockerreg.planck.security
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      GIT_SUBMODULE_STRATEGY: recursive
+      IMAGE_NAME: "${DOCKER_REGISTRY_HOST}/${{ github.repository }}"
+      GIT_CLONE_PATH: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        lfs: true
+        path: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
+        submodules: recursive
+    - uses: actions/cache@v3.3.2
+      with:
+        path: |-
+          build
+          .gradle
+        key: "${{ github.ref }}"
+    - uses: actions/download-artifact@v3.0.2
+    - run: pwd
+    - run: echo ${HOME}
+    - run: for i in "planckCoreV3" "libPlanckTransport" "libPlanckCxx11" "planckJNIWrapper" "libPlanckWrapper" "foldable-folder-list" ; do rm -f ../$i && ln -s ${HOME}/code/$i ../$i ; done
+    - run: ls -la ..
+    - run: "./gradlew --build-cache check"
