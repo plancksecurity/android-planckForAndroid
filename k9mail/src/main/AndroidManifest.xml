@@ -566,6 +566,7 @@
             android:name=".planck.manualsync.PlanckSyncWizard"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
+            android:configChanges="keyboardHidden|orientation|locale|screenSize"
             android:excludeFromRecents="true"
             android:exported="false" />
 
