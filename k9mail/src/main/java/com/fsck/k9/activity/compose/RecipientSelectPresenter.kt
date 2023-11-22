@@ -99,12 +99,9 @@ class RecipientSelectPresenter @Inject constructor(
         pair.first
     }
 
-    fun updateRecipientsFromEcho(
-        echoSender: String,
-    ) {
+    fun updateRecipientsFromMessage() {
         coroutineScope.launch {
             view.recipients
-                .filter { it.address.address.equals(echoSender, true) }
                 .filter { it.address in unsecureAddresses }
                 .map { recipient ->
                     recipient

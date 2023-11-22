@@ -499,13 +499,8 @@ class PlanckProviderImplKotlin(
             Timber.d("%s %s", TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
-            if (decMsg.subject.contains(ECHO_PROTOCOL_MESSAGE_SUBJECT)) {
-                if (!decMsg.from.isNullOrEmpty()) {
-                    echoMessageReceivedListener?.echoMessageReceived(
-                        decMsg.from[0].address,
-                        message.to[0].address
-                    )
-                }
+            if (!decMsg.from.isNullOrEmpty()) {
+                echoMessageReceivedListener?.messageReceived()
             }
 
             if (PlanckUtils.isAutoConsumeMessage(decMsg)) {
@@ -1292,7 +1287,6 @@ class PlanckProviderImplKotlin(
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"
-        private const val ECHO_PROTOCOL_MESSAGE_SUBJECT = "key management message (Distribution)"
         private const val MESSAGE_CREATION_ATTEMPTS = 20
         private const val MESSAGE_CREATION_ATTEMPT_COOLDOWN = 10L
         private const val MIME_TYPE_X_SMIME_SIGNATURE = "application/x-pkcs7-signature"

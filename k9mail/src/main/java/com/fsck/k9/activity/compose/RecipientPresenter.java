@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.loader.app.LoaderManager;
@@ -801,13 +800,11 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     @Override
-    public void echoMessageReceived(@NonNull String from, @NonNull String to) {
+    public void messageReceived() {
         updateCryptoStatus();
         if (account.isPlanckPrivacyProtected() && K9.isPlanckForwardWarningEnabled()) {
-            if (to.equalsIgnoreCase(recipientMvpView.getFromAddress().getAddress())) {
-                toPresenter.updateRecipientsFromEcho(from);
-                ccPresenter.updateRecipientsFromEcho(from);
-            }
+            toPresenter.updateRecipientsFromMessage();
+            ccPresenter.updateRecipientsFromMessage();
         }
     }
 
