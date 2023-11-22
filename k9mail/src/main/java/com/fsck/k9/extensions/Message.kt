@@ -17,3 +17,4 @@ fun LocalMessage?.isValidForHandshake() = this != null
         && getRecipients(RecipientType.CC).isNullOrEmpty()
         && getRecipients(RecipientType.BCC).isNullOrEmpty()
         && !getRecipients(RecipientType.TO).isNullOrEmpty()
+        && !from.first().address.equals(account.email, ignoreCase = true) // sender not my own account
