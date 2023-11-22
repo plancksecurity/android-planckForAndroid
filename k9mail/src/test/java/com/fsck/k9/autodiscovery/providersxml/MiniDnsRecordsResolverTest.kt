@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
@@ -32,22 +33,22 @@ class MiniDnsRecordsResolverTest {
         )
     }
 
+    @After
+    fun tearDown() {
+        unmockkObject(DnssecResolverApi.INSTANCE)
+    }
+
     @Test
     fun `getRealOrFallbackDomain() finds real domain using minidns library`() {
         val realDomain = dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, null)
+
+
+        verify { DnssecResolverApi.INSTANCE.resolve(DOMAIN, MX::class.java) }
         assertEquals(REAL_DOMAIN, realDomain)
     }
 
     @Test
-    fun `getRealOrFallbackDomain() returns Microsoft fallback domain if it cannot find real domain and throws error`() {
-        every {
-            DnssecResolverApi.INSTANCE.resolve(
-                DOMAIN,
-                MX::class.java
-            )
-        }.throws(RuntimeException("test"))
-
-
+    fun `getRealOrFallbackDomain() returns Microsoft fallback domain in any case`() {
         val realDomain =
             dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, OAuthProviderType.MICROSOFT)
 
@@ -56,27 +57,7 @@ class MiniDnsRecordsResolverTest {
     }
 
     @Test
-    fun `getRealOrFallbackDomain() returns Microsoft fallback domain if it cannot find real domain and returns empty`() {
-        every { resolverResult.answersOrEmptySet }.returns(emptySet())
-
-
-        val realDomain =
-            dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, OAuthProviderType.MICROSOFT)
-
-
-        assertEquals(MICROSOFT_FALLBACK_DOMAIN, realDomain)
-    }
-
-    @Test
-    fun `getRealOrFallbackDomain() returns Google fallback domain if it cannot find real domain`() {
-        every {
-            DnssecResolverApi.INSTANCE.resolve(
-                DOMAIN,
-                MX::class.java
-            )
-        }.throws(RuntimeException("test"))
-
-
+    fun `getRealOrFallbackDomain() returns Google fallback domain in any case`() {
         val realDomain =
             dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, OAuthProviderType.GOOGLE)
 
@@ -84,8 +65,32 @@ class MiniDnsRecordsResolverTest {
         assertEquals(GOOGLE_FALLBACK_DOMAIN, realDomain)
     }
 
-    @After
-    fun tearDown() {
-        unmockkObject(DnssecResolverApi.INSTANCE)
+    @Test
+    fun `getRealOrFallbackDomain() returns original domain if it cannot find real domain and throws error`() {
+        every {
+            DnssecResolverApi.INSTANCE.resolve(
+                DOMAIN,
+                MX::class.java
+            )
+        }.throws(RuntimeException("test"))
+
+
+        val realDomain =
+            dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, null)
+
+
+        assertEquals(DOMAIN, realDomain)
+    }
+
+    @Test
+    fun `getRealOrFallbackDomain() returns original domain if it cannot find real domain and returns empty`() {
+        every { resolverResult.answersOrEmptySet }.returns(emptySet())
+
+
+        val realDomain =
+            dnsRecordsResolver.getRealOrFallbackDomain(DOMAIN, null)
+
+
+        assertEquals(DOMAIN, realDomain)
     }
 }
