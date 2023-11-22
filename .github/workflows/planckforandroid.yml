@@ -21,12 +21,12 @@ jobs:
       DOCKER_REGISTRY_HOST: dockerreg.planck.security
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
       GIT_SUBMODULE_STRATEGY: recursive
-      IMAGE_NAME: "${{ secrets.PLANCK_DOCKER_REGISTRY_HOST }}/${{ github.repository }}"
+      IMAGE_NAME: "${{ secrets.DOCKER_REGISTRY_HOST }}/${{ github.repository }}"
       GIT_CLONE_PATH: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
       DOCKER_DRIVER: overlay2
     runs-on: ubuntu-latest
     container:
-      image: "${{ secrets.PLANCK_DOCKER_REGISTRY_HOST }}/docker:20.10.16"
+      image: "${{ secrets.DOCKER_REGISTRY_HOST }}/docker:20.10.16"
     if: # Unable to map conditional expression to GitHub Actions equivalent
     #         !(${{ github.event_name }} == "merge_request_event") || always()
     timeout-minutes: 180
