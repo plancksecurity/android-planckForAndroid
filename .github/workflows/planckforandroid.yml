@@ -56,7 +56,7 @@ jobs:
       image: "${DOCKER_REGISTRY_HOST}/docker:20.10.16"
     if: # Unable to map conditional expression to GitHub Actions equivalent
 #         !(${{ github.event_name }} == "merge_request_event") || always()
-    timeout-minutes: 180
+    #timeout-minutes: 180 # failing as error so commented
     services:
       docker:20.10.16-dind:
         image: docker:20.10.16-dind
