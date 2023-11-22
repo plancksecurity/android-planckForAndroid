@@ -103,7 +103,7 @@ jobs:
     container:
       image: "${IMAGE_NAME}/base:${{ github.ref }}"
     if: !(${{ github.event_name }} == "merge_request_event") || always()
-    timeout-minutes: 180
+    #timeout-minutes: 180
     env:
       DOCKER_REGISTRY_HOST: dockerreg.planck.security
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
