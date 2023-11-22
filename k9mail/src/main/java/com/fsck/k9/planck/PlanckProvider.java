@@ -18,7 +18,7 @@ import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import kotlin.Unit;
-import security.planck.echo.EchoMessageReceivedListener;
+import security.planck.echo.MessageReceivedListener;
 import timber.log.Timber;
 
 /**
@@ -46,7 +46,7 @@ public interface PlanckProvider {
     String KEY_MISSING_ERROR_MESSAGE = "keyMissing";
     String KEY_COULD_NOT_DECRYPT_MESSAGE = "couldNotDecrypt";
 
-    void setEchoMessageReceivedListener(EchoMessageReceivedListener listener);
+    void setEchoMessageReceivedListener(MessageReceivedListener listener);
 
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and

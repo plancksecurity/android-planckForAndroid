@@ -52,11 +52,11 @@ import java.util.Collections;
 import java.util.List;
 
 import foundation.pEp.jniadapter.Rating;
-import security.planck.echo.EchoMessageReceivedListener;
+import security.planck.echo.MessageReceivedListener;
 import timber.log.Timber;
 
 
-public class RecipientPresenter implements EchoMessageReceivedListener {
+public class RecipientPresenter implements MessageReceivedListener {
     private static final String STATE_KEY_CC_SHOWN = "state:ccShown";
     private static final String STATE_KEY_BCC_SHOWN = "state:bccShown";
     private static final String STATE_KEY_LAST_FOCUSED_TYPE = "state:lastFocusedType";

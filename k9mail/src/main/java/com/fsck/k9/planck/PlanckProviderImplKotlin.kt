@@ -32,7 +32,7 @@ import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
-import security.planck.echo.EchoMessageReceivedListener
+import security.planck.echo.MessageReceivedListener
 import security.planck.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import java.util.*
@@ -46,12 +46,12 @@ class PlanckProviderImplKotlin(
 
     private val sendMessageSet = false
     private val showHandshakeSet = false
-    private var echoMessageReceivedListener: EchoMessageReceivedListener? = null
+    private var messageReceivedListener: MessageReceivedListener? = null
     private val engineScope = CoroutineScope(PlanckDispatcher)
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
-    override fun setEchoMessageReceivedListener(listener: EchoMessageReceivedListener?) {
-        echoMessageReceivedListener = listener
+    override fun setEchoMessageReceivedListener(listener: MessageReceivedListener?) {
+        messageReceivedListener = listener
     }
 
     private fun processKeyImportSyncMessages(source: Message, decReturn: decrypt_message_Return, decryptedMimeMessage: MimeMessage): DecryptResult? {
@@ -500,7 +500,7 @@ class PlanckProviderImplKotlin(
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
             if (!decMsg.from.isNullOrEmpty()) {
-                echoMessageReceivedListener?.messageReceived()
+                messageReceivedListener?.messageReceived()
             }
 
             if (PlanckUtils.isAutoConsumeMessage(decMsg)) {

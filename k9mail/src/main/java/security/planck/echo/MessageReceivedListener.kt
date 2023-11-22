@@ -1,5 +1,5 @@
 package security.planck.echo
 
-interface EchoMessageReceivedListener {
+interface MessageReceivedListener {
     fun messageReceived()
 }
