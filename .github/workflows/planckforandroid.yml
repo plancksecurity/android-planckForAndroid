@@ -40,9 +40,10 @@ jobs:
         path: "${{ github.workspace }}/$CI_CONCURRENT_ID/${{ github.sha }}/${{ github.repository }}"
         submodules: recursive
     - run: mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
-    - run: docker pull  ${IMAGE_NAME}/toolchain:${{ github.ref }} || true
+    #- run: docker pull  ${IMAGE_NAME}/toolchain:${{ github.ref }} || true
     - run: echo "testing stuff??"
-    - run: docker build --cache-from ${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:${{ github.sha }} --tag=${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:latest --file Dockerfile.toolchain .
+    #- run: docker build --cache-from ${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:${{ github.sha }} --tag=${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:latest --file Dockerfile.toolchain .
+    - run: docker build --no-cache --tag=${IMAGE_NAME}/toolchain:${{ github.sha }} --tag=${IMAGE_NAME}/toolchain:${{ github.ref }} --tag=${IMAGE_NAME}/toolchain:latest --file Dockerfile.toolchain .
     - run: echo "${IMAGE_NAME}"
     - run: echo "${{ github.sha }}"
     - run: echo "${{ github.ref }}"
