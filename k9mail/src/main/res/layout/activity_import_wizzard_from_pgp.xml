@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_container"
@@ -8,263 +8,224 @@
     android:background="?attr/defaultDialogBackground"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:paddingStart="@dimen/key_import_floating_horizontal_margin"
-    android:paddingLeft="@dimen/key_import_floating_horizontal_margin"
-    android:paddingEnd="@dimen/key_import_floating_horizontal_margin"
-    android:paddingRight="@dimen/key_import_floating_horizontal_margin"
-    android:paddingBottom="@dimen/key_import_floating_vertical_margin"
     tools:context="com.fsck.k9.planck.manualsync.PlanckSyncWizard"
-    tools:layout_editor_absoluteX="16dp"
-    tools:layout_editor_absoluteY="16dp"
-    tools:layout_gravity="center"
-    android:minHeight="@dimen/key_import_floating_height"
     tools:layout_width="@dimen/key_import_floating_width">
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/handshake_toolbar_layout" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/WizardLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:paddingBottom="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include"
-        tools:text="A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
-        android:id="@+id/trustwordsContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description"
-        app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible">
+            <TextView
+                android:id="@+id/title"
+                style="@style/WizardToolbarTitle"
+                android:text="@string/pep_sync" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:text="A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?" />
 
         <TextView
             android:id="@+id/trustwords_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="sans-serif"
+            style="@style/WizardTrustwordsFprsTitle"
             android:text="@string/trustwords_title"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description"
             tools:text="@string/trustwords_title" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal|bottom"
-            android:orientation="horizontal">
+        <TextView
+            android:id="@+id/trustwords"
+            style="@style/WizardTrustwords"
+            app:layout_constraintEnd_toStartOf="@id/show_long_trustwords"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/trustwords_title"
+            tools:text="IMPORTUNER METAPHOR ARNO DIA SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
 
-            <TextView
-                android:id="@+id/trustwords"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:fontFamily="sans-serif"
-                android:padding="8dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:text="IMPORTUNER METAPHOR ARNO DIA SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal|bottom">
-
-                <ImageView
-                    android:id="@+id/show_long_trustwords"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_message_background"
-                    android:paddingStart="8dp"
-                    android:src="@drawable/ic_show_long_trustwords"
-                    android:visibility="visible" />
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/fpr_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:orientation="vertical"
-        android:paddingBottom="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/trustwordsContainer"
-        app:layout_constraintBottom_toTopOf="@id/currentState"
-        tools:visibility="visible">
+        <ImageView
+            android:id="@+id/show_long_trustwords"
+            style="@style/WizardShowLongTrustwords"
+            android:contentDescription="@string/pep_menu_long_trustwords"
+            app:layout_constraintBottom_toBottomOf="@id/trustwords"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/fpr_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
+            style="@style/WizardTrustwordsFprsTitle"
             android:text="@string/fpr_title"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/trustwords"
             tools:text="Fingerprints" />
 
         <TextView
             android:id="@+id/fpr_current_device_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
+            style="@style/WizardTrustwordsFprsTitle"
             android:text="@string/fpr_actual_title"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
-            tools:text="This device" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fpr_title" />
 
         <TextView
             android:id="@+id/fpr_current_device_value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:breakStrategy="simple"
-            android:ellipsize="none"
-            android:textStyle="bold"
+            style="@style/WizardFprValue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fpr_current_device_title"
             tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
 
         <TextView
             android:id="@+id/fpr_new_device_title"
+            style="@style/WizardTrustwordsFprsTitle"
+            android:text="@string/fpr_new_device_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fpr_current_device_value" />
+
+        <TextView
+            android:id="@+id/fpr_new_device_value"
+            style="@style/WizardFprValue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fpr_new_device_title"
+            tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="133dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:indeterminateDrawable="@drawable/add_second_device"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fpr_new_device_value"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/currentState"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fpr_new_device_value"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/afirmativeActionButton"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/pep_confirm_trustwords"
+            android:textColor="?attr/colorAccent"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sync_state_feedback"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/negativeActionButton"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/key_import_reject"
+            android:textColor="@color/planck_red"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
+            app:layout_constraintStart_toEndOf="@+id/dissmissActionButton"
+            app:layout_constraintTop_toBottomOf="@id/sync_state_feedback"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/dissmissActionButton"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/keysync_wizard_action_cancel"
+            android:textColor="?attr/defaultColorOnBackground"
+            android:visibility="gone"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sync_state_feedback"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/waiting_for_sync"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/sync_state_feedback"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/waiting_for_sync_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="@id/waiting_for_sync" />
+
+        <TextView
+            android:id="@+id/sync_state_feedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
-            android:text="@string/fpr_new_device_title"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
-            tools:text="New device" />
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="@id/barrier2" />
 
-        <TextView
-            android:id="@+id/fpr_new_device_value"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/trustwords_group"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:breakStrategy="simple"
-            android:ellipsize="none"
-            android:textStyle="bold"
-            tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
-    </LinearLayout>
+            app:constraint_referenced_ids="trustwords_title, trustwords, show_long_trustwords" />
 
-    <ProgressBar
-        android:id="@+id/loading"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="133dp"
-        android:layout_height="55dp"
-        android:indeterminateDrawable="@drawable/add_second_device"
-        android:visibility="gone"
-        android:layout_marginBottom="32dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toTopOf="@id/dissmissActionButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fpr_container" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/fpr_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="fpr_title,
+        fpr_current_device_title,
+        fpr_current_device_value,
+        fpr_new_device_title,
+        fpr_new_device_value" />
 
-    <ImageView
-        android:id="@+id/currentState"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:layout_marginBottom="32dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toTopOf="@id/dissmissActionButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fpr_container"
-        tools:visibility="visible" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="loading, currentState, waiting_for_sync_text" />
 
-    <Button
-        android:id="@+id/afirmativeActionButton"
-        style="?attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/keysync_wizard_action_next"
-        android:textColor="?attr/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="next" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/negativeActionButton"
-        style="?attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/key_import_reject"
-        android:textColor="@color/planck_red"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
-        app:layout_constraintStart_toEndOf="@+id/dissmissActionButton"
-        app:layout_constraintVertical_bias="1.0"
-        tools:text="Reject" />
-
-    <Button
-        android:id="@+id/dissmissActionButton"
-        style="?attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/keysync_wizard_action_cancel"
-        android:textColor="?attr/defaultColorOnBackground"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="cancel" />
-
-    <ProgressBar
-        android:id="@+id/waiting_for_sync"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@id/sync_state_feedback"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include" />
-
-    <TextView
-        android:id="@+id/waiting_for_sync_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/waiting_for_sync" />
-
-    <TextView
-        android:id="@+id/sync_state_feedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@id/dissmissActionButton" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
