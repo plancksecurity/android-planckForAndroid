@@ -3619,18 +3619,6 @@ public class TestUtils {
         }
     }
 
-    private static JSONObject getJSON(){
-        while (true) {
-            try {
-                String js = readJsonFile("results.json");
-                JSONObject jsonObject = new JSONObject(js);
-                return jsonObject;
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private static void downloadAttachedFile(String fileName) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
