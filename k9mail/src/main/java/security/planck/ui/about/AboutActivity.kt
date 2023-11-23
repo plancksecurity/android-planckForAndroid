@@ -25,17 +25,7 @@ class AboutActivity : K9Activity() {
     lateinit var toolbarCustomizer: ToolBarCustomizer
     private var iconClickCount = 0
 
-    private val versionNumber: String
-        get() {
-            var version = "?"
-            try {
-                val pi = packageManager.getPackageInfo(packageName, 0)
-                version = pi.versionName
-            } catch (ignore: Exception) {
-            }
-
-            return version
-        }
+    private val versionNumber: String = BuildConfig.VERSION_NAME.substringBefore('-')
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
