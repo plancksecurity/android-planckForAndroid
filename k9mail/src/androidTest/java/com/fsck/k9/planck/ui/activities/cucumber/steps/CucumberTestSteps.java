@@ -1273,6 +1273,7 @@ public class CucumberTestSteps {
     @When("^I reset own key$")
     public void I_reset_own_key() {
         testUtils.selectFromMenu(R.string.action_settings);
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
         testUtils.selectFromScreen(testUtils.stringToID("reset"));
         testUtils.pressOKButtonInDialog();
         try {
@@ -1280,6 +1281,8 @@ public class CucumberTestSteps {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        testUtils.pressBack();
+        waitForIdle();
         testUtils.pressBack();
         waitForIdle();
 
