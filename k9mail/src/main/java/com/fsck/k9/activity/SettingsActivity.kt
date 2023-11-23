@@ -578,7 +578,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
                 } else ConfirmationDialog.create(
                         this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount?.description),
+                            if (selectedContextAccount?.description.isNullOrBlank())
+                                selectedContextAccount?.email
+                            else
+                                selectedContextAccount?.description
+                        ),
                         R.string.okay_action,
                         R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
