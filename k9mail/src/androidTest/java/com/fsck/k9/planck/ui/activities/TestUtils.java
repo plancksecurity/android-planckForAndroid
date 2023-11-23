@@ -3617,12 +3617,14 @@ public class TestUtils {
     }
 
     private static JSONObject getJSON(){
-        try {
-            String js = readJsonFile("results.json");
-            JSONObject jsonObject = new JSONObject(js);
-            return jsonObject;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        while (true) {
+            try {
+                String js = readJsonFile("results.json");
+                JSONObject jsonObject = new JSONObject(js);
+                return jsonObject;
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
