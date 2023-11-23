@@ -50,7 +50,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         previewTV = view.findViewById(R.id.preview)
     }
 
-    private fun getParent(): AdapterView<*> = view.parent.parent.parent as AdapterView<*>
+    private fun getParent(): AdapterView<*>? = view.parent.parent.parent as? AdapterView<*>
 
     override fun onClick(view: View) {
         if (position != -1) {
@@ -222,7 +222,9 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
             true
         }
         view.setOnClickListener {
-            fragment.viewHolderActions.onItemClick(getParent(), view, position)
+            getParent()?.let {
+                fragment.viewHolderActions.onItemClick(it, view, position)
+            }
         }
         bindViews()
     }
