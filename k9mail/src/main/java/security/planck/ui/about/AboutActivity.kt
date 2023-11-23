@@ -3,7 +3,6 @@ package security.planck.ui.about
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
-import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
@@ -11,7 +10,6 @@ import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
-import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.databinding.ActivityAboutBinding
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity
@@ -62,7 +60,7 @@ class AboutActivity : K9Activity() {
         binding.aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         binding.documentationButton.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url, formattedVersionForUserManual))))
+            showUserManual()
         }
         binding.documentationButton.paintFlags = binding.documentationButton.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
@@ -76,7 +74,7 @@ class AboutActivity : K9Activity() {
         )
 
         binding.termsAndConditions.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
+            showTermsAndConditions()
         }
     }
 

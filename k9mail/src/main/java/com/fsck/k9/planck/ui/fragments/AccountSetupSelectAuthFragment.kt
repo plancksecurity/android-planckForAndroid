@@ -2,7 +2,6 @@ package com.fsck.k9.planck.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.fsck.k9.Account
 import com.fsck.k9.R
-import com.fsck.k9.activity.MessageList
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
@@ -115,12 +114,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
         termsAndConditionTextView.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(MessageList.TERMS_AND_CONDITIONS_LINK)
-                )
-            )
+            (requireActivity() as K9Activity).showTermsAndConditions()
         }
     }
 

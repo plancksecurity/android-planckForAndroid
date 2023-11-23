@@ -23,7 +23,6 @@ import androidx.core.view.isVisible
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
-import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -220,7 +219,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         )
 
         termsAndConditionsTextView.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
+            showTermsAndConditions()
         }
 
         if (!K9.isHideSpecialAccounts()) {

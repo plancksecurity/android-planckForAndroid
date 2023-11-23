@@ -8,6 +8,7 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="planck_documentation_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/user-guide-for-android</string>
+    <string name="planck_terms_and_conditions_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/terms-conditions</string>
     <string name="pEp_trustwords">planck Trustwords</string>
     <string name="device_group_rejoin_warning">The app must be restarted in order to join a device group after leaving one.</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>

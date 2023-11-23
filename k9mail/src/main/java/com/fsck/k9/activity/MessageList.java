@@ -125,8 +125,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     // used for remote search
     public static final String EXTRA_SEARCH_ACCOUNT = "com.fsck.k9.search_account";
     private static final String EXTRA_SEARCH_FOLDER = "com.fsck.k9.search_folder";
-    private static final String TUTORIAL_ABOUT_LINK = "https://help.planck.security/articles/#!user-guides-for-android-publication/versions";
-    public static final String TERMS_AND_CONDITIONS_LINK = "https://www.planck.security/conditions-of-use/";
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
     private static final String STATE_FIRST_BACK_STACK_ID = "firstBackstackId";
@@ -1274,11 +1272,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void showAboutTutorial() {
         WelcomeMessageKt.startTutorialMessage(this);
-    }
-
-    private void showUserManual() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url, getFormattedVersionForUserManual())));
-        startActivity(browserIntent);
     }
 
     @Override
