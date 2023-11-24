@@ -7,8 +7,15 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Rating
-import io.mockk.*
-import junit.framework.TestCase.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.slot
+import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -480,7 +487,7 @@ class RecipientSelectPresenterTest {
             .returns(ResultCompat.success(Rating.pEpRatingReliable))
 
 
-        presenter.updateRecipientsFromEcho(SENDER_ADDRESS)
+        presenter.updateRecipientsFromMessage()
         advanceUntilIdle()
 
 
@@ -504,7 +511,7 @@ class RecipientSelectPresenterTest {
             .returns(ResultCompat.success(Rating.pEpRatingReliable))
 
 
-        presenter.updateRecipientsFromEcho(SENDER_ADDRESS)
+        presenter.updateRecipientsFromMessage()
         advanceUntilIdle()
 
 
@@ -531,7 +538,7 @@ class RecipientSelectPresenterTest {
             .returns(ResultCompat.failure(TestException("test")))
 
 
-        presenter.updateRecipientsFromEcho(SENDER_ADDRESS)
+        presenter.updateRecipientsFromMessage()
         advanceUntilIdle()
 
 
@@ -558,7 +565,7 @@ class RecipientSelectPresenterTest {
             .returns(ResultCompat.failure(TestException("test")))
 
 
-        presenter.updateRecipientsFromEcho(SENDER_ADDRESS)
+        presenter.updateRecipientsFromMessage()
         advanceUntilIdle()
 
 
@@ -576,7 +583,7 @@ class RecipientSelectPresenterTest {
             .returns(ResultCompat.failure(TestException("test")))
 
 
-        presenter.updateRecipientsFromEcho(SENDER_ADDRESS)
+        presenter.updateRecipientsFromMessage()
         advanceUntilIdle()
 
 
