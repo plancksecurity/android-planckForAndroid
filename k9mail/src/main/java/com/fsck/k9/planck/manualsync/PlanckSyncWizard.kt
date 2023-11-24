@@ -31,7 +31,7 @@ class PlanckSyncWizard : WizardActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityImportWizzardFromPgpBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setUpToolbar(false)
+        initializeToolbar(false, "")
         setUpFloatingWindowWrapHeight()
         setupViews()
         onBackPressedDispatcher.addCallback { viewModel.cancelIfNotDone() }
