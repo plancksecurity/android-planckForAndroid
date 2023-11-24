@@ -90,7 +90,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
             if (result == LeaveDeviceGroupDialog.EXECUTED) {
                 updateLeaveDeviceGroupPreferenceVisibility()
-                k9.markDeviceJustLeftGroup()
+                k9.markDeviceJustLeftGroup(true)
             }
         }
     }
@@ -190,11 +190,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             setOnPreferenceClickListener {
                 view?.let {
                     if (isDeviceOnline()) {
-                        if (k9.deviceJustLeftGroup()) {
-                            showRestartDialog(it)
-                        } else {
-                            showManualSyncDialog(it)
-                        }
+                        showManualSyncDialog(it)
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
                     }
@@ -372,7 +368,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         pEpProvider.keyResetAllOwnKeys()
         if (syncRepository.isGrouped) {
-            k9.markDeviceJustLeftGroup()
+            k9.markDeviceJustLeftGroup(true)
         }
     }
 
