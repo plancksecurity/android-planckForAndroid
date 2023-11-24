@@ -11,19 +11,14 @@ import javax.inject.Inject
 class MiniDnsRecordsResolver @Inject constructor() {
     @WorkerThread
     fun getRealOrFallbackDomain(domain: String, oAuthProviderType: OAuthProviderType?): String {
-        return kotlin.runCatching {
-            DnssecResolverApi.INSTANCE.resolve(domain, MX::class.java)
-                .answersOrEmptySet.firstOrNull()?.target?.domainpart
-        }.onFailure { Timber.e(it) }.getOrNull() ?: getFallbackDomain(domain, oAuthProviderType)
-    }
-
-    private fun getFallbackDomain(
-        domain: String,
-        oAuthProviderType: OAuthProviderType?
-    ): String = when (oAuthProviderType) {
-        OAuthProviderType.MICROSOFT -> MICROSOFT_FALLBACK_DOMAIN
-        OAuthProviderType.GOOGLE -> GOOGLE_FALLBACK_DOMAIN
-        else -> domain
+        return when (oAuthProviderType) {
+            OAuthProviderType.MICROSOFT -> MICROSOFT_FALLBACK_DOMAIN
+            OAuthProviderType.GOOGLE -> GOOGLE_FALLBACK_DOMAIN
+            else -> kotlin.runCatching {
+                DnssecResolverApi.INSTANCE.resolve(domain, MX::class.java)
+                    .answersOrEmptySet.first().target.domainpart
+            }.onFailure { Timber.e(it) }.getOrNull() ?: domain
+        }
     }
 
     companion object {

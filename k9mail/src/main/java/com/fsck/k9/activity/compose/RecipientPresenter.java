@@ -940,7 +940,8 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         candidates.addAll(newCcAdresses);
         return candidates.size() == ONE_ADDRESS
                 && PlanckUtils.isRatingReliable(privacyState)
-                && account!= null && account.isPlanckPrivacyProtected();
+                && account!= null && account.isPlanckPrivacyProtected()
+                && !candidates.get(0).getAddress().equalsIgnoreCase(account.getEmail()); // recipient not my own account
     }
 
     private int getUnsecureRecipientsCount() {
