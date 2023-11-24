@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
@@ -17,8 +16,6 @@ import com.fsck.k9.databinding.ActivityImportWizzardFromPgpBinding
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
 
-
-private const val EMPTY_SPACE = 0
 
 private const val NO_RESOURCE = 0
 private const val ENGLISH_POSITION = 0
@@ -34,7 +31,7 @@ class PlanckSyncWizard : WizardActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityImportWizzardFromPgpBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setUpToolbar(false)
+        initializeToolbar(false, "")
         setUpFloatingWindowWrapHeight()
         setupViews()
         onBackPressedDispatcher.addCallback { viewModel.cancelIfNotDone() }
@@ -178,7 +175,6 @@ class PlanckSyncWizard : WizardActivity() {
             loadingAnimation = getLoadingAnimationDrawable(),
             dismissButtonVisible = true,
         )
-        binding.trustwordsContainer.layoutParams = LinearLayout.LayoutParams(EMPTY_SPACE, EMPTY_SPACE)
     }
 
     private fun showAwaitingUserToStartHandshake() {
@@ -230,12 +226,12 @@ class PlanckSyncWizard : WizardActivity() {
         if (ownFpr.isNotBlank()) {
             showFprs(ownFpr, partnerFpr)
         } else {
-            binding.fprContainer.isVisible = false
+            binding.fprGroup.isVisible = false
         }
         if (trustwords.isNotBlank()) {
             showTrustwords(trustwords)
         } else {
-            binding.trustwordsContainer.isVisible = false
+            binding.trustwordsGroup.isVisible = false
         }
         binding.currentState.apply {
             isVisible =
@@ -270,12 +266,12 @@ class PlanckSyncWizard : WizardActivity() {
     }
 
     private fun showTrustwords(trustwords: String) {
-        binding.trustwordsContainer.isVisible = true
+        binding.trustwordsGroup.isVisible = true
         binding.trustwords.text = trustwords
     }
 
     private fun showFprs(ownFpr: String, partnerFpr: String) {
-        binding.fprContainer.isVisible = true
+        binding.fprGroup.isVisible = true
         binding.fprCurrentDeviceValue.text = ownFpr
         binding.fprNewDeviceValue.text = partnerFpr
     }
