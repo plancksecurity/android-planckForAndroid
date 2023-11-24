@@ -30,6 +30,7 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckImporterActivity
+import com.fsck.k9.planck.infrastructure.extensions.showTermsAndConditions
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.planck.ui.listeners.indexedFolderClickListener

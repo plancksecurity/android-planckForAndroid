@@ -47,6 +47,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.infrastructure.extensions.ActivityKt;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.planck.ui.infrastructure.Router;
@@ -1182,7 +1183,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.user_manual: {
-                showUserManual();
+                ActivityKt.showUserManual(this);
                 return true;
             }
             case R.id.show_folder_list: {

@@ -11,6 +11,8 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.databinding.ActivityAboutBinding
+import com.fsck.k9.planck.infrastructure.extensions.showTermsAndConditions
+import com.fsck.k9.planck.infrastructure.extensions.showUserManual
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity
 import security.planck.ui.toolbar.ToolBarCustomizer

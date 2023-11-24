@@ -23,6 +23,7 @@ import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
 import com.fsck.k9.mail.AuthType
+import com.fsck.k9.planck.infrastructure.extensions.showTermsAndConditions
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.provisioning.AccountMailSettingsProvision
@@ -114,7 +115,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
         termsAndConditionTextView.setOnClickListener {
-            (requireActivity() as K9Activity).showTermsAndConditions()
+            activity?.showTermsAndConditions()
         }
     }
 

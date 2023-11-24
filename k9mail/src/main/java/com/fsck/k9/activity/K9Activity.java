@@ -5,7 +5,6 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -434,20 +433,5 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onSaveInstanceState(outState);
         outState.putString(K9ACTIVITY_SEARCH_TEXT, searchText);
         outState.putBoolean(SHOWING_SEARCH_VIEW, isShowingSearchView);
-    }
-
-    protected String getFormattedVersionForUserManual() {
-        return BuildConfig.VERSION_NAME.substring(0, BuildConfig.VERSION_NAME.indexOf('-'))
-                .replace('.', '-');
-    }
-
-    public void showUserManual() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_documentation_url, getFormattedVersionForUserManual())));
-        startActivity(browserIntent);
-    }
-
-    public void showTermsAndConditions() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.planck_terms_and_conditions_url, getFormattedVersionForUserManual())));
-        startActivity(browserIntent);
     }
 }
