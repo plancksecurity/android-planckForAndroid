@@ -15,6 +15,7 @@ import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.infrastructure.NEW_LINE
 import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
 import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
@@ -34,6 +35,7 @@ const val GMAIL_OUTGOING_PORT = 465
 const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
 const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
 private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
+private const val KEY_MATERIAL_BODY_LINE_LENGTH = 64
 
 class ConfiguredSettingsUpdater @Inject constructor(
     private val k9: K9,
@@ -664,7 +666,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     if (fingerprint != null && keyMaterial != null) {
                         MdmExtraKey(
                             fingerprint.formatPgpFingerprint(),
-                            keyMaterial
+                            keyMaterial.fixKeyMaterialHeader()
                         )
                     } else null
                 }?.filter {
@@ -678,6 +680,14 @@ class ConfiguredSettingsUpdater @Inject constructor(
                 saveFilteredExtraKeys(newMdmExtraKeys)
             }
         }.onFailure { if (K9.isDebug()) Log.e("MDM", "error saving extra keys: ", it) }
+    }
+
+    private fun String.fixKeyMaterialHeader(): String {
+        return splitToSequence("\r\n", "\n", "\r", " ")
+            .firstOrNull { it.length == KEY_MATERIAL_BODY_LINE_LENGTH }
+            ?.let { firstKeyBodyLine ->
+                replace(firstKeyBodyLine, "$NEW_LINE$NEW_LINE$firstKeyBodyLine")
+            } ?: this
     }
 
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
@@ -728,7 +738,7 @@ class ConfiguredSettingsUpdater @Inject constructor(
                         MdmMediaKey(
                             addressPattern,
                             fingerprint.formatPgpFingerprint(),
-                            keyMaterial
+                            keyMaterial.fixKeyMaterialHeader()
                         )
                     } else null
                 }?.filter {
