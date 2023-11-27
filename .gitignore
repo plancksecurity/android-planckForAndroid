@@ -35,4 +35,4 @@ outData/
 gradle/plugins/customConfig.gradle
 
 *.hprof
-*.conf
+localConfFiles/**/*.conf
