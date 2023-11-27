@@ -3,6 +3,6 @@ include ':k9mail-library'
 include ':plugins:HoloColorPicker'
 include ':plugins:openpgp-api-lib:openpgp-api'
 include ':planckJNIWrapper'
-project(':planckJNIWrapper').projectDir = file("../planckJNIWrapper/android")
+project(':planckJNIWrapper').projectDir = file("submodules/planckJNIWrapper/android")
 include ':foldableFolders'
-project(':foldableFolders').projectDir = file("../foldable-folder-list/library")
+project(':foldableFolders').projectDir = file("submodules/foldable-folder-list/library")

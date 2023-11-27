@@ -1,0 +1,8 @@
+[submodule "foldable-folder-list"]
+	path = submodules/foldable-folder-list
+	url = git@github.com:plancksecurity/android-foldable-folder-list.git
+	branch = main
+[submodule "planckJNIWrapper"]
+	path = submodules/planckJNIWrapper
+	url = git@github.com:plancksecurity/foundation-planckJNIWrapper.git
+	branch = develop
