@@ -489,8 +489,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         return deviceJustLeftGroup.get();
     }
 
-    public void markDeviceJustLeftGroup() {
-        deviceJustLeftGroup.set(true);
+    public void markDeviceJustLeftGroup(boolean justLeft) {
+        deviceJustLeftGroup.set(justLeft);
     }
 
     private static void setServicesEnabled(Context context, boolean enabled) {

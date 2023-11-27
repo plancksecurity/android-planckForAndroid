@@ -264,6 +264,11 @@ class PlanckSyncRepository @Inject constructor(
             Timber.e("unexpected initial state: ${syncStateMutableFlow.value}")
         }
         if (initialState !is SyncState.HandshakeReadyAwaitingUser) {
+            if (k9.deviceJustLeftGroup()) {
+                planckProvider.stopSync()
+                k9.markDeviceJustLeftGroup(false)
+                setPlanckSyncEnabled(true)
+            }
             syncStateMutableFlow.value =
                 SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = true)
             startCatchupAllowancePeriod()
