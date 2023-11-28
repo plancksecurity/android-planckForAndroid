@@ -36,6 +36,9 @@ const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
 const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
 private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 private const val KEY_MATERIAL_BODY_LINE_LENGTH = 64
+private const val KEY_BODY_START_PROOF_MIN_LINES = 5
+private const val KEY_BODY_START_REGEX =
+    """(\S{${KEY_MATERIAL_BODY_LINE_LENGTH}}\s+){${KEY_BODY_START_PROOF_MIN_LINES}}"""
 
 class ConfiguredSettingsUpdater @Inject constructor(
     private val k9: K9,
@@ -683,8 +686,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun String.fixKeyMaterialHeader(): String {
-        return splitToSequence("\r\n", "\n", "\r", " ")
-            .firstOrNull { it.length == KEY_MATERIAL_BODY_LINE_LENGTH }
+        return KEY_BODY_START_REGEX.toRegex().find(this)?.value
+            ?.substring(0, KEY_MATERIAL_BODY_LINE_LENGTH)
             ?.let { firstKeyBodyLine ->
                 replace(firstKeyBodyLine, "$NEW_LINE$NEW_LINE$firstKeyBodyLine")
             } ?: this
