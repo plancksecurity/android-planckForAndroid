@@ -6,13 +6,18 @@ tasks.register('prepareCoreBuild') {
 
 private void copyLocalConfsIfNeeded() {
     def localConfsFolder = new File(rootDir, "localConfFiles")
+    def targetFiles = new ArrayList<File>()
+    findLocalConfTargetFiles(rootDir, targetFiles)
     localConfsFolder.listFiles(new FileFilter() {
         @Override
         boolean accept(File pathname) {
             return pathname.isDirectory()
         }
     }).each { folder ->
-        def destFolder = new File(rootDir, "submodules/${folder.name}")
+        def destFolder = targetFiles.find { it.name == folder.name }
+        if (destFolder == null) {
+            throw new IllegalStateException("Error: folder ${folder.name} does not exist. You may need to do git submodule update --recursive")
+        }
         def destConfFile = new File(destFolder, "local.conf")
         def confTextSb = new StringBuilder()
         if (folder.name == "planckJNIWrapper") {
@@ -36,6 +41,20 @@ private void copyLocalConfsIfNeeded() {
         if (!confTextSb.isBlank() && (!destConfFile.exists() || confTextSb.toString() != destConfFile.text)) {
             destConfFile.write(confTextSb.toString())
         }
+    }
+}
+
+private void findLocalConfTargetFiles(File rootFolder, ArrayList<File> targetFiles) {
+    def submodulesFolder = new File(rootFolder, "submodules")
+    if (!submodulesFolder.exists()) return
+    submodulesFolder.listFiles(new FileFilter() {
+        @Override
+        boolean accept(File file) {
+            return file.isDirectory() && file.name != "foldable-folder-list" && file.name != "libetpan"
+        }
+    }).each { currentFolder ->
+        targetFiles.add(currentFolder)
+        findLocalConfTargetFiles(currentFolder, targetFiles)
     }
 }
 
