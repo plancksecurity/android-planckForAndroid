@@ -92,6 +92,18 @@ interface PlanckProvider {
     )
 
     /**
+     * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real pEp library interaction.
+     *
+     *
+     * @param source the (fully qualified) message to be decrypted.
+     * @return [Result] with the decrypted message or error en case we cannot decrypt or engine fails
+     */
+    suspend fun decryptMessage(
+        source: MimeMessage,
+        account: Account
+    ): Result<DecryptResult>
+
+    /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
      * pEp library interaction.
      *

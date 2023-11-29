@@ -31,6 +31,7 @@ import com.fsck.k9.planck.infrastructure.extensions.mapError
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
+import com.fsck.k9.planck.infrastructure.toResultCompat
 import com.fsck.k9.planck.ui.HandshakeData
 import com.fsck.k9.planck.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -574,6 +575,60 @@ class PlanckProviderImplKotlin(
         Timber.d("%s %s", TAG, "decryptMessage() enter")
         engineScope.launch {
             decryptMessageSuspend(source, account, callback)
+        }
+    }
+
+    @WorkerThread
+    override suspend fun decryptMessage(
+        source: MimeMessage,
+        account: Account
+    ): Result<DecryptResult> = withContext(PlanckDispatcher) {
+        var srcMsg: Message? = null
+        var decReturn: decrypt_message_Return? = null
+        kotlin.runCatching {
+            //TODO review this; we are in another thread so we should get a new engine anyways??
+            srcMsg = PlanckMessageBuilder(source).createMessage(context)
+            val planckMsg = srcMsg!!
+            planckMsg.dir = Message.Direction.Incoming
+            planckMsg.recvBy = PlanckUtils.createIdentity(Address(account.email), context)
+
+            Timber.d("%s %s", TAG, "decryptMessage() before decrypt")
+            decReturn = engine.get().decrypt_message(srcMsg, Vector(), 0)
+            val decryptReturn = decReturn!!
+            Timber.d("%s %s", TAG, "decryptMessage() after decrypt")
+
+            when (decReturn!!.rating) {
+                Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
+                    throw AppCannotDecryptException(KEY_MISSING_ERROR_MESSAGE)
+
+                else -> {
+                    val message = decryptReturn.dst
+                    val decMsg = getMimeMessage(source, message)
+
+                    if (source.folder.name == account.sentFolderName || source.folder.name == account.draftsFolderName) {
+                        decMsg.setHeader(
+                            MimeHeader.HEADER_PEP_RATING,
+                            PlanckUtils.ratingToString(getRating(source))
+                        )
+                    }
+
+                    DecryptResult(
+                        decMsg,
+                        decryptReturn.rating,
+                        decryptReturn.flags,
+                        planckMsg.isEncrypted()
+                    )
+                }
+            }
+        }.mapError {
+            Timber.e(it, "%s %s", TAG, "while decrypting message:")
+            AppCannotDecryptException("Could not decrypt", it)
+        }.also {
+            srcMsg?.close()
+            decReturn?.apply {
+                if (dst !== srcMsg) dst.close()
+            }
+            Timber.d("%s %s", TAG, "decryptMessage() exit")
         }
     }
 
