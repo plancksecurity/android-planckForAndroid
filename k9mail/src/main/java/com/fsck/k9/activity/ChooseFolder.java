@@ -400,7 +400,7 @@ public class ChooseFolder extends K9ListActivity {
     }
 
     private boolean isPlanckInternalSuspiciousFolder(String folderName) {
-        return mAccount.getDefaultPlanckSuspiciousFolderName().equals(folderName);
+        return mAccount.getPlanckSuspiciousFolderName().equals(folderName);
     }
 
     private boolean isPlanckInternalFolder(String folderName) {

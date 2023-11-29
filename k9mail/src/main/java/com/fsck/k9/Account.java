@@ -1303,7 +1303,7 @@ public class Account implements BaseAccount, StoreConfig {
         return Store.PLANCK_FOLDER;
     }
 
-    public String getDefaultPlanckSuspiciousFolderName() {
+    public String getPlanckSuspiciousFolderName() {
         return Store.PLANCK_SUSPICIOUS_FOLDER;
     }
 
