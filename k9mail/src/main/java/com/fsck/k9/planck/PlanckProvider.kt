@@ -1,52 +1,28 @@
-package com.fsck.k9.planck;
+package com.fsck.k9.planck
 
-import com.fsck.k9.Account;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.planck.infrastructure.ResultCompat;
-import com.fsck.k9.planck.ui.HandshakeData;
-import com.fsck.k9.planck.ui.blacklist.KeyListItem;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Message;
-import foundation.pEp.jniadapter.Rating;
-import foundation.pEp.jniadapter.Sync;
-import foundation.pEp.jniadapter.exceptions.pEpException;
-import kotlin.Unit;
-import security.planck.echo.MessageReceivedListener;
-import timber.log.Timber;
+import com.fsck.k9.Account
+import com.fsck.k9.mail.Address
+import com.fsck.k9.mail.Message
+import com.fsck.k9.mail.MessagingException
+import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.planck.infrastructure.ResultCompat
+import com.fsck.k9.planck.ui.HandshakeData
+import com.fsck.k9.planck.ui.blacklist.KeyListItem
+import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.Rating
+import foundation.pEp.jniadapter.Sync.MessageToSendCallback
+import foundation.pEp.jniadapter.Sync.NeedsFastPollCallback
+import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
+import foundation.pEp.jniadapter.exceptions.pEpException
+import security.planck.echo.MessageReceivedListener
+import timber.log.Timber
+import java.util.Vector
 
 /**
  * Created by dietz on 01.07.15.
  */
-public interface PlanckProvider {
-    /**
-     * If is outgoing any copy of the message encrypted (yellow, green, and un secure for some) it will be putted in this position,
-     * if not, all copies will be unencrypted.
-     */
-    int ENCRYPTED_MESSAGE_POSITION = 0;
-    String PLANCK_OWN_USER_ID = "pEp_own_userId";
-    int HALF_FINGERPRINT_LENGTH = 24;
-    //long TIMEOUT = 4 * 60 * 60 * 1000;
-    long TIMEOUT = 10 * 60 * 1000;
-
-
-    String PLANCK_PRIVATE_KEY_FPR = "pEpDetailsFpr";
-    String PLANCK_PRIVATE_KEY_ADDRESS = "pEpDetailsAddress";
-    String PLANCK_PRIVATE_KEY_USERNAME = "pEpDetailsUsername";
-    String PLANCK_PRIVATE_KEY_FROM = "pEpDetailsFrom";
-
-    String PLANCK_ALWAYS_SECURE_TRUE = "yes";
-    String PLANCK_KEY_LIST_SEPARATOR = ",";
-    String KEY_MISSING_ERROR_MESSAGE = "keyMissing";
-    String KEY_COULD_NOT_DECRYPT_MESSAGE = "couldNotDecrypt";
-
-    void setEchoMessageReceivedListener(MessageReceivedListener listener);
+interface PlanckProvider {
+    fun setEchoMessageReceivedListener(listener: MessageReceivedListener?)
 
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and
@@ -59,56 +35,82 @@ public interface PlanckProvider {
      * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    Rating getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
-    Rating getRating(com.fsck.k9.mail.Message message);
+    fun getRating(
+        from: Address?,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): Rating
 
-    void getRating(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback);
+    fun getRating(message: Message): Rating
+    fun getRating(message: Message, callback: ResultCallback<Rating>)
+    fun getRating(
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>,
+        callback: ResultCallback<Rating>
+    )
 
-    void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
-
-    ResultCompat<Rating> getRatingResult(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
+    fun getRatingResult(
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating>
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
      * pEp library interaction.
-     * <p/>
+     *
+     *
      * Implications from feeding LocalMessages into decryptMessage are currently not completely understood...
      *
      * @param source the (fully qualified) message to be decrypted.
      * @param receivedBy The email address which received the message
      * @return the decrypted message or the original message in case we cannot decrypt
-     * <p/>
-     * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
+     *
+     *
+     * TODO: pEp: how do I get the color Perhaps Via header value in return value
      */
-    DecryptResult decryptMessage(MimeMessage source, String receivedBy);
+    fun decryptMessage(source: MimeMessage, receivedBy: String): DecryptResult
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real pEp library interaction.
-     * <p/>
+     *
+     *
      *
      * @param source the (fully qualified) message to be decrypted.
      * @return the decrypted message or error en case we cannot decrypt or engine fails
-     * <p/>
+     *
+     *
      */
-    void decryptMessage(MimeMessage source, Account account, ResultCallback<DecryptResult> callback);
+    fun decryptMessage(
+        source: MimeMessage,
+        account: Account,
+        callback: ResultCallback<DecryptResult>
+    )
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
      * pEp library interaction.
-     * <p/>
+     *
+     *
      * Implications from feeding LocalMessages into decryptMessage are currently not completely understood...
-     * <p/>
-     * FIXME: where do I handle Bcc: corner case?
-     * FIXME: where do I handle split for different privacy levels (To1 is green, To2 is yellow?) Is this really necessary?
+     *
+     *
+     * FIXME: where do I handle Bcc: corner case
+     * FIXME: where do I handle split for different privacy levels (To1 is green, To2 is yellow) Is this really necessary
      *
      * @param source    the (fully qualified) message to be encrypted.
      * @param extraKeys extra key ids to encrypt msg to...
      * @return the encrypted message
      */
-    List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
+    fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage>
 
     //TODO> When alias available check if it works correctly
-    MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) throws MessagingException;
+    @Throws(MessagingException::class)
+    fun encryptMessageToSelf(source: MimeMessage?, keys: Array<String>): MimeMessage?
 
     /**
      * Checks the trust status (Color) for a given identity
@@ -116,12 +118,10 @@ public interface PlanckProvider {
      * @param identity
      * @return identity trust status color
      */
-    ResultCompat<Rating> getRating(Identity identity);
-
-    void getRating(Identity identity, ResultCallback<Rating> callback);
-    void getRating(Address address, ResultCallback<Rating> callback);
-
-    ResultCompat<Rating> getRating(Address address);
+    fun getRating(identity: Identity): ResultCompat<Rating>
+    fun getRating(identity: Identity, callback: ResultCallback<Rating>)
+    fun getRating(address: Address, callback: ResultCallback<Rating>)
+    fun getRating(address: Address): ResultCompat<Rating>
 
     /**
      * Retrieve long trustwords for a given identity
@@ -129,19 +129,31 @@ public interface PlanckProvider {
      * @param id
      * @return trustwords string
      */
-    String trustwords(Identity id, String language);
+    fun trustwords(id: Identity, language: String): String
+    fun trustwords(
+        myself: Identity,
+        partner: Identity,
+        lang: String,
+        isShort: Boolean
+    ): ResultCompat<String>
 
-    ResultCompat<String> trustwords(Identity myself, Identity partner, String lang, boolean isShort);
+    fun trustwords(
+        myself: Identity,
+        partner: Identity,
+        lang: String,
+        isShort: Boolean,
+        callback: SimpleResultCallback<String>
+    )
 
-    void trustwords(Identity myself, Identity partner, String lang, boolean isShort,SimpleResultCallback<String> callback);
-
-    void obtainTrustwords(Identity myself, Identity partner, String lang, Boolean areKeysyncTrustwords,
-                          ResultCallback<HandshakeData> callback);
+    fun obtainTrustwords(
+        myself: Identity, partner: Identity, lang: String, areKeysyncTrustwords: Boolean,
+        callback: ResultCallback<HandshakeData>
+    )
 
     /**
      * Close the engine/session associated to the provider
      */
-    void close();
+    fun close()
 
     /**
      * Returns a identity with the attributes related to the given identity filler, like fpr if available.
@@ -149,153 +161,117 @@ public interface PlanckProvider {
      * @param id identity to fill
      * @return identity filled
      */
-    Identity updateIdentity(Identity id);
+    fun updateIdentity(id: Identity): Identity
 
     /**
      * Trust on identity
      *
      * @param id identity to trust it
      */
-    void trustPersonalKey(Identity id);
+    fun trustPersonalKey(id: Identity)
 
     /**
      * Trust own identity
      *
      * @param id identity to trust it
      */
-    void trustOwnKey(Identity id);
+    fun trustOwnKey(id: Identity)
 
     /**
      * Mark key as compromised
      *
      * @param id identity to mark
      */
-    void keyMistrusted(Identity id);
+    fun keyMistrusted(id: Identity)
 
     /**
      * Reset id trust status, to do handshake again.
      *
      * @param id identity to reset trust
      */
-    void resetTrust(Identity id);
-
-    Identity myself(Identity myId);
-
-    Identity setOwnIdentity(Identity id, String fpr);
-
-    void setPassiveModeEnabled(boolean enable);
-
-    KeyDetail getOwnKeyDetails(Message message);
-
-    void setSubjectProtection(boolean enabled);
-
-    void configPassphrase(String passphrase);
-
-    void configPassphraseForNewKeys(boolean enable, String passphrase);
-
-    List<KeyListItem> getBlacklistInfo();
-
-    List<KeyListItem> getMasterKeysInfo();
-
-    void addToBlacklist(String fpr);
-
-    void deleteFromBlacklist(String fpr);
+    fun resetTrust(id: Identity)
+    fun myself(myId: Identity?): Identity?
+    fun setOwnIdentity(id: Identity, fpr: String): Identity?
+    fun setPassiveModeEnabled(enable: Boolean)
+    fun getOwnKeyDetails(message: foundation.pEp.jniadapter.Message): KeyDetail?
+    fun setSubjectProtection(enabled: Boolean)
+    fun configPassphrase(passphrase: String)
+    fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?)
+    val blacklistInfo: List<KeyListItem>?
+    val masterKeysInfo: List<KeyListItem>?
+    fun addToBlacklist(fpr: String)
+    fun deleteFromBlacklist(fpr: String)
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
+    fun acceptSync()
+    fun rejectSync()
+    fun cancelSync()
+    fun loadMessageRatingAfterResetTrust(
+        mimeMessage: MimeMessage?,
+        isIncoming: Boolean,
+        id: Identity
+    ): ResultCompat<Rating>
 
-    void acceptSync();
+    val log: String
+    fun getLog(callback: CompletedCallback): String
+    fun printLog()
+    fun loadOwnIdentities(callback: ResultCallback<List<Identity>>)
+    fun setIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback)
+    fun unsetIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback)
+    fun setIdentityFlag(identity: Identity, sync: Boolean)
+    fun unsetIdentityFlag(identity: Identity, flags: Int)
+    fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback)
+    fun incomingMessageRating(message: MimeMessage): ResultCompat<Rating>
+    fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>)
+    fun loadOutgoingMessageRatingAfterResetTrust(
+        identity: Identity,
+        from: Address,
+        toAddresses: List<Address>,
+        ccAddresses: List<Address>,
+        bccAddresses: List<Address>
+    ): ResultCompat<Rating>
 
-    void rejectSync();
+    fun obtainLanguages(): Map<String, PlanckLanguage>
+    fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): Message?
 
-    void cancelSync();
+    @Throws(pEpException::class)
+    fun encryptMessage(result: foundation.pEp.jniadapter.Message): foundation.pEp.jniadapter.Message
+    fun canEncrypt(address: String): Boolean
+    fun importKey(key: ByteArray): Vector<Identity>
+    fun importExtraKey(key: ByteArray): Vector<String>
+    fun keyResetIdentity(ident: Identity, fpr: String?)
+    fun keyResetUser(userId: String, fpr: String?)
+    fun keyResetAllOwnKeys()
+    fun leaveDeviceGroup(): ResultCompat<Unit>
+    fun startSync()
+    fun stopSync()
+    val isSyncRunning: Boolean
+    fun setSyncSendMessageCallback(callback: MessageToSendCallback)
+    fun setSyncHandshakeCallback(callback: NotifyHandshakeCallback)
+    fun disableSyncForAllIdentites()
+    fun syncReset()
+    fun updateSyncAccountsConfig()
+    fun createGroup(
+        groupIdentity: Identity,
+        manager: Identity,
+        members: Vector<Identity>
+    )
 
-    ResultCompat<Rating> loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id);
-
-    String getLog();
-
-    String getLog(CompletedCallback callback);
-
-    void printLog();
-
-    void loadOwnIdentities(ResultCallback<List<Identity>> callback);
-
-    void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
-
-    void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
-
-    void setIdentityFlag(Identity identity, boolean sync);
-
-    void unsetIdentityFlag(Identity identity, Integer flags);
-
-    void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
-
-    ResultCompat<Rating> incomingMessageRating(MimeMessage message);
-
-    void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback);
-
-    ResultCompat<Rating> loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
-
-    Map<String, PlanckLanguage> obtainLanguages();
-
-    com.fsck.k9.mail.Message generatePrivateKeyMessage(MimeMessage message, String fpr);
-
-    Message encryptMessage(Message result) throws pEpException;
-
-    boolean canEncrypt(String address);
-
-    Vector<Identity> importKey(byte[] key);
-
-    Vector<String> importExtraKey(byte[] key);
-
-    void keyResetIdentity(Identity ident, String fpr);
-
-    void keyResetUser(String userId, String fpr);
-
-    void keyResetAllOwnKeys();
-
-    ResultCompat<Unit> leaveDeviceGroup();
-
-    void startSync();
-    void stopSync();
-    boolean isSyncRunning();
-
-    void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
-
-    void setSyncHandshakeCallback(Sync.NotifyHandshakeCallback callback);
-
-    void disableSyncForAllIdentites();
-
-    void syncReset();
-
-    void updateSyncAccountsConfig();
-
-    void createGroup(
-            Identity groupIdentity,
-            Identity manager,
-            Vector<Identity> members
-    );
-
-    Identity queryGroupMailManager(Identity group);
-    Vector<Identity> queryGroupMailMembers(Identity group);
-
-    void joinGroupMail(Identity group, Identity member, Identity manager);
-
-    ResultCompat<Vector<Identity>> queryGroupMailManagerAndMembers(Identity group);
-
-    void dissolveGroup(Identity group, Identity manager);
-
-    void inviteMemberToGroup(Identity group, Identity member);
-
-    void removeMemberFromGroup(Identity group, Identity member);
-
-    Rating groupRating(Identity group, Identity manager);
+    fun queryGroupMailManager(group: Identity): Identity
+    fun queryGroupMailMembers(group: Identity): Vector<Identity>?
+    fun joinGroupMail(group: Identity, member: Identity, manager: Identity)
+    fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>>
+    fun dissolveGroup(group: Identity, manager: Identity)
+    fun inviteMemberToGroup(group: Identity, member: Identity)
+    fun removeMemberFromGroup(group: Identity, member: Identity)
+    fun groupRating(group: Identity, manager: Identity): Rating
 
     /**
      * isDeviceGrouped
      * Check if this device is in a planck device group.
      * @return true if in a group, false otherwise.
      */
-    boolean isDeviceGrouped();
+    val isDeviceGrouped: Boolean
 
     /**
      * getSignatureForText
@@ -303,7 +279,7 @@ public interface PlanckProvider {
      * @param text String of which we want to get the signature.
      * @return [ResultCompat] Success(String result) on success, Failure on error.
      */
-    ResultCompat<String> getSignatureForText(String text);
+    fun getSignatureForText(text: String): ResultCompat<String>
 
     /**
      * verifySignature
@@ -313,89 +289,89 @@ public interface PlanckProvider {
      * @param signature Signature string
      * @return [ResultCompat] Success(true) if match, Success(false) if no match, Failure on error.
      */
-    ResultCompat<Boolean> verifySignature(String textToVerify, String signature);
+    fun verifySignature(textToVerify: String, signature: String): ResultCompat<Boolean>
+    class KeyDetail(val fpr: String, val address: Address) {
 
-    class KeyDetail {
-        private final Address address;
-        private final String fpr;
-
-        public KeyDetail(String fpr, Address address) {
-            this.fpr = fpr;
-            this.address = address;
-        }
-
-        public String getFpr() {
-            return fpr;
-        }
-
-        public Address getAddress() {
-            return address;
-        }
-
-        public String getUsername() {
-            return address.getPersonal();
-        }
-
-        public String getStringAddress() {
-            return address.getAddress();
-        }
+        val username: String
+            get() = address.personal
+        val stringAddress: String
+            get() = address.address
     }
 
     class DecryptResult {
-        public int flags = -1;
-        final public MimeMessage msg;
-        final public Rating rating;
-        final public boolean isFormerlyEncryptedReUploadedMessage;
+        @JvmField
+        var flags = -1
+        @JvmField
+        val msg: MimeMessage
+        @JvmField
+        val rating: Rating
+        @JvmField
+        val isFormerlyEncryptedReUploadedMessage: Boolean
 
-        public DecryptResult(MimeMessage msg, Rating rating, int flags, boolean isEncrypted) {
-            this.msg = msg;
-            this.rating = rating;
-            this.flags = flags;
-            this.isFormerlyEncryptedReUploadedMessage = isFormerlyEncryptedReUploadedMessage(isEncrypted);
+        constructor(msg: MimeMessage, rating: Rating, flags: Int, isEncrypted: Boolean) {
+            this.msg = msg
+            this.rating = rating
+            this.flags = flags
+            isFormerlyEncryptedReUploadedMessage = isFormerlyEncryptedReUploadedMessage(isEncrypted)
         }
 
-        /**
-         * @deprecated Legacy constructor to be removed with PEpProviderImpl
-         */
-        @Deprecated
-        public DecryptResult(MimeMessage msg, Rating rating, int flags) {
-            this.msg = msg;
-            this.rating = rating;
-            this.flags = flags;
-            this.isFormerlyEncryptedReUploadedMessage = false;
+        @Deprecated("Legacy constructor to be removed with PEpProviderImpl")
+        constructor(msg: MimeMessage, rating: Rating, flags: Int) {
+            this.msg = msg
+            this.rating = rating
+            this.flags = flags
+            isFormerlyEncryptedReUploadedMessage = false
         }
 
-        private boolean isFormerlyEncryptedReUploadedMessage(boolean isEncrypted) {
-            return isEncrypted && rating.value >= Rating.pEpRatingUnreliable.value;
+        private fun isFormerlyEncryptedReUploadedMessage(isEncrypted: Boolean): Boolean {
+            return isEncrypted && rating.value >= Rating.pEpRatingUnreliable.value
         }
     }
 
-     enum ProtectionScope {
-        ACCOUNT,
-        MESSAGE
+    enum class ProtectionScope {
+        ACCOUNT, MESSAGE
     }
 
-    enum TrustAction {
-        TRUST,
-        MISTRUST
+    enum class TrustAction {
+        TRUST, MISTRUST
     }
 
     interface Callback {
-        void onError(Throwable throwable);
+        fun onError(throwable: Throwable)
     }
 
-    interface ResultCallback<Result> extends Callback {
-        void onLoaded(Result result);
+    interface ResultCallback<Result> : Callback {
+        fun onLoaded(result: Result)
     }
 
-    abstract class SimpleResultCallback<Result> implements ResultCallback<Result> {
-        @Override
-        public void onError(Throwable throwable) {
-            Timber.e(throwable);
+    abstract class SimpleResultCallback<Result> : ResultCallback<Result> {
+        override fun onError(throwable: Throwable) {
+            Timber.e(throwable)
         }
     }
 
-    interface CompletedCallback extends Callback {
-        void onComplete();
+    interface CompletedCallback : Callback {
+        fun onComplete()
+    }
+
+    companion object {
+        /**
+         * If is outgoing any copy of the message encrypted (yellow, green, and un secure for some) it will be putted in this position,
+         * if not, all copies will be unencrypted.
+         */
+        const val ENCRYPTED_MESSAGE_POSITION = 0
+        const val PLANCK_OWN_USER_ID = "pEp_own_userId"
+        const val HALF_FINGERPRINT_LENGTH = 24
+
+        //long TIMEOUT = 4 * 60 * 60 * 1000;
+        const val TIMEOUT = (10 * 60 * 1000).toLong()
+        const val PLANCK_PRIVATE_KEY_FPR = "pEpDetailsFpr"
+        const val PLANCK_PRIVATE_KEY_ADDRESS = "pEpDetailsAddress"
+        const val PLANCK_PRIVATE_KEY_USERNAME = "pEpDetailsUsername"
+        const val PLANCK_PRIVATE_KEY_FROM = "pEpDetailsFrom"
+        const val PLANCK_ALWAYS_SECURE_TRUE = "yes"
+        const val PLANCK_KEY_LIST_SEPARATOR = ","
+        const val KEY_MISSING_ERROR_MESSAGE = "keyMissing"
+        const val KEY_COULD_NOT_DECRYPT_MESSAGE = "couldNotDecrypt"
     }
 }
