@@ -313,40 +313,42 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             showDownloadMessageNotFound((ErrorDownloadingMessageNotFound) messageViewState);
         } else if (messageViewState instanceof ErrorDownloadingNetworkError) {
             showDownloadMessageNetworkError((ErrorDownloadingNetworkError) messageViewState);
-        } else if (messageViewState instanceof MessageLoaded) {
-            messageLoaded((MessageLoaded) messageViewState);
-        } else if (messageViewState instanceof MessageDecrypted) {
-            refreshMessage(PlanckUtils.isRatingDangerous(
-                    ((MessageDecrypted) messageViewState).getDecryptResult().rating));
+        } else if (messageViewState instanceof EncryptedMessageLoaded) {
+            encryptedMessageLoaded((EncryptedMessageLoaded) messageViewState);
+        } else if (messageViewState instanceof DecryptedMessageLoaded) {
+            decryptedMessageLoaded((DecryptedMessageLoaded) messageViewState);
         } else if (messageViewState instanceof MessageViewState.MessageDecoded) {
-            //At this point MessageTopView is ready, but the message may be going through decryption
-            //boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
             showMessage(((MessageDecoded) messageViewState).getInfo(), true);
         }
     }
 
-    private void messageLoaded(MessageLoaded messageViewState) {
-        mMessage = messageViewState.getMessage();
+    private void encryptedMessageLoaded(EncryptedMessageLoaded messageViewState) {
+        messageLoaded(messageViewState.getMessage());
+        setToolbar();
+    }
+
+    private void messageLoaded(LocalMessage message) {
+        mMessage = message;
         displayHeaderForLoadingMessage(mMessage);
         recoverRating(mMessage);
         ((MessageList) requireActivity()).setMessageViewVisible(true);
+    }
 
-        if (!messageViewState.getNeedsDecryption()) {
-            boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
-            if (moveToSuspiciousFolder) {
-                refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
-                FeedbackTools.showLongFeedback(
-                        getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
-                        DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
-                        DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
-                );
-            }
-            senderPlanckHelper.initialize(mMessage, MessageViewFragment.this);
-            mMessageView.displayViewOnLoadFinished(true);
-            senderPlanckHelper.checkCanHandshakeSender();
-            mFragmentListener.updateMenu();
+    private void decryptedMessageLoaded(DecryptedMessageLoaded messageViewState) {
+       messageLoaded(messageViewState.getMessage());
+        if (messageViewState.getMoveToSuspiciousFolder()) {
+
+            refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
+            FeedbackTools.showLongFeedback(
+                    getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
+                    DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
+                    DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
+            );
         }
-
+        senderPlanckHelper.initialize(mMessage, MessageViewFragment.this);
+        mMessageView.displayViewOnLoadFinished(true);
+        senderPlanckHelper.checkCanHandshakeSender();
+        mFragmentListener.updateMenu();
         setToolbar();
     }
 

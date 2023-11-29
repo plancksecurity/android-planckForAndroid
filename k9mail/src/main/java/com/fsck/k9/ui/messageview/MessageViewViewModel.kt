@@ -13,15 +13,24 @@ import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.extensions.isMessageIncomplete
 import com.fsck.k9.mail.Flag
-import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
-import com.fsck.k9.ui.messageview.MessageViewState.*
+import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
+import com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded
+import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecodingMessage
+import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessage
+import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessageKeyMissing
+import com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingMessageNotFound
+import com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingNetworkError
+import com.fsck.k9.ui.messageview.MessageViewState.ErrorLoadingMessage
+import com.fsck.k9.ui.messageview.MessageViewState.Idle
+import com.fsck.k9.ui.messageview.MessageViewState.MessageDecoded
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,6 +51,8 @@ class MessageViewViewModel @Inject constructor(
     private val messageViewStateLiveData: MutableLiveData<MessageViewState> =
         MutableLiveData(Idle)
     val messageViewState: LiveData<MessageViewState> = messageViewStateLiveData
+    private var moveToSuspiciousFolder = false
+
     fun initialize(messageReference: MessageReference) {
         this.messageReference = messageReference
         this.account = preferences.getAccount(messageReference.accountUuid)
@@ -79,8 +90,11 @@ class MessageViewViewModel @Inject constructor(
     private suspend fun messageLoaded(
         message: LocalMessage
     ) {
+        val loadedState =
+            if (message.hasToBeDecrypted()) EncryptedMessageLoaded(message)
+            else DecryptedMessageLoaded(message, moveToSuspiciousFolder)
         withContext(dispatcherProvider.main()) {
-            messageViewStateLiveData.setValue(MessageLoaded(message, message.hasToBeDecrypted()))
+            messageViewStateLiveData.value = loadedState
         }
         if (message.isMessageIncomplete()) {
             downloadMessageBody(false)
@@ -128,9 +142,10 @@ class MessageViewViewModel @Inject constructor(
 
     private fun downloadMessageFailed(t: Throwable) {
         messageViewStateLiveData.postValue(
-            when(t) {
+            when (t) {
                 is IllegalArgumentException ->
                     ErrorDownloadingMessageNotFound(t)
+
                 else ->
                     ErrorDownloadingNetworkError(t)
             }
@@ -188,19 +203,20 @@ class MessageViewViewModel @Inject constructor(
         decryptResult: PlanckProvider.DecryptResult,
         message: LocalMessage
     ) {
-        try {
+        kotlin.runCatching {
             val decryptedMessage: MimeMessage = decryptResult.msg
             // sync UID so we know our mail...
             decryptedMessage.uid = message.uid
             // Store the updated message locally
             val folder = message.folder
-            folder.storeSmallMessage(decryptedMessage) {
-                messageViewStateLiveData.postValue(
-                    MessageDecrypted(decryptResult)
-                )
-            }
-        } catch (e: MessagingException) {
-            Timber.e("pEp %s", "decryptMessage: view", e)
+            folder.storeSmallMessage(decryptedMessage) {}
+        }.onSuccess {
+            moveToSuspiciousFolder = PlanckUtils.isRatingDangerous(decryptResult.rating)
+            messageViewStateLiveData.postValue(
+                DecryptedMessageLoaded(it, moveToSuspiciousFolder)
+            )
+        }.onFailure {
+            messageViewStateLiveData.postValue(ErrorDecryptingMessage(it))
         }
     }
 }
