@@ -2,6 +2,7 @@
 <resources>
 
     <color name="logo_primary_color">@android:color/white</color>
+    <color name="primary_color_90">@color/message_list_selected_background_color_dark</color>
     <color name="startup_gradient_start">@color/dark_theme_default_background</color>
     <color name="startup_gradient_end">@color/dark_theme_default_background</color>
     <color name="link_primary_color">@color/white</color>
