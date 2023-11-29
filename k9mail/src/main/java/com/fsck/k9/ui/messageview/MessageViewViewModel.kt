@@ -79,7 +79,9 @@ class MessageViewViewModel @Inject constructor(
     private suspend fun messageLoaded(
         message: LocalMessage
     ) {
-        messageViewStateLiveData.postValue(MessageLoaded(message, message.hasToBeDecrypted()))
+        withContext(dispatcherProvider.main()) {
+            messageViewStateLiveData.setValue(MessageLoaded(message, message.hasToBeDecrypted()))
+        }
         if (message.isMessageIncomplete()) {
             downloadMessageBody(false)
         } else if (message.hasToBeDecrypted()) {

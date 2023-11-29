@@ -291,7 +291,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         Timber.d("MessageView displaying message %s", mMessageReference);
         observeViewModel();
         viewModel.initialize(mMessageReference);
-        viewModel.loadMessage();
     }
 
     private void observeViewModel() {
@@ -328,7 +327,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void messageLoaded(MessageLoaded messageViewState) {
         mMessage = messageViewState.getMessage();
-
         displayHeaderForLoadingMessage(mMessage);
         recoverRating(mMessage);
         ((MessageList) requireActivity()).setMessageViewVisible(true);
@@ -479,6 +477,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void displayMessage() {
         mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         mInitialized = true;
+        viewModel.loadMessage();
         mFragmentListener.updateMenu();
     }
 
