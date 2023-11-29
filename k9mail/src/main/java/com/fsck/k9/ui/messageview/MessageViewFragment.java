@@ -3,7 +3,8 @@ package com.fsck.k9.ui.messageview;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-import android.app.Activity;
+import static com.fsck.k9.ui.messageview.MessageViewState.*;
+
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -20,21 +21,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.loader.app.LoaderManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.MessageList;
-import com.fsck.k9.activity.MessageLoaderHelper;
-import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
-import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
@@ -50,7 +51,6 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.MessageView;
@@ -64,6 +64,7 @@ import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
+import kotlin.ExceptionsKt;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
@@ -103,6 +105,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION = 5000;
     private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES = 10;
+    private static final int ERROR_DEBUG_FEEDBACK_MAX_LINES = 10;
     private Rating pEpRating;
     private PlanckUIArtefactCache planckUIArtefactCache;
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
@@ -133,7 +136,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessagingController mController;
     private DownloadManager downloadManager;
     private Handler handler = new Handler();
-    private MessageLoaderHelper messageLoaderHelper;
     private MessageCryptoPresenter messageCryptoPresenter;
 
     /**
@@ -197,6 +199,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     SenderPlanckHelper senderPlanckHelper;
 
     private boolean justStarted;
+    private MessageViewViewModel viewModel;
 
     @Override
     public void onAttach(Context context) {
@@ -266,7 +269,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mMessageView.setOnDownloadButtonClickListener(v -> {
             mMessageView.disableDownloadButton();
             mMessageView.setToLoadingState();
-            messageLoaderHelper.downloadCompleteMessage();
+            viewModel.downloadCompleteMessage();
         });
         // onDownloadRemainder();;
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
@@ -275,7 +278,121 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         setSimpleRecipientHandshakeClickListener();
 
         planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
+        viewModel = new ViewModelProvider(this).get(MessageViewViewModel.class);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
+        mMessageReference = MessageReference.parse(messageReferenceString);
+        mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
+        Timber.d("MessageView displaying message %s", mMessageReference);
+        observeViewModel();
+        viewModel.initialize(mMessageReference);
+        viewModel.loadMessage();
+    }
+
+    private void observeViewModel() {
+        viewModel.getMessageViewState().observe(getViewLifecycleOwner(), this::renderMessageViewState);
+    }
+
+    private void renderMessageViewState(MessageViewState messageViewState) {
+        if (messageViewState.equals(Loading.INSTANCE)) {
+            mMessageView.setToLoadingState();
+        } else if (messageViewState instanceof ErrorLoadingMessage) {
+            showMessageLoadErrorFeedback((ErrorLoadingMessage) messageViewState);
+        } else if (messageViewState.equals(ErrorDecryptingMessageKeyMissing.INSTANCE)) {
+            showKeyNotFoundFeedback();
+        } else if (messageViewState instanceof ErrorDecryptingMessage) {
+            showGenericErrorFeedback(((ErrorDecryptingMessage) messageViewState).getThrowable());
+        } else if (messageViewState instanceof ErrorDecodingMessage) {
+            boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
+            showMessage(((ErrorDecodingMessage) messageViewState).getInfo(), shouldStopProgressDialog);
+        } else if (messageViewState instanceof ErrorDownloadingMessageNotFound) {
+            showDownloadMessageNotFound((ErrorDownloadingMessageNotFound) messageViewState);
+        } else if (messageViewState instanceof ErrorDownloadingNetworkError) {
+            showDownloadMessageNetworkError((ErrorDownloadingNetworkError) messageViewState);
+        } else if (messageViewState instanceof MessageLoaded) {
+            messageLoaded((MessageLoaded) messageViewState);
+        } else if (messageViewState instanceof MessageDecrypted) {
+            refreshMessage(PlanckUtils.isRatingDangerous(
+                    ((MessageDecrypted) messageViewState).getDecryptResult().rating));
+        } else if (messageViewState instanceof MessageViewState.MessageDecoded) {
+            //At this point MessageTopView is ready, but the message may be going through decryption
+            //boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
+            showMessage(((MessageDecoded) messageViewState).getInfo(), true);
+        }
+    }
+
+    private void messageLoaded(MessageLoaded messageViewState) {
+        mMessage = messageViewState.getMessage();
+
+        displayHeaderForLoadingMessage(mMessage);
+        recoverRating(mMessage);
+        ((MessageList) requireActivity()).setMessageViewVisible(true);
+
+        if (!messageViewState.getNeedsDecryption()) {
+            boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
+            if (moveToSuspiciousFolder) {
+                refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
+                FeedbackTools.showLongFeedback(
+                        getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
+                        DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
+                        DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
+                );
+            }
+            senderPlanckHelper.initialize(mMessage, MessageViewFragment.this);
+            mMessageView.displayViewOnLoadFinished(true);
+            senderPlanckHelper.checkCanHandshakeSender();
+            mFragmentListener.updateMenu();
+        }
+
+        setToolbar();
+    }
+
+    private void showDownloadMessageNetworkError(ErrorDownloadingNetworkError messageViewState) {
+        mMessageView.enableDownloadButton();
+        FeedbackTools.showLongFeedback(
+                getView(),
+                BuildConfig.DEBUG
+                        ? ExceptionsKt.stackTraceToString(messageViewState.getThrowable())
+                        : getString(R.string.status_network_error),
+                Snackbar.LENGTH_LONG,
+                ERROR_DEBUG_FEEDBACK_MAX_LINES
+        );
+    }
+
+    private void showDownloadMessageNotFound(ErrorDownloadingMessageNotFound messageViewState) {
+        mMessageView.enableDownloadButton();
+        FeedbackTools.showLongFeedback(
+                getView(),
+                BuildConfig.DEBUG
+                        ? ExceptionsKt.stackTraceToString(messageViewState.getThrowable())
+                        : getString(R.string.status_invalid_id_error),
+                Snackbar.LENGTH_LONG,
+                ERROR_DEBUG_FEEDBACK_MAX_LINES
+        );
+    }
+
+    private void showMessageLoadErrorFeedback(ErrorLoadingMessage messageViewState) {
+        String errorText = "";
+        if (BuildConfig.DEBUG) {
+            errorText += "Message loading error\n";
+            Throwable throwable = messageViewState.getThrowable();
+            if (throwable != null) {
+                errorText += ExceptionsKt.stackTraceToString(throwable);
+            }
+        } else {
+            errorText = getString(R.string.status_loading_error);
+        }
+        FeedbackTools.showLongFeedback(
+                getView(),
+                errorText,
+                Snackbar.LENGTH_LONG,
+                ERROR_DEBUG_FEEDBACK_MAX_LINES
+        );
     }
 
     @Override
@@ -300,10 +417,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             ((MessageList) requireActivity()).setMessageViewVisible(true);
             setupSwipeDetector();
             ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
-            Context context = requireActivity().getApplicationContext();
-            messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                    getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
-                    displayHtml);
             displayMessage();
         }
     }
@@ -318,19 +431,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Activity activity = getActivity();
         planckSecurityStatusLayout.setOnClickListener(null);
-
-        boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
-        if (isChangingConfigurations) {
-            if (messageLoaderHelper != null) {
-                messageLoaderHelper.onDestroyChangingConfigurations();
-            }
-            return;
-        }
-        if (messageLoaderHelper != null) {
-            messageLoaderHelper.onDestroy();
-        }
         getActivity().setResult(RESULT_CANCELED);
     }
 
@@ -377,31 +478,23 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void displayMessage() {
         mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
-        String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
-        mMessageReference = MessageReference.parse(messageReferenceString);
-        Timber.d("MessageView displaying message %s", mMessageReference);
-        mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         mInitialized = true;
-        messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
         mFragmentListener.updateMenu();
     }
 
     @Override
     public void onStop() {
         ((MessageList) ContextKt.getRootContext(requireActivity())).removeGestureDetector();
-        if (messageLoaderHelper != null) {
-            messageLoaderHelper.cancelAndClearLocalMessageLoader();
-        }
         planckSecurityStatusLayout.setVisibility(View.GONE);
         super.onStop();
     }
 
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
-            requestCode ^= REQUEST_MASK_LOADER_HELPER;
-            if (messageLoaderHelper != null) {
-                messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
-            }
+            //requestCode ^= REQUEST_MASK_LOADER_HELPER;
+            //if (messageLoaderHelper != null) {
+            //    messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
+            //}
             return;
         }
 
@@ -876,9 +969,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessageCryptoMvpView messageCryptoMvpView = new MessageCryptoMvpView() {
         @Override
         public void redisplayMessage() {
-            if (messageLoaderHelper != null) {
-                messageLoaderHelper.asyncReloadMessage();
-            }
+            viewModel.loadMessage();
         }
 
         @Override
@@ -903,10 +994,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public void restartMessageCryptoProcessing() {
-            if (messageLoaderHelper != null) {
-                mMessageView.setToLoadingState();
-                messageLoaderHelper.asyncRestartMessageCryptoProcessing();
-            }
+            //if (messageLoaderHelper != null) { // not needed as the account has no PgpProvider set
+            //    mMessageView.setToLoadingState();
+            //    messageLoaderHelper.asyncRestartMessageCryptoProcessing();
+            //}
         }
     };
 
@@ -970,108 +1061,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         return mInitialized;
     }
 
-    private MessageLoaderDecryptCallbacks messageLoaderDecryptCallbacks = new MessageLoaderDecryptCallbacks() {
-
-        @Override
-        public void onMessageDecrypted(PlanckProvider.DecryptResult decryptResult) {
-            refreshMessage(PlanckUtils.isRatingDangerous(decryptResult.rating));
-        }
-
-        @Override
-        public void onMessageDataDecryptFailed(String errorMessage) {
-            if (errorMessage.equals(PlanckProvider.KEY_MISSING_ERROR_MESSAGE)) {
-                showKeyNotFoundFeedback();
-            } else {
-                showGenericErrorFeedback();
-            }
-        }
-    };
-
-    private MessageLoaderCallbacks messageLoaderCallbacks = new MessageLoaderCallbacks() {
-        @Override
-        public void onMessageDataLoadFinished(LocalMessage message) {
-            mMessage = message;
-
-            displayHeaderForLoadingMessage(message);
-            recoverRating(message);
-            ((MessageList) getActivity()).setMessageViewVisible(true);
-
-            boolean alreadyDecrypted = !LocalMessageKt.hasToBeDecrypted(mMessage);
-            if (alreadyDecrypted) {
-                boolean moveToSuspiciousFolder = requireArguments().getBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER);
-                if (moveToSuspiciousFolder) {
-                    refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
-                    FeedbackTools.showLongFeedback(
-                            getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
-                            DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
-                            DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
-                    );
-                }
-                senderPlanckHelper.initialize(message, MessageViewFragment.this);
-                mMessageView.displayViewOnLoadFinished(true);
-                senderPlanckHelper.checkCanHandshakeSender();
-                mFragmentListener.updateMenu();
-            }
-
-            setToolbar();
-        }
-
-        @Override
-        public void onMessageDataLoadFailed() {
-            FeedbackTools.showLongFeedback(getView(), getString(R.string.status_loading_error));
-        }
-
-        @Override
-        public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-            //At this point MessageTopView is ready, but the message may be going through decryption
-            boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
-            showMessage(messageViewInfo, shouldStopProgressDialog);
-
-        }
-
-        @Override
-        public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-            //At this point MessageTopView is ready, but the message may be going through decryption
-            boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
-            showMessage(messageViewInfo, shouldStopProgressDialog);
-        }
-
-        @Override
-        public void setLoadingProgress(int current, int max) {
-            mMessageView.setLoadingProgress(current, max);
-        }
-
-        @Override
-        public void onDownloadErrorMessageNotFound() {
-            runOnMainThread(() -> {
-                        mMessageView.enableDownloadButton();
-                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error));
-                    }
-            );
-        }
-
-        @Override
-        public void onDownloadErrorNetworkError() {
-            runOnMainThread(() -> {
-                        mMessageView.enableDownloadButton();
-                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error));
-                    }
-            );
-        }
-
-        @Override
-        public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) {
-            try {
-                requestCode |= REQUEST_MASK_LOADER_HELPER;
-                getActivity().startIntentSenderForResult(
-                        si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
-            } catch (SendIntentException e) {
-                Timber.e(e, "Irrecoverable error calling PendingIntent!");
-            }
-        }
-    };
-
     private void recoverRating(LocalMessage message) {
         // recover pEpRating from db, if is null,
         // then we take the one in the header and store it
@@ -1088,10 +1077,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 planckUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey)
         );
     }
-    private void showGenericErrorFeedback() {
+
+    private void showGenericErrorFeedback(Throwable throwable) {
         mMessageView.setToErrorState(
                 planckUIArtefactCache.getTitle(Rating.pEpRatingCannotDecrypt),
-                planckUIArtefactCache.getExplanation(Rating.pEpRatingCannotDecrypt)
+                throwable != null
+                        ? ExceptionsKt.stackTraceToString(throwable)
+                        : planckUIArtefactCache.getExplanation(Rating.pEpRatingCannotDecrypt)
         );
     }
 

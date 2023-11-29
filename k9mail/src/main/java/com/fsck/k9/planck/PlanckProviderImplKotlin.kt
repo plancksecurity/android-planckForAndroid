@@ -27,6 +27,7 @@ import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageExcept
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailureWrongPassphrase
 import com.fsck.k9.planck.infrastructure.exceptions.CannotCreateMessageException
+import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
@@ -599,7 +600,7 @@ class PlanckProviderImplKotlin(
 
             when (decReturn!!.rating) {
                 Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
-                    throw AppCannotDecryptException(KEY_MISSING_ERROR_MESSAGE)
+                    throw KeyMissingException()
 
                 else -> {
                     val message = decryptReturn.dst
@@ -620,9 +621,12 @@ class PlanckProviderImplKotlin(
                     )
                 }
             }
-        }.mapError {
-            Timber.e(it, "%s %s", TAG, "while decrypting message:")
-            AppCannotDecryptException("Could not decrypt", it)
+        }.mapError { throwable ->
+            Timber.e(throwable, "%s %s", TAG, "while decrypting message:")
+            when (throwable) {
+                is KeyMissingException -> throwable
+                else -> AppCannotDecryptException("Could not decrypt", throwable)
+            }
         }.also {
             srcMsg?.close()
             decReturn?.apply {
