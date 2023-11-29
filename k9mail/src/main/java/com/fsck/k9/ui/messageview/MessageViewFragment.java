@@ -93,7 +93,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderPlanckHelperView {
 
     private static final String ARG_REFERENCE = "reference";
-    private static final String ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER = "moveMessageToSuspiciousFolder";
 
     private static final int ACTIVITY_CHOOSE_FOLDER_MOVE = 1;
     private static final int ACTIVITY_CHOOSE_FOLDER_COPY = 2;
@@ -111,18 +110,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
-        return newInstance(reference, false);
-    }
-
-    public static MessageViewFragment newInstance(
-            MessageReference reference,
-            boolean moveMessageToSuspiciousFolder
-    ) {
         MessageViewFragment fragment = new MessageViewFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_REFERENCE, reference.toIdentityString());
-        args.putBoolean(ARG_MOVE_MESSAGE_TO_SUSPICIOUS_FOLDER, moveMessageToSuspiciousFolder);
         fragment.setArguments(args);
 
         return fragment;
@@ -337,7 +328,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void decryptedMessageLoaded(DecryptedMessageLoaded messageViewState) {
        messageLoaded(messageViewState.getMessage());
         if (messageViewState.getMoveToSuspiciousFolder()) {
-
             refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
             FeedbackTools.showLongFeedback(
                     getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
@@ -1055,7 +1045,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         void updateMenu();
 
-        void refreshMessageViewFragment(boolean moveMessageToSuspiciousFolder);
+        void refreshMessageViewFragment();
     }
 
     public boolean isInitialized() {
@@ -1090,13 +1080,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private boolean canDecrypt() {
         return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
-    }
-
-    private void refreshMessage(boolean moveMessageToSuspiciousFolder) {
-        //If get support manager is null, it means that you don't have a fragment to refresh
-        if (mFragmentListener != null) {
-            mFragmentListener.refreshMessageViewFragment(moveMessageToSuspiciousFolder);
-        }
     }
 
     @Override
