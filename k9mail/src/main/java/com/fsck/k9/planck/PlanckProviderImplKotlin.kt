@@ -16,6 +16,11 @@ import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mail.internet.MimeUtility
 import com.fsck.k9.message.SimpleMessageFormat
 import com.fsck.k9.planck.PlanckProvider.*
+import com.fsck.k9.planck.PlanckProvider.Companion.ENCRYPTED_MESSAGE_POSITION
+import com.fsck.k9.planck.PlanckProvider.Companion.KEY_MISSING_ERROR_MESSAGE
+import com.fsck.k9.planck.PlanckProvider.Companion.PLANCK_ALWAYS_SECURE_TRUE
+import com.fsck.k9.planck.PlanckProvider.Companion.PLANCK_OWN_USER_ID
+import com.fsck.k9.planck.PlanckProvider.Companion.TIMEOUT
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.infrastructure.exceptions.AppCannotDecryptException
 import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageException
@@ -261,7 +266,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun obtainLanguages(): Map<String, PlanckLanguage>? = runBlocking(PlanckDispatcher) {
+    override fun obtainLanguages(): Map<String, PlanckLanguage> = runBlocking(PlanckDispatcher) {
         try {
             val supportedLocales = listOf("en", "de")
             val pEpRawLanguages = engine.get()._languagelist
@@ -309,9 +314,10 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun isSyncRunning(): Boolean = runBlocking(PlanckDispatcher) {
-        engine.get().isSyncRunning
-    }
+    override val isSyncRunning: Boolean
+        get() = runBlocking(PlanckDispatcher) {
+            engine.get().isSyncRunning
+        }
 
     private fun getElementAtPosition(chain: String): String {
         return chain.substring(1, chain.length - 1)
@@ -1063,20 +1069,21 @@ class PlanckProviderImplKotlin(
         engine.get().updateIdentity(id)
     }
 
-    @WorkerThread
-    override fun getBlacklistInfo(): List<KeyListItem>? = runBlocking(PlanckDispatcher) {
-        try {
-            val identities: MutableList<KeyListItem> = ArrayList()
-            val keys = engine.get().OpenPGP_list_keyinfo("")
-            keys?.forEach { key ->
-      //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
+    override val blacklistInfo: List<KeyListItem>?
+        @WorkerThread
+        get() = runBlocking(PlanckDispatcher) {
+            try {
+                val identities: MutableList<KeyListItem> = ArrayList()
+                val keys = engine.get().OpenPGP_list_keyinfo("")
+                keys?.forEach { key ->
+                    //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
+                }
+                return@runBlocking identities
+            } catch (e: pEpException) {
+                Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
             }
-            return@runBlocking identities
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+            null
         }
-        null
-    }
 
     @WorkerThread
     override fun addToBlacklist(fpr: String) = runBlocking(PlanckDispatcher) {
@@ -1088,18 +1095,19 @@ class PlanckProviderImplKotlin(
     //    engine.get().blacklist_delete(fpr)
     }
 
-    @WorkerThread
-    override fun getMasterKeysInfo(): List<KeyListItem>? {
-        try {
-            val identities: MutableList<KeyListItem> = ArrayList()
-            val keys = engine.get().OpenPGP_list_keyinfo("")
-            keys?.forEach { key -> identities.add(KeyListItem(key.first, key.second)) }
-            return identities
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+    override val masterKeysInfo: List<KeyListItem>?
+        @WorkerThread
+        get() {
+            try {
+                val identities: MutableList<KeyListItem> = ArrayList()
+                val keys = engine.get().OpenPGP_list_keyinfo("")
+                keys?.forEach { key -> identities.add(KeyListItem(key.first, key.second)) }
+                return identities
+            } catch (e: pEpException) {
+                Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+            }
+            return null
         }
-        return null
-    }
 
     @Deprecated("private key detection is not supported anymore, alternatives are pEp sync and import from FS")
     override fun getOwnKeyDetails(message: Message): KeyDetail? {
@@ -1201,10 +1209,11 @@ class PlanckProviderImplKotlin(
         return result
     }
 
-    @WorkerThread
-    override fun getLog(): String = runBlocking(PlanckDispatcher) {
-        getLogSuspend()
-    }
+    override val log: String
+        @WorkerThread
+        get() = runBlocking(PlanckDispatcher) {
+            getLogSuspend()
+        }
 
     private fun getLogSuspend(): String {
         return engine.get().getCrashdumpLog(100)
@@ -1263,11 +1272,12 @@ class PlanckProviderImplKotlin(
         return engine.get().group_rating(group, manager)
     }
 
-    @WorkerThread
-    override fun isDeviceGrouped(): Boolean = runBlocking(PlanckDispatcher) {
-        ResultCompat.of { engine.get().deviceGrouped() ?: false }
-            .onFailure { Timber.e(it) }.getOrDefault(false)
-    }
+    override val isDeviceGrouped: Boolean
+        @WorkerThread
+        get() = runBlocking(PlanckDispatcher) {
+            ResultCompat.of { engine.get().deviceGrouped() ?: false }
+                .onFailure { Timber.e(it) }.getOrDefault(false)
+        }
 
     @WorkerThread
     override fun getSignatureForText(text: String): ResultCompat<String> =

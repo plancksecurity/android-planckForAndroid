@@ -333,7 +333,7 @@ constructor(
             }
             this@VerifyPartnerViewModel.sender = Address.create(sender)
             this@VerifyPartnerViewModel.myself =
-                planckProvider.myself(PlanckUtils.createIdentity(Address.create(myself), context))
+                planckProvider.myself(PlanckUtils.createIdentity(Address.create(myself), context))!!
             this@VerifyPartnerViewModel.messageReference = messageReference
             this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
         }

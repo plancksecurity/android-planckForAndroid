@@ -49,7 +49,7 @@ class KeyImportPresenter @Inject constructor(
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
             accountIdentity = PlanckUtils.createIdentity(Address(address), context)
-            withContext(PlanckDispatcher) { currentFpr = planck.myself(accountIdentity).fpr }
+            withContext(PlanckDispatcher) { planck.myself(accountIdentity)?.let { currentFpr = it.fpr } }
         }
     }
 

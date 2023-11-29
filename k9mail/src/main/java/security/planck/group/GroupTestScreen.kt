@@ -275,7 +275,7 @@ class GroupTestScreen : K9Activity() {
                     Address(groupAddress, groupUserName),
                     this@GroupTestScreen
                 )
-                planckProvider.queryGroupMailManagerAndMembers(planckProvider.myself(groupIdentity))
+                planckProvider.queryGroupMailManagerAndMembers(planckProvider.myself(groupIdentity)!!)
             }
         }
     }
@@ -290,11 +290,11 @@ class GroupTestScreen : K9Activity() {
                     this@GroupTestScreen
                 )
                 ResultCompat.of {
-                    val updatedGroup = planckProvider.myself(groupIdentity)
+                    val updatedGroup = planckProvider.myself(groupIdentity)!!
                     val manager = planckProvider.queryGroupMailManager(updatedGroup)
                     planckProvider.dissolveGroup(
                         updatedGroup,
-                        planckProvider.myself(manager)
+                        planckProvider.myself(manager)!!
                     )
                 }
             }
@@ -328,7 +328,7 @@ class GroupTestScreen : K9Activity() {
                 )
                 ResultCompat.of {
                     planckProvider.inviteMemberToGroup(
-                        planckProvider.myself(groupIdentity),
+                        planckProvider.myself(groupIdentity)!!,
                         planckProvider.updateIdentity(memberIdentity)
                     )
                 }
@@ -363,7 +363,7 @@ class GroupTestScreen : K9Activity() {
                 )
                 ResultCompat.of {
                     planckProvider.removeMemberFromGroup(
-                        planckProvider.myself(groupIdentity),
+                        planckProvider.myself(groupIdentity)!!,
                         planckProvider.updateIdentity(memberIdentity)
                     )
                 }
@@ -408,7 +408,7 @@ class GroupTestScreen : K9Activity() {
                         if (memberIdentitiesList.isNotEmpty())
                             Vector(memberIdentitiesList.map { planckProvider.updateIdentity(it) })
                         else Vector()
-                    planckProvider.createGroup(groupIdentity, planckProvider.myself(manager), memberIdentities)
+                    planckProvider.createGroup(groupIdentity, planckProvider.myself(manager)!!, memberIdentities)
                 }
             }
         }
@@ -425,7 +425,7 @@ class GroupTestScreen : K9Activity() {
                 )
                 ResultCompat.of {
                     val manager = planckProvider.queryGroupMailManager(groupIdentity)
-                    planckProvider.groupRating(planckProvider.myself(groupIdentity), manager)
+                    planckProvider.groupRating(planckProvider.myself(groupIdentity)!!, manager)
                 }
             }
         }
