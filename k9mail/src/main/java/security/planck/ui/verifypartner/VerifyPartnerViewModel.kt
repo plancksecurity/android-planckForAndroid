@@ -130,7 +130,7 @@ constructor(
     fun finish() {
         stateLiveData.value = VerifyPartnerState.Finish(
             if (result.isEmpty()) {  // deliver result if not yet delivered
-                mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to currentRating?.toString())
+                mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to null)
             } else emptyMap()
         )
     }
