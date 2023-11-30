@@ -27,9 +27,8 @@ class AboutActivity : K9Activity() {
     lateinit var toolbarCustomizer: ToolBarCustomizer
     private var iconClickCount = 0
 
-    private val versionNumber: String = BuildConfig.VERSION_NAME
+    private val versionNumber: String = BuildConfig.BASE_VERSION
         .substringAfter('v')
-        .substringBefore('-')
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
