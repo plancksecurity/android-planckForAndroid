@@ -596,7 +596,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void delete() {
-        if (viewModel.hasMessage()) {
+        if (viewModelHasMessage()) {
             // Disable the delete button after it's tapped (to try to prevent
             // accidental clicks)
             mFragmentListener.disableDeleteAction();
@@ -642,19 +642,19 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onReply() {
-        if (viewModel.hasMessage()) {
+        if (viewModelHasMessage()) {
             mFragmentListener.onReply(viewModel.getMessage().makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(viewModel.getMessage()));
         }
     }
 
     public void onReplyAll() {
-        if (viewModel.hasMessage()) {
+        if (viewModelHasMessage()) {
             mFragmentListener.onReplyAll(viewModel.getMessage().makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(viewModel.getMessage()));
         }
     }
 
     public void onForward() {
-        if (viewModel.hasMessage()) {
+        if (viewModelHasMessage()) {
             mFragmentListener.onForward(viewModel.getMessage().makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(viewModel.getMessage()));
         }
     }
@@ -665,7 +665,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onMove() {
         if ((!mController.isMoveCapable(mAccount))
-                || (!viewModel.hasMessage())) {
+                || (!viewModelHasMessage())) {
             return;
         }
         if (!mController.isMoveCapable(mMessageReference)) {
@@ -679,7 +679,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onCopy() {
         if ((!mController.isCopyCapable(mAccount))
-                || (!viewModel.hasMessage())) {
+                || (!viewModelHasMessage())) {
             return;
         }
         if (!mController.isCopyCapable(mMessageReference)) {
@@ -760,7 +760,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onSendAlternate() {
-        if (viewModel.hasMessage()) {
+        if (viewModelHasMessage()) {
             mController.sendAlternate(getActivity(), mAccount, viewModel.getMessage());
         }
     }
@@ -908,11 +908,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean isMessageFlagged() {
-        return (viewModel.hasMessage()) && viewModel.getMessage().isSet(Flag.FLAGGED);
+        return (viewModelHasMessage()) && viewModel.getMessage().isSet(Flag.FLAGGED);
     }
 
     public boolean isMessageRead() {
-        return (viewModel.hasMessage()) && viewModel.getMessage().isSet(Flag.SEEN);
+        return (viewModelHasMessage()) && viewModel.getMessage().isSet(Flag.SEEN);
     }
 
     public boolean isCopyCapable() {
@@ -934,9 +934,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void updateTitle() {
-        if (viewModel.hasMessage()) {
+        if (viewModelHasMessage()) {
             displayMessageSubject(viewModel.getMessage().getSubject());
         }
+    }
+
+    private boolean viewModelHasMessage() {
+        return viewModel != null && viewModel.hasMessage();
     }
 
     public Context getApplicationContext() {

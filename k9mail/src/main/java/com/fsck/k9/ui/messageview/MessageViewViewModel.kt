@@ -105,7 +105,7 @@ class MessageViewViewModel @Inject constructor(
                 && ratingConditionsForSenderKeyReset(message.planckRating)
     }
 
-    fun checkCanHandshakeSender() {
+    private fun checkCanHandshakeSender() {
         viewModelScope.launch {
             (::message.isInitialized && message.isValidForHandshake()
                     && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
