@@ -265,4 +265,12 @@ class MessageViewViewModel @Inject constructor(
             messageViewStateLiveData.postValue(ErrorDecryptingMessage(it))
         }
     }
+
+    private fun LocalMessage.recoverRating() {
+        // recover pEpRating from db, if is null,
+        // then we take the one in the header and store it
+        planckRating ?: let {
+            planckRating = PlanckUtils.extractRating(this)
+        }
+    }
 }

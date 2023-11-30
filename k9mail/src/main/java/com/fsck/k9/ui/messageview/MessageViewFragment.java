@@ -1076,10 +1076,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         // recover pEpRating from db, if is null,
         // then we take the one in the header and store it
         pEpRating = message.getPlanckRating();
-        if (pEpRating == null) {
-            pEpRating = PlanckUtils.extractRating(message);
-            message.setPlanckRating(pEpRating);
-        }
     }
 
     private void showKeyNotFoundFeedback() {
