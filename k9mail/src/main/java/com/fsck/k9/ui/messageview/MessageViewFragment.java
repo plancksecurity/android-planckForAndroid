@@ -2,8 +2,16 @@ package com.fsck.k9.ui.messageview;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-
-import static com.fsck.k9.ui.messageview.MessageViewState.*;
+import static com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded;
+import static com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded;
+import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDecodingMessage;
+import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessage;
+import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessageKeyMissing;
+import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingMessageNotFound;
+import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingNetworkError;
+import static com.fsck.k9.ui.messageview.MessageViewState.ErrorLoadingMessage;
+import static com.fsck.k9.ui.messageview.MessageViewState.Loading;
+import static com.fsck.k9.ui.messageview.MessageViewState.MessageDecoded;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -27,7 +35,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
@@ -40,7 +47,6 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.extensions.LocalMessageKt;
 import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
@@ -56,7 +62,6 @@ import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
-import com.fsck.k9.planck.infrastructure.livedata.Event;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.listeners.SimpleRecipientHandshakeClickListener;
@@ -70,7 +75,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -185,8 +189,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Inject
     @MessageView
     DisplayHtml displayHtml;
-    @Inject
-    SenderPlanckHelper senderPlanckHelper;
 
     private boolean justStarted;
     private MessageViewViewModel viewModel;
@@ -234,8 +236,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                             } catch (Exception ex) {
                                 Timber.e(ex, "wrong rating");
                             }
+                            displayMessage();
                         }
-                        displayMessage();
                     }
                 }
         );
@@ -358,9 +360,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
             );
         }
-        senderPlanckHelper.initialize(viewModel.getMessage());
         mMessageView.displayViewOnLoadFinished(true);
-        viewModel.checkCanHandshakeSender();
         mFragmentListener.updateMenu();
         setToolbar();
     }

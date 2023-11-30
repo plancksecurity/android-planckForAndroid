@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.messageview
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,6 +23,7 @@ import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
@@ -39,6 +41,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import security.planck.dialog.BackgroundTaskDialogView
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -48,6 +51,7 @@ class MessageViewViewModel @Inject constructor(
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
     private val infoExtractor: MessageViewInfoExtractor,
+    private val context: Application,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
     private lateinit var messageReference: MessageReference
@@ -70,6 +74,10 @@ class MessageViewViewModel @Inject constructor(
     private val readToggledLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
     val readToggled: LiveData<Event<Boolean>> = readToggledLiveData
+
+    private val resetPartnerKeyStateLd: MutableLiveData<BackgroundTaskDialogView.State> =
+        MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
+    val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
 
     fun initialize(messageReference: MessageReference) {
         this.messageReference = messageReference
@@ -137,6 +145,22 @@ class MessageViewViewModel @Inject constructor(
         }
     }
 
+    fun resetPlanckData() {
+        viewModelScope.launch {
+            resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.LOADING
+            kotlin.runCatching {
+                val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
+                planckProvider.keyResetIdentity(resetIdentity, null)
+            }.onSuccess {
+                loadMessageFromDatabase()
+                resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
+            }.onFailure {
+                Timber.e(it)
+                resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.ERROR
+            }
+        }
+    }
+
     private suspend fun getSenderRating(message: LocalMessage): Rating =
         withContext(PlanckDispatcher) {
             planckProvider.getRating(message.from.first())
@@ -178,9 +202,13 @@ class MessageViewViewModel @Inject constructor(
         message: LocalMessage
     ) {
         this.message = message
-        val loadedState =
-            if (message.hasToBeDecrypted()) EncryptedMessageLoaded(message)
-            else DecryptedMessageLoaded(message, moveToSuspiciousFolder)
+        val loadedState = if(!message.hasToBeDecrypted()) {
+            message.recoverRating()
+            checkCanHandshakeSender()
+            DecryptedMessageLoaded(message, moveToSuspiciousFolder)
+        } else {
+            EncryptedMessageLoaded(message)
+        }
         withContext(dispatcherProvider.main()) {
             messageViewStateLiveData.value = loadedState
         }
@@ -301,6 +329,7 @@ class MessageViewViewModel @Inject constructor(
         }.onSuccess {
             this.message = it
             it.recoverRating()
+            checkCanHandshakeSender()
             moveToSuspiciousFolder = PlanckUtils.isRatingDangerous(decryptResult.rating)
             messageViewStateLiveData.postValue(
                 DecryptedMessageLoaded(it, moveToSuspiciousFolder)
@@ -316,5 +345,9 @@ class MessageViewViewModel @Inject constructor(
         planckRating ?: let {
             planckRating = PlanckUtils.extractRating(this)
         }
+    }
+
+    fun partnerKeyResetFinished() {
+        resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.CONFIRMATION
     }
 }
