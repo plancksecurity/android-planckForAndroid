@@ -4,7 +4,7 @@ buildscript {
                 'compileSdk'           : 33,
                 'targetSdk'            : 33,
                 'minSdk'               : 30,
-                'versionCode'          : 521,
+                'versionCode'          : 522,
         ]
 
         versions = [
