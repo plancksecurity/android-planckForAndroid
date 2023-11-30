@@ -62,6 +62,7 @@ import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
+import com.fsck.k9.planck.infrastructure.livedata.Event;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.listeners.SimpleRecipientHandshakeClickListener;
@@ -287,32 +288,37 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void observeViewModel() {
         viewModel.getMessageViewState().observe(getViewLifecycleOwner(), this::renderMessageViewState);
-        viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), event -> {
-            Boolean value = event.getContentIfNotHandled();
-            if (value != null) {
-                if (value) {
-                    allowHandshakeWithSender();
-                } else {
-                    disAllowHandshakeWithSender();
-                }
-            }
-        });
-        viewModel.getFlaggedToggled().observe(getViewLifecycleOwner(), event -> {
-            Boolean value = event.getContentIfNotHandled();
-            if (value != null && value) {
-                mMessageView.setHeaders(viewModel.getMessage(), mAccount);
-            }
-        });
+        viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), this::allowOrDisallowSenderHandshake);
+        viewModel.getFlaggedToggled().observe(getViewLifecycleOwner(), this::flaggedToggled);
+        viewModel.getReadToggled().observe(getViewLifecycleOwner(), this::readToggled);
+    }
 
-        viewModel.getReadToggled().observe(getViewLifecycleOwner(), event -> {
-            Boolean value = event.getContentIfNotHandled();
-            if (value != null && value) {
-                mMessageView.setHeaders(viewModel.getMessage(), mAccount);
-                String subject = viewModel.getMessage().getSubject();
-                displayMessageSubject(subject);
-                mFragmentListener.updateMenu();
+    private void readToggled(Event<Boolean> event) {
+        Boolean value = event.getContentIfNotHandled();
+        if (value != null && value) {
+            mMessageView.setHeaders(viewModel.getMessage(), mAccount);
+            String subject = viewModel.getMessage().getSubject();
+            displayMessageSubject(subject);
+            mFragmentListener.updateMenu();
+        }
+    }
+
+    private void flaggedToggled(Event<Boolean> event) {
+        Boolean value = event.getContentIfNotHandled();
+        if (value != null && value) {
+            mMessageView.setHeaders(viewModel.getMessage(), mAccount);
+        }
+    }
+
+    private void allowOrDisallowSenderHandshake(Event<Boolean> event) {
+        Boolean value = event.getContentIfNotHandled();
+        if (value != null) {
+            if (value) {
+                allowHandshakeWithSender();
+            } else {
+                disAllowHandshakeWithSender();
             }
-        });
+        }
     }
 
     private void renderMessageViewState(MessageViewState messageViewState) {
