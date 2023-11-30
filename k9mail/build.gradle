@@ -216,6 +216,7 @@ android {
         buildConfigField "String", "PLANCK_DRAGON_SERVER", "${planckDragonServer}"
 
         buildConfigField "String", "PLANCK_DRAGON_USERNAME", "${planckDragonUsername}"
+        buildConfigField "String", "BASE_VERSION", "\"${gitVersionName}\""
 
         buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.findProperty("useFakeManager") ?: true}"
         buildConfigField "int", "USER", "0"

@@ -8,8 +8,7 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 
 val formattedVersionForUserManual: String =
-    BuildConfig.VERSION_NAME.substringBefore('-')
-        .replace('.', '-')
+    BuildConfig.BASE_VERSION.replace('.', '-')
 
 
 fun Activity.showUserManual() {
