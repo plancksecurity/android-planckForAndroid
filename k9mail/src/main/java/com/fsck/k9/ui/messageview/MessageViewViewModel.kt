@@ -63,6 +63,14 @@ class MessageViewViewModel @Inject constructor(
     val allowHandshakeSender: LiveData<Event<Boolean>> = allowHandshakeSenderLiveData
     private var moveToSuspiciousFolder = false
 
+    private val flaggedToggledLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val flaggedToggled: LiveData<Event<Boolean>> = flaggedToggledLiveData
+
+    private val readToggledLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val readToggled: LiveData<Event<Boolean>> = readToggledLiveData
+
     fun initialize(messageReference: MessageReference) {
         this.messageReference = messageReference
         this.account = preferences.getAccount(messageReference.accountUuid)
@@ -72,9 +80,7 @@ class MessageViewViewModel @Inject constructor(
 
     fun downloadCompleteMessage() {
         viewModelScope.launch {
-            withContext(dispatcherProvider.io()) {
-                downloadMessageBody(true)
-            }
+            downloadMessageBody(true)
         }
     }
 
@@ -101,20 +107,34 @@ class MessageViewViewModel @Inject constructor(
     }
 
     fun toggleFlagged() {
-        val newState = !message.isSet(Flag.FLAGGED)
-        controller.setFlag(
-            account,
-            message.folder.name,
-            listOf(message),
-            Flag.FLAGGED,
-            newState
-        )
+        if (::message.isInitialized) {
+            viewModelScope.launch {
+                withContext(dispatcherProvider.io()) {
+                    val newState = !message.isSet(Flag.FLAGGED)
+                    controller.setFlag(
+                        account,
+                        message.folder.name,
+                        listOf(message),
+                        Flag.FLAGGED,
+                        newState
+                    )
+                }
+                flaggedToggledLiveData.value = Event(true)
+            }
+        }
     }
 
     fun toggleRead() {
-        controller.setFlag(
-            account, message.folder.name, listOf(message), Flag.SEEN, !message.isSet(Flag.SEEN)
-        )
+        if (::message.isInitialized) {
+            viewModelScope.launch {
+                withContext(dispatcherProvider.io()) {
+                    controller.setFlag(
+                        account, message.folder.name, listOf(message), Flag.SEEN, !message.isSet(Flag.SEEN)
+                    )
+                }
+                readToggledLiveData.value = Event(true)
+            }
+        }
     }
 
     private suspend fun getSenderRating(message: LocalMessage): Rating =
@@ -173,7 +193,7 @@ class MessageViewViewModel @Inject constructor(
         }
     }
 
-    private fun downloadMessageBody(complete: Boolean) {
+    private suspend fun downloadMessageBody(complete: Boolean) = withContext(dispatcherProvider.io()) {
         if (complete) {
             controller.loadMessageRemote(
                 account,

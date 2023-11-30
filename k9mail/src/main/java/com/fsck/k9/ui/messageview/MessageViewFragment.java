@@ -102,8 +102,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public static final int REQUEST_MASK_LOADER_HELPER = (1 << 8);
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
-    private static final int LOCAL_MESSAGE_LOADER_ID = 1;
-    private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION = 5000;
     private static final int DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES = 10;
     private static final int ERROR_DEBUG_FEEDBACK_MAX_LINES = 10;
@@ -287,17 +285,30 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void observeViewModel() {
         viewModel.getMessageViewState().observe(getViewLifecycleOwner(), this::renderMessageViewState);
-        viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), new Observer<Event<Boolean>>() {
-            @Override
-            public void onChanged(Event<Boolean> event) {
-                Boolean value = event.getContentIfNotHandled();
-                if (value != null) {
-                    if (value) {
-                        allowHandshakeWithSender();
-                    } else {
-                        disAllowHandshakeWithSender();
-                    }
+        viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null) {
+                if (value) {
+                    allowHandshakeWithSender();
+                } else {
+                    disAllowHandshakeWithSender();
                 }
+            }
+        });
+        viewModel.getFlaggedToggled().observe(getViewLifecycleOwner(), event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                mMessageView.setHeaders(viewModel.getMessage(), mAccount);
+            }
+        });
+
+        viewModel.getReadToggled().observe(getViewLifecycleOwner(), event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                mMessageView.setHeaders(viewModel.getMessage(), mAccount);
+                String subject = viewModel.getMessage().getSubject();
+                displayMessageSubject(subject);
+                mFragmentListener.updateMenu();
             }
         });
     }
@@ -641,10 +652,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onToggleFlagged() {
-        if (viewModel.hasMessage()) {
-            viewModel.toggleFlagged();
-            mMessageView.setHeaders(viewModel.getMessage(), mAccount);
-        }
+        viewModel.toggleFlagged();
     }
 
     public void onMove() {
@@ -762,13 +770,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onToggleRead() {
-        if (viewModel.hasMessage()) {
-            viewModel.toggleRead();
-            mMessageView.setHeaders(viewModel.getMessage(), mAccount);
-            String subject = viewModel.getMessage().getSubject();
-            displayMessageSubject(subject);
-            mFragmentListener.updateMenu();
-        }
+        viewModel.toggleRead();
     }
 
     private void setProgress(boolean enable) {
