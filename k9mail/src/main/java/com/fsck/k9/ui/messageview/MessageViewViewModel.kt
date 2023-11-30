@@ -12,7 +12,9 @@ import com.fsck.k9.controller.MessagingListener
 import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.extensions.isMessageIncomplete
+import com.fsck.k9.extensions.isValidForHandshake
 import com.fsck.k9.mail.Flag
+import com.fsck.k9.mail.Message
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
@@ -21,6 +23,8 @@ import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
+import com.fsck.k9.planck.infrastructure.livedata.Event
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecodingMessage
@@ -32,6 +36,7 @@ import com.fsck.k9.ui.messageview.MessageViewState.ErrorLoadingMessage
 import com.fsck.k9.ui.messageview.MessageViewState.Idle
 import com.fsck.k9.ui.messageview.MessageViewState.MessageDecoded
 import dagger.hilt.android.lifecycle.HiltViewModel
+import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -51,6 +56,9 @@ class MessageViewViewModel @Inject constructor(
     private val messageViewStateLiveData: MutableLiveData<MessageViewState> =
         MutableLiveData(Idle)
     val messageViewState: LiveData<MessageViewState> = messageViewStateLiveData
+    private val allowHandshakeSenderLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val allowHandshakeSender: LiveData<Event<Boolean>> = allowHandshakeSenderLiveData
     private var moveToSuspiciousFolder = false
 
     fun initialize(messageReference: MessageReference) {
@@ -70,6 +78,44 @@ class MessageViewViewModel @Inject constructor(
         viewModelScope.launch {
             loadMessageFromDatabase()
         }
+    }
+
+    fun canResetSenderKeys(message: LocalMessage?): Boolean {
+        message ?: return false
+        return (message.account?.isPlanckPrivacyProtected ?: false)
+                && messageConditionsForSenderKeyReset(message)
+                && ratingConditionsForSenderKeyReset(message.planckRating)
+    }
+
+    fun checkCanHandshakeSender(message: LocalMessage?) {
+        viewModelScope.launch {
+            (message.isValidForHandshake()
+                    && PlanckUtils.isRatingReliable(getSenderRating(message!!))).also {
+                allowHandshakeSenderLiveData.value = Event(it)
+            }
+        }
+    }
+
+    private suspend fun getSenderRating(message: LocalMessage): Rating =
+        withContext(PlanckDispatcher) {
+            planckProvider.getRating(message.from.first())
+        }.getOrDefault(Rating.pEpRatingUndefined)
+
+    private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
+        !message.hasToBeDecrypted()
+                && message.from != null // sender not null
+                && message.from.size == 1 // only one sender
+                && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
+                && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
+                && message.getRecipients(Message.RecipientType.CC)
+            .isNullOrEmpty() // no recipients in CC
+                && message.getRecipients(Message.RecipientType.BCC)
+            .isNullOrEmpty() // no recipients in BCC
+
+    private fun ratingConditionsForSenderKeyReset(
+        messageRating: Rating
+    ): Boolean {
+        return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
     private suspend fun loadMessageFromDatabase(): Result<LocalMessage?> =

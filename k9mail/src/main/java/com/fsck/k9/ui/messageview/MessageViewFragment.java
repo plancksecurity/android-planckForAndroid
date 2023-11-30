@@ -27,6 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
@@ -55,6 +56,7 @@ import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.MessageView;
 import com.fsck.k9.planck.infrastructure.extensions.ContextKt;
+import com.fsck.k9.planck.infrastructure.livedata.Event;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.planck.ui.listeners.SimpleRecipientHandshakeClickListener;
@@ -90,7 +92,7 @@ import timber.log.Timber;
 
 @AndroidEntryPoint
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener, SenderPlanckHelperView {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -286,6 +288,19 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void observeViewModel() {
         viewModel.getMessageViewState().observe(getViewLifecycleOwner(), this::renderMessageViewState);
+        viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), new Observer<Event<Boolean>>() {
+            @Override
+            public void onChanged(Event<Boolean> event) {
+                Boolean value = event.getContentIfNotHandled();
+                if (value != null) {
+                    if (value) {
+                        allowHandshakeWithSender();
+                    } else {
+                        disAllowHandshakeWithSender();
+                    }
+                }
+            }
+        });
     }
 
     private void renderMessageViewState(MessageViewState messageViewState) {
@@ -335,9 +350,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
             );
         }
-        senderPlanckHelper.initialize(mMessage, MessageViewFragment.this);
+        senderPlanckHelper.initialize(mMessage);
         mMessageView.displayViewOnLoadFinished(true);
-        senderPlanckHelper.checkCanHandshakeSender();
+        viewModel.checkCanHandshakeSender(mMessage);
         mFragmentListener.updateMenu();
         setToolbar();
     }
@@ -426,7 +441,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean shouldDisplayResetSenderKeyOption() {
-        return senderPlanckHelper.canResetSenderKeys(mMessage);
+        return viewModel.canResetSenderKeys(mMessage);
     }
 
     public void resetSenderKey() {
@@ -1012,11 +1027,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
-    @Override
-    public void allowHandshakeWithSender() {
+    private void allowHandshakeWithSender() {
         if (isAdded()) {
             planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus());
             mMessageView.getMessageHeader().showSingleRecipientHandshakeBanner();
+        }
+    }
+
+    private void disAllowHandshakeWithSender() {
+        if (isAdded()) {
+            planckSecurityStatusLayout.setOnClickListener(null);
+            mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         }
     }
 

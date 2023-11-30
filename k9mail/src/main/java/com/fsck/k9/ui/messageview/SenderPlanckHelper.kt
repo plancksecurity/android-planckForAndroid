@@ -25,17 +25,14 @@ import javax.inject.Inject
 class SenderPlanckHelper @Inject constructor(
     private val context: Application,
     private val planckProvider: PlanckProvider,
-    private val preferences: Preferences,
 ) {
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private lateinit var message: LocalMessage
-    private lateinit var view: SenderPlanckHelperView
     private var resetPartnerKeyView: BackgroundTaskDialogView? = null
     private var resetState = BackgroundTaskDialogView.State.CONFIRMATION
 
-    fun initialize(message: LocalMessage, view: SenderPlanckHelperView) {
+    fun initialize(message: LocalMessage) {
         this.message = message
-        this.view = view
     }
 
     private fun isInitialized(): Boolean = ::message.isInitialized
@@ -43,24 +40,6 @@ class SenderPlanckHelper @Inject constructor(
     fun initializeResetPartnerKeyView(resetPartnerKeyView: BackgroundTaskDialogView) {
         this.resetPartnerKeyView = resetPartnerKeyView
         resetPartnerKeyView.showState(resetState)
-    }
-
-    fun canResetSenderKeys(message: LocalMessage?): Boolean {
-        message ?: return false
-        return (message.account?.isPlanckPrivacyProtected ?: false)
-                && isInitialized()
-                && messageConditionsForSenderKeyReset(message)
-                && ratingConditionsForSenderKeyReset(message.planckRating)
-    }
-
-    fun checkCanHandshakeSender() {
-        uiScope.launch {
-            if (message.isValidForHandshake()
-                && PlanckUtils.isRatingReliable(getSenderRating())
-            ) {
-                view.allowHandshakeWithSender()
-            }
-        }
     }
 
     fun partnerKeyResetFinished() {
@@ -92,26 +71,5 @@ class SenderPlanckHelper @Inject constructor(
             delay(20)
         }
     }
-
-    private fun ratingConditionsForSenderKeyReset(
-        messageRating: Rating
-    ): Boolean {
-        return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
-    }
-
-    private suspend fun getSenderRating(): Rating = withContext(PlanckDispatcher) {
-        planckProvider.getRating(message.from.first())
-    }.getOrDefault(Rating.pEpRatingUndefined)
-
-    private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
-        !message.hasToBeDecrypted()
-                && message.from != null // sender not null
-                && message.from.size == 1 // only one sender
-                && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
-                && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
-                && message.getRecipients(Message.RecipientType.CC)
-            .isNullOrEmpty() // no recipients in CC
-                && message.getRecipients(Message.RecipientType.BCC)
-            .isNullOrEmpty() // no recipients in BCC
 
 }
