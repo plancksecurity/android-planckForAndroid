@@ -52,6 +52,8 @@ class MessageViewViewModel @Inject constructor(
 ) : ViewModel() {
     private lateinit var messageReference: MessageReference
     private lateinit var account: Account
+    lateinit var message: LocalMessage
+        private set
 
     private val messageViewStateLiveData: MutableLiveData<MessageViewState> =
         MutableLiveData(Idle)
@@ -65,6 +67,8 @@ class MessageViewViewModel @Inject constructor(
         this.messageReference = messageReference
         this.account = preferences.getAccount(messageReference.accountUuid)
     }
+
+    fun hasMessage(): Boolean = ::message.isInitialized
 
     fun downloadCompleteMessage() {
         viewModelScope.launch {
@@ -80,20 +84,37 @@ class MessageViewViewModel @Inject constructor(
         }
     }
 
-    fun canResetSenderKeys(message: LocalMessage?): Boolean {
-        message ?: return false
-        return (message.account?.isPlanckPrivacyProtected ?: false)
+    fun canResetSenderKeys(): Boolean {
+        return ::message.isInitialized
+                && (message.account?.isPlanckPrivacyProtected ?: false)
                 && messageConditionsForSenderKeyReset(message)
                 && ratingConditionsForSenderKeyReset(message.planckRating)
     }
 
-    fun checkCanHandshakeSender(message: LocalMessage?) {
+    fun checkCanHandshakeSender() {
         viewModelScope.launch {
-            (message.isValidForHandshake()
-                    && PlanckUtils.isRatingReliable(getSenderRating(message!!))).also {
+            (::message.isInitialized && message.isValidForHandshake()
+                    && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
                 allowHandshakeSenderLiveData.value = Event(it)
             }
         }
+    }
+
+    fun toggleFlagged() {
+        val newState = !message.isSet(Flag.FLAGGED)
+        controller.setFlag(
+            account,
+            message.folder.name,
+            listOf(message),
+            Flag.FLAGGED,
+            newState
+        )
+    }
+
+    fun toggleRead() {
+        controller.setFlag(
+            account, message.folder.name, listOf(message), Flag.SEEN, !message.isSet(Flag.SEEN)
+        )
     }
 
     private suspend fun getSenderRating(message: LocalMessage): Rating =
@@ -136,6 +157,7 @@ class MessageViewViewModel @Inject constructor(
     private suspend fun messageLoaded(
         message: LocalMessage
     ) {
+        this.message = message
         val loadedState =
             if (message.hasToBeDecrypted()) EncryptedMessageLoaded(message)
             else DecryptedMessageLoaded(message, moveToSuspiciousFolder)
@@ -257,6 +279,8 @@ class MessageViewViewModel @Inject constructor(
             val folder = message.folder
             folder.storeSmallMessage(decryptedMessage) {}
         }.onSuccess {
+            this.message = it
+            it.recoverRating()
             moveToSuspiciousFolder = PlanckUtils.isRatingDangerous(decryptResult.rating)
             messageViewStateLiveData.postValue(
                 DecryptedMessageLoaded(it, moveToSuspiciousFolder)

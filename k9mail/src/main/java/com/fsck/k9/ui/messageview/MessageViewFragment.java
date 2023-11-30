@@ -125,7 +125,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private PlanckFabMenu pEpFabMenu;
     private Account mAccount;
     private MessageReference mMessageReference;
-    private LocalMessage mMessage;
     private MessagingController mController;
     private DownloadManager downloadManager;
     private Handler handler = new Handler();
@@ -313,8 +312,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         } else if (messageViewState instanceof ErrorDecryptingMessage) {
             showGenericErrorFeedback(((ErrorDecryptingMessage) messageViewState).getThrowable());
         } else if (messageViewState instanceof ErrorDecodingMessage) {
-            boolean shouldStopProgressDialog = !LocalMessageKt.hasToBeDecrypted(mMessage);
-            showMessage(((ErrorDecodingMessage) messageViewState).getInfo(), shouldStopProgressDialog);
+            showMessage(((ErrorDecodingMessage) messageViewState).getInfo(), true);
         } else if (messageViewState instanceof ErrorDownloadingMessageNotFound) {
             showDownloadMessageNotFound((ErrorDownloadingMessageNotFound) messageViewState);
         } else if (messageViewState instanceof ErrorDownloadingNetworkError) {
@@ -334,9 +332,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void messageLoaded(LocalMessage message) {
-        mMessage = message;
-        displayHeaderForLoadingMessage(mMessage);
-        recoverRating(mMessage);
+        displayHeaderForLoadingMessage(message);
+        recoverRating(message);
         ((MessageList) requireActivity()).setMessageViewVisible(true);
     }
 
@@ -350,9 +347,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
             );
         }
-        senderPlanckHelper.initialize(mMessage);
+        senderPlanckHelper.initialize(viewModel.getMessage());
         mMessageView.displayViewOnLoadFinished(true);
-        viewModel.checkCanHandshakeSender(mMessage);
+        viewModel.checkCanHandshakeSender();
         mFragmentListener.updateMenu();
         setToolbar();
     }
@@ -441,7 +438,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean shouldDisplayResetSenderKeyOption() {
-        return viewModel.canResetSenderKeys(mMessage);
+        return viewModel.canResetSenderKeys();
     }
 
     public void resetSenderKey() {
@@ -513,7 +510,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void refreshRating(Rating rating) {
         pEpRating = rating;
         setToolbar();
-        mMessageView.setHeaders(mMessage, mAccount);
+        mMessageView.setHeaders(viewModel.getMessage(), mAccount);
     }
 
     private void setToolbar() {
@@ -521,7 +518,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             planckSecurityStatusLayout.setIncomingRating(
                     pEpRating,
                     !mAccount.isPlanckPrivacyProtected()
-                            || mMessage.isSet(Flag.X_SMIME_SIGNED)
+                            || viewModel.getMessage().isSet(Flag.X_SMIME_SIGNED)
             );
             toolBarCustomizer.setMessageToolbarColor();
             toolBarCustomizer.setMessageStatusBarColor();
@@ -564,7 +561,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
      * Called from UI thread when user select Delete
      */
     public void onDelete() {
-        if (K9.confirmDelete() || (K9.confirmDeleteStarred() && mMessage.isSet(Flag.FLAGGED))) {
+        if (K9.confirmDelete() || (K9.confirmDeleteStarred() && viewModel.getMessage().isSet(Flag.FLAGGED))) {
             showDialog(R.id.dialog_confirm_delete);
         } else {
             delete();
@@ -580,7 +577,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void delete() {
-        if (mMessage != null) {
+        if (viewModel.hasMessage()) {
             // Disable the delete button after it's tapped (to try to prevent
             // accidental clicks)
             mFragmentListener.disableDeleteAction();
@@ -626,35 +623,33 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onReply() {
-        if (mMessage != null) {
-            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(mMessage));
+        if (viewModel.hasMessage()) {
+            mFragmentListener.onReply(viewModel.getMessage().makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(viewModel.getMessage()));
         }
     }
 
     public void onReplyAll() {
-        if (mMessage != null) {
-            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(mMessage));
+        if (viewModel.hasMessage()) {
+            mFragmentListener.onReplyAll(viewModel.getMessage().makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(viewModel.getMessage()));
         }
     }
 
     public void onForward() {
-        if (mMessage != null) {
-            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(mMessage));
+        if (viewModel.hasMessage()) {
+            mFragmentListener.onForward(viewModel.getMessage().makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(viewModel.getMessage()));
         }
     }
 
     public void onToggleFlagged() {
-        if (mMessage != null) {
-            boolean newState = !mMessage.isSet(Flag.FLAGGED);
-            mController.setFlag(mAccount, mMessage.getFolder().getName(),
-                    Collections.singletonList(mMessage), Flag.FLAGGED, newState);
-            mMessageView.setHeaders(mMessage, mAccount);
+        if (viewModel.hasMessage()) {
+            viewModel.toggleFlagged();
+            mMessageView.setHeaders(viewModel.getMessage(), mAccount);
         }
     }
 
     public void onMove() {
         if ((!mController.isMoveCapable(mAccount))
-                || (mMessage == null)) {
+                || (!viewModel.hasMessage())) {
             return;
         }
         if (!mController.isMoveCapable(mMessageReference)) {
@@ -668,7 +663,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onCopy() {
         if ((!mController.isCopyCapable(mAccount))
-                || (mMessage == null)) {
+                || (!viewModel.hasMessage())) {
             return;
         }
         if (!mController.isCopyCapable(mMessageReference)) {
@@ -749,8 +744,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onSendAlternate() {
-        if (mMessage != null) {
-            mController.sendAlternate(getActivity(), mAccount, mMessage);
+        if (viewModel.hasMessage()) {
+            mController.sendAlternate(getActivity(), mAccount, viewModel.getMessage());
         }
     }
 
@@ -761,17 +756,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 permissionChecker,
                 mMessageView.getCurrentAttachmentResolver(),
                 mMessageView.getCurrentAttachments(),
-                mMessage,
+                viewModel.getMessage(),
                 mMessageView.toHtml());
         printMessage.print();
     }
 
     public void onToggleRead() {
-        if (mMessage != null) {
-            mController.setFlag(mAccount, mMessage.getFolder().getName(),
-                    Collections.singletonList(mMessage), Flag.SEEN, !mMessage.isSet(Flag.SEEN));
-            mMessageView.setHeaders(mMessage, mAccount);
-            String subject = mMessage.getSubject();
+        if (viewModel.hasMessage()) {
+            viewModel.toggleRead();
+            mMessageView.setHeaders(viewModel.getMessage(), mAccount);
+            String subject = viewModel.getMessage().getSubject();
             displayMessageSubject(subject);
             mFragmentListener.updateMenu();
         }
@@ -904,11 +898,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean isMessageFlagged() {
-        return (mMessage != null) && mMessage.isSet(Flag.FLAGGED);
+        return (viewModel.hasMessage()) && viewModel.getMessage().isSet(Flag.FLAGGED);
     }
 
     public boolean isMessageRead() {
-        return (mMessage != null) && mMessage.isSet(Flag.SEEN);
+        return (viewModel.hasMessage()) && viewModel.getMessage().isSet(Flag.SEEN);
     }
 
     public boolean isCopyCapable() {
@@ -930,8 +924,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void updateTitle() {
-        if (mMessage != null) {
-            displayMessageSubject(mMessage.getSubject());
+        if (viewModel.hasMessage()) {
+            displayMessageSubject(viewModel.getMessage().getSubject());
         }
     }
 
@@ -1013,17 +1007,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void refreshRecipients(Context context) {
         ArrayList<Identity> addresses = new ArrayList<>();
-        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(mMessage.getFrom()), context));
-        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), context));
-        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), context));
+        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(viewModel.getMessage().getFrom()), context));
+        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(viewModel.getMessage().getRecipients(Message.RecipientType.TO)), context));
+        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(viewModel.getMessage().getRecipients(Message.RecipientType.CC)), context));
         planckUIArtefactCache.setRecipients(mAccount, addresses);
     }
 
     public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        if (MessageKt.isValidForHandshake(mMessage)) {
+        if (MessageKt.isValidForHandshake(viewModel.getMessage())) {
             String myAddress = mAccount.getEmail();
-            VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, mMessage.getFrom()[0].getAddress(), myAddress, getMessageReference(), true);
+            VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, viewModel.getMessage().getFrom()[0].getAddress(), myAddress, getMessageReference(), true);
         }
     }
 
