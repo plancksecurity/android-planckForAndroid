@@ -365,10 +365,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
                     DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
             );
+        } else {
+            setToolbar();
+            mFragmentListener.updateMenu();
         }
         mMessageView.displayViewOnLoadFinished(true);
-        mFragmentListener.updateMenu();
-        setToolbar();
+
     }
 
     private void showDownloadMessageNetworkError(ErrorDownloadingNetworkError messageViewState) {
