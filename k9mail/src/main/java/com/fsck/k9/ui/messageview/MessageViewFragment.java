@@ -498,7 +498,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void refreshRating(Rating rating) {
         pEpRating = rating;
         setToolbar();
-        mMessage.setPlanckRating(pEpRating);
         mMessageView.setHeaders(mMessage, mAccount);
     }
 
