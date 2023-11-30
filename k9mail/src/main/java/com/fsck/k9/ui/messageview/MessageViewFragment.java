@@ -433,7 +433,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onResume() {
         super.onResume();
-        if (justStarted) {
+        if (justStarted) { // TODO: 30/11/23 To remove this workaround we may need to first remove the ViewAnimator in MessageList
             justStarted = false;
             ((MessageList) requireActivity()).setMessageViewVisible(true);
             setupSwipeDetector();
