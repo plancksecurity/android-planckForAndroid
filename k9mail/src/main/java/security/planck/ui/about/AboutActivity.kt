@@ -29,7 +29,7 @@ class AboutActivity : K9Activity() {
 
     private val versionNumber: String = BuildConfig.VERSION_NAME
         .substringAfter('v')
-        .substringBefore('-')
+        .substringBefore('-').replace(".enterprise", "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
