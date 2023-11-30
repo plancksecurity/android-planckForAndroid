@@ -23,7 +23,6 @@ import androidx.core.view.isVisible
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
-import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -31,6 +30,7 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckImporterActivity
+import com.fsck.k9.planck.infrastructure.extensions.showTermsAndConditions
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.planck.ui.listeners.indexedFolderClickListener
@@ -220,7 +220,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         )
 
         termsAndConditionsTextView.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
+            showTermsAndConditions()
         }
 
         if (!K9.isHideSpecialAccounts()) {
@@ -573,19 +573,18 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         // dismissed. Make sure we have all information necessary before creating a new dialog.
         when (id) {
             DIALOG_REMOVE_ACCOUNT -> {
-                return if (selectedContextAccount == null) {
-                    null
-                } else ConfirmationDialog.create(
+                return selectedContextAccount?.let { baseAccount ->
+                    ConfirmationDialog.create(
                         this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                            if (selectedContextAccount?.description.isNullOrBlank())
-                                selectedContextAccount?.email
+                            if (baseAccount.description.isNullOrBlank())
+                                baseAccount.email
                             else
-                                selectedContextAccount?.description
+                                baseAccount.description
                         ),
                         R.string.okay_action,
                         R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
-
+                }
             }
             DIALOG_CLEAR_ACCOUNT -> {
                 return if (selectedContextAccount == null) {
@@ -687,7 +686,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         when (id) {
             DIALOG_REMOVE_ACCOUNT -> {
                 alert.setMessage(getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description))
+                    if (selectedContextAccount?.description.isNullOrBlank())
+                        selectedContextAccount?.email
+                    else
+                        selectedContextAccount?.description
+                ))
             }
             DIALOG_CLEAR_ACCOUNT -> {
                 alert.setMessage(getString(R.string.account_clear_dlg_instructions_fmt,

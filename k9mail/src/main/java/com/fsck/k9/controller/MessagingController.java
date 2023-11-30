@@ -123,7 +123,7 @@ import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.planck.audit.AuditLogger;
 import security.planck.auth.OAuthTokenRevokedReceiver;
-import security.planck.echo.EchoMessageReceivedListener;
+import security.planck.echo.MessageReceivedListener;
 import security.planck.notification.GroupMailInvite;
 import security.planck.notification.GroupMailSignal;
 import timber.log.Timber;
@@ -331,7 +331,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         throw new Error(e);
     }
 
-    public void setEchoMessageReceivedListener(EchoMessageReceivedListener listener) {
+    public void setEchoMessageReceivedListener(MessageReceivedListener listener) {
         planckProvider.setEchoMessageReceivedListener(listener);
     }
 

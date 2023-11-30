@@ -48,7 +48,7 @@ class SyncRepositoryTest : RobolectricTest() {
         every { uuid }.returns(UUID)
     }
     private val preferences: Preferences = mockk {
-        every { accounts }.returns(listOf(account))
+        every { accounts }.answers { listOf(account) }
     }
     private val planckProvider: PlanckProvider = mockk(relaxed = true)
     private val messagingController: MessagingController = mockk(relaxed = true)
@@ -318,6 +318,22 @@ class SyncRepositoryTest : RobolectricTest() {
             SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = true)
         )
         verify { timer.startOrReset(INITIAL_HANDSHAKE_AVAILABLE_WAIT, any()) }
+    }
+
+    @Test
+    fun `userConnected() stops and restarts sync if current state is not HandshakeReadyAwaitingUser and device just left a device group`() {
+        every { k9.deviceJustLeftGroup() }.returns(true)
+        every { planckProvider.isSyncRunning }.returns(false)
+
+
+        syncRepository.userConnected()
+
+
+        verify { planckProvider.stopSync() }
+        verify { k9.markDeviceJustLeftGroup(false) }
+        verify { planckProvider.updateSyncAccountsConfig() }
+        verify { planckProvider.isSyncRunning }
+        verify { planckProvider.startSync() }
     }
 
     @Test

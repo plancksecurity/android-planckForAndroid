@@ -395,6 +395,15 @@ public class ChooseFolder extends K9ListActivity {
         return mHideCurrentFolder && (name.equals(mFolder) || (
                 mAccount.getInboxFolderName().equalsIgnoreCase(mFolder) &&
                         mAccount.getInboxFolderName().equalsIgnoreCase(name)) ||
-                mAccount.getDraftsFolderName().equals(name));
+                mAccount.getDraftsFolderName().equals(name)) ||
+                isPlanckInternalFolder(name) || isPlanckInternalSuspiciousFolder(name);
+    }
+
+    private boolean isPlanckInternalSuspiciousFolder(String folderName) {
+        return mAccount.getPlanckSuspiciousFolderName().equals(folderName);
+    }
+
+    private boolean isPlanckInternalFolder(String folderName) {
+        return mAccount.getDefaultpEpSyncFolderName().equals(folderName);
     }
 }

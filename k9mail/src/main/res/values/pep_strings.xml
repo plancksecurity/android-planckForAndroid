@@ -8,8 +8,8 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="planck_documentation_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/user-guide-for-android</string>
+    <string name="planck_terms_and_conditions_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/terms-conditions</string>
     <string name="pEp_trustwords">planck Trustwords</string>
-    <string name="device_group_rejoin_warning">The app must be restarted in order to join a device group after leaving one.</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
@@ -196,8 +196,6 @@
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="sync_title">planck sync wizard</string>
     <string name="sync_action">Sync</string>
-    <string name="action_restart">Restart</string>
-    <string name="action_postpone">Later</string>
     <string name="reset">Reset</string>
     <string name="offline">Device is offline. Please fix internet connection and try again.</string>
     <string name="reset_all">Yes, Reset</string>

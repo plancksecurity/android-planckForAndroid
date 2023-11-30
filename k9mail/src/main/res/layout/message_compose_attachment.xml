@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_weight="1"
-            android:ellipsize="start"
+            android:ellipsize="middle"
             android:fontFamily="sans-serif"
             android:singleLine="true"
             android:textColor="?android:textColorPrimary"

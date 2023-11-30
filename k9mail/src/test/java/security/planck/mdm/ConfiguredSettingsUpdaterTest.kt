@@ -426,6 +426,40 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     }
 
     @Test
+    fun `update() adds linebreaks before the key material body start if key material matches criteria`() {
+        val restrictions = getExtraKeysBundle(
+            material1 = REAL_KEY_MATERIAL_START
+        )
+        val entry = getExtraKeysRestrictionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verify {
+            planck.importExtraKey(REAL_KEY_MATERIAL_START_UPDATED.trim().toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
+        }
+    }
+
+    @Test
+    fun `update() does not add linebreaks before the key material body start if key material does not match criteria`() {
+        val restrictions = getExtraKeysBundle(
+            material1 = FAKE_KEY_MATERIAL_START
+        )
+        val entry = getExtraKeysRestrictionEntry()
+
+
+        callUpdate(restrictions, entry)
+
+
+        verify {
+            planck.importExtraKey(FAKE_KEY_MATERIAL_START.trim().toByteArray())
+            planck.importExtraKey(KEY_MATERIAL_2.toByteArray())
+        }
+    }
+
+    @Test
     fun `update() set extra keys to empty set if not provided in bundle`() {
         val restrictions = Bundle()
         val entry = getExtraKeysRestrictionEntry()
@@ -758,17 +792,19 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     private fun getExtraKeysBundle(
         fpr1: String = KEY_FPR_1,
         fpr2: String = KEY_FPR_2,
+        material1: String = KEY_MATERIAL_1,
+        material2: String = KEY_MATERIAL_2,
     ) = Bundle().apply {
         putParcelableArray(
             RESTRICTION_PLANCK_EXTRA_KEYS,
             arrayOf(
                 bundleOf(
                     RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT to fpr1,
-                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to KEY_MATERIAL_1
+                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to material1
                 ),
                 bundleOf(
                     RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT to fpr2,
-                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to KEY_MATERIAL_2
+                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to material2
                 ),
             )
         )
@@ -851,7 +887,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     private fun stubImportExtraKeyBehavior(
         planck: PlanckProvider,
-        behaviors: MutableMap<String, ReturnBehavior<Vector<String>>> = defaultImportExtraKeyBehaviors
+        behaviors: Map<String, ReturnBehavior<Vector<String>>> = defaultImportExtraKeyBehaviors
     ) {
         val keySlot = mutableListOf<ByteArray>()
         every { planck.importExtraKey(capture(keySlot)) }.answers {
@@ -2775,6 +2811,26 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         private const val KEY_FPR_2 = "2222222222222222222222222222222222222222"
         private const val KEY_MATERIAL_1 = "keymaterial1"
         private const val KEY_MATERIAL_2 = "keymaterial2"
+        private const val REAL_KEY_MATERIAL_START =
+            "comment\n" +
+                    "xjMEY9OobxYJKwYBBAHaRw8BAQdADRQay4tPfxu2PIJ6sw6Z4gZDXESaX1KZZ1nE\n" +
+                    "KkGTpXbCwBEEHxYKAIMFgmPTqG8FiQWkj70DCwkHCRBum59KMDX840cUAAAAAAAe\n" +
+                    "ACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcmemVc1Oks1c7Q20Bi9S4uqY\n" +
+                    "/aMiGCiOOBLVlaO8A6crqAMVCggCmwECHgEWIQQ/i189pVs58d9t43tum59KMDX8\n" +
+                    "4wAA0RUBAL72eYxNQsb870U4/FPYy09JJjPoP3S/B3d9ukESJsj9AQDSq4ZTkVlV\n"
+        private const val REAL_KEY_MATERIAL_START_UPDATED =
+            "comment\n\n\n" +
+                    "xjMEY9OobxYJKwYBBAHaRw8BAQdADRQay4tPfxu2PIJ6sw6Z4gZDXESaX1KZZ1nE\n" +
+                    "KkGTpXbCwBEEHxYKAIMFgmPTqG8FiQWkj70DCwkHCRBum59KMDX840cUAAAAAAAe\n" +
+                    "ACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcmemVc1Oks1c7Q20Bi9S4uqY\n" +
+                    "/aMiGCiOOBLVlaO8A6crqAMVCggCmwECHgEWIQQ/i189pVs58d9t43tum59KMDX8\n" +
+                    "4wAA0RUBAL72eYxNQsb870U4/FPYy09JJjPoP3S/B3d9ukESJsj9AQDSq4ZTkVlV\n"
+        private const val FAKE_KEY_MATERIAL_START =
+            "xjMEY9OobxYJKwYBBAHaRw8BAQdADR Qay4tPfxu2PIJ6sw6Z4gZDXESaX1KZZ1nE\n" +
+                    "KkGTpXbCwBEEHxYKAIMFgmPTqG8FiQWkj70DCwkHCRBum59KMDX840cUAAAAAAAeu\n" +
+                    "ACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcmemVc1Oks1c7Q20Bi9S4uqY\n" +
+                    "/aMiGCiOOBLVlaO8A6crqAMVCggCmwECHgEWIQQ/i189pVs58d9t43tum59KMDX8\n" +
+                    "4wAA0RUBAL72eYxNQsb870U4/FPYy09JJjPoP3S/B3d9ukESJsj9AQDSq4ZTkVlV\n"
         private const val WRONG_FPR = "WRONG_FPR"
         private const val NEW_ACCOUNT_DESCRIPTION = "newAccountDescription"
         private const val NEW_SENDER_NAME = "new sender name"

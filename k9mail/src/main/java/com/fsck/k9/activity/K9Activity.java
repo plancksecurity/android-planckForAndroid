@@ -434,9 +434,4 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         outState.putString(K9ACTIVITY_SEARCH_TEXT, searchText);
         outState.putBoolean(SHOWING_SEARCH_VIEW, isShowingSearchView);
     }
-
-    protected String getFormattedVersionForUserManual() {
-        return BuildConfig.VERSION_NAME.substring(0, BuildConfig.VERSION_NAME.indexOf('-'))
-                .replace('.', '-');
-    }
 }

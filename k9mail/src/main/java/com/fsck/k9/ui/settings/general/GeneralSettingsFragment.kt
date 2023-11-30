@@ -3,7 +3,6 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,7 +20,6 @@ import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.manualsync.PlanckSyncWizard
-import com.fsck.k9.planck.ui.activities.SplashActivity
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
@@ -90,7 +88,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             val result = bundle.getInt(LeaveDeviceGroupDialog.RESULT_KEY)
             if (result == LeaveDeviceGroupDialog.EXECUTED) {
                 updateLeaveDeviceGroupPreferenceVisibility()
-                k9.markDeviceJustLeftGroup()
+                k9.markDeviceJustLeftGroup(true)
             }
         }
     }
@@ -190,11 +188,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             setOnPreferenceClickListener {
                 view?.let {
                     if (isDeviceOnline()) {
-                        if (k9.deviceJustLeftGroup()) {
-                            showRestartDialog(it)
-                        } else {
-                            showManualSyncDialog(it)
-                        }
+                        showManualSyncDialog(it)
                     } else {
                         Snackbar.make(it, R.string.offline, Snackbar.LENGTH_LONG).show()
                     }
@@ -212,23 +206,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(R.string.sync_action) { _, _ ->
                 startManualSync()
             }.setNegativeButton(R.string.cancel_action, null).show()
-
-    private fun showRestartDialog(it: View): AlertDialog? =
-        AlertDialog.Builder(it.context)
-            .setTitle(getString(R.string.sync_title))
-            .setMessage(R.string.device_group_rejoin_warning)
-            .setCancelable(true)
-            .setPositiveButton(R.string.action_restart) { _, _ ->
-                restartApp()
-            }.setNegativeButton(R.string.action_postpone, null).show()
-
-    private fun restartApp() {
-        val intent = Intent(context, SplashActivity::class.java)
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
-        context?.startActivity(intent)
-        activity?.finish()
-        Runtime.getRuntime().exit(0)
-    }
 
     private fun startManualSync() {
         startForResult.launch(Intent(context, PlanckSyncWizard::class.java))
@@ -372,7 +349,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         pEpProvider.keyResetAllOwnKeys()
         if (syncRepository.isGrouped) {
-            k9.markDeviceJustLeftGroup()
+            k9.markDeviceJustLeftGroup(true)
         }
     }
 
