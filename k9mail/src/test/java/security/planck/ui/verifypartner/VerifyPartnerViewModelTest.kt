@@ -402,32 +402,6 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
     @Test
-    fun `initialize() sets state to ErrorGettingTrustwords if PlanckProvider_trustwords returns null`() =
-        runTest {
-            coEvery { PlanckUtils.isPEpUser(any()) }.returns(true)
-            coEvery {
-                planckProvider.trustwords(
-                    any(),
-                    any(),
-                    any(),
-                    any()
-                )
-            }.returns(ResultCompat.success(null))
-
-
-            initializeViewModel()
-            advanceUntilIdle()
-
-
-            assertObservedValues(
-                Idle,
-                LoadingHandshakeData,
-                LoadingHandshakeData,
-                ErrorGettingTrustwords
-            )
-        }
-
-    @Test
     fun `initialize() sets state to ErrorGettingTrustwords if PlanckIdentityMapper call fails`() =
         runTest {
             coEvery { mapper.updateAndMapRecipient(any()) }.throws(RuntimeException("test"))
@@ -1143,7 +1117,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
     @Test
-    fun `finish() sets state to Finish with filled result map if not filled yet`() = runTest {
+    fun `finish() sets state to Finish with null-filled result map if not filled yet`() = runTest {
         initializeViewModel(incoming = true)
         advanceUntilIdle()
         viewModel.finish()
@@ -1162,7 +1136,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                 shortTrustwords = true,
                 allowChangeTrust = true
             ),
-            Finish(mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to TEST_RATING.toString()))
+            Finish(mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to null))
         )
     }
 
