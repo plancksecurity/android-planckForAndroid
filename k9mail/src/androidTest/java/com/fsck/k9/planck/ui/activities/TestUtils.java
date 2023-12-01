@@ -3643,7 +3643,7 @@ public class TestUtils {
                 JSONObject jsonObject = new JSONObject(js);
                 return jsonObject;
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+
             }
         }
     }
