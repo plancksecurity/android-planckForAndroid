@@ -112,12 +112,10 @@ class MessageViewViewModel @Inject constructor(
                 && ratingConditionsForSenderKeyReset(message.planckRating)
     }
 
-    private fun checkCanHandshakeSender() {
-        viewModelScope.launch {
-            (::message.isInitialized && message.isValidForHandshake()
-                    && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
-                allowHandshakeSenderLiveData.value = Event(it)
-            }
+    private suspend fun checkCanHandshakeSender() {
+        (message.isValidForHandshake()
+                && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
+            allowHandshakeSenderLiveData.value = Event(it)
         }
     }
 
@@ -173,7 +171,7 @@ class MessageViewViewModel @Inject constructor(
     }
 
     private suspend fun getSenderRating(message: LocalMessage): Rating =
-        withContext(PlanckDispatcher) {
+        withContext(dispatcherProvider.planckDispatcher()) {
             planckProvider.getRating(message.from.first())
         }.getOrDefault(Rating.pEpRatingUndefined)
 
@@ -202,7 +200,6 @@ class MessageViewViewModel @Inject constructor(
                 Timber.e(it)
                 messageViewStateLiveData.postValue(ErrorLoadingMessage(it))
             }.onSuccess { message ->
-                // probably bring here logic from the fragment
                 message?.let {
                     messageLoaded(message)
                 } ?: messageViewStateLiveData.postValue(ErrorLoadingMessage())
@@ -213,8 +210,8 @@ class MessageViewViewModel @Inject constructor(
         message: LocalMessage
     ) {
         this.message = message
+        message.recoverRating()
         val loadedState = if (!message.hasToBeDecrypted()) {
-            message.recoverRating()
             checkCanHandshakeSender()
             DecryptedMessageLoaded(message, moveToSuspiciousFolder)
         } else {
@@ -327,7 +324,7 @@ class MessageViewViewModel @Inject constructor(
         )
     }
 
-    private fun messageDecrypted(
+    private suspend fun messageDecrypted(
         decryptResult: PlanckProvider.DecryptResult,
         message: LocalMessage
     ) {

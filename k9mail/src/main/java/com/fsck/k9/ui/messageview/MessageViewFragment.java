@@ -46,6 +46,7 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.extensions.LocalMessageKt;
 import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
@@ -1031,7 +1032,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        if (MessageKt.isValidForHandshake(viewModel.getMessage())) {
+        if (LocalMessageKt.isValidForHandshake(viewModel.getMessage())) {
             String myAddress = mAccount.getEmail();
             VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, viewModel.getMessage().getFrom()[0].getAddress(), myAddress, getMessageReference(), true);
         }
