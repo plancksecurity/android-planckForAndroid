@@ -2384,13 +2384,14 @@ public class CucumberTestSteps {
                     folderID = R.string.special_mailbox_name_archive;
                     break;
 
-        }
-        testUtils.openHamburgerMenu();
-        if (folder.equals("Suspicious")||folder.equals("suspicious")) {
-            testUtils.scrollUpNavigation();
-            testUtils.selectFromScreen("Suspicious");
-        } else {
-            testUtils.selectFromScreen(folderID);
+            }
+            testUtils.openHamburgerMenu();
+            if (folder.equals("Suspicious") || folder.equals("suspicious")) {
+                testUtils.scrollUpNavigation();
+                testUtils.selectFromScreen("Suspicious");
+            } else {
+                testUtils.selectFromScreen(folderID);
+            }
         }
     }
 
