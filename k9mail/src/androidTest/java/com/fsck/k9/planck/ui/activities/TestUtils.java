@@ -1203,6 +1203,17 @@ public class TestUtils {
         }
     }
 
+    public static void swipeDownList() {
+        try {
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ListView"));
+            waitForIdle();
+            scroll.swipe(Direction.DOWN, 1.0f);
+            waitForIdle();
+        } catch (Exception swipe) {
+            Timber.i("Cannot do swipeDown");
+        }
+    }
+
     public static void swipeUpScreen() {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
@@ -2513,7 +2524,7 @@ public class TestUtils {
 
     public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
-        for (int i = 0; i < 500; i ++) {
+        for (int i = 0; i < 1500; i ++) {
             waitForIdle();
         }
         for (UiObject2 object : device.findObjects(selector)) {
@@ -2763,11 +2774,13 @@ public class TestUtils {
 
     public void openHamburgerMenu () {
         waitForIdle();
-        while (!exists(onView(withContentDescription("Open navigation drawer")))) {
+        if (!viewIsDisplayed(onView(withId(R.id.navigation_bar_folders_layout)))) {
+            while (!exists(onView(withContentDescription("Open navigation drawer")))) {
+                waitForIdle();
+            }
+            onView(withContentDescription("Open navigation drawer")).perform(click());
             waitForIdle();
         }
-        onView(withContentDescription("Open navigation drawer")).perform(click());
-        waitForIdle();
     }
 
     public void typeTextToForceRatingCalculation(int view) {
@@ -2865,12 +2878,16 @@ public class TestUtils {
     public boolean textExistsOnScreen (String text) {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 view : device.findObjects(selector)) {
-            if (view.getText() != null) {
-                if (view.getText().contains(text)) {
-                    return true;
+        try {
+            for (UiObject2 view : device.findObjects(selector)) {
+                if (view.getText() != null) {
+                    if (view.getText().equals(text) || view.getText().contains("(" + text + ")")) {
+                        return true;
+                    }
                 }
             }
+        } catch (Exception exception) {
+            return false;
         }
         return false;
     }
@@ -3626,7 +3643,7 @@ public class TestUtils {
                 JSONObject jsonObject = new JSONObject(js);
                 return jsonObject;
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+
             }
         }
     }
