@@ -23,7 +23,6 @@ import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
-import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
@@ -54,8 +53,10 @@ class MessageViewViewModel @Inject constructor(
     private val context: Application,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
-    private lateinit var messageReference: MessageReference
-    private lateinit var account: Account
+    lateinit var messageReference: MessageReference
+        private set
+    lateinit var account: Account
+        private set
     lateinit var message: LocalMessage
         private set
 
@@ -79,9 +80,15 @@ class MessageViewViewModel @Inject constructor(
         MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
     val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
 
-    fun initialize(messageReference: MessageReference) {
-        this.messageReference = messageReference
-        this.account = preferences.getAccount(messageReference.accountUuid)
+    fun initialize(messageReferenceString: String?) {
+        kotlin.runCatching {
+            this.messageReference = MessageReference.parse(messageReferenceString!!)
+                ?: error("null reference")
+            this.account = preferences.getAccount(messageReference.accountUuid)
+                ?: error("account was removed")
+        }.onFailure {
+            messageViewStateLiveData.value = ErrorLoadingMessage(it, true)
+        }
     }
 
     fun hasMessage(): Boolean = ::message.isInitialized
@@ -137,7 +144,11 @@ class MessageViewViewModel @Inject constructor(
             viewModelScope.launch {
                 withContext(dispatcherProvider.io()) {
                     controller.setFlag(
-                        account, message.folder.name, listOf(message), Flag.SEEN, !message.isSet(Flag.SEEN)
+                        account,
+                        message.folder.name,
+                        listOf(message),
+                        Flag.SEEN,
+                        !message.isSet(Flag.SEEN)
                     )
                 }
                 readToggledLiveData.value = Event(true)
@@ -202,7 +213,7 @@ class MessageViewViewModel @Inject constructor(
         message: LocalMessage
     ) {
         this.message = message
-        val loadedState = if(!message.hasToBeDecrypted()) {
+        val loadedState = if (!message.hasToBeDecrypted()) {
             message.recoverRating()
             checkCanHandshakeSender()
             DecryptedMessageLoaded(message, moveToSuspiciousFolder)
@@ -221,23 +232,24 @@ class MessageViewViewModel @Inject constructor(
         }
     }
 
-    private suspend fun downloadMessageBody(complete: Boolean) = withContext(dispatcherProvider.io()) {
-        if (complete) {
-            controller.loadMessageRemote(
-                account,
-                messageReference.folderName,
-                messageReference.uid,
-                downloadMessageListener
-            )
-        } else {
-            controller.loadMessageRemotePartial(
-                account,
-                messageReference.folderName,
-                messageReference.uid,
-                downloadMessageListener
-            )
+    private suspend fun downloadMessageBody(complete: Boolean) =
+        withContext(dispatcherProvider.io()) {
+            if (complete) {
+                controller.loadMessageRemote(
+                    account,
+                    messageReference.folderName,
+                    messageReference.uid,
+                    downloadMessageListener
+                )
+            } else {
+                controller.loadMessageRemotePartial(
+                    account,
+                    messageReference.folderName,
+                    messageReference.uid,
+                    downloadMessageListener
+                )
+            }
         }
-    }
 
     private val downloadMessageListener: MessagingListener = object : SimpleMessagingListener() {
         override fun loadMessageRemoteFinished(account: Account, folder: String, uid: String) {

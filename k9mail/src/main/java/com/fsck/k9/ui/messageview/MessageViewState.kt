@@ -6,13 +6,19 @@ import com.fsck.k9.mailstore.MessageViewInfo
 sealed interface MessageViewState {
     object Idle : MessageViewState
     object Loading : MessageViewState
-    data class ErrorLoadingMessage(val throwable: Throwable? = null) : MessageViewState
+    data class ErrorLoadingMessage(
+        val throwable: Throwable? = null,
+        val close: Boolean = false
+    ) : MessageViewState
+
     object ErrorDecryptingMessageKeyMissing : MessageViewState
     data class ErrorDecryptingMessage(val throwable: Throwable) : MessageViewState
     data class ErrorDownloadingMessageNotFound(val throwable: Throwable) : MessageViewState
     data class ErrorDownloadingNetworkError(val throwable: Throwable) : MessageViewState
-    data class ErrorDecodingMessage(val info: MessageViewInfo, val throwable: Throwable) :
-        MessageViewState
+    data class ErrorDecodingMessage(
+        val info: MessageViewInfo,
+        val throwable: Throwable
+    ) : MessageViewState
 
     data class DecryptedMessageLoaded(
         val message: LocalMessage,

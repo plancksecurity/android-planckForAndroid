@@ -40,7 +40,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.MessageList;
@@ -279,11 +278,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
-        mMessageReference = MessageReference.parse(messageReferenceString);
-        mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
-        Timber.d("MessageView displaying message %s", mMessageReference);
         observeViewModel();
-        viewModel.initialize(mMessageReference);
+        viewModel.initialize(messageReferenceString);
+        mMessageReference = viewModel.getMessageReference();
+        Timber.d("MessageView displaying message %s", mMessageReference);
+        mAccount = viewModel.getAccount();
     }
 
     private void observeViewModel() {
@@ -414,6 +413,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 Snackbar.LENGTH_LONG,
                 ERROR_DEBUG_FEEDBACK_MAX_LINES
         );
+        if (messageViewState.getClose()) {
+            requireActivity().onBackPressed();
+        }
     }
 
     @Override
