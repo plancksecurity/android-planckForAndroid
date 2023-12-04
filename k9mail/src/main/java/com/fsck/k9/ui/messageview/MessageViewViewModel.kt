@@ -16,6 +16,7 @@ import com.fsck.k9.extensions.isMessageIncomplete
 import com.fsck.k9.extensions.isValidForHandshake
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
+import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
@@ -24,8 +25,8 @@ import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
+import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.livedata.Event
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecodingMessage
@@ -224,7 +225,7 @@ class MessageViewViewModel @Inject constructor(
             downloadMessageBody(false)
         } else if (message.hasToBeDecrypted()) {
             decryptMessage(message)
-        } else {
+        } else if (!moveToSuspiciousFolder) {
             decodeMessage(message)
         }
     }
@@ -303,14 +304,14 @@ class MessageViewViewModel @Inject constructor(
         return MessageViewInfo.createWithErrorState(localMessage, isMessageIncomplete)
     }
 
-    private suspend fun decryptMessage(message: LocalMessage) {
+    private suspend fun decryptMessage(message: LocalMessage) =
         planckProvider.decryptMessage(message, account)
-            .onSuccess { decryptResult ->
-                messageDecrypted(decryptResult, message)
-            }.onFailure { throwable ->
+            .onFailure { throwable ->
                 messageDecryptFailed(throwable)
+            }.flatMapSuspend { decryptResult ->
+                messageDecrypted(decryptResult, message)
             }
-    }
+
 
     private fun messageDecryptFailed(throwable: Throwable) {
         messageViewStateLiveData.postValue(
@@ -324,28 +325,23 @@ class MessageViewViewModel @Inject constructor(
         )
     }
 
-    private suspend fun messageDecrypted(
+    private fun messageDecrypted(
         decryptResult: PlanckProvider.DecryptResult,
         message: LocalMessage
-    ) {
-        kotlin.runCatching {
-            val decryptedMessage: MimeMessage = decryptResult.msg
-            // sync UID so we know our mail...
-            decryptedMessage.uid = message.uid
-            // Store the updated message locally
-            val folder = message.folder
-            folder.storeSmallMessage(decryptedMessage) {}
-        }.onSuccess {
-            this.message = it
-            it.recoverRating()
-            checkCanHandshakeSender()
+    ) = kotlin.runCatching {
+        val decryptedMessage: MimeMessage = decryptResult.msg
+        // sync UID so we know our mail...
+        decryptedMessage.uid = message.uid
+        // set rating in header not to lose it
+        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(decryptResult.rating))
+        // Store the updated message locally
+        val folder = message.folder
+        folder.storeSmallMessage(decryptedMessage) {
             moveToSuspiciousFolder = PlanckUtils.isRatingDangerous(decryptResult.rating)
-            messageViewStateLiveData.postValue(
-                DecryptedMessageLoaded(it, moveToSuspiciousFolder)
-            )
-        }.onFailure {
-            messageViewStateLiveData.postValue(ErrorDecryptingMessage(it))
+            loadMessage()
         }
+    }.onFailure {
+        messageViewStateLiveData.postValue(ErrorDecryptingMessage(it))
     }
 
     private fun LocalMessage.recoverRating() {
