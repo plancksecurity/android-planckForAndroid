@@ -115,7 +115,7 @@ class MessageViewViewModel @Inject constructor(
     private suspend fun checkCanHandshakeSender() {
         (message.isValidForHandshake()
                 && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
-            allowHandshakeSenderLiveData.value = Event(it)
+            allowHandshakeSenderLiveData.postValue(Event(it))
         }
     }
 
