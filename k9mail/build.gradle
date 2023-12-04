@@ -30,6 +30,7 @@ apply from: '../gradle/plugins/utils/git-version.gradle'
 apply from: '../gradle/plugins/utils/addaccount.gradle'
 apply from: '../gradle/plugins/cucumber.gradle'
 apply from: '../gradle/plugins/customTest.gradle'
+apply from: '../gradle/plugins/prepareCoreBuild.gradle'
 try {
     apply from: '../gradle/plugins/customConfig.gradle'
 } catch(Exception ignored) {}

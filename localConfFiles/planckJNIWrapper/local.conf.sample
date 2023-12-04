@@ -1,0 +1,21 @@
+######### C++ Compiler #########
+# Should work with clang and g++
+# CXX=g++
+# DEBUG=0       # RELEASE Build / set to 1 for DEBUG build
+
+############ JAVA ##############
+# JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk8-temurin/Contents/Home
+# USE_JAVAH=0   # keep the build from using javah
+
+############ YML2 ##############
+#YML2_PATH=$(HOME)/code/yml2
+
+########### Engine #############
+#ENGINE_LIB_PATH=$(PREFIX)/lib
+#ENGINE_INC_PATH=$(PREFIX)/include
+
+
+########## libAdapter ##########
+#AD_LIB_PATH=$(PREFIX)/lib
+#AD_INC_PATH=$(PREFIX)/include
+  
