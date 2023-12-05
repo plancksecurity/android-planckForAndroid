@@ -1,0 +1,24 @@
+[submodule "core/libetpan"]
+	path = core/libetpan
+	url = git@github.com:plancksecurity/foundation-libetpan.git
+[submodule "core/planckCoreSequoiaBackend"]
+	path = core/planckCoreSequoiaBackend
+	url = git@github.com:plancksecurity/foundation-planckCoreSequoiaBackend.git
+[submodule "core/libPlanckTransport"]
+	path = core/libPlanckTransport
+	url = git@github.com:plancksecurity/foundation-libPlanckTransport.git
+[submodule "core/planckCoreV3"]
+	path = core/planckCoreV3
+	url = git@github.com:plancksecurity/foundation-planckCoreV3.git
+[submodule "core/libPlanckCxx11"]
+	path = core/libPlanckCxx11
+	url = git@github.com:plancksecurity/foundation-libPlanckCxx11.git
+[submodule "core/libPlanckWrapper"]
+	path = core/libPlanckWrapper
+	url = git@github.com:plancksecurity/foundation-libPlanckWrapper.git
+[submodule "core/planckJNIWrapper"]
+	path = core/planckJNIWrapper
+	url = git@github.com:plancksecurity/foundation-planckJNIWrapper.git
+[submodule "foldable-folder-list"]
+	path = foldable-folder-list
+	url = git@github.com:plancksecurity/android-foldable-folder-list.git
