@@ -373,14 +373,8 @@ interface PlanckProvider {
          */
         const val ENCRYPTED_MESSAGE_POSITION = 0
         const val PLANCK_OWN_USER_ID = "pEp_own_userId"
-        const val HALF_FINGERPRINT_LENGTH = 24
 
-        //long TIMEOUT = 4 * 60 * 60 * 1000;
         const val TIMEOUT = (10 * 60 * 1000).toLong()
-        const val PLANCK_PRIVATE_KEY_FPR = "pEpDetailsFpr"
-        const val PLANCK_PRIVATE_KEY_ADDRESS = "pEpDetailsAddress"
-        const val PLANCK_PRIVATE_KEY_USERNAME = "pEpDetailsUsername"
-        const val PLANCK_PRIVATE_KEY_FROM = "pEpDetailsFrom"
         const val PLANCK_ALWAYS_SECURE_TRUE = "yes"
         const val PLANCK_KEY_LIST_SEPARATOR = ","
         const val KEY_MISSING_ERROR_MESSAGE = "keyMissing"
