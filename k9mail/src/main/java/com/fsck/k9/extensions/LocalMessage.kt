@@ -17,13 +17,17 @@ fun LocalMessage.isMessageIncomplete(): Boolean {
 
 fun LocalMessage?.isValidForHandshake() = this != null
         && (account?.isPlanckPrivacyProtected ?: false)
-        && from != null
-        && from.size == 1
+        && hasSingleSenderNotMe()
         && PlanckUtils.isRatingReliable(planckRating)
         && getRecipients(Message.RecipientType.CC).isNullOrEmpty()
         && getRecipients(Message.RecipientType.BCC).isNullOrEmpty()
         && !getRecipients(Message.RecipientType.TO).isNullOrEmpty()
-        && !from.first().address.equals(account.email, ignoreCase = true) // sender not my own account
+
+private fun LocalMessage.hasSingleSenderNotMe(): Boolean =
+    from != null
+            && from.size == 1
+            // sender not my own account
+            && !from.first().address.equals(account.email, ignoreCase = true)
 
 private fun isMessageFullDownloaded(localMessage: LocalMessage): Boolean {
     return localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !MessageExtractor.hasMissingParts(
