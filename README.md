@@ -18,13 +18,15 @@ The following dependencies are needed to build the project:
 - rust
 - lxml
 - rosetta
-- asn1c
-- yml2
+- asn1c **(expected to be installed at system level**, otherwise see custom .conf files can be used as detailed below)
+- yml2 (**expected to be in \$HOME/yml2 by default**, otherwise see custom .conf files can be used as detailed below)
+
 ### Clone the project
 `git clone git@github.com:plancksecurity/android-planckForAndroid.git --recursive`
 
 ### Add custom .conf files as needed
 You can add custom .conf files for core repos in `localConfFiles/<repo-name>` folder. (See as an example `localConfFiles/planckJNIWrapper/local.conf.sample`).
+No files are needed by default.
 
 ### Run the project
 Click on "run" action on Android Studio or other IDE.
