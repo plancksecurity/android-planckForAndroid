@@ -1,6 +1,7 @@
 package com.fsck.k9.ui.messageview
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.fsck.k9.R
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.dialog.SimpleBackgroundTaskDialog
@@ -10,8 +11,7 @@ private const val DIALOG_TAG = "PARTNER_KEY_RESET"
 
 @AndroidEntryPoint
 class ResetPartnerKeyDialog : SimpleBackgroundTaskDialog() {
-    @Inject
-    lateinit var helper: SenderPlanckHelper
+    private val viewModel: MessageViewViewModel by viewModels(ownerProducer = { requireParentFragment() })
 
     override val title: String
         get() = getString(R.string.reset_partner_keys_title)
@@ -27,15 +27,17 @@ class ResetPartnerKeyDialog : SimpleBackgroundTaskDialog() {
         get() = getString(R.string.reset_partner_keys_confirmation_action)
 
     override fun dialogFinished() {
-        helper.partnerKeyResetFinished()
+        viewModel.partnerKeyResetFinished()
     }
 
     override fun taskTriggered() {
-        helper.resetPlanckData()
+        viewModel.resetPlanckData()
     }
 
     override fun dialogInitialized() {
-        helper.initializeResetPartnerKeyView(this)
+        viewModel.resetPartnerKeyState.observe(viewLifecycleOwner) {
+            showState(it)
+        }
     }
 
     companion object {
@@ -44,7 +46,7 @@ class ResetPartnerKeyDialog : SimpleBackgroundTaskDialog() {
         @JvmStatic
         fun Fragment.showResetPartnerKeyDialog() {
             val fragment = newInstance()
-            parentFragmentManager
+            childFragmentManager
                 .beginTransaction()
                 .add(fragment, DIALOG_TAG)
                 .commitAllowingStateLoss()

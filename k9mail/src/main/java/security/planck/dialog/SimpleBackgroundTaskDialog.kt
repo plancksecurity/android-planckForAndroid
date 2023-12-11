@@ -129,5 +129,5 @@ abstract class SimpleBackgroundTaskDialog : DialogFragment(), BackgroundTaskDial
         dialogFinished()
     }
     abstract fun taskTriggered()
-    abstract fun dialogInitialized()
+    open fun dialogInitialized() {}
 }

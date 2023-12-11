@@ -68,10 +68,10 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
         provisioningSettings
     )
 
-    private val defaultImportMediaKeyBehaviors: MutableMap<String, ReturnBehavior<Vector<Identity?>>> =
+    private val defaultImportMediaKeyBehaviors: MutableMap<String, ReturnBehavior<Vector<Identity>>> =
         mutableMapOf(
             KEY_MATERIAL_1 to ReturnBehavior.Return(
-                Vector<Identity?>(2).apply {
+                Vector<Identity>(2).apply {
                     add(
                         Identity().apply {
                             this.fpr = KEY_FPR_1
@@ -87,7 +87,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
                 }
             ),
             KEY_MATERIAL_2 to ReturnBehavior.Return(
-                Vector<Identity?>(2).apply {
+                Vector<Identity>(2).apply {
                     add(
                         Identity().apply {
                             this.fpr = KEY_FPR_2
@@ -859,11 +859,11 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
     fun stubImportKeyBehavior(
         planck: PlanckProvider,
         material: String,
-        behavior: ReturnBehavior<Vector<Identity?>>
+        behavior: ReturnBehavior<Vector<Identity>>
     ) {
         every { planck.importKey(material.toByteArray()) }.answers {
             when (behavior) {
-                is ReturnBehavior.Return -> behavior.value
+                is ReturnBehavior.Return -> behavior.value!!
                 is ReturnBehavior.Throw -> throw behavior.e
             }
         }
@@ -871,14 +871,14 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
 
     private fun stubImportKeyBehavior(
         planck: PlanckProvider,
-        behaviors: MutableMap<String, ReturnBehavior<Vector<Identity?>>> = defaultImportMediaKeyBehaviors
+        behaviors: MutableMap<String, ReturnBehavior<Vector<Identity>>> = defaultImportMediaKeyBehaviors
     ) {
         val keySlot = mutableListOf<ByteArray>()
         every { planck.importKey(capture(keySlot)) }.answers {
             val material = keySlot.last()
             behaviors[material.decodeToString()]!!.let { behavior ->
                 when (behavior) {
-                    is ReturnBehavior.Return -> behavior.value
+                    is ReturnBehavior.Return -> behavior.value!!
                     is ReturnBehavior.Throw -> throw behavior.e
                 }
             }
@@ -894,7 +894,7 @@ class ConfiguredSettingsUpdaterTest : RobolectricTest() {
             val material = keySlot.last()
             behaviors[material.decodeToString()]!!.let { behavior ->
                 when (behavior) {
-                    is ReturnBehavior.Return -> behavior.value
+                    is ReturnBehavior.Return -> behavior.value!!
                     is ReturnBehavior.Throw -> throw behavior.e
                 }
             }

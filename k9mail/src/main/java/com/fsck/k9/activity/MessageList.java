@@ -1999,10 +1999,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public void refreshMessageViewFragment(boolean moveMessageToSuspiciousFolder) {
+    public void refreshMessageViewFragment() {
         if(mMessageViewFragment != null) {
-            MessageViewFragment fragment = MessageViewFragment.newInstance(
-                    mMessageViewFragment.getMessageReference(), moveMessageToSuspiciousFolder);
+            MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageViewFragment.getMessageReference());
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.message_view_container, fragment);
             mMessageViewFragment = fragment;
