@@ -1,0 +1,4 @@
+############ YML2 ##############
+#YML2_PATH=/Users/ignaciogarcia/code/yml2
+#YML2_PROC=$(YML2_PATH)/yml2proc $(YML2_OPTS)
+#YML2_OPTS=--encoding=utf8
