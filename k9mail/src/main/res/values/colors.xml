@@ -6,6 +6,7 @@
 
     <color name="light_primary_color">#c8e6c9</color>
     <color name="primary_color_90">#EDE5FF</color>
+    <color name="attachment_color_selected">#EDE5FF</color>
     <color name="logo_primary_color">#04083D</color>
     <color name="link_primary_color">@color/colorPrimary</color>
     <color name="ic_launcher_background">@color/logo_primary_color</color>

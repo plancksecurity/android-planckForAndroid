@@ -2,11 +2,6 @@ package com.fsck.k9.planck.infrastructure.modules;
 
 import android.app.Activity;
 
-import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.infrastructure.ComposeView;
-import com.fsck.k9.planck.infrastructure.MessageView;
-import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
-
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -34,17 +29,5 @@ public class ActivityModule {
     @Provides
     public ResourcesProvider providepEpResourcesProvider(Activity activity) {
         return new PlanckResourcesProvider(activity);
-    }
-
-    @Provides
-    @ComposeView
-    public DisplayHtml provideDisplayHtmlForCompose(DisplayHtmlUiFactory factory) {
-        return factory.createForMessageCompose();
-    }
-
-    @Provides
-    @MessageView
-    public DisplayHtml provideDisplayHtmlForMessageView(DisplayHtmlUiFactory factory) {
-        return factory.createForMessageView();
     }
 }

@@ -41,6 +41,7 @@ SyncWizard: * Handshake is **locked** when user clicks on "Next" button to displ
 
     Wizard_Start --> CatchupAllowancePeriod : Handshake not available
 
+    CatchupAllowancePeriod: * If app just left a device group:\n    - stop sync\n    - re-initialize sync environment
     CatchupAllowancePeriod: * Start polling planck folder
     CatchupAllowancePeriod: * Wait 20 seconds to allow devices to \ncatch up each other's state
     CatchupAllowancePeriod: * Possibly a handshake is already ongoing
