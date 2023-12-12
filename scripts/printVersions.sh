@@ -10,7 +10,7 @@ function getGitTagOrBranchOrCommit() {
 function getAllVersions() {
   SCRIPT_FOLDER=$(dirname "$0")
   (
-    cd "$SCRIPT_FOLDER"/../.. || exit
+    cd "$SCRIPT_FOLDER"/../core || exit
     for i in $(find . -depth 1 -type d -not -path '*/.*' | gsed 's|./||');
     do
       (
@@ -18,10 +18,6 @@ function getAllVersions() {
         echo "$(git remote get-url --all origin) $(getGitTagOrBranchOrCommit)"
       )
     done
-    (
-      cd "pEpJNIAdapter/android/external/downloads/pEpEngineSequoiaBackend.git" || exit
-      echo "$(git remote get-url --all origin) $(getGitTagOrBranchOrCommit)"
-    )
   )
 }
 

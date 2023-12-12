@@ -1,0 +1,57 @@
+tasks.register('prepareCoreBuild') {
+    doLast {
+        copyLocalConfsIfNeeded()
+        populateCoreHeaderFilesIfNeeded()
+    }
+}
+
+private void populateCoreHeaderFilesIfNeeded() {
+    def coreFolder = new File(rootDir, "core/planckCoreV3")
+    if (coreFolder.exists()) {
+        def planckIncludeFolder = new File(coreFolder, "build-android/include/pEp")
+        if (!planckIncludeFolder.exists() || planckIncludeFolder.list().length == 0) {
+            planckIncludeFolder.mkdirs()
+            exec {
+                workingDir = coreFolder
+                commandLine = ['sh', '-c', 'build-android/takeOutHeaderFiles.sh $(pwd)']
+            }
+        }
+    }
+}
+
+private void copyLocalConfsIfNeeded() {
+    def localConfsFolder = new File(rootDir, "localConfFiles")
+    localConfsFolder.listFiles(new FileFilter() {
+        @Override
+        boolean accept(File pathname) {
+            return pathname.isDirectory()
+        }
+    }).each { folder ->
+        def destFolder = new File(rootDir, "core/${folder.name}")
+        def destConfFile = new File(destFolder, "local.conf")
+        def confTextSb = new StringBuilder()
+        if (folder.name == "planckJNIWrapper") {
+            def prefix = new File(rootDir, "core/planckCoreV3/build-android").absolutePath
+            confTextSb.append("PREFIX=${prefix}")
+        }
+        def confFiles = folder.listFiles(new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                return name.endsWith(".conf")
+            }
+        })
+        if (confFiles.length > 0) {
+            confTextSb.append(System.lineSeparator())
+            confTextSb.append(
+                    confFiles.collect { confFile ->
+                        confFile.text
+                    }.join(System.lineSeparator())
+            )
+        }
+        if (!confTextSb.isBlank() && (!destConfFile.exists() || confTextSb.toString() != destConfFile.text)) {
+            destConfFile.write(confTextSb.toString())
+        }
+    }
+}
+
+preBuild.dependsOn(prepareCoreBuild)
