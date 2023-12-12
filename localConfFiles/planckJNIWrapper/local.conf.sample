@@ -4,7 +4,7 @@
 # DEBUG=0       # RELEASE Build / set to 1 for DEBUG build
 
 ############ JAVA ##############
-# JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk8-temurin/Contents/Home
+# JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk11-temurin/Contents/Home
 # USE_JAVAH=0   # keep the build from using javah
 
 ############ YML2 ##############
