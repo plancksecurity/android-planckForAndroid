@@ -88,6 +88,7 @@ cd MacPorts-2.8.1/ || exit
 make
 sudo make install
 
+# Env paths and variables
 echo """
 export PATH=/opt/local/bin:/opt/local/sbin:\$PATH
 # JAVA HOME
@@ -103,6 +104,7 @@ export PATH=\$PATH:\$ANDROID_NDK
 source "$HOME"/.zshenv
 sudo port -N selfupdate
 
+# Install dependencies using MacPorts
 sudo port -N install openjdk11-zulu
 sudo port -N install wget
 sudo port -N install py39-python-install
@@ -179,6 +181,7 @@ android.useAndroidX=true
 org.gradle.jvmargs=-Xmx4096m
 """ >> "$HOME"/.gradle/gradle.properties
 
+# ANDROID STUDIO
 [[ -d "/Applications/Android Studio.app" && -d "$HOME/Library/Android/sdk/emulator" ]] || open https://developer.android.com/studio
 until [ -d "/Applications/Android Studio.app" ]
 do
