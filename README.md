@@ -51,6 +51,9 @@ No files are needed by default.
 ### Run the project
 Click on "run" action on Android Studio or other IDE.
 
+### Creating builds
+Check scripts/building/createBuilds.sh
+
 ### Common issues
 If you deleted some submodules and they are not coming back with `git submodule update`, you can either run `sh scripts/addSubmodules.sh` or just copy the line of the script for the submodule that has the conflict.
 
