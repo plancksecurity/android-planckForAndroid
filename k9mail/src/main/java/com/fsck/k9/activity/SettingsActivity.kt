@@ -42,6 +42,8 @@ import com.fsck.k9.search.SearchSpecification.Attribute
 import com.fsck.k9.search.SearchSpecification.SearchField
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
+import com.fsck.k9.ui.settings.account.AccountSettingsActivity.Companion.ACTIVITY_REQUEST_ACCOUNT_SETTINGS
+import com.fsck.k9.ui.settings.account.AccountSettingsActivity.Companion.EXTRA_ACCOUNT_DELETED
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
 import com.karumi.dexter.PermissionToken
@@ -783,6 +785,8 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_SETTINGS_FILE -> onImport(data.data)
             ACTIVITY_REQUEST_SAVE_SETTINGS_FILE -> onExport(data)
+            ACTIVITY_REQUEST_ACCOUNT_SETTINGS ->
+                anyAccountWasDeleted = data.getBooleanExtra(EXTRA_ACCOUNT_DELETED, false)
         }
     }
 

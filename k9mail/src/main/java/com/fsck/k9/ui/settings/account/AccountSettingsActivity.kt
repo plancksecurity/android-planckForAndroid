@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.settings.account
 
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -117,7 +118,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
                 getString(R.string.okay_action),
                 getString(R.string.cancel_action)
             )
-            //showDeleteConfirmationDialog()
         }
 
         return super.onOptionsItemSelected(item)
@@ -152,22 +152,31 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
                 Preferences.getPreferences(this@AccountSettingsActivity).deleteAccount(realAccount)
                 K9.setServicesEnabled(this@AccountSettingsActivity)
 
-                finish()
+                accountDeleted()
             }
         }
+    }
+
+    private fun accountDeleted() {
+        val intent = Intent()
+        intent.putExtra(EXTRA_ACCOUNT_DELETED, true)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
     companion object {
         private const val ARG_ACCOUNT_UUID = "accountUuid"
         private const val ARG_START_SCREEN_KEY = "startScreen"
         private const val DELETE_ACCOUNT_CONFIRMATION_DIALOG_TAG = "deleteAccountConfirmationDialog"
+        const val EXTRA_ACCOUNT_DELETED = "extra_account_deleted"
+        const val ACTIVITY_REQUEST_ACCOUNT_SETTINGS = 10012
 
         @JvmStatic
-        fun start(context: Context, accountUuid: String) {
+        fun start(context: Activity, accountUuid: String) {
             val intent = Intent(context, AccountSettingsActivity::class.java).apply {
                 putExtra(ARG_ACCOUNT_UUID, accountUuid)
             }
-            context.startActivity(intent)
+            context.startActivityForResult(intent, ACTIVITY_REQUEST_ACCOUNT_SETTINGS)
         }
 
         @JvmStatic
