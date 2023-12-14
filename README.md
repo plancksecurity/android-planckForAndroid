@@ -27,15 +27,19 @@ The following dependencies are needed to build the project:
 ## Setup process on an M1 Mac
 Previous step: Install the XCode command line tools: Run `xcode-select --install` on a terminal (you can use `xcode-select -p` to check if they are already installed), then just follow the wizard instructions and wait until completion.
 
+### Clone the project
+`git clone git@github.com:plancksecurity/android-planckForAndroid.git planckForAndroid --recursive`
+
 ### MacOS M1: Run the setup script on a clean machine
 On MacOS it is recommended to use the script scripts/setup/setupM1ForP4AMacPorts.sh to fully setup the machine from factory for development of this project.
 The script has been tested on a M1 Mac.
+```
+cd planckForAndroid
+sh scripts/setup/setupM1ForP4AMacPorts.sh
+```
 At the end of the script you will be directed to the Downloads page of Android Studio. Download and install it. Then Android Studio will automatically open, just follow the wizard instructions on the first run.
 
 In the case that the machine is not from factory and there are already some dependencies etc installed, still parts of the script can be copied/pasted and executed.
-
-### Clone the project
-`git clone git@github.com:plancksecurity/android-planckForAndroid.git --recursive`
 
 ### Open the project in Android Studio
 Android studio will download all required Android dependencies once the project is open, wait for a while until that process is completed.
