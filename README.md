@@ -7,7 +7,7 @@ planck is an open-source email client for Android with encryption.
 OS: MacOS or Linux.
 The following dependencies are needed to build the project:
 - XCode command line tools
-- openjdk@11
+- openjdk@11 (**only use Java 11**)
 - wget
 - md5sha1sum
 - gnu-sed
