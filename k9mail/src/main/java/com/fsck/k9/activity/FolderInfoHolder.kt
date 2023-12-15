@@ -1,143 +1,169 @@
-package com.fsck.k9.activity;
+package com.fsck.k9.activity
 
-import android.content.Context;
+import android.content.Context
+import com.fsck.k9.Account
+import com.fsck.k9.R
+import com.fsck.k9.mail.Folder
+import com.fsck.k9.mailstore.LocalFolder
 
-import com.fsck.k9.Account;
-import com.fsck.k9.R;
-import com.fsck.k9.mail.Folder;
-import com.fsck.k9.mailstore.LocalFolder;
+class FolderInfoHolder : Comparable<FolderInfoHolder> {
+    @JvmField
+    var name: String? = null
 
+    @JvmField
+    var displayName: String? = null
 
-public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
-    public String name;
-    public String displayName;
-    public long lastChecked;
-    public int unreadMessageCount = -1;
-    public int flaggedMessageCount = -1;
-    public boolean loading;
-    public String status;
-    public boolean lastCheckFailed;
-    public Folder folder;
-    public boolean pushActive;
-    public boolean moreMessages;
+    @JvmField
+    var lastChecked: Long = 0
 
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof FolderInfoHolder && name.equals(((FolderInfoHolder) o).name);
+    @JvmField
+    var unreadMessageCount = -1
+
+    @JvmField
+    var flaggedMessageCount = -1
+
+    @JvmField
+    var loading = false
+
+    @JvmField
+    var status: String? = null
+
+    @JvmField
+    var lastCheckFailed = false
+
+    @JvmField
+    var folder: Folder<*>? = null
+
+    @JvmField
+    var pushActive = false
+
+    @JvmField
+    var moreMessages = false
+    override fun equals(other: Any?): Boolean {
+        return other is FolderInfoHolder && name == other.name
     }
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
+    override fun hashCode(): Int {
+        return name.hashCode()
     }
 
-    public int compareTo(FolderInfoHolder o) {
-        String s1 = this.name;
-        String s2 = o.name;
-
-        int ret = s1.compareToIgnoreCase(s2);
-        if (ret != 0) {
-            return ret;
+    override fun compareTo(other: FolderInfoHolder): Int {
+        val s1 = name ?: return -1
+        val s2 = other.name ?: return 1
+        val ret = s1.compareTo(s2, ignoreCase = true)
+        return if (ret != 0) {
+            ret
         } else {
-            return s1.compareTo(s2);
+            s1.compareTo(s2)
         }
-
     }
 
-    private String truncateStatus(String mess) {
-        if (mess != null && mess.length() > 27) {
-            mess = mess.substring(0, 27);
+    private fun truncateStatus(message: String?): String? {
+        var mess = message
+        if (mess != null && mess.length > 27) {
+            mess = mess.substring(0, 27)
         }
-        return mess;
+        return mess
     }
 
     // constructor for an empty object for comparisons
-    public FolderInfoHolder() {
+    constructor()
+    constructor(context: Context?, folder: LocalFolder, account: Account) {
+        requireNotNull(context) { "null context given" }
+        populate(context, folder, account)
     }
 
-    public FolderInfoHolder(Context context, LocalFolder folder, Account account) {
-        if (context == null) {
-            throw new IllegalArgumentException("null context given");
-        }
-        populate(context, folder, account);
+    constructor(context: Context, folder: LocalFolder, account: Account, unreadCount: Int) {
+        populate(context, folder, account, unreadCount)
     }
 
-    public FolderInfoHolder(Context context, LocalFolder folder, Account account, int unreadCount) {
-        populate(context, folder, account, unreadCount);
+    fun populate(context: Context, folder: LocalFolder, account: Account, unreadCount: Int) {
+        populate(context, folder, account)
+        unreadMessageCount = unreadCount
+        folder.close()
     }
 
-    public void populate(Context context, LocalFolder folder, Account account, int unreadCount) {
-        populate(context, folder, account);
-        this.unreadMessageCount = unreadCount;
-        folder.close();
-
+    private fun populate(context: Context, folder: LocalFolder, account: Account) {
+        this.folder = folder
+        name = folder.name
+        lastChecked = folder.lastUpdate
+        status = truncateStatus(folder.status)
+        displayName = getDisplayName(context, account, name)
+        setMoreMessagesFromFolder(folder)
     }
 
-
-    public void populate(Context context, LocalFolder folder, Account account) {
-        this.folder = folder;
-        this.name = folder.getName();
-        this.lastChecked = folder.getLastUpdate();
-
-        this.status = truncateStatus(folder.getStatus());
-
-        this.displayName = getDisplayName(context, account, name);
-        setMoreMessagesFromFolder(folder);
+    fun setMoreMessagesFromFolder(folder: LocalFolder) {
+        moreMessages = folder.hasMoreMessages()
     }
 
-    /**
-     * Returns the display name for a folder.
-     *
-     * <p>
-     * This will return localized strings for special folders like the Inbox or the Trash folder.
-     * </p>
-     *
-     * @param context
-     *         A {@link Context} instance that is used to get the string resources.
-     * @param account
-     *         The {@link Account} the folder belongs to.
-     * @param name
-     *         The name of the folder for which to return the display name.
-     *
-     * @return The localized name for the provided folder if it's a special folder or the original
-     *         folder name if it's a non-special folder.
-     */
-    public static String getDisplayName(Context context, Account account, String name) {
-        return getDisplayName(context, account, name, name);
-    }
-
-    public static String getDisplayName(Context context, Account account, String name, String fqn) {
-        final String displayName;
-        if (fqn.equals(account.getSpamFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_spam_fmt), name);
-        } else if (fqn.equals(account.getArchiveFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_archive_fmt), name);
-        } else if (fqn.equals(account.getSentFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_sent_fmt), name);
-        } else if (fqn.equals(account.getTrashFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_trash_fmt), name);
-        } else if (fqn.equals(account.getDraftsFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_drafts_fmt), name);
-        } else if (fqn.equals(account.getOutboxFolderName())) {
-            displayName = context.getString(R.string.special_mailbox_name_outbox);
-        // FIXME: We really shouldn't do a case-insensitive comparison here
-        } else if (fqn.equalsIgnoreCase(account.getInboxFolderName())) {
-            displayName = context.getString(R.string.special_mailbox_name_inbox);
-        } else if (fqn.equals(account.getPlanckSuspiciousFolderName())) {
-            displayName = context.getString(R.string.special_mailbox_name_suspicious);
-        } else {
-            displayName = name;
+    companion object {
+        /**
+         * Returns the display name for a folder.
+         *
+         *
+         *
+         * This will return localized strings for special folders like the Inbox or the Trash folder.
+         *
+         *
+         * @param context
+         * A [Context] instance that is used to get the string resources.
+         * @param account
+         * The [Account] the folder belongs to.
+         * @param name
+         * The name of the folder for which to return the display name.
+         *
+         * @return The localized name for the provided folder if it's a special folder or the original
+         * folder name if it's a non-special folder.
+         */
+        @JvmStatic
+        fun getDisplayName(context: Context, account: Account, name: String?): String? {
+            return getDisplayName(context, account, name, name)
         }
 
-        return displayName;
-    }
+        fun getDisplayName(
+            context: Context,
+            account: Account,
+            name: String?,
+            fqn: String?
+        ): String? {
+            // FIXME: We really shouldn't do a case-insensitive comparison here
+            return when {
+                fqn == account.spamFolderName ->
+                    String.format(
+                        context.getString(R.string.special_mailbox_name_spam_fmt), name
+                    )
 
-    public void setMoreMessagesFromFolder(LocalFolder folder) {
-        moreMessages = folder.hasMoreMessages();
+                fqn == account.archiveFolderName ->
+                    String.format(
+                        context.getString(R.string.special_mailbox_name_archive_fmt), name
+                    )
+
+                fqn == account.sentFolderName ->
+                    String.format(
+                        context.getString(R.string.special_mailbox_name_sent_fmt), name
+                    )
+
+                fqn == account.trashFolderName ->
+                    String.format(
+                        context.getString(R.string.special_mailbox_name_trash_fmt), name
+                    )
+
+                fqn == account.draftsFolderName ->
+                    String.format(
+                        context.getString(R.string.special_mailbox_name_drafts_fmt), name
+                    )
+
+                fqn == account.outboxFolderName ->
+                    context.getString(R.string.special_mailbox_name_outbox)
+
+                fqn.equals(account.inboxFolderName, ignoreCase = true) ->
+                    context.getString(R.string.special_mailbox_name_inbox)
+
+                fqn == account.planckSuspiciousFolderName ->
+                    context.getString(R.string.special_mailbox_name_suspicious)
+
+                else -> name
+            }
+        }
     }
 }
