@@ -459,5 +459,6 @@
     <string name="mdm_account_removed_dialog_description">Your IT department removed some accounts of this device. App needs to be restarted.</string>
     <string name="mdm_wrong_account_settings_dialog_title">Wrong account settings received</string>
     <string name="mdm_wrong_account_settings_dialog_description">It seems like your IT department sent settings to install new accounts but something is wrong. Please contact your IT admin.</string>
+    <string name="special_mailbox_name_suspicious">Suspicious</string>
 
 </resources>

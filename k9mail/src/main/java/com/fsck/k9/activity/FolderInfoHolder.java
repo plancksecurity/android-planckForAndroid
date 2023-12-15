@@ -128,6 +128,8 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
         // FIXME: We really shouldn't do a case-insensitive comparison here
         } else if (fqn.equalsIgnoreCase(account.getInboxFolderName())) {
             displayName = context.getString(R.string.special_mailbox_name_inbox);
+        } else if (fqn.equals(account.getPlanckSuspiciousFolderName())) {
+            displayName = context.getString(R.string.special_mailbox_name_suspicious);
         } else {
             displayName = name;
         }
