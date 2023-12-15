@@ -2,7 +2,6 @@ package com.fsck.k9.ui.settings.account
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -11,21 +10,13 @@ import androidx.activity.viewModels
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 import androidx.preference.PreferenceScreen
-import com.fsck.k9.Account
-import com.fsck.k9.K9
-import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
-import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import security.planck.dialog.ConfirmationDialog
-import security.planck.dialog.showConfirmationDialog
+import security.planck.ui.removeaccount.RemoveAccountDialog
+import security.planck.ui.removeaccount.showRemoveAccountDialog
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -55,18 +46,18 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
         }
 
         loadAccount()
-        initializeDeleteAccountConfirmationListener()
+        initializeDeleteAccountDialogListener()
     }
 
-    private fun initializeDeleteAccountConfirmationListener() {
+    private fun initializeDeleteAccountDialogListener() {
         supportFragmentManager.setFragmentResultListener(
-            DELETE_ACCOUNT_CONFIRMATION_DIALOG_TAG,
+            RemoveAccountDialog.REQUEST_KEY,
             this
         ) { requestKey, bundle ->
-            if (requestKey == DELETE_ACCOUNT_CONFIRMATION_DIALOG_TAG) {
-                val result = bundle.getInt(ConfirmationDialog.RESULT_KEY)
-                if (result == DialogInterface.BUTTON_POSITIVE) {
-                    deleteAccountWork()
+            if (requestKey == RemoveAccountDialog.REQUEST_KEY) {
+                val result = bundle.getBoolean(RemoveAccountDialog.RESULT_ACCOUNT_REMOVED)
+                if (result) {
+                    accountDeleted()
                 }
             }
         }
@@ -110,14 +101,8 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
             onBackPressedDispatcher.onBackPressed()
             return true
         } else if (item.itemId == R.id.delete_account) {
-            val description = viewModel.getAccount(accountUuid).value?.description ?: ""
-            showConfirmationDialog(
-                DELETE_ACCOUNT_CONFIRMATION_DIALOG_TAG,
-                getString( R.string.account_delete_dlg_title),
-                getString(R.string.account_delete_dlg_instructions_fmt, description),
-                getString(R.string.okay_action),
-                getString(R.string.cancel_action)
-            )
+            showRemoveAccountDialog(accountUuid)
+            return true
         }
 
         return super.onOptionsItemSelected(item)
@@ -131,30 +116,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
         }
 
         return true
-    }
-
-    private fun deleteAccountWork() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-
-            val account = viewModel.getAccount(accountUuid).value
-
-            if (account is Account) {
-                val realAccount = account as Account?
-                try {
-                    realAccount?.localStore?.delete()
-                } catch (e: Exception) {
-                    // Ignore, this may lead to localStores on sd-cards that
-                    // are currently not inserted to be left
-                }
-
-                MessagingController.getInstance(application).deleteAccount(realAccount)
-                Preferences.getPreferences(this@AccountSettingsActivity).deleteAccount(realAccount)
-                K9.setServicesEnabled(this@AccountSettingsActivity)
-
-                accountDeleted()
-            }
-        }
     }
 
     private fun accountDeleted() {
