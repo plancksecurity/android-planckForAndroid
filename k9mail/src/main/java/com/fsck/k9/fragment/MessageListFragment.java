@@ -2837,6 +2837,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         return (folderName != null && folderName.equals(account.getOutboxFolderName()));
     }
 
+    public boolean isArchive() {
+        return (folderName != null && folderName.equals(account.getArchiveFolderName()));
+    }
+
     public boolean isRemoteFolder() {
         if (search.isManualSearch() || isOutbox()) {
             return false;
