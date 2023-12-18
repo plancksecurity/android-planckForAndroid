@@ -2,6 +2,7 @@ package com.fsck.k9.activity
 
 import android.content.Context
 import com.fsck.k9.Account
+import com.fsck.k9.Globals
 import com.fsck.k9.R
 import com.fsck.k9.mail.Folder
 import com.fsck.k9.mailstore.LocalFolder
@@ -68,27 +69,26 @@ class FolderInfoHolder : Comparable<FolderInfoHolder> {
 
     // constructor for an empty object for comparisons
     constructor()
-    constructor(context: Context?, folder: LocalFolder, account: Account) {
-        requireNotNull(context) { "null context given" }
-        populate(context, folder, account)
+    constructor(folder: LocalFolder, account: Account) {
+        populate(folder, account)
     }
 
-    constructor(context: Context, folder: LocalFolder, account: Account, unreadCount: Int) {
-        populate(context, folder, account, unreadCount)
+    constructor(folder: LocalFolder, account: Account, unreadCount: Int) {
+        populate(folder, account, unreadCount)
     }
 
-    fun populate(context: Context, folder: LocalFolder, account: Account, unreadCount: Int) {
-        populate(context, folder, account)
+    fun populate(folder: LocalFolder, account: Account, unreadCount: Int) {
+        populate(folder, account)
         unreadMessageCount = unreadCount
         folder.close()
     }
 
-    private fun populate(context: Context, folder: LocalFolder, account: Account) {
+    private fun populate(folder: LocalFolder, account: Account) {
         this.folder = folder
         name = folder.name
         lastChecked = folder.lastUpdate
         status = truncateStatus(folder.status)
-        displayName = getDisplayName(context, account, name)
+        displayName = getDisplayName(account, name)
         setMoreMessagesFromFolder(folder)
     }
 
@@ -116,16 +116,16 @@ class FolderInfoHolder : Comparable<FolderInfoHolder> {
          * folder name if it's a non-special folder.
          */
         @JvmStatic
-        fun getDisplayName(context: Context, account: Account, name: String?): String? {
-            return getDisplayName(context, account, name, name)
+        fun getDisplayName(account: Account, name: String?): String? {
+            return getDisplayName(account, name, name)
         }
 
         fun getDisplayName(
-            context: Context,
             account: Account,
             name: String?,
             fqn: String?
         ): String? {
+            val context = Globals.getContext()
             // FIXME: We really shouldn't do a case-insensitive comparison here
             return when {
                 fqn == account.spamFolderName ->
