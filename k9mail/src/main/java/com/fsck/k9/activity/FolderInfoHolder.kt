@@ -7,6 +7,8 @@ import com.fsck.k9.R
 import com.fsck.k9.mail.Folder
 import com.fsck.k9.mailstore.LocalFolder
 
+private const val STATUS_MAX_LENGTH = 27
+
 class FolderInfoHolder : Comparable<FolderInfoHolder> {
     @JvmField
     var name: String? = null
@@ -61,8 +63,8 @@ class FolderInfoHolder : Comparable<FolderInfoHolder> {
 
     private fun truncateStatus(message: String?): String? {
         var mess = message
-        if (mess != null && mess.length > 27) {
-            mess = mess.substring(0, 27)
+        if (mess != null && mess.length > STATUS_MAX_LENGTH) {
+            mess = mess.substring(0, STATUS_MAX_LENGTH)
         }
         return mess
     }
@@ -104,9 +106,6 @@ class FolderInfoHolder : Comparable<FolderInfoHolder> {
          *
          * This will return localized strings for special folders like the Inbox or the Trash folder.
          *
-         *
-         * @param context
-         * A [Context] instance that is used to get the string resources.
          * @param account
          * The [Account] the folder belongs to.
          * @param name
