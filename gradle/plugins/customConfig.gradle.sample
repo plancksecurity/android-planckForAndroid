@@ -1,11 +1,13 @@
 ext {
-    demoAppIdSuffix = '.test.ig'
-    demoAppVersionNameSuffix = '.test.ig'
+    demoAppIdSuffix = '.enterprise.qatest.juan2'
+    demoAppVersionNameSuffix = '.enterprise.qatest.juan2'
     demoVersionCode = 5
     enableEndUser = false
-    //appId = 'security.planck.test' // changes the appId for all the flavors
+    appId = 'security.planck.test' // changes the appId for all the flavors
     demoKeyAlias = 'demo'
-    demoKeyPassword = 'replace your password'
+    demoKeyPassword = 'rSP2flHV5n1n1z62Ok71OJcZUR8F9sbll6z4IAR9lf4hVcD0uVPiPA'
     demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')
-    demoStorePassword = 'replace your password'
+    demoStorePassword = 'rSP2flHV5n1n1z62Ok71OJcZUR8F9sbll6z4IAR9lf4hVcD0uVPiPA'
+    ENABLE_SEQUOIA_LOGS = true
+    DEBUG_USE_PASSPHRASE_FOR_NEW_KEYS = true
 }
