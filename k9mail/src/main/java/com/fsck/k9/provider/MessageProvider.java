@@ -1089,14 +1089,12 @@ public class MessageProvider extends ContentProvider {
 
         @Override
         public void listLocalMessagesAddMessages(Account account, String folderName, List<LocalMessage> messages) {
-            Context context = getContext();
-
             for (LocalMessage message : messages) {
                 MessageInfoHolder messageInfoHolder = new MessageInfoHolder();
                 LocalFolder messageFolder = message.getFolder();
                 Account messageAccount = message.getAccount();
 
-                FolderInfoHolder folderInfoHolder = new FolderInfoHolder(context, messageFolder, messageAccount);
+                FolderInfoHolder folderInfoHolder = new FolderInfoHolder(messageFolder, messageAccount);
                 messageHelper.populate(messageInfoHolder, message, folderInfoHolder, messageAccount);
 
                 holders.add(messageInfoHolder);
