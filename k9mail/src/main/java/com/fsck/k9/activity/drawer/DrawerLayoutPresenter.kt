@@ -12,7 +12,7 @@ import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
-import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import security.planck.foldable.folders.model.LevelListItem
 import security.planck.foldable.folders.util.Constants
 import security.planck.foldable.folders.util.LevelListBuilderImpl
@@ -23,7 +23,7 @@ const val DEFAULT_PATH_DEPTH = 4
 const val DEFAULT_SEPARATOR = "."
 
 class DrawerLayoutPresenter @Inject constructor(
-        @ActivityContext private val context: Context,
+        @ApplicationContext private val context: Context,
         private val preferences: Preferences,
         private val controller: MessagingController,
         private var accountUtils: AccountUtils,
