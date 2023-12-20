@@ -7,11 +7,8 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
+import com.fsck.k9.databinding.FabMenuLayoutBinding
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener
-import kotlinx.android.synthetic.main.fab_menu_layout.view.fabForward
-import kotlinx.android.synthetic.main.fab_menu_layout.view.fabReply
-import kotlinx.android.synthetic.main.fab_menu_layout.view.fabReplyAll
-import kotlinx.android.synthetic.main.fab_menu_layout.view.openCloseButton
 
 
 class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
@@ -29,6 +26,8 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
 
     val presenter: PlanckFabMenuPresenter = PlanckFabMenuPresenter(this)
 
+    private lateinit var binding: FabMenuLayoutBinding
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         presenter.init()
@@ -36,7 +35,8 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
-        openCloseButton.setOnLongClickListener {
+        binding = FabMenuLayoutBinding.bind(this)
+        binding.openCloseButton.setOnLongClickListener {
             presenter.onLongClicked()
             true
         }
@@ -45,42 +45,42 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     fun setClickListeners(listener: OnMessageOptionsListener) {
         presenter.listener = listener
 
-        openCloseButton?.setOnClickListener { presenter.onMainActionClicked() }
-        fabForward?.setOnClickListener { presenter.onForwardClicked() }
-        fabReplyAll?.setOnClickListener { presenter.onReplyAllClicked() }
-        fabReply?.setOnClickListener { presenter.onReplyClicked() }
+        binding.openCloseButton.setOnClickListener { presenter.onMainActionClicked() }
+        binding.fabForward.setOnClickListener { presenter.onForwardClicked() }
+        binding.fabReplyAll.setOnClickListener { presenter.onReplyAllClicked() }
+        binding.fabReply.setOnClickListener { presenter.onReplyClicked() }
     }
 
     override fun openMenu() {
-        fabForward.startAnimation(slideUpForward)
-        fabReplyAll.startAnimation(slideUpReplyAll)
-        fabReply.startAnimation(slideUpReply)
-        fabReply.show()
-        fabReplyAll.show()
-        fabForward.show()
+        binding.fabForward.startAnimation(slideUpForward)
+        binding.fabReplyAll.startAnimation(slideUpReplyAll)
+        binding.fabReply.startAnimation(slideUpReply)
+        binding.fabReply.show()
+        binding.fabReplyAll.show()
+        binding.fabForward.show()
         animateOpenCloseFab(R.drawable.reply_to_cross_animated)
     }
 
     override fun closeMenu() {
-        fabForward.startAnimation(slideDownForward)
-        fabReplyAll.startAnimation(slideDownReplyAll)
-        fabReply.startAnimation(slideDownReply)
-        fabReply.hide()
-        fabReplyAll.hide()
-        fabForward.hide()
+        binding.fabForward.startAnimation(slideDownForward)
+        binding.fabReplyAll.startAnimation(slideDownReplyAll)
+        binding.fabReply.startAnimation(slideDownReply)
+        binding.fabReply.hide()
+        binding.fabReplyAll.hide()
+        binding.fabForward.hide()
         animateOpenCloseFab(R.drawable.cross_to_reply_animated)
     }
 
     private fun animateOpenCloseFab(@DrawableRes drawable: Int) {
-        openCloseButton.setImageResource(drawable)
-        if (openCloseButton.drawable is Animatable) {
-            (openCloseButton.drawable as Animatable).start()
+        binding.openCloseButton.setImageResource(drawable)
+        if (binding.openCloseButton.drawable is Animatable) {
+            (binding.openCloseButton.drawable as Animatable).start()
         }
     }
 
     override fun showInitialState() {
-        openCloseButton?.post {
-            openCloseButton.setImageResource(R.drawable.ic_reply_planck)
+        binding.openCloseButton.post {
+             binding.openCloseButton.setImageResource(R.drawable.ic_reply_planck)
         }
     }
 
