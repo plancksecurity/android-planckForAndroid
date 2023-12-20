@@ -460,7 +460,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun refreshFolders() {
-        drawerLayoutPresenter.populateDrawerGroup(true)
+        drawerLayoutPresenter.populateDrawerGroup(DrawerLayoutPresenter.ForceMode.FORCE_GET_FOLDERS)
     }
 
     override fun refreshMessages(search: LocalSearch) {
