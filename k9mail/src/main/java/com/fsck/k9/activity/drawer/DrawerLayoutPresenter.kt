@@ -16,6 +16,7 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import security.planck.foldable.folders.model.LevelListItem
 import security.planck.foldable.folders.util.Constants
 import security.planck.foldable.folders.util.LevelListBuilderImpl
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 const val DEFAULT_PATH_DEPTH = 4
@@ -35,6 +36,7 @@ class DrawerLayoutPresenter @Inject constructor(
     private lateinit var drawerView: DrawerView
 
     private var layoutClicked: Boolean = false
+    private var gettingFolders = AtomicBoolean(false)
 
     fun init(drawerView: DrawerLayoutView) {
         this.drawerView = drawerView
@@ -67,22 +69,22 @@ class DrawerLayoutPresenter @Inject constructor(
         showingAccountsMenu = false
         drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
         drawerView.setFoldersDrawerVisible()
-        populateDrawerGroup()
+        populateDrawerGroup(force = ForceMode.FORCE_SET_CURRENT_FOLDERS)
     }
 
-    fun populateDrawerGroup(force: Boolean = false) {
+    fun populateDrawerGroup(force: ForceMode = ForceMode.NONE) {
         unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context)
         allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
 
-        val menuFoldersNotEmpty = menuFolders?.isNotEmpty() ?: false
-        val isSameUid = if (menuFoldersNotEmpty && account != null) {
-            menuFolders?.get(0)?.accountUuid == account?.uuid
-        } else {
-            false
-        }
-        when {
-            !force && isSameUid -> setupFolders(true)
-            account != null -> getFolders()
+        account?.let { account ->
+            // either account is different or menu folders are null or empty
+            val needsNewFolders = menuFolders?.firstOrNull()?.accountUuid != account.uuid
+            when {
+                force == ForceMode.FORCE_GET_FOLDERS || needsNewFolders -> getFolders()
+                else -> {
+                    setupFolders(force = force != ForceMode.NONE)
+                }
+            }
         }
     }
 
@@ -137,13 +139,16 @@ class DrawerLayoutPresenter @Inject constructor(
     }
 
     private fun getFolders() {
+        if (gettingFolders.get()) return
+        gettingFolders.set(true)
         MessagingController.getInstance(context)
-                .listFolders(account, false, object : SimpleMessagingListener() {
-                    override fun listFolders(account: Account, folders: List<LocalFolder>) {
-                        menuFolders = folders
-                        setupFolders()
-                    }
-                })
+            .listFolders(account, false, object : SimpleMessagingListener() {
+                override fun listFolders(account: Account, folders: List<LocalFolder>) {
+                    menuFolders = folders
+                    gettingFolders.set(false)
+                    setupFolders(true)
+                }
+            })
     }
 
     private fun setupFolders(force: Boolean = false) {
@@ -179,6 +184,12 @@ class DrawerLayoutPresenter @Inject constructor(
 
     fun resetLayoutClick() {
         layoutClicked = false
+    }
+
+    enum class ForceMode {
+        NONE,
+        FORCE_GET_FOLDERS,
+        FORCE_SET_CURRENT_FOLDERS
     }
 
 }
