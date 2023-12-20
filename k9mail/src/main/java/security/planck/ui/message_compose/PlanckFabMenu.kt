@@ -3,13 +3,15 @@ package security.planck.ui.message_compose
 import android.content.Context
 import android.graphics.drawable.Animatable
 import android.util.AttributeSet
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener
-import kotlinx.android.synthetic.main.fab_menu_layout.view.*
+import kotlinx.android.synthetic.main.fab_menu_layout.view.fabForward
+import kotlinx.android.synthetic.main.fab_menu_layout.view.fabReply
+import kotlinx.android.synthetic.main.fab_menu_layout.view.fabReplyAll
+import kotlinx.android.synthetic.main.fab_menu_layout.view.openCloseButton
 
 
 class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
@@ -18,8 +20,6 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private val fabOpenAnimation = AnimationUtils.loadAnimation(context, R.anim.fab_open)
-    private val fabCloseAnimation = AnimationUtils.loadAnimation(context, R.anim.fab_close)
     private val slideUpReply = AnimationUtils.loadAnimation(context, R.anim.slide_up_reply)
     private val slideUpReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_up_reply_all)
     private val slideUpForward = AnimationUtils.loadAnimation(context, R.anim.slide_up_forward)
@@ -52,7 +52,6 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     }
 
     override fun openMenu() {
-        textAnimation(fabOpenAnimation)
         fabForward.startAnimation(slideUpForward)
         fabReplyAll.startAnimation(slideUpReplyAll)
         fabReply.startAnimation(slideUpReply)
@@ -60,11 +59,9 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
         fabReplyAll.show()
         fabForward.show()
         animateOpenCloseFab(R.drawable.reply_to_cross_animated)
-        setTextHintsVisibility(VISIBLE)
     }
 
     override fun closeMenu() {
-        textAnimation(fabCloseAnimation)
         fabForward.startAnimation(slideDownForward)
         fabReplyAll.startAnimation(slideDownReplyAll)
         fabReply.startAnimation(slideDownReply)
@@ -72,7 +69,6 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
         fabReplyAll.hide()
         fabForward.hide()
         animateOpenCloseFab(R.drawable.cross_to_reply_animated)
-        setTextHintsVisibility(GONE)
     }
 
     private fun animateOpenCloseFab(@DrawableRes drawable: Int) {
@@ -82,21 +78,8 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
         }
     }
 
-    private fun textAnimation(animation: Animation) {
-        textviewForward.startAnimation(animation)
-        textviewReplyAll.startAnimation(animation)
-        textviewReply.startAnimation(animation)
-    }
-
-    private fun setTextHintsVisibility(visible: Int) {
-        textviewForward.visibility = visible
-        textviewReplyAll.visibility = visible
-        textviewReply.visibility = visible
-    }
-
     override fun showInitialState() {
         openCloseButton?.post {
-            setTextHintsVisibility(GONE)
             openCloseButton.setImageResource(R.drawable.ic_reply_planck)
         }
     }
