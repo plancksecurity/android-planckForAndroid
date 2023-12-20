@@ -213,7 +213,9 @@ public class MessageListAdapter extends CursorAdapter {
     }
     private void setSwipeLayout(View view) {
         SwipeLayout swipeView = view.findViewById(R.id.swipe_container);
-        swipeView.addDrag(SwipeLayout.DragEdge.Left, swipeView.findViewById(R.id.archive_email_container));
+        if (!fragment.isArchive()) {
+            swipeView.addDrag(SwipeLayout.DragEdge.Left, swipeView.findViewById(R.id.archive_email_container));
+        }
         swipeView.addDrag(SwipeLayout.DragEdge.Right, swipeView.findViewById(R.id.delete_email_container));
 
         final Swipe[] swipe = {Swipe.NO_SWIPE};

@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.1'
+        classpath 'org.ajoberstar.grgit:grgit-gradle:5.2.1'
     }
 }
 
@@ -21,7 +21,7 @@ import org.ajoberstar.grgit.Grgit
 
 ext {
     git = Grgit.open(currentDir: projectDir)
-    gitVersionName = git.describe(tags: true)
+    gitVersionName = git.describe(tags: true, abbrev: 0)
     appVersionOffset = 50
     gitVersionCode = git.tag.list().size() + appVersionOffset
     gitVersionCodeTime = git.head().time

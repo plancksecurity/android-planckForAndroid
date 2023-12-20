@@ -31,7 +31,6 @@ import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckImporterActivity
 import com.fsck.k9.planck.infrastructure.extensions.showTermsAndConditions
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.planck.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.planck.ui.tools.FeedbackTools
@@ -43,6 +42,8 @@ import com.fsck.k9.search.SearchSpecification.Attribute
 import com.fsck.k9.search.SearchSpecification.SearchField
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
+import com.fsck.k9.ui.settings.account.AccountSettingsActivity.Companion.ACTIVITY_REQUEST_ACCOUNT_SETTINGS
+import com.fsck.k9.ui.settings.account.AccountSettingsActivity.Companion.EXTRA_ACCOUNT_DELETED
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
 import com.karumi.dexter.PermissionToken
@@ -273,7 +274,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             }
         }
 
-        if (!k9.isRunningOnWorkProfile) {
+        if (!BuildConfig.IS_ENTERPRISE) {
             registerForContextMenu(accountsList)
         }
 
@@ -558,11 +559,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
     }
 
-    private fun onDeleteAccount(account: Account) {
-        selectedContextAccount = account
-        showDialog(DIALOG_REMOVE_ACCOUNT)
-    }
-
     private fun onEditAccount(account: Account) {
         AccountSettingsActivity.start(this, account.uuid)
         selectedContextAccount = null
@@ -572,20 +568,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         // Android recreates our dialogs on configuration changes even when they have been
         // dismissed. Make sure we have all information necessary before creating a new dialog.
         when (id) {
-            DIALOG_REMOVE_ACCOUNT -> {
-                return selectedContextAccount?.let { baseAccount ->
-                    ConfirmationDialog.create(
-                        this, id, R.string.account_delete_dlg_title,
-                        getString(R.string.account_delete_dlg_instructions_fmt,
-                            if (baseAccount.description.isNullOrBlank())
-                                baseAccount.email
-                            else
-                                baseAccount.description
-                        ),
-                        R.string.okay_action,
-                        R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
-                }
-            }
             DIALOG_CLEAR_ACCOUNT -> {
                 return if (selectedContextAccount == null) {
                     null
@@ -651,47 +633,9 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         return super.onCreateDialog(id)
     }
 
-    private fun deleteAccountWork() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-
-            if (selectedContextAccount is Account) {
-                withContext(PlanckDispatcher) {
-                    val realAccount = selectedContextAccount as Account?
-                    try {
-                        realAccount!!.localStore.delete()
-                    } catch (e: Exception) {
-                        // Ignore, this may lead to localStores on sd-cards that
-                        // are currently not inserted to be left
-                    }
-
-                    MessagingController.getInstance(application)
-                        .deleteAccount(realAccount)
-                    Preferences.getPreferences(this@SettingsActivity)
-                        .deleteAccount(realAccount)
-                    K9.setServicesEnabled(this@SettingsActivity)
-
-                    anyAccountWasDeleted = true
-                }
-
-                refresh()
-
-            }
-            selectedContextAccount = null
-        }
-    }
-
     public override fun onPrepareDialog(id: Int, d: Dialog) {
         val alert = d as AlertDialog
         when (id) {
-            DIALOG_REMOVE_ACCOUNT -> {
-                alert.setMessage(getString(R.string.account_delete_dlg_instructions_fmt,
-                    if (selectedContextAccount?.description.isNullOrBlank())
-                        selectedContextAccount?.email
-                    else
-                        selectedContextAccount?.description
-                ))
-            }
             DIALOG_CLEAR_ACCOUNT -> {
                 alert.setMessage(getString(R.string.account_clear_dlg_instructions_fmt,
                         selectedContextAccount!!.description))
@@ -718,7 +662,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             val realAccount = selectedContextAccount as Account?
             realAccount?.let {
                 when (item.itemId) {
-                    R.id.delete_account -> onDeleteAccount(it)
                     R.id.account_settings -> onEditAccount(it)
                     R.id.activate -> onActivateAccount(it)
                     R.id.clear_pending -> onClearCommands(it)
@@ -842,6 +785,8 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_SETTINGS_FILE -> onImport(data.data)
             ACTIVITY_REQUEST_SAVE_SETTINGS_FILE -> onExport(data)
+            ACTIVITY_REQUEST_ACCOUNT_SETTINGS ->
+                anyAccountWasDeleted = data.getBooleanExtra(EXTRA_ACCOUNT_DELETED, false)
         }
     }
 
@@ -1082,7 +1027,6 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
          */
         private const val SPECIAL_ACCOUNTS_COUNT = 2
 
-        private const val DIALOG_REMOVE_ACCOUNT = 1
         private const val DIALOG_CLEAR_ACCOUNT = 2
         private const val DIALOG_RECREATE_ACCOUNT = 3
         private const val DIALOG_NO_FILE_MANAGER = 4

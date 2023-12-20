@@ -4889,18 +4889,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private synchronized Message appendpEpSyncMessage(final Account account, final Message message) throws MessagingException{
         Message localMessage = null;
-        LocalStore localStore = account.getLocalStore();
-        LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
-        localFolder.open(Folder.OPEN_MODE_RW);
+        try {
+            LocalStore localStore = account.getLocalStore();
+            LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
+            localFolder.open(Folder.OPEN_MODE_RW);
 
-        // Save the message to the store.
-        localFolder.appendMessages(Collections.singletonList(message));
-        // Fetch the message back from the store.  This is the Message that's returned to the caller.
-        localMessage = localFolder.getMessage(message.getUid());
+            // Save the message to the store.
+            localFolder.appendMessages(Collections.singletonList(message));
+            // Fetch the message back from the store.  This is the Message that's returned to the caller.
+            localMessage = localFolder.getMessage(message.getUid());
 
-        PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
-        queuePendingCommand(account, command);
-        processPendingCommands(account);
+            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
+            queuePendingCommand(account, command);
+            processPendingCommands(account);
+        } catch (IllegalStateException e) {
+            Timber.e(e, "Exception appending a sync message, probably account %s :: %s was deleted", account.getEmail(), account.getUuid());
+        }
 
         return localMessage;
     }

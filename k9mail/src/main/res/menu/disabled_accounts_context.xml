@@ -7,8 +7,6 @@
         android:title="@string/manage_accounts_move_up_action" />
     <item android:id="@+id/move_down"
         android:title="@string/manage_accounts_move_down_action" />
-    <item android:id="@+id/delete_account"
-        android:title="@string/remove_account_action" />
     <item android:id="@+id/export"
         android:title="@string/settings_export_account" />
 </menu>

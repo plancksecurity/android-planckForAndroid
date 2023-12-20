@@ -1,40 +1,68 @@
-planck
+# planck
 
-planck is an open-source email client for Android with pretty Easy privacy
+planck is an open-source email client for Android with encryption.
 
-## Download
+## How to start development
+### Pre-requisistes
+OS: MacOS or Linux.
+The following dependencies are needed to build the project:
+- XCode command line tools
+- openjdk@11 (**only use Java 11**)
+- wget
+- md5sha1sum
+- gnu-sed
+- autoconf
+- automake
+- libtool
+- python
+- pkg-config
+- rust
+- lxml
+- rosetta
+- asn1c **(expected to be installed at system level**, otherwise see custom .conf files can be used as detailed below)
+- yml2 (**expected to be in \$HOME/yml2 by default**, otherwise see custom .conf files can be used as detailed below)
 
-planck can be downloaded from a couple of sources:
+**If you are building on a second machine, you may need to initially copy the files at .ssh folder to the same folder on your new machine so you can access GitHub repos via ssh.**
 
-- Google Play
-- [F-Droid]
+## Setup process on an M1 Mac
+Previous step: Install the XCode command line tools: Run `xcode-select --install` on a terminal (you can use `xcode-select -p` to check if they are already installed), then just follow the wizard instructions and wait until completion.
 
-You might also be interested in becoming a beta tester to get an early look at new versions.
+### Clone the project
+`git clone git@github.com:plancksecurity/android-planckForAndroid.git planckForAndroid --recursive`
+
+### MacOS M1: Run the setup script on a clean machine
+On MacOS it is recommended to use the script scripts/setup/setupM1ForP4AMacPorts.sh to fully setup the machine from factory for development of this project.
+The script has been tested on a M1 Mac.
+```
+cd planckForAndroid
+sh scripts/setup/setupM1ForP4AMacPorts.sh
+```
+At the end of the script you will be directed to the Downloads page of Android Studio. Download and install it. Then Android Studio will automatically open, just follow the wizard instructions on the first run.
+
+In the case that the machine is not from factory and there are already some dependencies etc installed:still parts of the script can be copied/pasted and executed.
+Also in this case note that the expected Rust version to be used is 1.64.0.
+
+### Open the project in Android Studio
+Android studio will download all required Android dependencies once the project is open, wait for a while until that process is completed.
+
+### Add custom .conf files as needed
+You can add custom .conf files for core repos in `localConfFiles/<repo-name>` folder. (See as an example `localConfFiles/planckJNIWrapper/local.conf.sample`).
+No files are needed by default.
+
+### Run the project
+Click on "run" action on Android Studio or other IDE.
+
+### Creating builds
+You may want to first checkout all relevant core repo versions: `sh scripts/checkoutCoreVersion.sh <core tag>`
+<br>Check scripts/building/createBuilds.sh
+
+### Common issues
+If you deleted some submodules and they are not coming back with `git submodule update`, you can either run `sh scripts/addSubmodules.sh` or just copy the line of the script for the submodule that has the conflict.
+
 
 ## Need Help?
 
-If the app is not behaving like it should, you might find these resources helpful:
-
-- [User Manual](https://userguide.planck.security/planck_for_Android_User_Guide.pdf)
-
-
-
-## Contributing
-
-Please fork this repository and contribute back using [merge requests](https://git.planck.security/android/pep/-/merge_requests).
-
-Any contributions, large or small, major features, bug fixes, unit/integration tests are welcomed and appreciated
-but will be thoroughly reviewed and discussed.
-
-
-## Communication
-
-Aside from discussing changes in [merge requests](https://git.planck.security/android/pep/-/merge_requests) and
-[issues](https://git.planck.security/android/pep/-/issues) we use the following communication services:
-
-- IRC chat, [#prettyeasyprivacy on the Freenode network]
-- [Developer mailing list]
-
+If the app is not behaving like it should, you can access the user manual for the specific version from the app options menu and Settings/About screens.
 
 ## License
 

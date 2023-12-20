@@ -411,7 +411,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
         // regular folder content display
         if (!isManualSearch() && singleFolderMode) {
-            String displayName = FolderInfoHolder.getDisplayName(activity, account, folderName);
+            String displayName = FolderInfoHolder.getDisplayName(account, folderName);
 
             fragmentListener.setMessageListTitle(displayName);
 
@@ -792,7 +792,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void onFolderRetrievedGetFolderInfoHolder(LocalFolder localFolder) {
-        currentFolder = new FolderInfoHolder(context, localFolder, account);
+        currentFolder = new FolderInfoHolder(localFolder, account);
         initializeLoadersIfNeeded();
     }
 
@@ -2835,6 +2835,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     public boolean isOutbox() {
         return (folderName != null && folderName.equals(account.getOutboxFolderName()));
+    }
+
+    public boolean isArchive() {
+        return (folderName != null && folderName.equals(account.getArchiveFolderName()));
     }
 
     public boolean isRemoteFolder() {

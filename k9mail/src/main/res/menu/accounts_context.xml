@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/move_up"
-        android:title="@string/manage_accounts_move_up_action"
-        android:visible="false"/>
+        android:title="@string/manage_accounts_move_up_action" />
     <item android:id="@+id/move_down"
-        android:title="@string/manage_accounts_move_down_action"
-        android:visible="false"/>
+        android:title="@string/manage_accounts_move_down_action" />
     <item android:id="@+id/empty_trash"
-        android:title="@string/empty_trash_action"
-        android:visible="false" />
+        android:title="@string/empty_trash_action" />
     <item android:id="@+id/account_settings"
         android:title="@string/account_settings_action" />
-    <item android:id="@+id/delete_account"
-        android:title="@string/remove_account_action" />
 
     <item android:id="@+id/export"
-        android:title="@string/settings_export_account"
-        android:visible="false"/>
+        android:title="@string/settings_export_account" />
     <item
         android:id="@+id/advanced"
-        android:title="@string/advanced"
-        android:visible="false">
+        android:title="@string/advanced">
         <menu>
             <item android:id="@+id/clear"
                 android:title="@string/clear_action" />
