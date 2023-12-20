@@ -22,14 +22,12 @@ class DrawerLayoutToogle : ActionBarDrawerToggle {
     }
 
     override fun onDrawerOpened(drawerView: View) {
-        drawerLayoutView?.populateDrawerGroup()
-        drawerLayoutView?.addActivityListener()
+        drawerLayoutView?.drawerOpened()
         super.onDrawerOpened(drawerView)
     }
 
     override fun onDrawerClosed(drawerView: View) {
-        drawerLayoutView?.removeActivityListener()
+        drawerLayoutView?.drawerClosed()
         super.onDrawerClosed(drawerView)
-
     }
 }
