@@ -25,6 +25,7 @@ const val DEFAULT_SEPARATOR = "."
 class DrawerLayoutPresenter @Inject constructor(
         @ActivityContext private val context: Context,
         private val preferences: Preferences,
+        private val controller: MessagingController,
         private var accountUtils: AccountUtils,
 ) {
 
@@ -141,14 +142,13 @@ class DrawerLayoutPresenter @Inject constructor(
     private fun getFolders() {
         if (gettingFolders.get()) return
         gettingFolders.set(true)
-        MessagingController.getInstance(context)
-            .listFolders(account, false, object : SimpleMessagingListener() {
-                override fun listFolders(account: Account, folders: List<LocalFolder>) {
-                    menuFolders = folders
-                    gettingFolders.set(false)
-                    setupFolders(true)
-                }
-            })
+        controller.listFolders(account, false, object : SimpleMessagingListener() {
+            override fun listFolders(account: Account, folders: List<LocalFolder>) {
+                menuFolders = folders
+                gettingFolders.set(false)
+                setupFolders(true)
+            }
+        })
     }
 
     private fun setupFolders(force: Boolean = false) {
