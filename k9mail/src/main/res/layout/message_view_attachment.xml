@@ -37,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="middle"
-        android:maxLines="2"
+        android:maxLines="1"
         android:paddingStart="8dp"
         android:paddingEnd="16dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
