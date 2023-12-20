@@ -78,9 +78,9 @@ ext {
 }
 
 function checkCurrentVersion() {
-  TAG=$(git describe --tags | gsed -r 's@-.*@@' 2> /dev/null)
+  TAG=$(git describe --tags --abbrev=0 2> /dev/null)
   [ "$VERSION" = "$TAG" ] || {
-    >&2 echo "ERROR: EXPECTED VERSION $VERSION BUT $TAG WAS PROVIDED"
+    >&2 echo "ERROR: EXPECTED VERSION $TAG BUT $VERSION WAS PROVIDED"
     exit 1
   }
 }
