@@ -99,8 +99,7 @@ class DrawerLayoutPresenter @Inject constructor(
     private fun setAccountAdapter() {
         val accounts: MutableList<Account> = ArrayList(preferences.availableAccounts)
         accounts.remove(account)
-        val collection = ListAdapteeCollection(accounts)
-        drawerView.setAccountsAdapter(collection)
+        drawerView.setAccountsAdapter(accounts)
     }
 
     fun setFoldersAdapter() {
