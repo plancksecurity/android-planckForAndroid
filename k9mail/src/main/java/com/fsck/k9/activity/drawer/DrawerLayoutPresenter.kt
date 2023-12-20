@@ -4,6 +4,7 @@ import android.content.Context
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.Preferences
+import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.mailstore.LocalFolder
@@ -11,7 +12,6 @@ import com.fsck.k9.planck.AccountUtils
 import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
-import com.pedrogomez.renderers.ListAdapteeCollection
 import dagger.hilt.android.qualifiers.ApplicationContext
 import security.planck.foldable.folders.model.LevelListItem
 import security.planck.foldable.folders.util.Constants
@@ -38,6 +38,12 @@ class DrawerLayoutPresenter @Inject constructor(
 
     private var layoutClicked: Boolean = false
     private var gettingFolders = AtomicBoolean(false)
+
+    private val activityListener = object : ActivityListener() {
+        override fun informUserOfStatus() {
+            populateDrawerGroup()
+        }
+    }
 
     fun init(drawerView: DrawerLayoutView) {
         this.drawerView = drawerView
@@ -73,7 +79,7 @@ class DrawerLayoutPresenter @Inject constructor(
         populateDrawerGroup(force = ForceMode.FORCE_SET_CURRENT_FOLDERS)
     }
 
-    fun populateDrawerGroup(force: ForceMode = ForceMode.NONE) {
+    private fun populateDrawerGroup(force: ForceMode = ForceMode.NONE) {
         unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context)
         allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
 
@@ -185,7 +191,20 @@ class DrawerLayoutPresenter @Inject constructor(
         layoutClicked = false
     }
 
-    enum class ForceMode {
+    fun startListeningToFolderChanges() {
+        populateDrawerGroup()
+        controller.addListener(activityListener)
+    }
+
+    fun stopListeningToFolderChanges() {
+        controller.removeListener(activityListener)
+    }
+
+    fun refreshFolders() {
+        populateDrawerGroup(ForceMode.FORCE_GET_FOLDERS)
+    }
+
+    private enum class ForceMode {
         NONE,
         FORCE_GET_FOLDERS,
         FORCE_SET_CURRENT_FOLDERS

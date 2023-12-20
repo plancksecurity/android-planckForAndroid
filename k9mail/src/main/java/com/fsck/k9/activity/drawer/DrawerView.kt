@@ -22,9 +22,8 @@ interface DrawerView {
     fun setupAccountsListeners(account: Account, accounts: MutableList<Account>)
     fun setUpMainAccountView(account: Account)
     fun setNavigationViewInsets()
-    fun removeActivityListener()
-    fun addActivityListener()
-    fun populateDrawerGroup()
+    fun drawerClosed()
+    fun drawerOpened()
     fun refreshFolders()
 
 }
