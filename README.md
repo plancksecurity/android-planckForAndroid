@@ -39,7 +39,8 @@ sh scripts/setup/setupM1ForP4AMacPorts.sh
 ```
 At the end of the script you will be directed to the Downloads page of Android Studio. Download and install it. Then Android Studio will automatically open, just follow the wizard instructions on the first run.
 
-In the case that the machine is not from factory and there are already some dependencies etc installed, still parts of the script can be copied/pasted and executed.
+In the case that the machine is not from factory and there are already some dependencies etc installed:still parts of the script can be copied/pasted and executed.
+Also in this case note that the expected Rust version to be used is 1.64.0.
 
 ### Open the project in Android Studio
 Android studio will download all required Android dependencies once the project is open, wait for a while until that process is completed.
@@ -52,7 +53,8 @@ No files are needed by default.
 Click on "run" action on Android Studio or other IDE.
 
 ### Creating builds
-Check scripts/building/createBuilds.sh
+You may want to first checkout all relevant core repo versions: `sh scripts/checkoutCoreVersion.sh <core tag>`
+<br>Check scripts/building/createBuilds.sh
 
 ### Common issues
 If you deleted some submodules and they are not coming back with `git submodule update`, you can either run `sh scripts/addSubmodules.sh` or just copy the line of the script for the submodule that has the conflict.
