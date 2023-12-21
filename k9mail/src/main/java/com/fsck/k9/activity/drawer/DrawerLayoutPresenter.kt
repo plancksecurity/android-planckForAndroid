@@ -31,6 +31,7 @@ class DrawerLayoutPresenter @Inject constructor(
 
     private var showingAccountsMenu = false
     var account: Account? = null
+        private set
     private lateinit var unifiedInboxAccount: SearchAccount
     private lateinit var allMessagesAccount: SearchAccount
     private var menuFolders: List<LocalFolder>? = null
@@ -66,6 +67,7 @@ class DrawerLayoutPresenter @Inject constructor(
     }
 
     fun onAccountClicked(account: Account) {
+        this.account = account
         val search = createSearchFolder(account)
         drawerView.refreshMessages(search)
         setupNavigationHeader()
@@ -74,7 +76,7 @@ class DrawerLayoutPresenter @Inject constructor(
 
     fun createFoldersMenu() {
         showingAccountsMenu = false
-        drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
+        drawerView.setupNavigationHeaderListeners(false)
         drawerView.setFoldersDrawerVisible()
         populateDrawerGroup(force = ForceMode.FORCE_SET_CURRENT_FOLDERS)
     }
@@ -97,7 +99,7 @@ class DrawerLayoutPresenter @Inject constructor(
 
     fun createAccountsMenu() {
         showingAccountsMenu = true
-        drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
+        drawerView.setupNavigationHeaderListeners(true)
         drawerView.setAccountsDrawerVisible()
         setAccountAdapter()
     }
@@ -123,7 +125,7 @@ class DrawerLayoutPresenter @Inject constructor(
                 else -> Constants.DEFAULT_SHOW_ON_TOP_PRIO
             }
         }
-        val levelListBuilder = LevelListBuilderImpl<FolderModel>(
+        val levelListBuilder = LevelListBuilderImpl(
             separator = separator,
             depthLimit = DEFAULT_PATH_DEPTH,
             showOnTopFilter = filter,
@@ -184,7 +186,7 @@ class DrawerLayoutPresenter @Inject constructor(
             layoutClicked = true
             false
         } else
-            layoutClicked
+            true
     }
 
     fun resetLayoutClick() {
@@ -202,6 +204,10 @@ class DrawerLayoutPresenter @Inject constructor(
 
     fun refreshFolders() {
         populateDrawerGroup(ForceMode.FORCE_GET_FOLDERS)
+    }
+
+    fun updateAccount(account: Account) {
+        this.account = account
     }
 
     private enum class ForceMode {
