@@ -100,7 +100,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     fun updateAccount(account: Account) {
-        drawerLayoutPresenter.account = account
+        drawerLayoutPresenter.updateAccount(account)
     }
 
     private fun initializeDrawerToggle(activity: Activity?, toolbar: Toolbar?) {
@@ -386,7 +386,6 @@ class DrawerLayoutView @Inject constructor(
 
     private fun onAccountClick(account: Account) {
         if (!drawerLayoutPresenter.layoutClick()) {
-            drawerLayoutPresenter.account = account
             messageListView.showLoadingMessages()
             messageListView.updateAccount(account)
             messageListView.updateLastUsedAccount()
