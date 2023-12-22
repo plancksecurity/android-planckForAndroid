@@ -466,5 +466,6 @@
     <string name="account_delete_dlg_account_not_available">Account %s is not available.</string>
     <string name="account_delete_dlg_success">Account %s was removed.</string>
     <string name="device_cannot_create_pinned_shortcut_feedback">The device does not support this kind of shortcut.</string>
+    <string name="shortcut_feedback_account_removed">This account was removed from the app.</string>
 
 </resources>
