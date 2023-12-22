@@ -640,7 +640,7 @@ public abstract class MessageBuilder {
         com.fsck.k9.Identity k9Identity = new com.fsck.k9.Identity();
         k9Identity.setSignatureUse(false);
         k9Identity.setSignature("");
-        k9Identity.setReplyTo(PlanckUtils.getReplyTo(replyTo));
+        k9Identity.setReplyTo(replyTo == null ? null : PlanckUtils.getReplyTo(replyTo));
         if (from != null) {
             k9Identity.setName(from.username);
             k9Identity.setEmail(from.address);
