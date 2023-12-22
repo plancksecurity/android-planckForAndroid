@@ -641,9 +641,11 @@ public abstract class MessageBuilder {
         k9Identity.setSignatureUse(false);
         k9Identity.setSignature("");
         k9Identity.setReplyTo(PlanckUtils.getReplyTo(replyTo));
-        k9Identity.setName(from.username);
+        if (from != null) {
+            k9Identity.setName(from.username);
+            k9Identity.setEmail(from.address);
+        }
         k9Identity.setDescription("");
-        k9Identity.setEmail(from.address);
         return setIdentity(k9Identity);
     }
 
