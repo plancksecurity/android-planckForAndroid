@@ -615,17 +615,18 @@ public class FolderList extends K9ListActivity {
         if (folder.equals(allMessagesFolderName)) {
             SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
             MessageList.actionDisplaySearch(this, allMessagesAccount.getRelatedSearch(), false, false, true);
-            return;
-        }
-        if (folder.equals(unifiedFolderName)) {
+        } else if (folder.equals(unifiedFolderName)) {
             SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
             MessageList.actionDisplaySearch(this, unifiedInboxAccount.getRelatedSearch(), false, false, true);
-            return;
+        } else {
+            LocalSearch search = new LocalSearch(folder);
+            search.addAccountUuid(mAccount.getUuid());
+            search.addAllowedFolder(folder);
+            MessageList.actionDisplaySearch(this, search, false, false, true);
         }
-        LocalSearch search = new LocalSearch(folder);
-        search.addAccountUuid(mAccount.getUuid());
-        search.addAllowedFolder(folder);
-        MessageList.actionDisplaySearch(this, search, false, false, true);
+        if (BuildConfig.IS_ENTERPRISE) {
+            finish();
+        }
     }
 
     private void onCompact(Account account) {
