@@ -86,14 +86,10 @@
 
         <TextView
             android:id="@+id/to_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/RecipientSelectViewErrorText"
             app:layout_constraintTop_toBottomOf="@id/to"
             app:layout_constraintStart_toStartOf="@id/to"
             app:layout_constraintEnd_toEndOf="@id/to"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/compose_unsecure_delivery_warning"
-            android:visibility="gone"
             tools:visibility="visible"
             tools:text="error" />
 
@@ -172,14 +168,10 @@
 
         <TextView
             android:id="@+id/cc_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/RecipientSelectViewErrorText"
             app:layout_constraintTop_toBottomOf="@id/cc"
             app:layout_constraintStart_toStartOf="@id/cc"
             app:layout_constraintEnd_toEndOf="@id/cc"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/compose_unsecure_delivery_warning"
-            android:visibility="gone"
             tools:visibility="visible"
             tools:text="error" />
 
@@ -240,14 +232,10 @@
 
         <TextView
             android:id="@+id/bcc_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/RecipientSelectViewErrorText"
             app:layout_constraintTop_toBottomOf="@id/bcc"
             app:layout_constraintStart_toStartOf="@id/bcc"
             app:layout_constraintEnd_toEndOf="@id/bcc"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/compose_unsecure_delivery_warning"
-            android:visibility="gone"
             tools:visibility="visible"
             tools:text="error" />
 
