@@ -22,4 +22,5 @@
     <color name="wizard_button_background_color">@color/dark_theme_default_background</color>
 
     <color name="select_auth_key_icon_color_dark">@color/planck_gray</color>
+    <color name="compose_unsecure_delivery_warning">#FD0007</color>
 </resources>
