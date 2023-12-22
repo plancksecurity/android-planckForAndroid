@@ -118,7 +118,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private static final String EXTRA_FOLDER = "open_folder";
     private static final String EXTRA_NO_THREADING = "no_threading";
 
-    private static final String ACTION_SHORTCUT = "shortcut";
+    public static final String ACTION_SHORTCUT = "shortcut";
     private static final String EXTRA_SPECIAL_FOLDER = "special_folder";
 
     private static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
