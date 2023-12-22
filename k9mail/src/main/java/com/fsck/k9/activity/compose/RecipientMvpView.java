@@ -58,7 +58,6 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final ActionRecipientSelectView ccView;
     private final ActionRecipientSelectView bccView;
     private final ComposeAccountRecipient fromView;
-    private final ViewAnimator cryptoStatusView;
     private final ViewAnimator recipientExpanderContainer;
     private final Account mAccount;
 
@@ -77,13 +76,14 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         toView = (ActionRecipientSelectView) activity.findViewById(R.id.to);
         ccView = (ActionRecipientSelectView) activity.findViewById(R.id.cc);
         bccView = (ActionRecipientSelectView) activity.findViewById(R.id.bcc);
+        toView.setErrorTextView(activity.findViewById(R.id.to_error));
+        ccView.setErrorTextView(activity.findViewById(R.id.cc_error));
+        bccView.setErrorTextView(activity.findViewById(R.id.bcc_error));
         ccWrapper = activity.findViewById(R.id.cc_wrapper);
         ccDivider = activity.findViewById(R.id.cc_divider);
         bccWrapper = activity.findViewById(R.id.bcc_wrapper);
         bccDivider = activity.findViewById(R.id.bcc_divider);
         recipientExpanderContainer = (ViewAnimator) activity.findViewById(R.id.recipient_expander_container);
-        cryptoStatusView = (ViewAnimator) activity.findViewById(R.id.crypto_status);
-        cryptoStatusView.setOnClickListener(this);
 
         toView.setOnFocusChangeListener(this);
         ccView.setOnFocusChangeListener(this);
@@ -281,29 +281,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
                 presenter.onClickRecipientExpander();
                 break;
             }
-            case R.id.crypto_status: {
-                presenter.onClickCryptoStatus();
-                break;
-            }
-            case R.id.crypto_special_mode: {
-                presenter.onClickCryptoSpecialModeIndicator();
-            }
         }
     }
 
     public void showCryptoDialog(CryptoMode currentCryptoMode) {
         CryptoSettingsDialog dialog = CryptoSettingsDialog.newInstance(currentCryptoMode);
         dialog.show(activity.getFragmentManager(), "crypto_settings");
-    }
-
-    public void showOpenPgpInlineDialog(boolean firstTime) {
-        PgpInlineDialog dialog = PgpInlineDialog.newInstance(firstTime, R.id.crypto_special_mode);
-        dialog.show(activity.getSupportFragmentManager(), "openpgp_inline");
-    }
-
-    public void showOpenPgpSignOnlyDialog(boolean firstTime) {
-        PgpSignOnlyDialog dialog = PgpSignOnlyDialog.newInstance(firstTime, R.id.crypto_special_mode);
-        dialog.show(activity.getSupportFragmentManager(), "openpgp_signonly");
     }
 
     public void launchUserInteractionPendingIntent(PendingIntent pendingIntent, int requestCode) {

@@ -7,9 +7,10 @@
     android:orientation="vertical"
     tools:showIn="@layout/message_compose">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginStart="@dimen/outer_margin"
         android:layout_marginLeft="@dimen/outer_margin"
         android:layout_marginEnd="@dimen/outer_margin"
@@ -24,231 +25,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:minWidth="@dimen/min_label_width"
-            android:text="@string/recipient_from"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:text="@string/recipient_from"/>
 
         <include
             android:id="@+id/identity"
             layout="@layout/compose_account_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/from_label"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center_vertical"/>
 
-        <ImageView
-            android:id="@+id/pgp_inline_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="8dp"
-            android:tint="?attr/grayScaleColorOnBackground1"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/crypto_special_mode"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/compatibility"
-            tools:visibility="visible" />
-
-        <com.fsck.k9.view.ToolableViewAnimator
-            android:id="@+id/crypto_special_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:inAnimation="@anim/fade_in"
-            android:outAnimation="@anim/fade_out"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/crypto_status"
-            app:layout_constraintTop_toTopOf="parent"
-            app:previewInitialChild="2"
-            tools:visibility="visible">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="8dp"
-                android:tint="?attr/grayScaleColorOnBackground1"
-                app:srcCompat="@drawable/compatibility" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                android:tint="?attr/openpgp_blue"
-                app:srcCompat="@drawable/status_signature_verified_cutout" />
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="8dp"
-                    android:tint="?attr/openpgp_blue"
-                    app:srcCompat="@drawable/status_signature_verified_cutout" />
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="end|bottom"
-                    android:tint="?attr/grayScaleColorOnBackground1"
-                    app:srcCompat="@drawable/compatibility" />
-            </FrameLayout>
-
-        </com.fsck.k9.view.ToolableViewAnimator>
-
-        <com.fsck.k9.view.ToolableViewAnimator
-            android:id="@+id/crypto_status"
-            android:layout_width="36dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:inAnimation="@anim/fade_in"
-            android:outAnimation="@anim/fade_out"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:previewInitialChild="2"
-            tools:visibility="visible">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:tint="?attr/openpgp_dark_grey"
-                app:srcCompat="@drawable/status_lock_disabled" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:tint="?attr/openpgp_red"
-                app:srcCompat="@drawable/status_lock_error" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_dots" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_lock" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_dots" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_red"
-                    app:srcCompat="@drawable/status_lock_error_dots_1" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_dots" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_red"
-                    app:srcCompat="@drawable/status_lock_none_dots_1" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_lock_disabled" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_dots" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_orange"
-                    app:srcCompat="@drawable/status_lock_dots_2" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_grey"
-                    app:srcCompat="@drawable/status_dots" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:tint="?attr/openpgp_green"
-                    app:srcCompat="@drawable/status_lock_dots_3" />
-
-            </FrameLayout>
-
-        </com.fsck.k9.view.ToolableViewAnimator>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/to_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -264,6 +57,9 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/min_height"
             android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:labelFor="@+id/to"
             android:minWidth="@dimen/min_label_width"
             android:text="@string/recipient_to" />
@@ -271,11 +67,12 @@
         <com.fsck.k9.planck.ui.ActionRecipientSelectView
             android:id="@+id/to"
             style="@style/MediumComposeText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/recipient_expander_container"
-            android:layout_toEndOf="@id/to_label"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/recipient_expander_container"
+            app:layout_constraintStart_toEndOf="@id/to_label"
             android:background="@android:color/transparent"
             android:dropDownAnchor="@id/to_wrapper"
             android:dropDownWidth="wrap_content"
@@ -287,12 +84,26 @@
             tools:text="Recipient"
             android:completionThreshold="1"/>
 
+        <TextView
+            android:id="@+id/to_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/to"
+            app:layout_constraintStart_toStartOf="@id/to"
+            app:layout_constraintEnd_toEndOf="@id/to"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/compose_unsecure_delivery_warning"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="error" />
+
         <ViewAnimator
             android:id="@+id/recipient_expander_container"
             android:layout_width="@dimen/min_height"
             android:layout_height="@dimen/min_height"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:inAnimation="@anim/fade_in"
             android:outAnimation="@anim/fade_out">
 
@@ -309,14 +120,14 @@
                 android:layout_height="wrap_content" />
         </ViewAnimator>
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cc_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -336,6 +147,9 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/min_height"
             android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:labelFor="@+id/cc"
             android:minWidth="@dimen/min_label_width"
             android:text="@string/recipient_cc" />
@@ -343,8 +157,12 @@
         <com.fsck.k9.planck.ui.ActionRecipientSelectView
             android:id="@+id/cc"
             style="@style/MediumComposeText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cc_label"
+            app:layout_constraintEnd_toEndOf="parent"
             android:background="@android:color/transparent"
             android:dropDownAnchor="@id/cc_wrapper"
             android:dropDownWidth="wrap_content"
@@ -352,7 +170,20 @@
             android:inputType="textEmailAddress|textMultiLine"
             android:completionThreshold="1"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/cc_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cc"
+            app:layout_constraintStart_toStartOf="@id/cc"
+            app:layout_constraintEnd_toEndOf="@id/cc"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/compose_unsecure_delivery_warning"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="error" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/cc_divider"
@@ -362,7 +193,7 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bcc_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -382,6 +213,9 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/min_height"
             android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:labelFor="@+id/bcc"
             android:minWidth="@dimen/min_label_width"
             android:text="@string/recipient_bcc" />
@@ -389,8 +223,12 @@
         <com.fsck.k9.planck.ui.ActionRecipientSelectView
             android:id="@+id/bcc"
             style="@style/MediumComposeText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/bcc_label"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
             android:dropDownAnchor="@id/bcc_wrapper"
@@ -400,7 +238,20 @@
             android:completionThreshold="1"
             app:alwaysUnsecure="true"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/bcc_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/bcc"
+            app:layout_constraintStart_toStartOf="@id/bcc"
+            app:layout_constraintEnd_toEndOf="@id/bcc"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/compose_unsecure_delivery_warning"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="error" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/bcc_divider"

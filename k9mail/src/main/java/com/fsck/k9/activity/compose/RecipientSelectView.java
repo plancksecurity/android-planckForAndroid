@@ -21,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -79,6 +80,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Account account;
     private PlanckUIArtefactCache uiCache;
     private boolean alwaysUnsecure;
+    private TextView errorTextView;
 
 
     @Inject ContactPictureLoader contactPictureLoader;
@@ -156,6 +158,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 recipientSelectPresenter.onRecipientsChanged();
             }
         });
+    }
+
+    public void setErrorTextView(TextView errorTextView) {
+        this.errorTextView = errorTextView;
     }
 
     @Override
@@ -482,6 +488,18 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return new Recipient(parsedAddresses[0]);
     }
 
+    @Override
+    public void setError(CharSequence error) {
+        if (errorTextView == null) return;
+        if (error == null) {
+            errorTextView.setVisibility(View.GONE);
+            errorTextView.setText(null);
+        } else {
+            errorTextView.setText(error);
+            errorTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
     public boolean isEmpty() {
         return getObjects().isEmpty();
     }
@@ -505,6 +523,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         super.onFocusChanged(hasFocus, direction, previous);
         if (hasFocus) {
             displayKeyboard();
+            setError(null);
         }
     }
 
@@ -677,6 +696,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         alternatesPopup.dismiss();
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+        if (errorTextView != null && errorTextView.getVisibility() != View.GONE) {
+            setError(null);
+        }
     }
 
     public void removeRecipientAndResetView(Recipient recipient) {
