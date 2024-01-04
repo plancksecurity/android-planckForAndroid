@@ -5,6 +5,7 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckProvider.CompletedCallback
 import com.fsck.k9.planck.infrastructure.Poller
@@ -40,6 +41,7 @@ class PlanckSyncRepository @Inject constructor(
     private val messagingController: Provider<MessagingController>,
     private val timer: Timer,
     private val pollerFactory: PollerFactory,
+    dispatcherProvider: DispatcherProvider,
 ) : SyncRepository {
     private val syncStateMutableFlow: MutableStateFlow<SyncAppState> =
         MutableStateFlow(SyncState.Idle)
@@ -49,7 +51,7 @@ class PlanckSyncRepository @Inject constructor(
     override var isGrouped = false
     private var isPollingMessages = false
     private var poller: Poller? = null
-    private val engineScope = CoroutineScope(PlanckDispatcher)
+    private val engineScope = CoroutineScope(dispatcherProvider.planckDispatcher())
 
     @Volatile
     private var handshakeLocked = false

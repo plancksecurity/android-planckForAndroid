@@ -380,17 +380,6 @@
                     android:title="@string/pep_subject_protection"
                     android:summary="@string/global_settings_subject_protection_summary"/>
 
-
-                <Preference
-                    android:key="pep_gpg_blacklist"
-                    android:title="@string/blacklist_title"
-                    android:summary="@string/global_settings_blacklist_summary">
-                    <intent
-                        android:targetClass="com.fsck.k9.planck.ui.blacklist.PepBlacklist"
-                        android:targetPackage="@string/application_id" />
-
-                </Preference>
-
             </PreferenceCategory>
 
             <PreferenceCategory

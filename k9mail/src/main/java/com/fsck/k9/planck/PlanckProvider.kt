@@ -210,10 +210,7 @@ interface PlanckProvider {
     fun setSubjectProtection(enabled: Boolean)
     fun configPassphrase(passphrase: String)
     fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?)
-    val blacklistInfo: List<KeyListItem>?
     val masterKeysInfo: List<KeyListItem>?
-    fun addToBlacklist(fpr: String)
-    fun deleteFromBlacklist(fpr: String)
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
     suspend fun acceptSync()
