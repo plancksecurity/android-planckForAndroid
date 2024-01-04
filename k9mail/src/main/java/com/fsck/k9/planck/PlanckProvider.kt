@@ -215,9 +215,9 @@ interface PlanckProvider {
     fun deleteFromBlacklist(fpr: String)
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
-    fun acceptSync()
-    fun rejectSync()
-    fun cancelSync()
+    suspend fun acceptSync()
+    suspend fun rejectSync()
+    suspend fun cancelSync()
     fun loadMessageRatingAfterResetTrust(
         mimeMessage: MimeMessage?,
         isIncoming: Boolean,
