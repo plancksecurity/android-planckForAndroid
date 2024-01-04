@@ -12,8 +12,6 @@
     <string name="pep_extra_addresses">Zusätzliche Schlüsselkennungen:</string>
     <string name="pep_use_keyserver">Schlüssel auf Schlüsselserver suchen</string>
     <string name="pep_passive_mode">Passivmodus</string>
-    <string name="pep_add_key_to_blacklist">Schlüssel nicht mehr verwenden</string>
-    <string name="pep_remove_key_from_blacklist">Schlüssel wieder verwenden</string>
     <string name="pep_confirm_trustwords">Bestätigen</string>
     <string name="pep_wrong_trustwords">Ablehnen</string>
     <string name="pep_wrong_fingerprint">Falscher Fingerabdruck</string>
@@ -230,10 +228,8 @@
     <string name="pgp_key_import_title">PGP Schlüsselimport aus dem Dateisystem</string>
     <string name="change_language_explanation">App wird zum Startbildschirm wechseln um die Änderung abzuschliessen</string>
     <string name="change_language_title">Sprache ändern</string>
-    <string name="blacklist_title">Blacklist</string>
     <string name="account_settings_save_encrypted_summary_disabled">Verschlüsselte Nachrichten entschlüsseln und auf dem Server ungesichert speichern.</string>
     <string name="account_settings_save_encrypted_summary_enabled">Verschlüsselte Nachrichten auf dem Server ebenso sicher speichern.</string>
-    <string name="global_settings_blacklist_summary">OpenPGP-Schlüssel eines Kommunikationspartenrs nicht mehr verwenden</string>
     <string name="global_settings_subject_protection_summary">Nachricht schützen, wenn der Kommunikationspartner OpenPGP verwendet</string>
     <string name="global_settings_passive_mode_summary">Keinen Schlüssel mitsenden, wenn der Kommunikationspartner kein planck verwendet</string>
     <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>

@@ -32,7 +32,6 @@ import com.fsck.k9.planck.infrastructure.extensions.mapError
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
-import com.fsck.k9.planck.infrastructure.toResultCompat
 import com.fsck.k9.planck.ui.HandshakeData
 import com.fsck.k9.planck.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -1134,30 +1133,6 @@ class PlanckProviderImplKotlin(
         return engine.get().updateIdentity(id)
     }
 
-    override val blacklistInfo: List<KeyListItem>?
-        @WorkerThread
-        get() = try {
-            val identities: MutableList<KeyListItem> = ArrayList()
-            val keys = engine.get().OpenPGP_list_keyinfo("")
-            keys?.forEach { key ->
-                //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
-            }
-            identities
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
-            null
-        }
-
-    @WorkerThread
-    override fun addToBlacklist(fpr: String) {
-      //  engine.get().blacklist_add(fpr)
-    }
-
-    @WorkerThread
-    override fun deleteFromBlacklist(fpr: String) {
-    //    engine.get().blacklist_delete(fpr)
-    }
-
     override val masterKeysInfo: List<KeyListItem>?
         @WorkerThread
         get() {
@@ -1167,7 +1142,7 @@ class PlanckProviderImplKotlin(
                 keys?.forEach { key -> identities.add(KeyListItem(key.first, key.second)) }
                 return identities
             } catch (e: pEpException) {
-                Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+                Timber.e(e, "%s %s", TAG, "getMasterKeysInfo")
             }
             return null
         }
