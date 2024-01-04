@@ -504,19 +504,6 @@
             android:name=".planck.ui.blacklist.PlanckBlacklist"
             android:label="@string/blacklist_title"
             android:theme="@style/Theme.K9.DayNight" />
-        <activity
-            android:name=".planck.ui.keysync.PlanckAddDevice"
-            android:excludeFromRecents="true"
-            android:label="@string/pep_device_group"
-            android:launchMode="singleInstance"
-            android:theme="@style/OverlayTheme"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <receiver android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver"
             android:exported="false">
@@ -547,7 +534,6 @@
             android:name=".planck.ui.activities.provisioning.ProvisioningActivity"
             android:launchMode="singleInstance"
             android:theme="@style/SplashTheme"/>
-        <activity android:name=".planck.ui.keysync.KeysyncManagement" />
         <activity android:name="security.planck.ui.about.AboutActivity"
             android:label="@string/about_action"/>
         <activity
