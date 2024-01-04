@@ -1002,12 +1002,12 @@ class PlanckProviderImplKotlin(
         partner: Identity,
         lang: String,
         isShort: Boolean
-    ): ResultCompat<String> {
+    ): ResultCompat<String?> {
         return ResultCompat.of { engine.get().get_trustwords(myself, partner, lang, !isShort) }
     }
 
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean,
-                            callback: SimpleResultCallback<String>) {
+                            callback: SimpleResultCallback<String?>) {
         engineScope.launch {
             trustwordsSuspend(myself, partner, lang, isShort, callback)
         }
@@ -1015,7 +1015,7 @@ class PlanckProviderImplKotlin(
 
     private fun trustwordsSuspend(
             myself: Identity, partner: Identity, lang: String, isShort: Boolean,
-            callback: SimpleResultCallback<String>) {
+            callback: SimpleResultCallback<String?>) {
         try {
             val result = engine.get().get_trustwords(myself, partner, lang, !isShort)
             notifyLoaded(result, callback)
