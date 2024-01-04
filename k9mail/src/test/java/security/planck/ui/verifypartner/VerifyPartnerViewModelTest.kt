@@ -137,7 +137,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
 
     private fun stupPlanckProvider() {
         val identitySlot = slot<Identity>()
-        coEvery { planckProvider.myself(capture(identitySlot)) }.coAnswers { identitySlot.captured }
+        coEvery { planckProvider.myselfSuspend(capture(identitySlot)) }.coAnswers { identitySlot.captured }
         coEvery {
             planckProvider.trustwords(
                 any(),
@@ -236,7 +236,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         verify { Address.create(myself.address) }
         verify { Address.create(partner.address) }
         verify { PlanckUtils.createIdentity(myselfAddress, context) }
-        verify { planckProvider.myself(myself) }
+        coVerify { planckProvider.myselfSuspend(myself) }
     }
 
     @Test
@@ -845,7 +845,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
     @Test
     fun `positiveAction() on trust confirmation for outgoing message sets state to ErrorTrusting if PlanckProvider_getRatingResult() fails`() =
         runTest {
-            every { planckProvider.getRatingResult(any(), any(), any(), any()) }.returns(
+            coEvery { planckProvider.getRatingResult(any(), any(), any(), any()) }.returns(
                 ResultCompat.failure(RuntimeException("test"))
             )
 
@@ -888,7 +888,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
     @Test
     fun `positiveAction() on mistrust confirmation for outgoing message sets state to ErrorMistrusting if PlanckProvider_getRatingResult() fails`() =
         runTest {
-            every { planckProvider.getRatingResult(any(), any(), any(), any()) }.returns(
+            coEvery { planckProvider.getRatingResult(any(), any(), any(), any()) }.returns(
                 ResultCompat.failure(RuntimeException("test"))
             )
 
