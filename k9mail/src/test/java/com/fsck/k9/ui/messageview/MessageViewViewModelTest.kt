@@ -306,7 +306,7 @@ class MessageViewViewModelTest : RobolectricTest() {
 
 
             verify { localMessage.isValidForHandshake() }
-            verify { planckProvider.getRating(any<Address>()) }
+            coVerify { planckProvider.getRating(any<Address>()) }
             verify { PlanckUtils.isRatingReliable(Rating.pEpRatingReliable) }
             assertAllowHandshakeEvents(false, true)
         }
@@ -342,7 +342,7 @@ class MessageViewViewModelTest : RobolectricTest() {
     @Test
     fun `loadMessage() does not allow to handshake sender if getting sender rating fails`() =
         runTest {
-            every { planckProvider.getRating(any<Address>()) }.returns(
+            coEvery { planckProvider.getRating(any<Address>()) }.returns(
                 ResultCompat.failure(
                     TestException("test")
                 )
