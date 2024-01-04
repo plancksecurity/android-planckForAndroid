@@ -21,9 +21,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
-import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.planck.infrastructure.extensions.isAllMessagesFolder
 import com.fsck.k9.planck.infrastructure.extensions.isUnifiedInboxFolder
@@ -33,7 +31,6 @@ import com.fsck.k9.planck.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
-import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -49,7 +46,6 @@ class DrawerLayoutView @Inject constructor(
     @ActivityContext private val context: Context,
     private val drawerFolderPopulator: DrawerFolderPopulator,
     private val drawerLayoutPresenter: DrawerLayoutPresenter,
-    private val messagingController: MessagingController,
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -86,13 +82,6 @@ class DrawerLayoutView @Inject constructor(
 
     private lateinit var messageListView: MessageListView
 
-    private val activityListener = object : ActivityListener() {
-
-        override fun informUserOfStatus() {
-            populateDrawerGroup()
-        }
-    }
-
     fun initDrawerView(
         activity: Activity?,
         toolbar: Toolbar?,
@@ -111,7 +100,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     fun updateAccount(account: Account) {
-        drawerLayoutPresenter.account = account
+        drawerLayoutPresenter.updateAccount(account)
     }
 
     private fun initializeDrawerToggle(activity: Activity?, toolbar: Toolbar?) {
@@ -385,19 +374,18 @@ class DrawerLayoutView @Inject constructor(
         }
     }
 
-    override fun setAccountsAdapter(collection: ListAdapteeCollection<Account>) {
+    override fun setAccountsAdapter(list: List<Account>) {
         val accountRenderer = AccountRenderer()
         val rendererAccountBuilder = RendererBuilder(accountRenderer)
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
 
         navigationAccounts.layoutManager = getDrawerLayoutManager()
-        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection as List<Account>)
+        accountAdapter = RVRendererAdapter(rendererAccountBuilder, list)
         navigationAccounts.adapter = accountAdapter
     }
 
     private fun onAccountClick(account: Account) {
         if (!drawerLayoutPresenter.layoutClick()) {
-            drawerLayoutPresenter.account = account
             messageListView.showLoadingMessages()
             messageListView.updateAccount(account)
             messageListView.updateLastUsedAccount()
@@ -455,24 +443,20 @@ class DrawerLayoutView @Inject constructor(
         drawerLayoutPresenter.loadNavigationView()
     }
 
-    override fun populateDrawerGroup() {
-        drawerLayoutPresenter.populateDrawerGroup()
-    }
-
     override fun refreshFolders() {
-        drawerLayoutPresenter.populateDrawerGroup(true)
+        drawerLayoutPresenter.refreshFolders()
     }
 
     override fun refreshMessages(search: LocalSearch) {
         messageListView.refreshMessages(search)
     }
 
-    override fun addActivityListener() {
-        messagingController.addListener(activityListener)
+    override fun drawerOpened() {
+        drawerLayoutPresenter.startListeningToFolderChanges()
     }
 
-    override fun removeActivityListener() {
-        messagingController.removeListener(activityListener)
+    override fun drawerClosed() {
+        drawerLayoutPresenter.stopListeningToFolderChanges()
     }
 
     companion object {

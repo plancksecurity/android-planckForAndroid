@@ -20,9 +20,9 @@ class DrawerFolderPopulator @Inject constructor() {
         account: Account,
         force: Boolean
     ) {
-        val newFoldersAreDifferent = areFolderListDifferent(newFolders)
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
+            val newFoldersAreDifferent = areFolderListDifferent(newFolders)
             val newUnreadCounts = calculateNewUnread(newFolders)
             val unreadCountIsDifferent = !newUnreadCounts.contentEquals(lastUnreadCounts)
             if (force || newFoldersAreDifferent || unreadCountIsDifferent) {
