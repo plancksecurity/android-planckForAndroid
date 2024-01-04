@@ -224,8 +224,7 @@ interface PlanckProvider {
         id: Identity
     ): ResultCompat<Rating>
 
-    val log: String
-    fun getLog(callback: CompletedCallback): String
+    suspend fun getLog(): String
     fun printLog()
     fun loadOwnIdentities(callback: ResultCallback<List<Identity>>)
     fun setIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback)

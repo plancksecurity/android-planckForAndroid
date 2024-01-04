@@ -780,12 +780,12 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(message: com.fsck.k9.mail.Message): Rating = runBlocking(PlanckDispatcher) {
+    override fun getRating(message: com.fsck.k9.mail.Message): Rating {
         val from = message.from[0]
         val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
         val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
         val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
-        getRating(from, to, cc, bcc)
+        return getRating(from, to, cc, bcc)
     }
 
     override fun getRating(message: com.fsck.k9.mail.Message, callback: ResultCallback<Rating>) {
@@ -1079,7 +1079,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun keyResetIdentity(ident: Identity, fpr: String?) = runBlocking(PlanckDispatcher) {
+    override fun keyResetIdentity(ident: Identity, fpr: String?) {
         val identity = updateIdentity(ident)
         try {
             engine.get().key_reset_identity(identity, fpr)
@@ -1091,7 +1091,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun keyResetUser(userId: String, fpr: String?) = runBlocking(PlanckDispatcher) {
+    override fun keyResetUser(userId: String, fpr: String?) {
         try {
             engine.get().key_reset_user(userId, fpr)
         } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
@@ -1252,30 +1252,15 @@ class PlanckProviderImplKotlin(
     @WorkerThread
     override fun printLog() {
         uiScope.launch {
-            log.split("\n")
+            getLog().split("\n")
                     .filter { it.isNotBlank() }
                     .toTypedArray()
                     .forEach { logLine -> Timber.i("%s %s", TAG, logLine) }
         }
     }
 
-    override fun getLog(callback: CompletedCallback): String {
-        var result = ""
-        uiScope.launch {
-            result = getLogSuspend()
-            callback.onComplete()
-        }
-        return result
-    }
-
-    override val log: String
-        @WorkerThread
-        get() = runBlocking(PlanckDispatcher) {
-            getLogSuspend()
-        }
-
-    private fun getLogSuspend(): String {
-        return engine.get().getCrashdumpLog(100)
+    override suspend fun getLog(): String = withContext(PlanckDispatcher) {
+        engine.get().getCrashdumpLog(100)
     }
 
     fun Message.isEncrypted(): Boolean {

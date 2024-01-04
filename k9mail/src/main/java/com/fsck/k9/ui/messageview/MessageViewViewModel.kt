@@ -160,7 +160,9 @@ class MessageViewViewModel @Inject constructor(
             resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.LOADING
             kotlin.runCatching {
                 val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
-                planckProvider.keyResetIdentity(resetIdentity, null)
+                withContext(dispatcherProvider.planckDispatcher()) {
+                    planckProvider.keyResetIdentity(resetIdentity, null)
+                }
             }.onSuccess {
                 loadMessageFromDatabase()
                 resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
