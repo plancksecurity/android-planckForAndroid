@@ -133,7 +133,7 @@ interface PlanckProvider {
     fun getRating(identity: Identity): ResultCompat<Rating>
     fun getRating(identity: Identity, callback: ResultCallback<Rating>)
     fun getRating(address: Address, callback: ResultCallback<Rating>)
-    fun getRating(address: Address): ResultCompat<Rating>
+    suspend fun getRating(address: Address): ResultCompat<Rating>
 
     /**
      * Retrieve long trustwords for a given identity

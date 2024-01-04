@@ -19,6 +19,7 @@ import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
@@ -351,7 +352,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.onPreferenceClickListener = null
     }
 
-    private suspend fun keyReset(account: Account): Boolean = withContext(Dispatchers.Default) {
+    private suspend fun keyReset(account: Account): Boolean = withContext(PlanckDispatcher) {
         val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         try {
             val address = Address(account.email, account.name)

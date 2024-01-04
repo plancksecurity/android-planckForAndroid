@@ -172,9 +172,7 @@ class MessageViewViewModel @Inject constructor(
     }
 
     private suspend fun getSenderRating(message: LocalMessage): Rating =
-        withContext(dispatcherProvider.planckDispatcher()) {
-            planckProvider.getRating(message.from.first())
-        }.getOrDefault(Rating.pEpRatingUndefined)
+        planckProvider.getRating(message.from.first()).getOrDefault(Rating.pEpRatingUndefined)
 
     private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
         !message.hasToBeDecrypted()

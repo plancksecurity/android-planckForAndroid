@@ -925,7 +925,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(address: Address): ResultCompat<Rating> = runBlocking(PlanckDispatcher) {
+    override suspend fun getRating(address: Address): ResultCompat<Rating> = withContext(PlanckDispatcher) {
         val identity = PlanckUtils.createIdentity(address, context)
         getRating(identity)
     }
@@ -1124,8 +1124,8 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun updateIdentity(id: Identity): Identity = runBlocking(PlanckDispatcher) {
-        engine.get().updateIdentity(id)
+    override fun updateIdentity(id: Identity): Identity {
+        return engine.get().updateIdentity(id)
     }
 
     override val blacklistInfo: List<KeyListItem>?
