@@ -1968,11 +1968,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
                         PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
     }
 
-    public void persistentShutDown() {
-        syncRepository.get().shutdownSync();
-        forceSaveAppSettings();
-    }
-
     private void forceSaveAppSettings() {
         StorageEditor editor = Preferences.getPreferences(this).getStorage().edit();
         save(editor);

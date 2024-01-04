@@ -9,13 +9,17 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckProvider.CompletedCallback
 import com.fsck.k9.planck.infrastructure.Poller
 import com.fsck.k9.planck.infrastructure.PollerFactory
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
 import foundation.pEp.jniadapter.SyncHandshakeSignal
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import security.planck.notification.GroupMailSignal.Companion.fromSignal
 import security.planck.sync.KeySyncCleaner.Companion.queueAutoConsumeMessages
 import security.planck.timer.Timer
@@ -45,6 +49,7 @@ class PlanckSyncRepository @Inject constructor(
     override var isGrouped = false
     private var isPollingMessages = false
     private var poller: Poller? = null
+    private val engineScope = CoroutineScope(PlanckDispatcher)
 
     @Volatile
     private var handshakeLocked = false
@@ -175,6 +180,12 @@ class PlanckSyncRepository @Inject constructor(
 
 
     override fun setPlanckSyncEnabled(enabled: Boolean) {
+        runBlocking {
+            setPlanckSyncEnabledSuspend(enabled)
+        }
+    }
+
+    private suspend fun setPlanckSyncEnabledSuspend(enabled: Boolean) {
         if (enabled) {
             planckInitSyncEnvironment()
         } else if (isGrouped) {
@@ -198,9 +209,11 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     private fun initSync() {
-        planckProvider.updateSyncAccountsConfig()
-        if (!planckProvider.isSyncRunning) {
-            planckProvider.startSync()
+        engineScope.launch {
+            planckProvider.updateSyncAccountsConfig()
+            if (!planckProvider.isSyncRunning()) {
+                planckProvider.startSync()
+            }
         }
     }
 
@@ -213,11 +226,13 @@ class PlanckSyncRepository @Inject constructor(
     }
 
     override fun allowTimedManualSync() {
-        when (planckProvider.isSyncRunning) {
-            true -> planckProvider.syncReset()
-            else -> planckProvider.startSync()
+        engineScope.launch {
+            when (planckProvider.isSyncRunning()) {
+                true -> planckProvider.syncReset()
+                else -> planckProvider.startSync()
+            }
+            startOrResetManualSyncTimer()
         }
-        startOrResetManualSyncTimer()
     }
 
     override fun cancelSync() {
@@ -233,8 +248,8 @@ class PlanckSyncRepository @Inject constructor(
         timer.cancel()
     }
 
-    private fun leaveDeviceGroup() {
-        if (planckProvider.isSyncRunning) {
+    private suspend fun leaveDeviceGroup() {
+        if (planckProvider.isSyncRunning()) {
             planckProvider.leaveDeviceGroup()
                 .onSuccess { isGrouped = false }
                 .onFailure {
@@ -245,11 +260,11 @@ class PlanckSyncRepository @Inject constructor(
         }
     }
 
-    override fun shutdownSync() {
+    override suspend fun shutdownSync() {
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: start")
         }
-        if (planckProvider.isSyncRunning) {
+        if (planckProvider.isSyncRunning()) {
             planckProvider.stopSync()
             k9.markSyncEnabled(false)
         }
@@ -258,20 +273,24 @@ class PlanckSyncRepository @Inject constructor(
         }
     }
 
-    override fun userConnected() {
+    override suspend fun userConnected() {
         val initialState = syncStateMutableFlow.value
         if (initialState != SyncState.Idle) {
             Timber.e("unexpected initial state: ${syncStateMutableFlow.value}")
         }
         if (initialState !is SyncState.HandshakeReadyAwaitingUser) {
-            if (k9.deviceJustLeftGroup()) {
-                planckProvider.stopSync()
-                k9.markDeviceJustLeftGroup(false)
-                setPlanckSyncEnabled(true)
-            }
+            resetSyncIfDeviceGroupLeft()
             syncStateMutableFlow.value =
                 SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = true)
             startCatchupAllowancePeriod()
+        }
+    }
+
+    private suspend fun PlanckSyncRepository.resetSyncIfDeviceGroupLeft() {
+        if (k9.deviceJustLeftGroup()) {
+            planckProvider.stopSync()
+            k9.markDeviceJustLeftGroup(false)
+            setPlanckSyncEnabledSuspend(true)
         }
     }
 

@@ -254,15 +254,15 @@ interface PlanckProvider {
     fun keyResetIdentity(ident: Identity, fpr: String?)
     fun keyResetUser(userId: String, fpr: String?)
     fun keyResetAllOwnKeys()
-    fun leaveDeviceGroup(): ResultCompat<Unit>
-    fun startSync()
-    fun stopSync()
-    val isSyncRunning: Boolean
+    suspend fun leaveDeviceGroup(): ResultCompat<Unit>
+    suspend fun startSync()
+    suspend fun stopSync()
+    suspend fun isSyncRunning(): Boolean
     fun setSyncSendMessageCallback(callback: MessageToSendCallback)
     fun setSyncHandshakeCallback(callback: NotifyHandshakeCallback)
     fun disableSyncForAllIdentites()
-    fun syncReset()
-    fun updateSyncAccountsConfig()
+    suspend fun syncReset()
+    suspend fun updateSyncAccountsConfig()
     fun createGroup(
         groupIdentity: Identity,
         manager: Identity,
