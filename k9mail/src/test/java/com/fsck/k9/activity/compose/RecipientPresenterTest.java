@@ -219,37 +219,6 @@ public class RecipientPresenterTest extends RobolectricTest {
     }
 
     @Test
-    public void getCurrentCryptoStatus_withModeSignOnly() throws Exception {
-        setupCryptoProvider();
-
-        recipientPresenter.onMenuSetSignOnly(true);
-        ComposeCryptoStatus status = recipientPresenter.getCurrentCryptoStatus();
-
-        assertEquals(RecipientMvpView.CryptoStatusDisplayType.UNCONFIGURED, status.getCryptoStatusDisplayType());
-        assertFalse(status.isProviderStateOk());
-        assertTrue(status.isSigningEnabled());
-        assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView).showOpenPgpSignOnlyDialog(true);
-        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
-    }
-
-    @Test
-    public void getCurrentCryptoStatus_withModeInline() throws Exception {
-        setupCryptoProvider();
-
-        recipientPresenter.onMenuSetPgpInline(true);
-        ComposeCryptoStatus status = recipientPresenter.getCurrentCryptoStatus();
-
-        assertEquals(RecipientMvpView.CryptoStatusDisplayType.UNCONFIGURED, status.getCryptoStatusDisplayType());
-        assertFalse(status.isProviderStateOk());
-        assertTrue(status.isEncryptionOpportunistic());
-        assertTrue(status.isSigningEnabled());
-        assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView).showOpenPgpInlineDialog(true);
-        verify(recipientMvpView, times(3)).handlepEpState(anyBoolean());
-    }
-
-    @Test
     public void onRecipientsChanged_notifiesListenerOfRecipientChange() {
         recipientPresenter.onRecipientsChanged();
         verify(listener).onRecipientsChanged();

@@ -685,28 +685,6 @@ public class RecipientPresenter implements MessageReceivedListener {
         pgpBuilder.setCryptoStatus(getCurrentCryptoStatus());
     }
 
-    public void onMenuSetPgpInline(boolean enablePgpInline) {
-        onCryptoPgpInlineChanged(enablePgpInline);
-        if (enablePgpInline) {
-            boolean shouldShowPgpInlineDialog = checkAndIncrementPgpInlineDialogCounter();
-            if (shouldShowPgpInlineDialog) {
-                recipientMvpView.showOpenPgpInlineDialog(true);
-            }
-        }
-    }
-
-    public void onMenuSetSignOnly(boolean enableSignOnly) {
-        if (enableSignOnly) {
-            onCryptoModeChanged(CryptoMode.SIGN_ONLY);
-            boolean shouldShowPgpSignOnlyDialog = checkAndIncrementPgpSignOnlyDialogCounter();
-            if (shouldShowPgpSignOnlyDialog) {
-                recipientMvpView.showOpenPgpSignOnlyDialog(true);
-            }
-        } else {
-            onCryptoModeChanged(CryptoMode.OPPORTUNISTIC);
-        }
-    }
-
     public void onCryptoPgpSignOnlyDisabled() {
         onCryptoPgpInlineChanged(false);
         onCryptoModeChanged(CryptoMode.OPPORTUNISTIC);
@@ -719,26 +697,6 @@ public class RecipientPresenter implements MessageReceivedListener {
             return true;
         }
         return false;
-    }
-
-    private boolean checkAndIncrementPgpSignOnlyDialogCounter() {
-        int pgpSignOnlyDialogCounter = K9.getPgpSignOnlyDialogCounter();
-        if (pgpSignOnlyDialogCounter < PGP_DIALOG_DISPLAY_THRESHOLD) {
-            K9.setPgpSignOnlyDialogCounter(pgpSignOnlyDialogCounter + 1);
-            return true;
-        }
-        return false;
-    }
-
-    void onClickCryptoSpecialModeIndicator() {
-        ComposeCryptoStatus currentCryptoStatus = getCurrentCryptoStatus();
-        if (currentCryptoStatus.isSignOnly()) {
-            recipientMvpView.showOpenPgpSignOnlyDialog(false);
-        } else if (currentCryptoStatus.isPgpInlineModeEnabled()) {
-            recipientMvpView.showOpenPgpInlineDialog(false);
-        } else {
-            throw new IllegalStateException("This icon should not be clickable while no special mode is active!");
-        }
     }
 
 
