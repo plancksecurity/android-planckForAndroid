@@ -35,7 +35,7 @@ interface PlanckProvider {
      * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    fun getRating(
+    suspend fun getRating(
         from: Address?,
         toAddresses: List<Address>,
         ccAddresses: List<Address>,
@@ -52,7 +52,7 @@ interface PlanckProvider {
         callback: ResultCallback<Rating>
     )
 
-    fun getRatingResult(
+    suspend fun getRatingResult(
         from: Address,
         toAddresses: List<Address>,
         ccAddresses: List<Address>,
@@ -203,6 +203,7 @@ interface PlanckProvider {
      */
     fun resetTrust(id: Identity)
     fun myself(myId: Identity?): Identity?
+    suspend fun myselfSuspend(myId: Identity?): Identity?
     fun setOwnIdentity(id: Identity, fpr: String): Identity?
     fun setPassiveModeEnabled(enable: Boolean)
     fun getOwnKeyDetails(message: foundation.pEp.jniadapter.Message): KeyDetail?
@@ -234,7 +235,7 @@ interface PlanckProvider {
     fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback)
     fun incomingMessageRating(message: MimeMessage): ResultCompat<Rating>
     fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>)
-    fun loadOutgoingMessageRatingAfterResetTrust(
+    suspend fun loadOutgoingMessageRatingAfterResetTrust(
         identity: Identity,
         from: Address,
         toAddresses: List<Address>,

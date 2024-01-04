@@ -49,7 +49,7 @@ class KeyImportPresenter @Inject constructor(
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
             accountIdentity = PlanckUtils.createIdentity(Address(address), context)
-            withContext(PlanckDispatcher) { planck.myself(accountIdentity)?.let { currentFpr = it.fpr } }
+            planck.myselfSuspend(accountIdentity)?.let { currentFpr = it.fpr }
         }
     }
 
@@ -90,23 +90,21 @@ class KeyImportPresenter @Inject constructor(
 
     private suspend fun onKeyImportConfirmed(): Boolean {
         return withContext(PlanckDispatcher) {
-            var result = false
-            runBlocking {
-                try {
-                    val id = planck.setOwnIdentity(accountIdentity, fingerprint)
-                    result = if (id == null || !planck.canEncrypt(address)) {
-                        Timber.w("Couldn't set own key: %s", fingerprint)
-                        planck.setOwnIdentity(accountIdentity, currentFpr)
-                        false
-                    } else {
-                        planck.myself(id)
-                        true
-                    }
-
-                } catch (e: pEpException) {  // this means there was no right formatted key in the file.
-                    result = true
+            var result: Boolean
+            try {
+                val id = planck.setOwnIdentity(accountIdentity, fingerprint)
+                result = if (id == null || !planck.canEncrypt(address)) {
+                    Timber.w("Couldn't set own key: %s", fingerprint)
                     planck.setOwnIdentity(accountIdentity, currentFpr)
+                    false
+                } else {
+                    planck.myselfSuspend(id)
+                    true
                 }
+
+            } catch (e: pEpException) {  // this means there was no right formatted key in the file.
+                result = true
+                planck.setOwnIdentity(accountIdentity, currentFpr)
             }
             result
         }

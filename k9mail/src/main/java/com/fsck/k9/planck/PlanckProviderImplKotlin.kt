@@ -202,7 +202,7 @@ class PlanckProviderImplKotlin(
         engine.close()
     }
 
-    override fun setPassiveModeEnabled(enable: Boolean) = runBlocking(PlanckDispatcher) {
+    override fun setPassiveModeEnabled(enable: Boolean) {
         engine.get().config_passive_mode(enable)
     }
 
@@ -242,7 +242,7 @@ class PlanckProviderImplKotlin(
             var id = PlanckUtils.createIdentity(
                 Address(account.email, account.name), context
             )
-            id = myself(id)
+            id = myselfSuspend(id)
             setIdentityFlagSuspend(id, account.isPlanckSyncEnabled)
         }
     }
@@ -468,7 +468,7 @@ class PlanckProviderImplKotlin(
     override fun canEncrypt(address: String): Boolean {
 
         val msg = Message()
-        val id = myself(PlanckUtils.createIdentity(Address(address), context))
+        val id = myselfInternal(PlanckUtils.createIdentity(Address(address), context))
         msg.from = id
 
         val to = Vector<Identity>()
@@ -608,7 +608,7 @@ class PlanckProviderImplKotlin(
                     if (source.folder.name == account.sentFolderName || source.folder.name == account.draftsFolderName) {
                         decMsg.setHeader(
                             MimeHeader.HEADER_PEP_RATING,
-                            PlanckUtils.ratingToString(getRating(source))
+                            PlanckUtils.ratingToString(getRatingSuspend(source))
                         )
                     }
 
@@ -635,7 +635,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    private fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
+    private suspend fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         //TODO review this; we are in another thread so we should get a new engine anyways??
@@ -657,7 +657,7 @@ class PlanckProviderImplKotlin(
                     val decMsg = getMimeMessage(source, message)
 
                     if (source.folder.name == account.sentFolderName || source.folder.name == account.draftsFolderName) {
-                        decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(getRating(source)))
+                        decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(getRatingSuspend(source)))
                     }
 
                     notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags, srcMsg.isEncrypted()), callback)
@@ -695,11 +695,19 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun myself(myId: Identity?): Identity? = runBlocking(PlanckDispatcher) {
+    override fun myself(myId: Identity?): Identity? = runBlocking {
+        myselfSuspend(myId)
+    }
+
+    override suspend fun myselfSuspend(myId: Identity?): Identity? = withContext(PlanckDispatcher) {
+        myselfInternal(myId)
+    }
+
+    private fun myselfInternal(myId: Identity?): Identity? {
         myId?.user_id = PLANCK_OWN_USER_ID
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
-        try {
+        return try {
             engine.get().myself(myId)
         } catch (exception: pEpException) {
             Timber.e(exception, "%s %s", TAG, "error in PEpProviderImpl.myself")
@@ -707,7 +715,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun loadOutgoingMessageRatingAfterResetTrust(
+    override suspend fun loadOutgoingMessageRatingAfterResetTrust(
         identity: Identity,
         from: Address,
         toAddresses: List<Address>,
@@ -780,7 +788,11 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(message: com.fsck.k9.mail.Message): Rating {
+    override fun getRating(message: com.fsck.k9.mail.Message): Rating = runBlocking {
+        getRatingSuspend(message)
+    }
+
+    private suspend fun getRatingSuspend(message: com.fsck.k9.mail.Message): Rating {
         val from = message.from[0]
         val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
         val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
@@ -809,7 +821,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun getRatingResult(
+    override suspend fun getRatingResult(
         from: Address,
         toAddresses: List<Address>,
         ccAddresses: List<Address>,
@@ -822,7 +834,7 @@ class PlanckProviderImplKotlin(
      *     Don't instantiate a new engine
      */
     @WorkerThread //already done
-    override fun getRating(from: Address?,
+    override suspend fun getRating(from: Address?,
                            toAddresses: List<Address>,
                            ccAddresses: List<Address>,
                            bccAddresses: List<Address>): Rating {
@@ -846,7 +858,7 @@ class PlanckProviderImplKotlin(
         return Rating.pEpRatingUndefined
     }
 
-    private fun getRatingSuspend(
+    private suspend fun getRatingSuspend(
         identity: Identity?,
         from: Address?,
         toAddresses: List<Address>,
@@ -859,7 +871,7 @@ class PlanckProviderImplKotlin(
             bccAddresses.isNotEmpty() -> ResultCompat.success(Rating.pEpRatingUnencrypted)
             else -> {
                 var message: Message? = null
-                ResultCompat.of {
+                ResultCompat.ofSuspend {
                     if (identity != null) engine.get().keyResetTrust(identity)
                     val areRecipientsEmpty = toAddresses.isEmpty() && ccAddresses.isEmpty() && bccAddresses.isEmpty()
                     if (from == null || areRecipientsEmpty) Rating.pEpRatingUndefined
@@ -887,7 +899,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    private fun createMessageForRating(from: Address?,
+    private suspend fun createMessageForRating(from: Address?,
                                        toAddresses: List<Address>,
                                        ccAddresses: List<Address>,
                                        bccAddresses: List<Address>): Message {
@@ -906,7 +918,7 @@ class PlanckProviderImplKotlin(
         return message
     }
 
-    private fun insistToInitializeMessageOrThrow(): Message {
+    private suspend fun insistToInitializeMessageOrThrow(): Message {
         var error: Throwable? = null
         repeat(MESSAGE_CREATION_ATTEMPTS) { count ->
             try {
@@ -916,7 +928,7 @@ class PlanckProviderImplKotlin(
                     Log.e(TAG, "ERROR CREATING MESSAGE IN ATTEMPT ${count + 1}", ex)
                 }
                 error = ex
-                runBlocking { delay(MESSAGE_CREATION_ATTEMPT_COOLDOWN) }
+                delay(MESSAGE_CREATION_ATTEMPT_COOLDOWN)
             }
         }
 
