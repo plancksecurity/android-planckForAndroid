@@ -147,14 +147,14 @@ interface PlanckProvider {
         partner: Identity,
         lang: String,
         isShort: Boolean
-    ): ResultCompat<String>
+    ): ResultCompat<String?>
 
     fun trustwords(
         myself: Identity,
         partner: Identity,
         lang: String,
         isShort: Boolean,
-        callback: SimpleResultCallback<String>
+        callback: SimpleResultCallback<String?>
     )
 
     fun obtainTrustwords(

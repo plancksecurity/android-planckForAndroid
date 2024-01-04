@@ -146,11 +146,15 @@ class PlanckSyncWizardViewModel @Inject constructor(
                 shortTrustWords,
             )
         }.onSuccess { trustwords ->
-            syncState.value = SyncState.UserHandshaking(
-                PlanckUtils.formatFpr(myself.fpr),
-                PlanckUtils.formatFpr(partner.fpr),
-                trustwords
-            )
+            if (trustwords.isNullOrBlank()) {
+                syncState.value = SyncState.Error(IllegalStateException("could not get trustwords"))
+            } else {
+                syncState.value = SyncState.UserHandshaking(
+                    PlanckUtils.formatFpr(myself.fpr),
+                    PlanckUtils.formatFpr(partner.fpr),
+                    trustwords
+                )
+            }
         }.onFailure {
             syncState.value = SyncState.Error(it)
         }
