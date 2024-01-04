@@ -449,19 +449,19 @@ class PlanckProviderImplKotlin(
         return result
     }
 
-    override fun acceptSync() {
+    override suspend fun acceptSync() {
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
     }
 
-    override fun rejectSync() {
+    override suspend fun rejectSync() {
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
     }
 
-    override fun cancelSync() {
+    override suspend fun cancelSync() {
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
     }
 
-    private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = runBlocking(PlanckDispatcher) {
+    private suspend fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = withContext(PlanckDispatcher) {
         engine.get().deliverHandshakeResult(syncResult, Vector())
     }
 
