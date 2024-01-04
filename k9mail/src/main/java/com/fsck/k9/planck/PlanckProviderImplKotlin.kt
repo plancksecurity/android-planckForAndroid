@@ -1136,27 +1136,25 @@ class PlanckProviderImplKotlin(
 
     override val blacklistInfo: List<KeyListItem>?
         @WorkerThread
-        get() = runBlocking(PlanckDispatcher) {
-            try {
-                val identities: MutableList<KeyListItem> = ArrayList()
-                val keys = engine.get().OpenPGP_list_keyinfo("")
-                keys?.forEach { key ->
-                    //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
-                }
-                return@runBlocking identities
-            } catch (e: pEpException) {
-                Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+        get() = try {
+            val identities: MutableList<KeyListItem> = ArrayList()
+            val keys = engine.get().OpenPGP_list_keyinfo("")
+            keys?.forEach { key ->
+                //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
             }
+            identities
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
             null
         }
 
     @WorkerThread
-    override fun addToBlacklist(fpr: String) = runBlocking(PlanckDispatcher) {
+    override fun addToBlacklist(fpr: String) {
       //  engine.get().blacklist_add(fpr)
     }
 
     @WorkerThread
-    override fun deleteFromBlacklist(fpr: String) = runBlocking(PlanckDispatcher) {
+    override fun deleteFromBlacklist(fpr: String) {
     //    engine.get().blacklist_delete(fpr)
     }
 
