@@ -92,14 +92,14 @@ interface SyncRepository {
      *
      * Temporarily disable sync. This status is not persisted unless [K9.save] is called.
      */
-    fun shutdownSync()
+    suspend fun shutdownSync()
 
     /**
      * userConnected
      *
      * User interface is connected to this [SyncRepository] and starts collecting the [syncStateFlow].
      */
-    fun userConnected()
+    suspend fun userConnected()
 
     /**
      * lockHandshake

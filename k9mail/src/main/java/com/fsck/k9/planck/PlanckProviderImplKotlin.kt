@@ -231,19 +231,19 @@ class PlanckProviderImplKotlin(
         engine.get().disable_all_sync_channels()
     }
 
-    override fun syncReset() = runBlocking(PlanckDispatcher) {
+    override suspend fun syncReset() = withContext(PlanckDispatcher) {
         engine.get().sync_reinit()
     }
 
     @WorkerThread
-    override fun updateSyncAccountsConfig() = runBlocking (PlanckDispatcher) {
+    override suspend fun updateSyncAccountsConfig() {
         disableSyncForAllIdentites()
         for (account in Preferences.getPreferences(context).accounts) {
             var id = PlanckUtils.createIdentity(
                 Address(account.email, account.name), context
             )
             id = myself(id)
-            setIdentityFlag(id, account.isPlanckSyncEnabled)
+            setIdentityFlagSuspend(id, account.isPlanckSyncEnabled)
         }
     }
 
@@ -316,10 +316,9 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override val isSyncRunning: Boolean
-        get() = runBlocking(PlanckDispatcher) {
-            engine.get().isSyncRunning
-        }
+    override suspend fun isSyncRunning(): Boolean = withContext(PlanckDispatcher) {
+        engine.get().isSyncRunning
+    }
 
     private fun getElementAtPosition(chain: String): String {
         return chain.substring(1, chain.length - 1)
@@ -967,21 +966,16 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun startSync() {
-        val ioScope = CoroutineScope(PlanckDispatcher + SupervisorJob())
-
-        ioScope.launch {
-            try {
-                Timber.i("%s %s", TAG, "Trying to start sync thread engine.get().startSync()")
-                engine.get().startSync()
-            } catch (exception: pEpException) {
-                Timber.e("%s %s", TAG, "Could not engine.get().startSync()", exception)
-            }
+    override suspend fun startSync() = withContext(PlanckDispatcher) {
+        try {
+            Timber.i("%s %s", TAG, "Trying to start sync thread engine.get().startSync()")
+            engine.get().startSync()
+        } catch (exception: pEpException) {
+            Timber.e("%s %s", TAG, "Could not engine.get().startSync()", exception)
         }
-
     }
 
-    override fun stopSync() = runBlocking(PlanckDispatcher) {
+    override suspend fun stopSync() = withContext(PlanckDispatcher) {
         Timber.d("%s %s", TAG, "stopSync")
         engine.get().stopSync()
     }
@@ -1119,7 +1113,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun leaveDeviceGroup(): ResultCompat<Unit> = runBlocking(PlanckDispatcher) {
+    override suspend fun leaveDeviceGroup(): ResultCompat<Unit> = withContext(PlanckDispatcher) {
         ResultCompat.of { engine.get().leave_device_group() }
     }
 
@@ -1229,14 +1223,20 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun setIdentityFlag(identity: Identity, sync: Boolean) = runBlocking(PlanckDispatcher) {
-        try {
-            when {
-                sync -> engine.get().enable_identity_for_sync(identity)
-                else -> engine.get().disable_identity_for_sync(identity)
+    override fun setIdentityFlag(identity: Identity, sync: Boolean) = runBlocking {
+        setIdentityFlagSuspend(identity, sync)
+    }
+
+    private suspend fun setIdentityFlagSuspend(identity: Identity, sync: Boolean) {
+        withContext(PlanckDispatcher) {
+            try {
+                when {
+                    sync -> engine.get().enable_identity_for_sync(identity)
+                    else -> engine.get().disable_identity_for_sync(identity)
+                }
+            } catch (e: pEpException) {
+                Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
             }
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
         }
     }
 
