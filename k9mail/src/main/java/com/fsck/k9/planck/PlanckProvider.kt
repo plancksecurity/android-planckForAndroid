@@ -282,7 +282,7 @@ interface PlanckProvider {
      * Check if this device is in a planck device group.
      * @return true if in a group, false otherwise.
      */
-    val isDeviceGrouped: Boolean
+    suspend fun isDeviceGrouped(): Boolean
 
     /**
      * getSignatureForText

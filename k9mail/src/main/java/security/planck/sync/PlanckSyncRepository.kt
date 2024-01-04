@@ -217,10 +217,6 @@ class PlanckSyncRepository @Inject constructor(
         }
     }
 
-    private fun updateDeviceGrouped() {
-        isGrouped = planckProvider.isDeviceGrouped
-    }
-
     private fun startOrResetManualSyncTimer() {
         timer.startOrReset(MANUAL_SYNC_TIME_LIMIT) { syncStartTimeout() }
     }

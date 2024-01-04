@@ -1316,12 +1316,10 @@ class PlanckProviderImplKotlin(
         return engine.get().group_rating(group, manager)
     }
 
-    override val isDeviceGrouped: Boolean
-        @WorkerThread
-        get() = runBlocking(PlanckDispatcher) {
-            ResultCompat.of { engine.get().deviceGrouped() ?: false }
-                .onFailure { Timber.e(it) }.getOrDefault(false)
-        }
+    override suspend fun isDeviceGrouped(): Boolean = withContext(PlanckDispatcher) {
+        ResultCompat.of { engine.get().deviceGrouped() ?: false }
+            .onFailure { Timber.e(it) }.getOrDefault(false)
+    }
 
     @WorkerThread
     override fun getSignatureForText(text: String): ResultCompat<String> =
