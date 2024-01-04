@@ -1,5 +1,6 @@
 package security.planck.ui.removeaccount
 
+import android.content.pm.ShortcutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -107,6 +108,13 @@ class RemoveAccountDialog : DialogFragment() {
                 )
 
             is RemoveAccountState.Finish -> {
+                if (state.removed) {
+                    context?.getSystemService(ShortcutManager::class.java)
+                        ?.disableShortcuts(
+                            listOf(requireArguments().getString(ARG_ACCOUNT_UUID).orEmpty()),
+                            getString(R.string.shortcut_feedback_account_removed)
+                        )
+                }
                 setFragmentResult(REQUEST_KEY, bundleOf(RESULT_ACCOUNT_REMOVED to state.removed))
                 dismissAllowingStateLoss()
             }
