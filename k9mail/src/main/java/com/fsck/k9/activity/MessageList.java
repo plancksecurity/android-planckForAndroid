@@ -48,6 +48,7 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.extensions.ActivityKt;
+import com.fsck.k9.planck.infrastructure.extensions.StringKt;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.planck.ui.infrastructure.Router;
@@ -412,9 +413,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private Bundle prepareSearch() {
         final Bundle appData = new Bundle();
         String currentSearchName = mActionBarTitle.getText().toString();
-        if (currentSearchName.equals(getString(R.string.integrated_inbox_title))) {
+        if (StringKt.isUnifiedInboxFolder(currentSearchName, this)) {
             specialAccountUuid = SearchAccount.UNIFIED_INBOX;
-        } else if (currentSearchName.equals(getString(R.string.search_all_messages_title))) {
+        } else if (StringKt.isAllMessagesFolder(currentSearchName, this)) {
             specialAccountUuid = SearchAccount.ALL_MESSAGES;
         } else {
             specialAccountUuid = null;

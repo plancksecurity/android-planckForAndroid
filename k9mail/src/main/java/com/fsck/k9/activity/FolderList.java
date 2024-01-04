@@ -56,6 +56,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.planck.infrastructure.extensions.StringKt;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -610,12 +611,10 @@ public class FolderList extends K9ListActivity {
      }
 
     private void onOpenFolder(String folder) {
-        String allMessagesFolderName = context.getString(R.string.search_all_messages_title);
-        String unifiedFolderName = context.getString(R.string.integrated_inbox_title);
-        if (folder.equals(allMessagesFolderName)) {
+        if (StringKt.isAllMessagesFolder(folder, context)) {
             SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
             MessageList.actionDisplaySearch(this, allMessagesAccount.getRelatedSearch(), false, false, true);
-        } else if (folder.equals(unifiedFolderName)) {
+        } else if (StringKt.isUnifiedInboxFolder(folder, context)) {
             SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
             MessageList.actionDisplaySearch(this, unifiedInboxAccount.getRelatedSearch(), false, false, true);
         } else {

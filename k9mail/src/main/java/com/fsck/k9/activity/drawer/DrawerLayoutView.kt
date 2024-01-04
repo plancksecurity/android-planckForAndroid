@@ -25,6 +25,8 @@ import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
+import com.fsck.k9.planck.infrastructure.extensions.isAllMessagesFolder
+import com.fsck.k9.planck.infrastructure.extensions.isUnifiedInboxFolder
 import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.planck.ui.renderers.AccountRenderer
 import com.fsck.k9.planck.ui.renderers.FolderRenderer
@@ -435,9 +437,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     private fun filterLocalFolders(folders: List<LocalFolder>): List<LocalFolder> {
-        val allMessagesFolderName: String = context.getString(R.string.search_all_messages_title)
-        val unifiedFolderName: String = context.getString(R.string.integrated_inbox_title)
-        return folders.filter { folder -> folder.name != allMessagesFolderName && folder.name != unifiedFolderName }
+        return folders.filter { folder -> !folder.name.isUnifiedInboxFolder(context) && !folder.name.isAllMessagesFolder(context) }
     }
 
     private fun initDrawerListener(fromView: View, accountClicked: Account) {
