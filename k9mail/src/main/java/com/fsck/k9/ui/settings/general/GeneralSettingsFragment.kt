@@ -258,6 +258,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeGlobalPlanckSync() {
         (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as? SwitchPreferenceCompat)?.apply {
+            isVisible = k9.isRunningOnWorkProfile
             if (K9.getPlanckSyncEnabled().locked) {
                 isEnabled = false
                 summaryOff = getString(R.string.preference_summary_locked_by_it_manager, summaryOff)
