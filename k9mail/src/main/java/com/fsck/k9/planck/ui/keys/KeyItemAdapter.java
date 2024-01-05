@@ -72,7 +72,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
             context = view.getContext();
             identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
             identityAddress = ((TextView) view.findViewById(R.id.tvAddress));
-            isBlacklistedCheckbox = ((CheckBox) view.findViewById(R.id.checkboxIsBlacklisted));
+            isBlacklistedCheckbox = ((CheckBox) view.findViewById(R.id.checkboxIsSelected));
             container = view.findViewById(R.id.recipientContainer);
 
 
