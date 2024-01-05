@@ -62,9 +62,8 @@ class PlanckUIUtilsTest : RobolectricTest() {
 
         assertNull(PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingHaveNoKey))
         assertNull(PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey))
-        assertDrawableEqualsRes(
-            R.drawable.ico_not_encrypted,
-            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)!!
+        assertNull(
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)
         )
 
         assertDrawableEqualsRes(
@@ -135,7 +134,7 @@ class PlanckUIUtilsTest : RobolectricTest() {
         )
         assertDrawableEqualsRes(
             R.drawable.ico_inactive,
-            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, outgoing = true)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey, planckInactive = true, outgoing = true)!!
         )
     }
 
@@ -248,7 +247,7 @@ class PlanckUIUtilsTest : RobolectricTest() {
         assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingCannotDecrypt)
         assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingHaveNoKey, outgoing = true)
+        assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, outgoing = true)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnencrypted)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnreliable)
         assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMediaKeyProtected)
@@ -260,20 +259,20 @@ class PlanckUIUtilsTest : RobolectricTest() {
 
     @Test
     fun `getRatingColorRes returns correct visibility for each rating with protection disabled`() {
-        assertCorrectVisibility(View.GONE, null, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnderAttack, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingB0rken, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMistrust, enabled = false)
-        assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingCannotDecrypt, enabled = false)
-        assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnencrypted, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnreliable, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMediaKeyProtected, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingReliable, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingTrusted, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingTrustedAndAnonymized, enabled = false)
-        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingFullyAnonymous, enabled = false)
+        assertCorrectVisibility(View.GONE, null, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnderAttack, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingB0rken, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMistrust, inactive = false)
+        assertCorrectVisibility(View.GONE, Rating.pEpRatingUndefined, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingCannotDecrypt, inactive = false)
+        assertCorrectVisibility(View.GONE, Rating.pEpRatingHaveNoKey, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnencrypted, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingUnreliable, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingMediaKeyProtected, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingReliable, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingTrusted, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingTrustedAndAnonymized, inactive = false)
+        assertCorrectVisibility(View.VISIBLE, Rating.pEpRatingFullyAnonymous, inactive = false)
     }
 
     @Test
@@ -298,11 +297,11 @@ class PlanckUIUtilsTest : RobolectricTest() {
     private fun assertCorrectVisibility(
         expected: Int,
         rating: Rating?,
-        enabled: Boolean = true,
+        inactive: Boolean = false,
         forceHide: Boolean = false,
         outgoing: Boolean = false,
     ) {
-        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, outgoing, enabled, forceHide))
+        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, outgoing, inactive, forceHide))
     }
 
     private fun assertCorrectStringRes(
