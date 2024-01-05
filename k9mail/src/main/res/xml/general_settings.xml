@@ -94,7 +94,8 @@
 
         <SwitchPreferenceCompat
             android:key="pep_use_passphrase_for_new_keys"
-            android:title="@string/passhphrase_new_keys_settings_title" />
+            android:title="@string/passhphrase_new_keys_settings_title"
+            app:isPreferenceVisible="false"/>
 
     </PreferenceScreen>
 
