@@ -20,7 +20,8 @@ abstract class RatingDisplay {
 
         return if (planckInactive) originalHolder.copy(
             iconRes = R.drawable.ico_inactive,
-            textRes = R.string.planck_inactive
+            textRes = R.string.planck_inactive,
+            visible = true,
         ) else originalHolder
     }
 

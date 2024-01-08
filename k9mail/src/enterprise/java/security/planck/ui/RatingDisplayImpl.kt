@@ -47,14 +47,6 @@ class RatingDisplayImpl : RatingDisplay() {
             visible = false
         ),
         RatingDisplayHolder(
-            ratingValue = Rating.pEpRatingHaveNoKey.value,
-            textRes = R.string.pep_rating_not_encrypted,
-            colorRes = R.color.planck_yellow,
-            iconRes = R.drawable.ico_not_encrypted,
-            visible = true,
-            outgoing = true
-        ),
-        RatingDisplayHolder(
             ratingValue = Rating.pEpRatingUnencrypted.value,
             textRes = R.string.pep_rating_not_encrypted,
             colorRes = R.color.planck_yellow,
