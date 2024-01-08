@@ -39,7 +39,7 @@ class AutoCloseableEngineThreadAndroidTest {
 
     inner class TestAutoCloseableEngineThread(
         r: Runnable?
-    ) : AutoCloseableEngineThread(engine, r) {
+    ) : AutoCloseableEngineThread(r) {
         override fun run() {
             try {
                 super.run()

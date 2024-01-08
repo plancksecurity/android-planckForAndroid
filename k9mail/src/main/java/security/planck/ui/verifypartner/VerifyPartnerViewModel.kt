@@ -219,7 +219,7 @@ constructor(
             }
         }
 
-    private fun getOutgoingMessageRating(): ResultCompat<Rating> =
+    private suspend fun getOutgoingMessageRating(): ResultCompat<Rating> =
         planckProvider.getRatingResult(
             sender,
             listOf(Address.create(partner.address)),
@@ -327,13 +327,13 @@ constructor(
         messageReference: MessageReference?,
         isMessageIncoming: Boolean
     ): ResultCompat<Unit> = withContext(dispatcherProvider.planckDispatcher()) {
-        ResultCompat.of {
+        ResultCompat.ofSuspend {
             if (isMessageIncoming && messageReference == null) {
                 error("incoming message needs a message reference always")
             }
             this@VerifyPartnerViewModel.sender = Address.create(sender)
             this@VerifyPartnerViewModel.myself =
-                planckProvider.myself(PlanckUtils.createIdentity(Address.create(myself), context))!!
+                planckProvider.myselfSuspend(PlanckUtils.createIdentity(Address.create(myself), context))!!
             this@VerifyPartnerViewModel.messageReference = messageReference
             this@VerifyPartnerViewModel.isMessageIncoming = isMessageIncoming
         }

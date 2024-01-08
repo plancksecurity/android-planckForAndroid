@@ -11,11 +11,6 @@ import android.content.pm.ResolveInfo;
 
 
 public class OpenPgpProviderUtil {
-    private static final String PACKAGE_NAME_APG = "org.thialfihar.android.apg";
-    private static final ArrayList<String> PROVIDER_BLACKLIST = new ArrayList<>();
-    static {
-        PROVIDER_BLACKLIST.add(PACKAGE_NAME_APG);
-    }
 
     public static List<String> getOpenPgpProviderPackages(Context context) {
         ArrayList<String> result = new ArrayList<>();
@@ -54,9 +49,5 @@ public class OpenPgpProviderUtil {
         }
 
         return null;
-    }
-
-    public static boolean isBlacklisted(String packageName) {
-        return PROVIDER_BLACKLIST.contains(packageName);
     }
 }

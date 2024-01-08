@@ -112,6 +112,14 @@ sealed class ResultCompat<T> {
                 Failure(ex)
             }
         }
+
+        suspend fun <T> ofSuspend(block: suspend () -> T): ResultCompat<T> {
+            return try {
+                Success(block())
+            } catch (ex: Throwable) {
+                Failure(ex)
+            }
+        }
     }
 }
 

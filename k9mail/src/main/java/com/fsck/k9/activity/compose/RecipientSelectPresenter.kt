@@ -86,7 +86,7 @@ class RecipientSelectPresenter @Inject constructor(
         view.restoreFirstRecipientTruncation()
     }
 
-    private fun sortRecipientsByRatingSuspend(
+    private suspend fun sortRecipientsByRatingSuspend(
         recipients: List<Recipient>,
     ): List<Recipient> = recipients.map { recipient ->
         val rating = planck.getRating(recipient.address)

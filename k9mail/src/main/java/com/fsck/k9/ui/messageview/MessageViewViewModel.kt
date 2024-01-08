@@ -160,7 +160,9 @@ class MessageViewViewModel @Inject constructor(
             resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.LOADING
             kotlin.runCatching {
                 val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
-                planckProvider.keyResetIdentity(resetIdentity, null)
+                withContext(dispatcherProvider.planckDispatcher()) {
+                    planckProvider.keyResetIdentity(resetIdentity, null)
+                }
             }.onSuccess {
                 loadMessageFromDatabase()
                 resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
@@ -172,9 +174,7 @@ class MessageViewViewModel @Inject constructor(
     }
 
     private suspend fun getSenderRating(message: LocalMessage): Rating =
-        withContext(dispatcherProvider.planckDispatcher()) {
-            planckProvider.getRating(message.from.first())
-        }.getOrDefault(Rating.pEpRatingUndefined)
+        planckProvider.getRating(message.from.first()).getOrDefault(Rating.pEpRatingUndefined)
 
     private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
         !message.hasToBeDecrypted()

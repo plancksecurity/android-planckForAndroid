@@ -70,8 +70,10 @@ class PlanckSyncWizardViewModel @Inject constructor(
     fun next() {
         when (syncState.value) {
             is SyncState.HandshakeReadyAwaitingUser -> {
-                syncRepository.lockHandshake()
-                getOrRefreshTrustWords()
+                viewModelScope.launch {
+                    syncRepository.lockHandshake()
+                    getOrRefreshTrustWords()
+                }
             }
 
             is SyncState.UserHandshaking -> {
@@ -95,18 +97,24 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     fun rejectHandshake() {
-        planckProvider.rejectSync()
-        syncRepository.cancelSync()
+        viewModelScope.launch {
+            planckProvider.rejectSync()
+            syncRepository.cancelSync()
+        }
     }
 
     fun acceptHandshake() {
-        planckProvider.acceptSync()
-        next()
+        viewModelScope.launch {
+            planckProvider.acceptSync()
+            next()
+        }
     }
 
     fun cancelHandshake() {
-        planckProvider.cancelSync()
-        syncRepository.cancelSync()
+        viewModelScope.launch {
+            planckProvider.cancelSync()
+            syncRepository.cancelSync()
+        }
     }
 
     fun changeTrustwordsLanguage(languagePosition: Int) {
@@ -123,28 +131,32 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     private fun changeTrustwords(language: String) {
-        trustwordsLanguage = language
-        getOrRefreshTrustWords()
+        viewModelScope.launch {
+            trustwordsLanguage = language
+            getOrRefreshTrustWords()
+        }
     }
 
-    private fun getOrRefreshTrustWords() {
-        viewModelScope.launch {
-            withContext(dispatcherProvider.planckDispatcher()) {
-                planckProvider.trustwords(
-                    myself,
-                    partner,
-                    trustwordsLanguage,
-                    shortTrustWords,
-                )
-            }.onSuccess { trustwords ->
+    private suspend fun getOrRefreshTrustWords() {
+        withContext(dispatcherProvider.planckDispatcher()) {
+            planckProvider.trustwords(
+                myself,
+                partner,
+                trustwordsLanguage,
+                shortTrustWords,
+            )
+        }.onSuccess { trustwords ->
+            if (trustwords.isNullOrBlank()) {
+                syncState.value = SyncState.Error(IllegalStateException("could not get trustwords"))
+            } else {
                 syncState.value = SyncState.UserHandshaking(
                     PlanckUtils.formatFpr(myself.fpr),
                     PlanckUtils.formatFpr(partner.fpr),
                     trustwords
                 )
-            }.onFailure {
-                syncState.value = SyncState.Error(it)
             }
+        }.onFailure {
+            syncState.value = SyncState.Error(it)
         }
     }
 
@@ -154,8 +166,10 @@ class PlanckSyncWizardViewModel @Inject constructor(
     }
 
     fun switchTrustwordsLength() {
-        shortTrustWords = !shortTrustWords
-        getOrRefreshTrustWords()
+        viewModelScope.launch {
+            shortTrustWords = !shortTrustWords
+            getOrRefreshTrustWords()
+        }
     }
 
     fun isHandshaking(): Boolean = syncState.value is SyncState.UserHandshaking

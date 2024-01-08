@@ -55,8 +55,6 @@
     <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
     <string name="pep_subject_protection">Protect Message subject</string>
-    <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
-    <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
     <string name="pep_confirm_trustwords">Confirm</string>
     <string name="pep_wrong_trustwords">Reject</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
@@ -287,10 +285,8 @@
     <string name="global_settings_extra_keys_summary">Encrypt messages with additional keys.</string>
     <string name="global_settings_passive_mode_summary">Doesn\'t attach a sender_key.asc if your communication partner is not using planck</string>
     <string name="global_settings_subject_protection_summary">Encrypt the message subject when writing to a communication partner with OpenPGP</string>
-    <string name="global_settings_blacklist_summary">Blacklist a key of an OpenPGP communication partner not to use it anymore</string>
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
     <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
-    <string name="blacklist_title">Blacklist</string>
     <string name="message_view_message_no_longer_available">This message is no longer available, probably it has been deleted using another email client.</string>
 
     <string name="change_language_title">Change Language</string>

@@ -139,7 +139,6 @@ class ST5SettingsScreenshotTest : BaseScreenshotTest() {
         click(getString(R.string.cancel_action))
         clickSettingDialog(R.string.master_key_management, "global key management setting")
         clickSettingDialog(R.string.passhphrase_new_keys_settings_title, "global passphrase setting")
-        clickSettingDialog(R.string.blacklist_title, "global blacklist setting")
 
         Espresso.pressBack()
     }

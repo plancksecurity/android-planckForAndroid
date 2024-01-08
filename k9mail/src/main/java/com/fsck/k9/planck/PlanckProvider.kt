@@ -35,7 +35,7 @@ interface PlanckProvider {
      * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    fun getRating(
+    suspend fun getRating(
         from: Address?,
         toAddresses: List<Address>,
         ccAddresses: List<Address>,
@@ -52,7 +52,7 @@ interface PlanckProvider {
         callback: ResultCallback<Rating>
     )
 
-    fun getRatingResult(
+    suspend fun getRatingResult(
         from: Address,
         toAddresses: List<Address>,
         ccAddresses: List<Address>,
@@ -133,7 +133,7 @@ interface PlanckProvider {
     fun getRating(identity: Identity): ResultCompat<Rating>
     fun getRating(identity: Identity, callback: ResultCallback<Rating>)
     fun getRating(address: Address, callback: ResultCallback<Rating>)
-    fun getRating(address: Address): ResultCompat<Rating>
+    suspend fun getRating(address: Address): ResultCompat<Rating>
 
     /**
      * Retrieve long trustwords for a given identity
@@ -147,14 +147,14 @@ interface PlanckProvider {
         partner: Identity,
         lang: String,
         isShort: Boolean
-    ): ResultCompat<String>
+    ): ResultCompat<String?>
 
     fun trustwords(
         myself: Identity,
         partner: Identity,
         lang: String,
         isShort: Boolean,
-        callback: SimpleResultCallback<String>
+        callback: SimpleResultCallback<String?>
     )
 
     fun obtainTrustwords(
@@ -203,29 +203,26 @@ interface PlanckProvider {
      */
     fun resetTrust(id: Identity)
     fun myself(myId: Identity?): Identity?
+    suspend fun myselfSuspend(myId: Identity?): Identity?
     fun setOwnIdentity(id: Identity, fpr: String): Identity?
     fun setPassiveModeEnabled(enable: Boolean)
     fun getOwnKeyDetails(message: foundation.pEp.jniadapter.Message): KeyDetail?
     fun setSubjectProtection(enabled: Boolean)
     fun configPassphrase(passphrase: String)
     fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?)
-    val blacklistInfo: List<KeyListItem>?
     val masterKeysInfo: List<KeyListItem>?
-    fun addToBlacklist(fpr: String)
-    fun deleteFromBlacklist(fpr: String)
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
-    fun acceptSync()
-    fun rejectSync()
-    fun cancelSync()
+    suspend fun acceptSync()
+    suspend fun rejectSync()
+    suspend fun cancelSync()
     fun loadMessageRatingAfterResetTrust(
         mimeMessage: MimeMessage?,
         isIncoming: Boolean,
         id: Identity
     ): ResultCompat<Rating>
 
-    val log: String
-    fun getLog(callback: CompletedCallback): String
+    suspend fun getLog(): String
     fun printLog()
     fun loadOwnIdentities(callback: ResultCallback<List<Identity>>)
     fun setIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback)
@@ -235,7 +232,7 @@ interface PlanckProvider {
     fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback)
     fun incomingMessageRating(message: MimeMessage): ResultCompat<Rating>
     fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>)
-    fun loadOutgoingMessageRatingAfterResetTrust(
+    suspend fun loadOutgoingMessageRatingAfterResetTrust(
         identity: Identity,
         from: Address,
         toAddresses: List<Address>,
@@ -254,15 +251,15 @@ interface PlanckProvider {
     fun keyResetIdentity(ident: Identity, fpr: String?)
     fun keyResetUser(userId: String, fpr: String?)
     fun keyResetAllOwnKeys()
-    fun leaveDeviceGroup(): ResultCompat<Unit>
-    fun startSync()
-    fun stopSync()
-    val isSyncRunning: Boolean
+    suspend fun leaveDeviceGroup(): ResultCompat<Unit>
+    suspend fun startSync()
+    suspend fun stopSync()
+    suspend fun isSyncRunning(): Boolean
     fun setSyncSendMessageCallback(callback: MessageToSendCallback)
     fun setSyncHandshakeCallback(callback: NotifyHandshakeCallback)
     fun disableSyncForAllIdentites()
-    fun syncReset()
-    fun updateSyncAccountsConfig()
+    suspend fun syncReset()
+    suspend fun updateSyncAccountsConfig()
     fun createGroup(
         groupIdentity: Identity,
         manager: Identity,
@@ -283,7 +280,7 @@ interface PlanckProvider {
      * Check if this device is in a planck device group.
      * @return true if in a group, false otherwise.
      */
-    val isDeviceGrouped: Boolean
+    suspend fun isDeviceGrouped(): Boolean
 
     /**
      * getSignatureForText
