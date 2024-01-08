@@ -192,13 +192,13 @@
 
     <style name="SyncDisableDialog.Light.Base" parent="AlertDialogStyle.Light">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="SyncDisableDialog.Dark.Base" parent="AlertDialogStyle.Dark">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
