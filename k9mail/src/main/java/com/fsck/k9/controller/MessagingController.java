@@ -1622,11 +1622,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             final int todo,
             final LocalMessage localMessage,
             final MSG originalMessage,
+            final String messageId,
             final boolean shouldRemoveId,
             final List<LocalMessage> messagesToNotify,
             final StorageEditor storageEditor) {
         if (shouldRemoveId) {
-            storageEditor.removeOngoingDecryptMessageId(originalMessage.getMessageId());
+            storageEditor.removeOngoingDecryptMessageId(messageId);
         }
         // Increment the number of "new messages" if the newly downloaded message is
         // not marked as read.
@@ -1768,7 +1769,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
                                 boolean shouldRemoveId = me instanceof CrashedWhileDecryptingException;
                                 updateStatus(account, folder, localFolder, progress, newMessages, todo,
-                                        localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
+                                        localMessage, message, message.getMessageId(), shouldRemoveId, messagesToNotify, storageEditor);
 
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
@@ -1809,21 +1810,25 @@ public class MessagingController implements Sync.MessageToSendCallback {
             List<LocalMessage> messagesToNotify,
             StorageEditor storageEditor,
             LocalFolder localFolder
-    ) throws MessagingException {
-        if (PlanckUtils.isRatingDangerous(localMessage.getPlanckRating()) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
-            moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
-                    localMessage,
-                    account,
-                    folder,
-                    progress,
-                    newMessages,
-                    todo,
-                    messagesToNotify,
-                    storageEditor
-            );
-        } else {
-            updateStatus(account, folder, localFolder, progress, newMessages, todo,
-                    localMessage, message, true, messagesToNotify, storageEditor);
+    ) {
+        try {
+            if (PlanckUtils.isRatingDangerous(localMessage.getPlanckRating()) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+                moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
+                        localMessage,
+                        account,
+                        folder,
+                        progress,
+                        newMessages,
+                        todo,
+                        messagesToNotify,
+                        storageEditor
+                );
+            } else {
+                updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                        localMessage, message, message.getMessageId(), true, messagesToNotify, storageEditor);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
         }
     }
 
@@ -1849,7 +1854,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             suspiciousFolder.open(Folder.OPEN_MODE_RO);
             LocalMessage movedMessage = suspiciousFolder.getMessage(newUid);
             updateStatus(account, folder, suspiciousFolder, progress, newMessages, todo,
-                    movedMessage, movedMessage, true, messagesToNotify, storageEditor);
+                    movedMessage, movedMessage, localMessage.getMessageId(), true, messagesToNotify, storageEditor);
         } finally {
             closeFolder(suspiciousFolder);
             closeFolder(suspiciousRemoteFolder);
