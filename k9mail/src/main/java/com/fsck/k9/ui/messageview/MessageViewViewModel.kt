@@ -39,9 +39,13 @@ import com.fsck.k9.ui.messageview.MessageViewState.Idle
 import com.fsck.k9.ui.messageview.MessageViewState.MessageDecoded
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.dialog.BackgroundTaskDialogView
+import security.planck.messaging.MessagingRepository
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -52,6 +56,7 @@ class MessageViewViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val infoExtractor: MessageViewInfoExtractor,
     private val context: Application,
+    private val messagingRepository: MessagingRepository,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
     lateinit var messageReference: MessageReference
@@ -67,7 +72,6 @@ class MessageViewViewModel @Inject constructor(
     private val allowHandshakeSenderLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
     val allowHandshakeSender: LiveData<Event<Boolean>> = allowHandshakeSenderLiveData
-    private var moveToSuspiciousFolder = false
 
     private val flaggedToggledLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
@@ -81,6 +85,16 @@ class MessageViewViewModel @Inject constructor(
         MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
     val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
 
+    private val updateFlow: MutableStateFlow<MessageViewState> = MutableStateFlow(Idle)
+
+    init {
+        updateFlow.onEach { state ->
+            if (state is EncryptedMessageLoaded) message = state.message
+            else if (state is DecryptedMessageLoaded) message = state.message
+            messageViewStateLiveData.value = state
+        }.launchIn(viewModelScope)
+    }
+
     fun initialize(messageReferenceString: String?) {
         kotlin.runCatching {
             this.messageReference = MessageReference.parse(messageReferenceString!!)
@@ -88,7 +102,8 @@ class MessageViewViewModel @Inject constructor(
             this.account = preferences.getAccount(messageReference.accountUuid)
                 ?: error("account was removed")
         }.onFailure {
-            messageViewStateLiveData.value = ErrorLoadingMessage(it, true)
+            updateFlow.value = ErrorLoadingMessage(it, true)
+            //messageViewStateLiveData.value = ErrorLoadingMessage(it, true)
         }
     }
 
@@ -96,13 +111,13 @@ class MessageViewViewModel @Inject constructor(
 
     fun downloadCompleteMessage() {
         viewModelScope.launch {
-            downloadMessageBody(true)
+            messagingRepository.downloadMessageBody(account,messageReference, true, updateFlow)
         }
     }
 
     fun loadMessage() {
         viewModelScope.launch {
-            loadMessageFromDatabase()
+            messagingRepository.loadMessage(account, messageReference, updateFlow)
         }
     }
 
@@ -164,7 +179,7 @@ class MessageViewViewModel @Inject constructor(
                     planckProvider.keyResetIdentity(resetIdentity, null)
                 }
             }.onSuccess {
-                loadMessageFromDatabase()
+                messagingRepository.loadMessage(account, messageReference, updateFlow)
                 resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
             }.onFailure {
                 Timber.e(it)
@@ -191,165 +206,6 @@ class MessageViewViewModel @Inject constructor(
         messageRating: Rating
     ): Boolean {
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
-    }
-
-    private suspend fun loadMessageFromDatabase(): Result<LocalMessage?> =
-        withContext(dispatcherProvider.io()) {
-            kotlin.runCatching {
-                controller.loadMessage(account, messageReference.folderName, messageReference.uid)
-            }.onFailure {
-                Timber.e(it)
-                messageViewStateLiveData.postValue(ErrorLoadingMessage(it))
-            }.onSuccess { message ->
-                message?.let {
-                    messageLoaded(message)
-                } ?: messageViewStateLiveData.postValue(ErrorLoadingMessage())
-            }
-        }
-
-    private suspend fun messageLoaded(
-        message: LocalMessage
-    ) {
-        this.message = message
-        message.recoverRating()
-        val loadedState = if (!message.hasToBeDecrypted()) {
-            checkCanHandshakeSender()
-            DecryptedMessageLoaded(message, moveToSuspiciousFolder)
-        } else {
-            EncryptedMessageLoaded(message)
-        }
-        withContext(dispatcherProvider.main()) {
-            messageViewStateLiveData.value = loadedState
-        }
-        if (message.isMessageIncomplete()) {
-            downloadMessageBody(false)
-        } else if (message.hasToBeDecrypted()) {
-            decryptMessage(message)
-        } else if (!moveToSuspiciousFolder) {
-            decodeMessage(message)
-        }
-    }
-
-    private suspend fun downloadMessageBody(complete: Boolean) =
-        withContext(dispatcherProvider.io()) {
-            if (complete) {
-                controller.loadMessageRemote(
-                    account,
-                    messageReference.folderName,
-                    messageReference.uid,
-                    downloadMessageListener
-                )
-            } else {
-                controller.loadMessageRemotePartial(
-                    account,
-                    messageReference.folderName,
-                    messageReference.uid,
-                    downloadMessageListener
-                )
-            }
-        }
-
-    private val downloadMessageListener: MessagingListener = object : SimpleMessagingListener() {
-        override fun loadMessageRemoteFinished(account: Account, folder: String, uid: String) {
-            if (messageReference.equals(account.uuid, folder, uid)) {
-                downloadMessageFinished()
-            }
-        }
-
-        override fun loadMessageRemoteFailed(
-            account: Account,
-            folder: String,
-            uid: String,
-            t: Throwable
-        ) {
-            downloadMessageFailed(t)
-        }
-    }
-
-    private fun downloadMessageFailed(t: Throwable) {
-        messageViewStateLiveData.postValue(
-            when (t) {
-                is IllegalArgumentException ->
-                    ErrorDownloadingMessageNotFound(t)
-
-                else ->
-                    ErrorDownloadingNetworkError(t)
-            }
-        )
-    }
-
-    private fun downloadMessageFinished() {
-        loadMessage()
-    }
-
-    private fun decodeMessage(message: LocalMessage) {
-        kotlin.runCatching {
-            infoExtractor.extractMessageForView(
-                message,
-                null,
-                account.isOpenPgpProviderConfigured
-            )
-        }.onFailure {
-            Timber.e(it)
-            messageViewStateLiveData.postValue(
-                ErrorDecodingMessage(createErrorStateMessageViewInfo(message), it)
-            )
-        }.onSuccess {
-            messageViewStateLiveData.postValue(MessageDecoded(it))
-        }
-    }
-
-    private fun createErrorStateMessageViewInfo(localMessage: LocalMessage): MessageViewInfo {
-        val isMessageIncomplete: Boolean = !localMessage.isSet(Flag.X_DOWNLOADED_FULL)
-        return MessageViewInfo.createWithErrorState(localMessage, isMessageIncomplete)
-    }
-
-    private suspend fun decryptMessage(message: LocalMessage) =
-        planckProvider.decryptMessage(message, account)
-            .onFailure { throwable ->
-                messageDecryptFailed(throwable)
-            }.flatMapSuspend { decryptResult ->
-                messageDecrypted(decryptResult, message)
-            }
-
-
-    private fun messageDecryptFailed(throwable: Throwable) {
-        messageViewStateLiveData.postValue(
-            when (throwable) {
-                is KeyMissingException ->
-                    ErrorDecryptingMessageKeyMissing
-
-                else ->
-                    ErrorDecryptingMessage(throwable)
-            }
-        )
-    }
-
-    private fun messageDecrypted(
-        decryptResult: PlanckProvider.DecryptResult,
-        message: LocalMessage
-    ) = kotlin.runCatching {
-        val decryptedMessage: MimeMessage = decryptResult.msg
-        // sync UID so we know our mail...
-        decryptedMessage.uid = message.uid
-        // set rating in header not to lose it
-        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(decryptResult.rating))
-        // Store the updated message locally
-        val folder = message.folder
-        folder.storeSmallMessage(decryptedMessage) {
-            moveToSuspiciousFolder = PlanckUtils.isRatingDangerous(decryptResult.rating)
-            loadMessage()
-        }
-    }.onFailure {
-        messageViewStateLiveData.postValue(ErrorDecryptingMessage(it))
-    }
-
-    private fun LocalMessage.recoverRating() {
-        // recover pEpRating from db, if is null,
-        // then we take the one in the header and store it
-        planckRating ?: let {
-            planckRating = PlanckUtils.extractRating(this)
-        }
     }
 
     fun partnerKeyResetFinished() {

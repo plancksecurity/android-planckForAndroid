@@ -10,14 +10,14 @@ import com.fsck.k9.ui.helper.DisplayHtmlUiFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 
 @Suppress("unused")
 @Module
-@InstallIn(ActivityRetainedComponent::class)
-class ViewModelModule {
-    /*@Provides
+@InstallIn(SingletonComponent::class)
+class InfoExtractorModule {
+    @Provides
     @ComposeView
     fun provideDisplayHtmlForCompose(factory: DisplayHtmlUiFactory): DisplayHtml {
         return factory.createForMessageCompose()
@@ -41,5 +41,5 @@ class ViewModelModule {
         @MessageView displayHtml: DisplayHtml
     ): MessageViewInfoExtractor {
         return MessageViewInfoExtractor(context, attachmentInfoExtractor, displayHtml)
-    }*/
+    }
 }
