@@ -99,7 +99,6 @@ class MessageViewViewModel @Inject constructor(
                 ?: error("account was removed")
         }.onFailure {
             updateFlow.value = ErrorLoadingMessage(it, true)
-            //messageViewStateLiveData.value = ErrorLoadingMessage(it, true)
         }
     }
 

@@ -277,7 +277,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         super.onViewCreated(view, savedInstanceState);
         String messageReferenceString = requireArguments().getString(ARG_REFERENCE);
         observeViewModel();
-        viewModel.initialize(messageReferenceString);
+        if (savedInstanceState == null) {
+            viewModel.initialize(messageReferenceString);
+        }
         mMessageReference = viewModel.getMessageReference();
         Timber.d("MessageView displaying message %s", mMessageReference);
         mAccount = viewModel.getAccount();
