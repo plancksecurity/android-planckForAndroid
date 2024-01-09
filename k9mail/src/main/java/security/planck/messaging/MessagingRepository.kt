@@ -48,6 +48,7 @@ class MessagingRepository @Inject constructor(
         updateFlow: MutableStateFlow<MessageViewState>,
         moveToSuspiciousFolder: Boolean = false,
     ) = withContext(dispatcherProvider.io()) {
+        updateFlow.value = MessageViewState.Loading
         loadMessageFromDatabase(
             account, messageReference, updateFlow, moveToSuspiciousFolder
         )
@@ -79,19 +80,16 @@ class MessagingRepository @Inject constructor(
         updateFlow: MutableStateFlow<MessageViewState>,
         moveToSuspiciousFolder: Boolean = false,
     ) {
-        //this.message = message
         message.recoverRating()
         val loadedState = if (!message.hasToBeDecrypted()) {
-            //checkCanHandshakeSender()
             MessageViewState.DecryptedMessageLoaded(message, moveToSuspiciousFolder)
         } else {
             MessageViewState.EncryptedMessageLoaded(message)
         }
-        updateFlow.value = loadedState
 
-        //withContext(dispatcherProvider.main()) {
-        //    messageViewStateLiveData.value = loadedState
-        //}
+        withContext(dispatcherProvider.main()) {
+            updateFlow.value = loadedState
+        }
         if (message.isMessageIncomplete()) {
             downloadMessageBody(account, message.makeMessageReference(), false, updateFlow)
         } else if (message.hasToBeDecrypted()) {
