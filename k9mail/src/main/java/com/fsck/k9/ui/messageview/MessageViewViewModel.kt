@@ -9,34 +9,22 @@ import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.controller.MessagingListener
-import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.extensions.hasToBeDecrypted
-import com.fsck.k9.extensions.isMessageIncomplete
 import com.fsck.k9.extensions.isValidForHandshake
+import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
-import com.fsck.k9.mail.internet.MimeHeader
-import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.mail.Message.RecipientType
 import com.fsck.k9.mailstore.LocalMessage
-import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
-import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
-import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.livedata.Event
 import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded
-import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecodingMessage
-import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessage
-import com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessageKeyMissing
-import com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingMessageNotFound
-import com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingNetworkError
 import com.fsck.k9.ui.messageview.MessageViewState.ErrorLoadingMessage
 import com.fsck.k9.ui.messageview.MessageViewState.Idle
-import com.fsck.k9.ui.messageview.MessageViewState.MessageDecoded
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,6 +74,11 @@ class MessageViewViewModel @Inject constructor(
     val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
 
     private val updateFlow: MutableStateFlow<MessageViewState> = MutableStateFlow(Idle)
+
+    val messageSubject: String?
+        get() = if (::message.isInitialized) message.subject else null
+    val messageFrom: Array<Address>
+        get() = message.from
 
     init {
         updateFlow.onEach { state ->
@@ -211,4 +204,13 @@ class MessageViewViewModel @Inject constructor(
     fun partnerKeyResetFinished() {
         resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.CONFIRMATION
     }
+
+    fun isMessageValidForHandshake(): Boolean = ::message.isInitialized && message.isValidForHandshake()
+    fun isMessageSMime(): Boolean = ::message.isInitialized && message.isSet(Flag.X_SMIME_SIGNED)
+    fun isMessageFlagged(): Boolean = ::message.isInitialized && message.isSet(Flag.FLAGGED)
+    fun isMessageRead(): Boolean = ::message.isInitialized && message.isSet(Flag.SEEN)
+    fun makeMessageReference(): MessageReference = message.makeMessageReference()
+    fun getMessageRecipients(recipientType: RecipientType): Array<Address> = message.getRecipients(recipientType)
+
+    fun extractMessageRating(): Rating = PlanckUtils.extractRating(message)
 }
