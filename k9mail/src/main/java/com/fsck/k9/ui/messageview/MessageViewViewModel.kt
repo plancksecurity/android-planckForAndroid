@@ -83,7 +83,10 @@ class MessageViewViewModel @Inject constructor(
     init {
         updateFlow.onEach { state ->
             if (state is EncryptedMessageLoaded) message = state.message
-            else if (state is DecryptedMessageLoaded) message = state.message
+            else if (state is DecryptedMessageLoaded) {
+                message = state.message
+                checkCanHandshakeSender()
+            }
             messageViewStateLiveData.value = state
         }.launchIn(viewModelScope)
     }
