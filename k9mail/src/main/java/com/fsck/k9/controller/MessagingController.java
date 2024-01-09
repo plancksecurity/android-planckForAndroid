@@ -1812,7 +1812,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             LocalFolder localFolder
     ) {
         try {
-            if (PlanckUtils.isRatingDangerous(localMessage.getPlanckRating()) && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+            if (!Store.PLANCK_SUSPICIOUS_FOLDER.equals(folder)
+                    && PlanckUtils.isRatingDangerous(localMessage.getPlanckRating())
+                    && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
                 moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
                         localMessage,
                         account,
