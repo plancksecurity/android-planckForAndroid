@@ -13,10 +13,8 @@ import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.extensions.isValidForHandshake
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
-import com.fsck.k9.mail.Message
 import com.fsck.k9.mail.Message.RecipientType
 import com.fsck.k9.mailstore.LocalMessage
-import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
@@ -42,7 +40,6 @@ class MessageViewViewModel @Inject constructor(
     private val preferences: Preferences,
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
-    private val infoExtractor: MessageViewInfoExtractor,
     private val context: Application,
     private val messagingRepository: MessagingRepository,
     private val dispatcherProvider: DispatcherProvider,
@@ -106,7 +103,7 @@ class MessageViewViewModel @Inject constructor(
 
     fun downloadCompleteMessage() {
         viewModelScope.launch {
-            messagingRepository.downloadMessageBody(account,messageReference, true, updateFlow)
+            messagingRepository.downloadMessageBody(account, messageReference, true, updateFlow)
         }
     }
 
@@ -191,10 +188,10 @@ class MessageViewViewModel @Inject constructor(
                 && message.from != null // sender not null
                 && message.from.size == 1 // only one sender
                 && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
-                && message.getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
-                && message.getRecipients(Message.RecipientType.CC)
+                && message.getRecipients(RecipientType.TO).size == 1 // only one recipient in TO
+                && message.getRecipients(RecipientType.CC)
             .isNullOrEmpty() // no recipients in CC
-                && message.getRecipients(Message.RecipientType.BCC)
+                && message.getRecipients(RecipientType.BCC)
             .isNullOrEmpty() // no recipients in BCC
 
     private fun ratingConditionsForSenderKeyReset(
@@ -207,12 +204,15 @@ class MessageViewViewModel @Inject constructor(
         resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.CONFIRMATION
     }
 
-    fun isMessageValidForHandshake(): Boolean = ::message.isInitialized && message.isValidForHandshake()
+    fun isMessageValidForHandshake(): Boolean =
+        ::message.isInitialized && message.isValidForHandshake()
+
     fun isMessageSMime(): Boolean = ::message.isInitialized && message.isSet(Flag.X_SMIME_SIGNED)
     fun isMessageFlagged(): Boolean = ::message.isInitialized && message.isSet(Flag.FLAGGED)
     fun isMessageRead(): Boolean = ::message.isInitialized && message.isSet(Flag.SEEN)
     fun makeMessageReference(): MessageReference = message.makeMessageReference()
-    fun getMessageRecipients(recipientType: RecipientType): Array<Address> = message.getRecipients(recipientType)
+    fun getMessageRecipients(recipientType: RecipientType): Array<Address> =
+        message.getRecipients(recipientType)
 
     fun extractMessageRating(): Rating = PlanckUtils.extractRating(message)
 }
