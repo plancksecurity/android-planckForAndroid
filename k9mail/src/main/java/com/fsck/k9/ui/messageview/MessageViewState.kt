@@ -22,7 +22,6 @@ sealed interface MessageViewState {
 
     data class DecryptedMessageLoaded(
         val message: LocalMessage,
-        val moveToSuspiciousFolder: Boolean = false
     ) : MessageViewState
 
     data class EncryptedMessageLoaded(val message: LocalMessage) : MessageViewState

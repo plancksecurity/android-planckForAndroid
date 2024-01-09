@@ -1,8 +1,6 @@
 package security.planck.messaging
 
-import android.app.Application
 import com.fsck.k9.Account
-import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.controller.MessagingListener
@@ -33,10 +31,8 @@ import javax.inject.Singleton
 
 @Singleton
 class MessagingRepository @Inject constructor(
-    private val preferences: Preferences,
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
-    private val context: Application,
     private val infoExtractor: MessageViewInfoExtractor,
     private val dispatcherProvider: DispatcherProvider,
 ) {
@@ -46,11 +42,10 @@ class MessagingRepository @Inject constructor(
         account: Account,
         messageReference: MessageReference,
         updateFlow: MutableStateFlow<MessageViewState>,
-        moveToSuspiciousFolder: Boolean = false,
     ) = withContext(dispatcherProvider.io()) {
         updateFlow.value = MessageViewState.Loading
         loadMessageFromDatabase(
-            account, messageReference, updateFlow, moveToSuspiciousFolder
+            account, messageReference, updateFlow
         )
     }
 
@@ -58,7 +53,6 @@ class MessagingRepository @Inject constructor(
         account: Account,
         messageReference: MessageReference,
         updateFlow: MutableStateFlow<MessageViewState>,
-        moveToSuspiciousFolder: Boolean = false,
     ) {
         appIoScope.launch {
             kotlin.runCatching {
@@ -68,7 +62,7 @@ class MessagingRepository @Inject constructor(
                 updateFlow.value = MessageViewState.ErrorLoadingMessage(it)
             }.onSuccess { message ->
                 message?.let {
-                    messageLoaded(account, message, updateFlow, moveToSuspiciousFolder)
+                    messageLoaded(account, message, updateFlow)
                 } ?: let { updateFlow.value = MessageViewState.ErrorLoadingMessage() }
             }
         }
@@ -78,11 +72,10 @@ class MessagingRepository @Inject constructor(
         account: Account,
         message: LocalMessage,
         updateFlow: MutableStateFlow<MessageViewState>,
-        moveToSuspiciousFolder: Boolean = false,
     ) {
         message.recoverRating()
         val loadedState = if (!message.hasToBeDecrypted()) {
-            MessageViewState.DecryptedMessageLoaded(message, moveToSuspiciousFolder)
+            MessageViewState.DecryptedMessageLoaded(message)
         } else {
             MessageViewState.EncryptedMessageLoaded(message)
         }
@@ -94,7 +87,7 @@ class MessagingRepository @Inject constructor(
             downloadMessageBody(account, message.makeMessageReference(), false, updateFlow)
         } else if (message.hasToBeDecrypted()) {
             decryptMessage(account, message, updateFlow)
-        } else if (!moveToSuspiciousFolder) {
+        } else {
             decodeMessage(account, message, updateFlow)
         }
     }
@@ -257,6 +250,10 @@ class MessagingRepository @Inject constructor(
         messageReference: MessageReference,
     ) {
         controller.moveMessage(
-            account, messageReference.folderName, messageReference, account.planckSuspiciousFolderName)
+            account,
+            messageReference.folderName,
+            messageReference,
+            account.planckSuspiciousFolderName
+        )
     }
 }
