@@ -235,7 +235,12 @@ class MessagingRepository @Inject constructor(
         val folder = message.folder
         folder.storeSmallMessage(decryptedMessage) {
             val moveToSuspiciousFolder = PlanckUtils.isRatingDangerous(decryptResult.rating)
-            loadMessageFromDatabase(account, message.makeMessageReference(), updateFlow, moveToSuspiciousFolder)
+            if (moveToSuspiciousFolder) {
+                moveMessageToSuspiciousFolder(account, message.makeMessageReference())
+                updateFlow.value = MessageViewState.MessageMovedToSuspiciousFolder
+            } else {
+                loadMessageFromDatabase(account, message.makeMessageReference(), updateFlow)
+            }
         }
     }.onFailure {
         updateFlow.value = MessageViewState.ErrorDecryptingMessage(it)
@@ -247,5 +252,13 @@ class MessagingRepository @Inject constructor(
         planckRating ?: let {
             planckRating = PlanckUtils.extractRating(this)
         }
+    }
+
+    private fun moveMessageToSuspiciousFolder(
+        account: Account,
+        messageReference: MessageReference,
+    ) {
+        controller.moveMessage(
+            account, messageReference.folderName, messageReference, account.planckSuspiciousFolderName)
     }
 }

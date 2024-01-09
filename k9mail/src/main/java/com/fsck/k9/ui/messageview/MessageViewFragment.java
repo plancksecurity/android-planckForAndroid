@@ -51,7 +51,6 @@ import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -340,7 +339,18 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             decryptedMessageLoaded((DecryptedMessageLoaded) messageViewState);
         } else if (messageViewState instanceof MessageViewState.MessageDecoded) {
             showMessage(((MessageDecoded) messageViewState).getInfo(), true);
+        } else if (messageViewState.equals(MessageViewState.MessageMovedToSuspiciousFolder.INSTANCE)) {
+            messageMovedToSuspiciousFolder();
         }
+    }
+
+    private void messageMovedToSuspiciousFolder() {
+        mFragmentListener.goBack();
+        FeedbackTools.showLongFeedback(
+                getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
+                DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
+                DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
+        );
     }
 
     private void encryptedMessageLoaded(EncryptedMessageLoaded messageViewState) {
@@ -355,20 +365,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void decryptedMessageLoaded(DecryptedMessageLoaded messageViewState) {
-       messageLoaded(messageViewState.getMessage());
-        if (messageViewState.getMoveToSuspiciousFolder()) {
-            refileMessage(Store.PLANCK_SUSPICIOUS_FOLDER, true);
-            FeedbackTools.showLongFeedback(
-                    getRootView(), getString(R.string.dangerous_message_moved_to_suspicious_folder),
-                    DANGEROUS_MESSAGE_MOVED_FEEDBACK_DURATION,
-                    DANGEROUS_MESSAGE_MOVED_FEEDBACK_MAX_LINES
-            );
-        } else {
-            setToolbar();
-            mFragmentListener.updateMenu();
-        }
+        messageLoaded(messageViewState.getMessage());
+        setToolbar();
+        mFragmentListener.updateMenu();
         mMessageView.displayViewOnLoadFinished(true);
-
     }
 
     private void showDownloadMessageNetworkError(ErrorDownloadingNetworkError messageViewState) {
@@ -628,17 +628,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void refileMessage(String dstFolder) {
-        refileMessage(dstFolder, false);
-    }
-
-    private void refileMessage(String dstFolder, boolean forceGoBack) {
         String srcFolder = mMessageReference.getFolderName();
         MessageReference messageToMove = mMessageReference;
-        if (forceGoBack) {
-            mFragmentListener.goBack();
-        } else {
-            mFragmentListener.showNextMessageOrReturn();
-        }
+        mFragmentListener.showNextMessageOrReturn();
         mController.moveMessage(mAccount, srcFolder, messageToMove, dstFolder);
     }
 
