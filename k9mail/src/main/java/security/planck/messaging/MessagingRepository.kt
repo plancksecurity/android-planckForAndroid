@@ -20,8 +20,6 @@ import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.ui.messageview.MessageViewState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,9 +32,9 @@ class MessagingRepository @Inject constructor(
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
     private val infoExtractor: MessageViewInfoExtractor,
+    private val appIoScope: CoroutineScope,
     private val dispatcherProvider: DispatcherProvider,
 ) {
-    private val appIoScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     suspend fun loadMessage(
         account: Account,
