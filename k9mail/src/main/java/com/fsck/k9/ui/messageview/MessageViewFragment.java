@@ -2,14 +2,15 @@ package com.fsck.k9.ui.messageview;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorDownloadingMessageNotFound;
+import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorDownloadingNetworkError;
+import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage;
+import static com.fsck.k9.ui.messageview.MessageViewEffect.MessageMovedToSuspiciousFolder;
 import static com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded;
 import static com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded;
 import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDecodingMessage;
 import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessage;
 import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDecryptingMessageKeyMissing;
-import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingMessageNotFound;
-import static com.fsck.k9.ui.messageview.MessageViewState.ErrorDownloadingNetworkError;
-import static com.fsck.k9.ui.messageview.MessageViewState.ErrorLoadingMessage;
 import static com.fsck.k9.ui.messageview.MessageViewState.Loading;
 import static com.fsck.k9.ui.messageview.MessageViewState.MessageDecoded;
 
@@ -85,7 +86,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import kotlin.ExceptionsKt;
-import kotlin.Function;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
@@ -292,6 +292,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void observeViewModel() {
         viewModel.getMessageViewState().observe(getViewLifecycleOwner(), this::renderMessageViewState);
+        viewModel.getMessageViewEffect().observe(getViewLifecycleOwner(), event -> {
+            MessageViewEffect effect = event.getContentIfNotHandled();
+            if (effect != null) {
+                renderMessageViewEffect(effect);
+            }
+        });
         viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), this::allowOrDisallowSenderHandshake);
         viewModel.getFlaggedToggled().observe(getViewLifecycleOwner(), this::flaggedToggled);
         viewModel.getReadToggled().observe(getViewLifecycleOwner(), this::readToggled);
@@ -328,25 +334,29 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void renderMessageViewState(MessageViewState messageViewState) {
         if (messageViewState.equals(Loading.INSTANCE)) {
             mMessageView.setToLoadingState();
-        } else if (messageViewState instanceof ErrorLoadingMessage) {
-            showMessageLoadErrorFeedback((ErrorLoadingMessage) messageViewState);
         } else if (messageViewState.equals(ErrorDecryptingMessageKeyMissing.INSTANCE)) {
             showKeyNotFoundFeedback();
         } else if (messageViewState instanceof ErrorDecryptingMessage) {
             showGenericErrorFeedback(((ErrorDecryptingMessage) messageViewState).getThrowable());
         } else if (messageViewState instanceof ErrorDecodingMessage) {
             showMessage(((ErrorDecodingMessage) messageViewState).getInfo(), true);
-        } else if (messageViewState instanceof ErrorDownloadingMessageNotFound) {
-            showDownloadMessageNotFound((ErrorDownloadingMessageNotFound) messageViewState);
-        } else if (messageViewState instanceof ErrorDownloadingNetworkError) {
-            showDownloadMessageNetworkError((ErrorDownloadingNetworkError) messageViewState);
         } else if (messageViewState instanceof EncryptedMessageLoaded) {
             encryptedMessageLoaded((EncryptedMessageLoaded) messageViewState);
         } else if (messageViewState instanceof DecryptedMessageLoaded) {
             decryptedMessageLoaded((DecryptedMessageLoaded) messageViewState);
         } else if (messageViewState instanceof MessageViewState.MessageDecoded) {
             showMessage(((MessageDecoded) messageViewState).getInfo(), true);
-        } else if (messageViewState.equals(MessageViewState.MessageMovedToSuspiciousFolder.INSTANCE)) {
+        }
+    }
+
+    private void renderMessageViewEffect(MessageViewEffect effect) {
+        if (effect instanceof ErrorLoadingMessage) {
+            showMessageLoadErrorFeedback((ErrorLoadingMessage) effect);
+        } else if (effect instanceof ErrorDownloadingMessageNotFound) {
+            showDownloadMessageNotFound((ErrorDownloadingMessageNotFound) effect);
+        } else if (effect instanceof ErrorDownloadingNetworkError) {
+            showDownloadMessageNetworkError((ErrorDownloadingNetworkError) effect);
+        } else if (effect.equals(MessageMovedToSuspiciousFolder.INSTANCE)) {
             messageMovedToSuspiciousFolder();
         }
     }

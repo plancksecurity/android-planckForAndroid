@@ -19,13 +19,13 @@ import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.livedata.Event
+import com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage
+import com.fsck.k9.ui.messageview.MessageViewEffect.NoEffect
 import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.EncryptedMessageLoaded
-import com.fsck.k9.ui.messageview.MessageViewState.ErrorLoadingMessage
 import com.fsck.k9.ui.messageview.MessageViewState.Idle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Rating
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -42,7 +42,7 @@ class MessageViewViewModel(
     private val planckProvider: PlanckProvider,
     private val context: Application,
     private val messagingRepository: MessagingRepository,
-    private val updateFlow: MutableStateFlow<MessageViewState>,
+    private val messageViewUpdate: MessageViewUpdate,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
@@ -60,20 +60,23 @@ class MessageViewViewModel(
         planckProvider,
         context,
         messagingRepository,
-        MutableStateFlow(Idle),
+        MessageViewUpdate(),
         dispatcherProvider
     )
 
-    lateinit var messageReference: MessageReference
-        private set
-    lateinit var account: Account
-        private set
+    val messageReference: MessageReference
+        get() = messageViewUpdate.messageReference
+    val account: Account
+        get() = messageViewUpdate.account
     lateinit var message: LocalMessage
         private set
 
     private val messageViewStateLiveData: MutableLiveData<MessageViewState> =
         MutableLiveData(Idle)
     val messageViewState: LiveData<MessageViewState> = messageViewStateLiveData
+    private val messageViewEffectLiveData: MutableLiveData<Event<MessageViewEffect>> =
+        MutableLiveData(Event(NoEffect))
+    val messageViewEffect: LiveData<Event<MessageViewEffect>> = messageViewEffectLiveData
     private val allowHandshakeSenderLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
     val allowHandshakeSender: LiveData<Event<Boolean>> = allowHandshakeSenderLiveData
@@ -96,7 +99,7 @@ class MessageViewViewModel(
         get() = message.from
 
     init {
-        updateFlow.onEach { state ->
+        messageViewUpdate.stateFlow.onEach { state ->
             if (state is EncryptedMessageLoaded) message = state.message
             else if (state is DecryptedMessageLoaded) {
                 message = state.message
@@ -104,16 +107,19 @@ class MessageViewViewModel(
             }
             messageViewStateLiveData.value = state
         }.launchIn(viewModelScope)
+        messageViewUpdate.effectFlow.onEach { effect ->
+            messageViewEffectLiveData.value = Event(effect)
+        }.launchIn(viewModelScope)
     }
 
     fun initialize(messageReferenceString: String?) {
         kotlin.runCatching {
-            this.messageReference = MessageReference.parse(messageReferenceString!!)
+            messageViewUpdate.messageReference = MessageReference.parse(messageReferenceString!!)
                 ?: error("null reference")
-            this.account = preferences.getAccount(messageReference.accountUuid)
+            messageViewUpdate.account = preferences.getAccount(messageReference.accountUuid)
                 ?: error("account was removed")
         }.onFailure {
-            updateFlow.value = ErrorLoadingMessage(it, true)
+            messageViewUpdate.effectFlow.value = ErrorLoadingMessage(it, true)
         }
     }
 
@@ -121,13 +127,15 @@ class MessageViewViewModel(
 
     fun downloadCompleteMessage() {
         viewModelScope.launch {
-            messagingRepository.downloadCompleteMessage(account, messageReference, updateFlow)
+            messagingRepository.downloadCompleteMessage(
+                messageViewUpdate
+            )
         }
     }
 
     fun loadMessage() {
         viewModelScope.launch {
-            messagingRepository.loadMessage(account, messageReference, updateFlow)
+            messagingRepository.loadMessage(messageViewUpdate)
         }
     }
 
@@ -189,7 +197,7 @@ class MessageViewViewModel(
                     planckProvider.keyResetIdentity(resetIdentity, null)
                 }
             }.onSuccess {
-                messagingRepository.loadMessage(account, messageReference, updateFlow)
+                messagingRepository.loadMessage(messageViewUpdate)
                 resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
             }.onFailure {
                 Timber.e(it)
