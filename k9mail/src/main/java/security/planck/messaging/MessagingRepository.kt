@@ -44,25 +44,23 @@ class MessagingRepository @Inject constructor(
         updateFlow.value = MessageViewState.Loading
         loadMessageFromDatabase(
             account, messageReference, updateFlow
-        )
+        ).join()
     }
 
     private fun loadMessageFromDatabase(
         account: Account,
         messageReference: MessageReference,
         updateFlow: MutableStateFlow<MessageViewState>,
-    ) {
-        appIoScope.launch {
-            kotlin.runCatching {
-                controller.loadMessage(account, messageReference.folderName, messageReference.uid)
-            }.onFailure {
-                Timber.e(it)
-                updateFlow.value = MessageViewState.ErrorLoadingMessage(it)
-            }.onSuccess { message ->
-                message?.let {
-                    messageLoaded(account, message, updateFlow)
-                } ?: let { updateFlow.value = MessageViewState.ErrorLoadingMessage() }
-            }
+    ) = appIoScope.launch {
+        kotlin.runCatching {
+            controller.loadMessage(account, messageReference.folderName, messageReference.uid)
+        }.onFailure {
+            Timber.e(it)
+            updateFlow.value = MessageViewState.ErrorLoadingMessage(it)
+        }.onSuccess { message ->
+            message?.let {
+                messageLoaded(account, message, updateFlow)
+            } ?: let { updateFlow.value = MessageViewState.ErrorLoadingMessage() }
         }
     }
 
@@ -110,12 +108,12 @@ class MessagingRepository @Inject constructor(
         }
     }
 
-    suspend fun downloadMessageBody(
+    private fun downloadMessageBody(
         account: Account,
         messageReference: MessageReference,
         complete: Boolean,
         updateFlow: MutableStateFlow<MessageViewState>,
-    ) = withContext(dispatcherProvider.io()) {
+    ) {
         if (complete) {
             controller.loadMessageRemote(
                 account,
@@ -131,6 +129,16 @@ class MessagingRepository @Inject constructor(
                 getDownloadMessageListener(messageReference, updateFlow)
             )
         }
+    }
+
+    suspend fun downloadCompleteMessage(
+        account: Account,
+        messageReference: MessageReference,
+        updateFlow: MutableStateFlow<MessageViewState>,
+    ) = withContext(dispatcherProvider.io()) {
+        appIoScope.launch {
+            downloadMessageBody(account, messageReference, true, updateFlow)
+        }.join()
     }
 
     private fun getDownloadMessageListener(
