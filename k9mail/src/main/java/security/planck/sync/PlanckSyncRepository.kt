@@ -190,9 +190,10 @@ class PlanckSyncRepository @Inject constructor(
     private suspend fun setPlanckSyncEnabledSuspend(enabled: Boolean) {
         if (enabled) {
             planckInitSyncEnvironment()
-        } else if (isGrouped) {
-            leaveDeviceGroup()
         } else {
+            if (isGrouped) {
+                leaveDeviceGroup()
+            }
             shutdownSync()
         }
     }
