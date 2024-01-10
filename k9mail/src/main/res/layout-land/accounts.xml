@@ -1,128 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/simple_toolbar_layout" />
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    <include
+        android:id="@+id/appbar"
+        layout="@layout/simple_toolbar_layout"
+        app:layout_constraintTop_toTopOf="parent " />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/global_settings_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/global_settings_title"
-            android:textColor="?attr/colorAccent" />
-
-        <FrameLayout
-            android:id="@+id/generalSettingsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout_height="300dp" />
-
-    </LinearLayout>
-    <FrameLayout
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/global_settings_title"
+        android:textColor="?attr/colorAccent"
+        app:layout_constraintEnd_toStartOf="@id/separator"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appbar" />
+
+    <FrameLayout
+        android:id="@+id/generalSettingsContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/separator"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/global_settings_title" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginRight="8dp"
-        android:background="@color/light_gray"/>
+        android:layout_marginBottom="16dp"
+        android:background="@color/light_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appbar" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <TextView
+        android:id="@+id/available_accounts_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/available_accounts_title"
+        android:textColor="?attr/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/separator"
+        app:layout_constraintTop_toBottomOf="@id/appbar" />
 
-        <TextView
-            android:id="@+id/available_accounts_title"
-            android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/separator"
+        app:layout_constraintTop_toBottomOf="@id/available_accounts_title"
+        tools:visibility="visible" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/separator"
+        app:layout_constraintTop_toBottomOf="@id/available_accounts_title">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/available_accounts_title"
-            android:textColor="?attr/colorAccent" />
+            android:orientation="vertical">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
-
-            <RelativeLayout
+            <com.fsck.k9.planck.ui.tools.NestedListView
+                android:id="@+id/accounts_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" />
 
-                <ProgressBar
-                    android:id="@+id/loading"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+            <TextView
+                android:id="@+id/add_account_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="@string/add_account_action"
+                android:textAllCaps="true"
+                android:textColor="?attr/colorAccent"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+            <TextView
+                android:id="@+id/terms_and_conditions"
+                style="@style/TermsAndConditionsText"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                tools:text="Terms and Conditions" />
 
-                <FrameLayout
-                    android:id="@+id/add_account_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/accounts_list"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+        </LinearLayout>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:paddingTop="16dp"
-                        android:paddingBottom="16dp"
-                        android:text="@string/add_account_action"
-                        android:textAllCaps="true"
-                        android:textColor="?attr/colorAccent"
-                        android:textStyle="bold" />
+    </ScrollView>
 
-                </FrameLayout>
-
-                <com.fsck.k9.planck.ui.tools.NestedListView
-                    android:id="@+id/accounts_list"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/terms_and_conditions"
-                    android:layout_centerHorizontal="true"
-                    style="@style/TermsAndConditionsText"
-                    tools:text="Terms and Conditions"
-                    android:visibility="gone"
-                    android:layout_below="@id/add_account_container"/>
-            </RelativeLayout>
-
-        </ScrollView>
-
-    </LinearLayout>
-
-</LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
