@@ -198,7 +198,7 @@ class SyncRepositoryTest : RobolectricTest() {
     @Test
     fun `setPlanckSyncEnabled(true) does not initialize sync if there are no accounts setup in device`() {
         coEvery { planckProvider.isSyncRunning() }.returns(false)
-        every { preferences.accounts }.returns(emptyList())
+        every { preferences.accounts }.answers { emptyList() }
 
 
         syncRepository.setPlanckSyncEnabled(true)
@@ -246,7 +246,7 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `setPlanckSyncEnabled(false) leaves device group if device is grouped and sync is running`() {
+    fun `setPlanckSyncEnabled(false) leaves device group and shuts down sync if device is grouped and sync is running`() {
         coEvery { planckProvider.isSyncRunning() }.returns(true)
         syncRepository.isGrouped = true
         coEvery { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
@@ -256,6 +256,8 @@ class SyncRepositoryTest : RobolectricTest() {
 
         coVerify { planckProvider.leaveDeviceGroup() }
         assertEquals(false, syncRepository.isGrouped)
+        coVerify { planckProvider.stopSync() }
+        verify { k9.markSyncEnabled(false) }
     }
 
     @Test
