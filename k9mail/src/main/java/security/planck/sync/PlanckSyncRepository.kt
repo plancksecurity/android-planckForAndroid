@@ -262,10 +262,8 @@ class PlanckSyncRepository @Inject constructor(
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: start")
         }
-        if (planckProvider.isSyncRunning()) {
-            planckProvider.stopSync()
-            k9.markSyncEnabled(false)
-        }
+        planckProvider.stopSync()
+        k9.markSyncEnabled(false)
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: end")
         }
