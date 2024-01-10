@@ -233,7 +233,7 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `setPlanckSyncEnabled(false) does not shut down sync if device is not grouped and sync is not running`() {
+    fun `setPlanckSyncEnabled(false) when device is not grouped does shut down sync even if sync is not running`() {
         coEvery { planckProvider.isSyncRunning() }.returns(false)
         syncRepository.isGrouped = false
 
@@ -241,8 +241,8 @@ class SyncRepositoryTest : RobolectricTest() {
         syncRepository.setPlanckSyncEnabled(false)
 
 
-        coVerify(exactly = 0) { planckProvider.stopSync() }
-        verify(exactly = 0) { k9.markSyncEnabled(false) }
+        coVerify { planckProvider.stopSync() }
+        verify { k9.markSyncEnabled(false) }
     }
 
     @Test
