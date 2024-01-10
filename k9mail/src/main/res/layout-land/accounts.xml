@@ -45,43 +45,10 @@
         android:layout_marginRight="8dp"
         android:background="@color/light_gray"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_centerInParent="true"
-
-            android:indeterminate="true"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <FrameLayout
-            android:id="@+id/add_account_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/accounts_list"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                android:text="@string/add_account_action"
-                android:textAllCaps="true"
-                android:textColor="?attr/colorAccent"
-                android:textStyle="bold" />
-
-        </FrameLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/available_accounts_title"
@@ -95,20 +62,66 @@
             android:text="@string/available_accounts_title"
             android:textColor="?attr/colorAccent" />
 
-        <com.fsck.k9.planck.ui.tools.NestedListView
-            android:id="@+id/accounts_list"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/available_accounts_title" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/terms_and_conditions"
-            android:layout_centerHorizontal="true"
-            style="@style/TermsAndConditionsText"
-            tools:text="Terms and Conditions"
-            android:visibility="gone"
-            android:layout_below="@id/add_account_container"/>
-    </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/loading"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <FrameLayout
+                    android:id="@+id/add_account_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/accounts_list"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        android:text="@string/add_account_action"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/colorAccent"
+                        android:textStyle="bold" />
+
+                </FrameLayout>
+
+                <com.fsck.k9.planck.ui.tools.NestedListView
+                    android:id="@+id/accounts_list"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/terms_and_conditions"
+                    android:layout_centerHorizontal="true"
+                    style="@style/TermsAndConditionsText"
+                    tools:text="Terms and Conditions"
+                    android:visibility="gone"
+                    android:layout_below="@id/add_account_container"/>
+            </RelativeLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
 
 </LinearLayout>
 
