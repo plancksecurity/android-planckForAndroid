@@ -20,7 +20,9 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.testutils.CoroutineTestRule
+import com.fsck.k9.ui.messageview.MessageViewEffect
 import com.fsck.k9.ui.messageview.MessageViewState
+import com.fsck.k9.ui.messageview.MessageViewUpdate
 import com.fsck.k9.ui.messageview.MessageViewViewModelTest
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
@@ -38,7 +40,6 @@ import io.mockk.verify
 import junit.framework.TestCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -84,7 +85,6 @@ class MessagingRepositoryTest {
         every { isSet(Flag.SEEN) }.returns(false)
         every { folder }.returns(this@MessagingRepositoryTest.folder)
         every { uid }.returns(MESSAGE_UID)
-        every { makeMessageReference() }.returns(messageReference)
     }
     private val storedMessage = localMessage
     private val decryptedMessage: MimeMessage = mockk {
@@ -101,8 +101,11 @@ class MessagingRepositoryTest {
         coroutinesTestRule.testDispatcherProvider
     )
     private val receivedMessageStates = mutableListOf<MessageViewState>()
-    private val updateFlow: MutableStateFlow<MessageViewState> =
-        MutableStateFlow(MessageViewState.Idle)
+    private val receivedMessageEffects = mutableListOf<MessageViewEffect>()
+    private val messageViewUpdate = MessageViewUpdate().apply {
+        account = this@MessagingRepositoryTest.account
+        messageReference = this@MessagingRepositoryTest.messageReference
+    }
 
     @Before
     fun setUp() {
@@ -145,7 +148,7 @@ class MessagingRepositoryTest {
 
     @Test
     fun `loadMessage() uses MessagingController to load message`() = runTest {
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -155,7 +158,7 @@ class MessagingRepositoryTest {
     @Test
     fun `loadMessage() sets state to DecryptedMessageLoaded if message does not need to be decrypted`() =
         runTest {
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -171,14 +174,17 @@ class MessagingRepositoryTest {
         every { controller.loadMessage(any(), any(), any()) }.throws(TestException("test"))
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
         assertMessageStates(
             MessageViewState.Idle,
             MessageViewState.Loading,
-            MessageViewState.ErrorLoadingMessage(TestException("test"))
+        )
+        assertMessageEffects(
+            MessageViewEffect.NoEffect,
+            MessageViewEffect.ErrorLoadingMessage(TestException("test")),
         )
     }
 
@@ -187,14 +193,17 @@ class MessagingRepositoryTest {
         every { controller.loadMessage(any(), any(), any()) }.returns(null)
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
         assertMessageStates(
             MessageViewState.Idle,
             MessageViewState.Loading,
-            MessageViewState.ErrorLoadingMessage()
+        )
+        assertMessageEffects(
+            MessageViewEffect.NoEffect,
+            MessageViewEffect.ErrorLoadingMessage(),
         )
     }
 
@@ -204,7 +213,7 @@ class MessagingRepositoryTest {
 
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -217,7 +226,7 @@ class MessagingRepositoryTest {
     fun `loadMessage() does not set rating to message from header if message rating is not null`() =
         runTest {
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -229,7 +238,7 @@ class MessagingRepositoryTest {
     fun `loadMessage() uses MessageViewInfoExtractor to extract message info if message does not need to be decrypted`() =
         runTest {
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -240,7 +249,7 @@ class MessagingRepositoryTest {
     fun `loadMessage() sets state to MessageDecoded if message is successfully decoded for view`() =
         runTest {
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -265,7 +274,7 @@ class MessagingRepositoryTest {
 
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -287,7 +296,7 @@ class MessagingRepositoryTest {
 
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -305,7 +314,7 @@ class MessagingRepositoryTest {
 
 
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -324,7 +333,7 @@ class MessagingRepositoryTest {
 
 
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -348,7 +357,7 @@ class MessagingRepositoryTest {
 
 
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -366,7 +375,7 @@ class MessagingRepositoryTest {
 
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -386,7 +395,7 @@ class MessagingRepositoryTest {
 
 
 
-            repository.loadMessage(account, messageReference, updateFlow)
+            repository.loadMessage(messageViewUpdate)
             advanceUntilIdle()
 
 
@@ -404,7 +413,7 @@ class MessagingRepositoryTest {
         every { localMessage.hasToBeDecrypted() }.returns(true)
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -424,7 +433,7 @@ class MessagingRepositoryTest {
         }
 
 
-        repository.loadMessage(account, messageReference, updateFlow)
+        repository.loadMessage(messageViewUpdate)
         advanceUntilIdle()
 
 
@@ -442,14 +451,22 @@ class MessagingRepositoryTest {
             MessageViewState.Idle,
             MessageViewState.Loading,
             MessageViewState.EncryptedMessageLoaded(localMessage),
-            MessageViewState.MessageMovedToSuspiciousFolder,
+        )
+        assertMessageEffects(
+            MessageViewEffect.NoEffect,
+            MessageViewEffect.MessageMovedToSuspiciousFolder,
         )
     }
 
     private fun observeUpdateFlow() {
         CoroutineScope(UnconfinedTestDispatcher()).launch {
-            updateFlow.collect {
+            messageViewUpdate.stateFlow.collect {
                 receivedMessageStates.add(it)
+            }
+        }
+        CoroutineScope(UnconfinedTestDispatcher()).launch {
+            messageViewUpdate.effectFlow.collect {
+                receivedMessageEffects.add(it)
             }
         }
     }
@@ -457,6 +474,12 @@ class MessagingRepositoryTest {
     private fun assertMessageStates(vararg states: MessageViewState) {
         states.forEachIndexed { index, messageViewState ->
             TestCase.assertEquals(messageViewState, receivedMessageStates[index])
+        }
+    }
+
+    private fun assertMessageEffects(vararg effects: MessageViewEffect) {
+        effects.forEachIndexed { index, messageViewState ->
+            TestCase.assertEquals(messageViewState, receivedMessageEffects[index])
         }
     }
 

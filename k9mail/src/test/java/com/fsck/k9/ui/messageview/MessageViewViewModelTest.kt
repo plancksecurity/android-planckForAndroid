@@ -13,18 +13,18 @@ import com.fsck.k9.extensions.isValidForHandshake
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
-import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
-import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.testutils.CoroutineTestRule
-import com.fsck.k9.ui.messageview.MessageViewState.*
+import com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage
+import com.fsck.k9.ui.messageview.MessageViewEffect.NoEffect
+import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
+import com.fsck.k9.ui.messageview.MessageViewState.Idle
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import io.mockk.called
@@ -43,7 +43,6 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -75,7 +74,6 @@ class MessageViewViewModelTest : RobolectricTest() {
         coEvery { getRating(any<Address>()) }.returns(ResultCompat.success(Rating.pEpRatingReliable))
         every { keyResetIdentity(any(), any()) }.just(runs)
     }
-    private val messageViewInfo: MessageViewInfo = mockk()
     private val app: Application = mockk()
     private val messageReference: MessageReference =
         spyk(MessageReference(ACCOUNT_UUID, FOLDER_NAME, MESSAGE_UID, null))
@@ -105,11 +103,14 @@ class MessageViewViewModelTest : RobolectricTest() {
     }
     private val senderAddress = Address(MAIL1)
     private val senderIdentity: Identity = mockk()
-    private val updateFlow: MutableStateFlow<MessageViewState> = MutableStateFlow(Idle)
     private val repository: MessagingRepository = mockk {
-        coEvery { loadMessage(any(), any(), any()) }.answers {
-            updateFlow.value = DecryptedMessageLoaded(localMessage)
+        coEvery { loadMessage(any()) }.answers {
+            messageViewUpdate.stateFlow.value = DecryptedMessageLoaded(localMessage)
         }
+    }
+    private val messageViewUpdate = MessageViewUpdate().apply {
+        account = this@MessageViewViewModelTest.account
+        messageReference = this@MessageViewViewModelTest.messageReference
     }
     private val viewModel = MessageViewViewModel(
         preferences,
@@ -117,10 +118,11 @@ class MessageViewViewModelTest : RobolectricTest() {
         planckProvider,
         app,
         repository,
-        updateFlow,
+        messageViewUpdate,
         coroutinesTestRule.testDispatcherProvider
     )
     private val receivedMessageStates = mutableListOf<MessageViewState>()
+    private val receivedMessageEffects = mutableListOf<MessageViewEffect>()
     private val receivedResetStates = mutableListOf<BackgroundTaskDialogView.State>()
     private val allowHandshakeSenderEvents = mutableListOf<Boolean>()
     private val flaggedToggledEvents = mutableListOf<Boolean>()
@@ -194,10 +196,14 @@ class MessageViewViewModelTest : RobolectricTest() {
         verify { preferences.wasNot(called) }
         assertMessageStates(
             Idle,
+            justClass = true
+        )
+        assertMessageEffects(
+            NoEffect,
             ErrorLoadingMessage(IllegalStateException("null reference"), true),
             justClass = true
         )
-        val last = receivedMessageStates.last() as ErrorLoadingMessage
+        val last = receivedMessageEffects.last() as ErrorLoadingMessage
         assertTrue(last.close)
         assertTrue(last.throwable is IllegalStateException)
     }
@@ -212,10 +218,13 @@ class MessageViewViewModelTest : RobolectricTest() {
 
         assertMessageStates(
             Idle,
+        )
+        assertMessageEffects(
+            NoEffect,
             ErrorLoadingMessage(null, true),
             justClass = true
         )
-        val last = receivedMessageStates.last() as ErrorLoadingMessage
+        val last = receivedMessageEffects.last() as ErrorLoadingMessage
         assertTrue(last.close)
         assertTrue(last.throwable is IllegalStateException)
     }
@@ -227,7 +236,7 @@ class MessageViewViewModelTest : RobolectricTest() {
         advanceUntilIdle()
 
 
-        coVerify { repository.loadMessage(account, messageReference, any()) }
+        coVerify { repository.loadMessage(messageViewUpdate) }
     }
 
     @Test
@@ -577,6 +586,19 @@ class MessageViewViewModelTest : RobolectricTest() {
         }
     }
 
+    private fun assertMessageEffects(
+        vararg effects: MessageViewEffect,
+        justClass: Boolean = false
+    ) {
+        effects.forEachIndexed { index, messageViewState ->
+            if (justClass) {
+                assertEquals(messageViewState::class, receivedMessageEffects[index]::class)
+            } else {
+                assertEquals(messageViewState, receivedMessageEffects[index])
+            }
+        }
+    }
+
     private fun assertResetStates(
         vararg states: BackgroundTaskDialogView.State,
         full: Boolean = true
@@ -603,6 +625,12 @@ class MessageViewViewModelTest : RobolectricTest() {
         viewModel.messageViewState.observeForever { value ->
             receivedMessageStates.add(value)
             println("received: $value")
+        }
+        viewModel.messageViewEffect.observeForever { event ->
+            event.getContentIfNotHandled()?.let { value ->
+                receivedMessageEffects.add(value)
+                println("received: $value")
+            }
         }
         viewModel.resetPartnerKeyState.observeForever { value ->
             println("received: $value")
