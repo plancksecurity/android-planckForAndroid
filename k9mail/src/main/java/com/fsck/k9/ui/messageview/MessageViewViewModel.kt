@@ -36,14 +36,34 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class MessageViewViewModel @Inject constructor(
+class MessageViewViewModel(
     private val preferences: Preferences,
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
     private val context: Application,
     private val messagingRepository: MessagingRepository,
+    private val updateFlow: MutableStateFlow<MessageViewState>,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
+
+    @Inject
+    constructor(
+        preferences: Preferences,
+        controller: MessagingController,
+        planckProvider: PlanckProvider,
+        context: Application,
+        messagingRepository: MessagingRepository,
+        dispatcherProvider: DispatcherProvider,
+    ) : this(
+        preferences,
+        controller,
+        planckProvider,
+        context,
+        messagingRepository,
+        MutableStateFlow(Idle),
+        dispatcherProvider
+    )
+
     lateinit var messageReference: MessageReference
         private set
     lateinit var account: Account
@@ -69,8 +89,6 @@ class MessageViewViewModel @Inject constructor(
     private val resetPartnerKeyStateLd: MutableLiveData<BackgroundTaskDialogView.State> =
         MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
     val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
-
-    private val updateFlow: MutableStateFlow<MessageViewState> = MutableStateFlow(Idle)
 
     val messageSubject: String?
         get() = if (::message.isInitialized) message.subject else null
@@ -103,7 +121,7 @@ class MessageViewViewModel @Inject constructor(
 
     fun downloadCompleteMessage() {
         viewModelScope.launch {
-            messagingRepository.downloadMessageBody(account, messageReference, true, updateFlow)
+            messagingRepository.downloadCompleteMessage(account, messageReference, updateFlow)
         }
     }
 
