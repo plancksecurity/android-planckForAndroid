@@ -10,13 +10,16 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.planck.ui.activities.UtilsPackage
 import kotlinx.coroutines.runBlocking
+import org.junit.FixMethodOrder
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ST1AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @get:Rule

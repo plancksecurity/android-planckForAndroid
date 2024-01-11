@@ -1,21 +1,19 @@
 package com.fsck.k9.ui
 
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
-import com.fsck.k9.planck.ui.activities.TestUtils
-import com.fsck.k9.planck.ui.activities.UtilsPackage
 import kotlinx.coroutines.runBlocking
-import org.junit.Ignore
+import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ST5SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
