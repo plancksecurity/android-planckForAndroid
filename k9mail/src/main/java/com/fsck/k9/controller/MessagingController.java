@@ -1812,9 +1812,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             LocalFolder localFolder
     ) {
         try {
-            if (!Store.PLANCK_SUSPICIOUS_FOLDER.equals(folder)
-                    && PlanckUtils.isRatingDangerous(localMessage.getPlanckRating())
-                    && !PlanckUtils.isAutoConsumeMessage(localMessage)) {
+            if (shouldMoveMessageToSuspiciousFolder(localMessage, folder)) {
                 moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
                         localMessage,
                         account,
@@ -1832,6 +1830,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
         } catch (Exception e) {
             Timber.e(e);
         }
+    }
+
+    private static boolean shouldMoveMessageToSuspiciousFolder(LocalMessage localMessage, String folder) {
+        return !Store.PLANCK_SUSPICIOUS_FOLDER.equals(folder)
+                && PlanckUtils.isRatingDangerous(localMessage.getPlanckRating())
+                && !PlanckUtils.isAutoConsumeMessage(localMessage);
     }
 
     private void moveDangerousMessageToSuspiciousFolderAndUpdateStatus(
