@@ -70,10 +70,10 @@ class MessagingRepository @Inject constructor(
         messageViewUpdate: MessageViewUpdate,
     ) {
         message.recoverRating()
-        val loadedState = if (!message.hasToBeDecrypted()) {
-            MessageViewState.DecryptedMessageLoaded(message)
-        } else {
+        val loadedState = if (message.hasToBeDecrypted()) {
             MessageViewState.EncryptedMessageLoaded(message)
+        } else {
+            MessageViewState.DecryptedMessageLoaded(message)
         }
 
         with(messageViewUpdate) {
