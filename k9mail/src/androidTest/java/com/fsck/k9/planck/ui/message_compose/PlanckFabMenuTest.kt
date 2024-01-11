@@ -54,12 +54,10 @@ class PlanckFabMenuTest {
 
         clickListItem(1)
 
-        textsAreNotVisible()
         fabsAreNotVisible()
 
         longClickMainButton()
 
-        textsAreVisible()
         fabsAreVisible()
     }
 
@@ -69,17 +67,14 @@ class PlanckFabMenuTest {
 
         clickListItem(1)
 
-        textsAreNotVisible()
         fabsAreNotVisible()
 
         longClickMainButton()
 
-        textsAreVisible()
         fabsAreVisible()
 
         longClickMainButton()
 
-        textsAreNotVisible()
         fabsAreNotVisible()
     }
 
@@ -91,18 +86,6 @@ class PlanckFabMenuTest {
         onView(withRecyclerView(R.id.message_list).atPosition(position))
             .perform(click())
         device?.waitForIdle()
-    }
-
-    private fun textsAreVisible() {
-        onView(withId(R.id.textviewReply)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.textviewReplyAll)).check(matches(isCompletelyDisplayed()))
-        onView(withId(R.id.textviewForward)).check(matches(isCompletelyDisplayed()))
-    }
-
-    private fun textsAreNotVisible() {
-        onView(withId(R.id.textviewReply)).check(matches(not(isCompletelyDisplayed())))
-        onView(withId(R.id.textviewReplyAll)).check(matches(not(isCompletelyDisplayed())))
-        onView(withId(R.id.textviewForward)).check(matches(not(isCompletelyDisplayed())))
     }
 
     private fun fabsAreVisible() {

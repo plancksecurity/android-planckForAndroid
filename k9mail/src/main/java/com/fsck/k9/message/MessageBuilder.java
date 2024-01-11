@@ -117,7 +117,7 @@ public abstract class MessageBuilder {
 
     protected void buildHeader(MimeMessage message) throws MessagingException {
         message.addSentDate(sentDate, hideTimeZone);
-        Address from = new Address(identity.getEmail(), identity.getName());
+        Address from = identity == null ? null : new Address(identity.getEmail(), identity.getName());
         message.setFrom(from);
         message.setRecipients(RecipientType.TO, to);
         message.setRecipients(RecipientType.CC, cc);
@@ -128,7 +128,7 @@ public abstract class MessageBuilder {
             message.setHeader("User-Agent", context.getString(R.string.message_header_mua));
         }
 
-        final String replyTo = identity.getReplyTo();
+        final String replyTo = identity == null ? null : identity.getReplyTo();
         if (replyTo != null) {
             message.setReplyTo(new Address[] { new Address(replyTo) });
         }
@@ -343,7 +343,7 @@ public abstract class MessageBuilder {
 
         textBodyBuilder.setInsertSeparator(!isDraft);
 
-        boolean useSignature = (!isDraft && identity.getSignatureUse());
+        boolean useSignature = (!isDraft && identity != null && identity.getSignatureUse());
         if (useSignature) {
             textBodyBuilder.setAppendSignature(true);
             textBodyBuilder.setSignature(signature);
@@ -640,10 +640,12 @@ public abstract class MessageBuilder {
         com.fsck.k9.Identity k9Identity = new com.fsck.k9.Identity();
         k9Identity.setSignatureUse(false);
         k9Identity.setSignature("");
-        k9Identity.setReplyTo(PlanckUtils.getReplyTo(replyTo));
-        k9Identity.setName(from.username);
+        k9Identity.setReplyTo(replyTo == null ? null : PlanckUtils.getReplyTo(replyTo));
+        if (from != null) {
+            k9Identity.setName(from.username);
+            k9Identity.setEmail(from.address);
+        }
         k9Identity.setDescription("");
-        k9Identity.setEmail(from.address);
         return setIdentity(k9Identity);
     }
 

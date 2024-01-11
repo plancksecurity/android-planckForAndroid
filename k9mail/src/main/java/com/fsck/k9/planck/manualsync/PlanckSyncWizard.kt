@@ -59,7 +59,6 @@ class PlanckSyncWizard : WizardActivity() {
         }
         binding.negativeActionButton.setOnClickListener {
             viewModel.rejectHandshake()
-            finish()
         }
         binding.showLongTrustwords.setOnClickListener {
             binding.showLongTrustwords.isVisible = false

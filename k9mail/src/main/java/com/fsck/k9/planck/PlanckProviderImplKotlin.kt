@@ -32,7 +32,6 @@ import com.fsck.k9.planck.infrastructure.extensions.mapError
 import com.fsck.k9.planck.infrastructure.threading.EngineThreadLocal
 import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread
-import com.fsck.k9.planck.infrastructure.toResultCompat
 import com.fsck.k9.planck.ui.HandshakeData
 import com.fsck.k9.planck.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -202,7 +201,7 @@ class PlanckProviderImplKotlin(
         engine.close()
     }
 
-    override fun setPassiveModeEnabled(enable: Boolean) = runBlocking(PlanckDispatcher) {
+    override fun setPassiveModeEnabled(enable: Boolean) {
         engine.get().config_passive_mode(enable)
     }
 
@@ -231,19 +230,19 @@ class PlanckProviderImplKotlin(
         engine.get().disable_all_sync_channels()
     }
 
-    override fun syncReset() = runBlocking(PlanckDispatcher) {
+    override suspend fun syncReset() = withContext(PlanckDispatcher) {
         engine.get().sync_reinit()
     }
 
     @WorkerThread
-    override fun updateSyncAccountsConfig() = runBlocking (PlanckDispatcher) {
+    override suspend fun updateSyncAccountsConfig() {
         disableSyncForAllIdentites()
         for (account in Preferences.getPreferences(context).accounts) {
             var id = PlanckUtils.createIdentity(
                 Address(account.email, account.name), context
             )
-            id = myself(id)
-            setIdentityFlag(id, account.isPlanckSyncEnabled)
+            id = myselfSuspend(id)
+            setIdentityFlagSuspend(id, account.isPlanckSyncEnabled)
         }
     }
 
@@ -316,10 +315,9 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override val isSyncRunning: Boolean
-        get() = runBlocking(PlanckDispatcher) {
-            engine.get().isSyncRunning
-        }
+    override suspend fun isSyncRunning(): Boolean = withContext(PlanckDispatcher) {
+        engine.get().isSyncRunning
+    }
 
     private fun getElementAtPosition(chain: String): String {
         return chain.substring(1, chain.length - 1)
@@ -450,26 +448,26 @@ class PlanckProviderImplKotlin(
         return result
     }
 
-    override fun acceptSync() {
+    override suspend fun acceptSync() {
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
     }
 
-    override fun rejectSync() {
+    override suspend fun rejectSync() {
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
     }
 
-    override fun cancelSync() {
+    override suspend fun cancelSync() {
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
     }
 
-    private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = runBlocking(PlanckDispatcher) {
+    private suspend fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = withContext(PlanckDispatcher) {
         engine.get().deliverHandshakeResult(syncResult, Vector())
     }
 
     override fun canEncrypt(address: String): Boolean {
 
         val msg = Message()
-        val id = myself(PlanckUtils.createIdentity(Address(address), context))
+        val id = myselfInternal(PlanckUtils.createIdentity(Address(address), context))
         msg.from = id
 
         val to = Vector<Identity>()
@@ -609,7 +607,7 @@ class PlanckProviderImplKotlin(
                     if (source.folder.name == account.sentFolderName || source.folder.name == account.draftsFolderName) {
                         decMsg.setHeader(
                             MimeHeader.HEADER_PEP_RATING,
-                            PlanckUtils.ratingToString(getRating(source))
+                            PlanckUtils.ratingToString(getRatingSuspend(source))
                         )
                     }
 
@@ -636,7 +634,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    private fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
+    private suspend fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         //TODO review this; we are in another thread so we should get a new engine anyways??
@@ -658,7 +656,7 @@ class PlanckProviderImplKotlin(
                     val decMsg = getMimeMessage(source, message)
 
                     if (source.folder.name == account.sentFolderName || source.folder.name == account.draftsFolderName) {
-                        decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(getRating(source)))
+                        decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(getRatingSuspend(source)))
                     }
 
                     notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags, srcMsg.isEncrypted()), callback)
@@ -696,11 +694,19 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun myself(myId: Identity?): Identity? = runBlocking(PlanckDispatcher) {
+    override fun myself(myId: Identity?): Identity? = runBlocking {
+        myselfSuspend(myId)
+    }
+
+    override suspend fun myselfSuspend(myId: Identity?): Identity? = withContext(PlanckDispatcher) {
+        myselfInternal(myId)
+    }
+
+    private fun myselfInternal(myId: Identity?): Identity? {
         myId?.user_id = PLANCK_OWN_USER_ID
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
-        try {
+        return try {
             engine.get().myself(myId)
         } catch (exception: pEpException) {
             Timber.e(exception, "%s %s", TAG, "error in PEpProviderImpl.myself")
@@ -708,7 +714,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun loadOutgoingMessageRatingAfterResetTrust(
+    override suspend fun loadOutgoingMessageRatingAfterResetTrust(
         identity: Identity,
         from: Address,
         toAddresses: List<Address>,
@@ -781,12 +787,18 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(message: com.fsck.k9.mail.Message): Rating = runBlocking(PlanckDispatcher) {
+    override fun getRating(message: com.fsck.k9.mail.Message): Rating = runBlocking {
+        withContext(PlanckDispatcher) {
+            getRatingSuspend(message)
+        }
+    }
+
+    private suspend fun getRatingSuspend(message: com.fsck.k9.mail.Message): Rating {
         val from = message.from[0]
         val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
         val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
         val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
-        getRating(from, to, cc, bcc)
+        return getRating(from, to, cc, bcc)
     }
 
     override fun getRating(message: com.fsck.k9.mail.Message, callback: ResultCallback<Rating>) {
@@ -810,7 +822,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun getRatingResult(
+    override suspend fun getRatingResult(
         from: Address,
         toAddresses: List<Address>,
         ccAddresses: List<Address>,
@@ -823,7 +835,7 @@ class PlanckProviderImplKotlin(
      *     Don't instantiate a new engine
      */
     @WorkerThread //already done
-    override fun getRating(from: Address?,
+    override suspend fun getRating(from: Address?,
                            toAddresses: List<Address>,
                            ccAddresses: List<Address>,
                            bccAddresses: List<Address>): Rating {
@@ -847,7 +859,7 @@ class PlanckProviderImplKotlin(
         return Rating.pEpRatingUndefined
     }
 
-    private fun getRatingSuspend(
+    private suspend fun getRatingSuspend(
         identity: Identity?,
         from: Address?,
         toAddresses: List<Address>,
@@ -860,7 +872,7 @@ class PlanckProviderImplKotlin(
             bccAddresses.isNotEmpty() -> ResultCompat.success(Rating.pEpRatingUnencrypted)
             else -> {
                 var message: Message? = null
-                ResultCompat.of {
+                ResultCompat.ofSuspend {
                     if (identity != null) engine.get().keyResetTrust(identity)
                     val areRecipientsEmpty = toAddresses.isEmpty() && ccAddresses.isEmpty() && bccAddresses.isEmpty()
                     if (from == null || areRecipientsEmpty) Rating.pEpRatingUndefined
@@ -888,7 +900,7 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    private fun createMessageForRating(from: Address?,
+    private suspend fun createMessageForRating(from: Address?,
                                        toAddresses: List<Address>,
                                        ccAddresses: List<Address>,
                                        bccAddresses: List<Address>): Message {
@@ -907,7 +919,7 @@ class PlanckProviderImplKotlin(
         return message
     }
 
-    private fun insistToInitializeMessageOrThrow(): Message {
+    private suspend fun insistToInitializeMessageOrThrow(): Message {
         var error: Throwable? = null
         repeat(MESSAGE_CREATION_ATTEMPTS) { count ->
             try {
@@ -917,7 +929,7 @@ class PlanckProviderImplKotlin(
                     Log.e(TAG, "ERROR CREATING MESSAGE IN ATTEMPT ${count + 1}", ex)
                 }
                 error = ex
-                runBlocking { delay(MESSAGE_CREATION_ATTEMPT_COOLDOWN) }
+                delay(MESSAGE_CREATION_ATTEMPT_COOLDOWN)
             }
         }
 
@@ -925,7 +937,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(address: Address): ResultCompat<Rating> = runBlocking(PlanckDispatcher) {
+    override suspend fun getRating(address: Address): ResultCompat<Rating> = withContext(PlanckDispatcher) {
         val identity = PlanckUtils.createIdentity(address, context)
         getRating(identity)
     }
@@ -967,21 +979,16 @@ class PlanckProviderImplKotlin(
         }
     }
 
-    override fun startSync() {
-        val ioScope = CoroutineScope(PlanckDispatcher + SupervisorJob())
-
-        ioScope.launch {
-            try {
-                Timber.i("%s %s", TAG, "Trying to start sync thread engine.get().startSync()")
-                engine.get().startSync()
-            } catch (exception: pEpException) {
-                Timber.e("%s %s", TAG, "Could not engine.get().startSync()", exception)
-            }
+    override suspend fun startSync() = withContext(PlanckDispatcher) {
+        try {
+            Timber.i("%s %s", TAG, "Trying to start sync thread engine.get().startSync()")
+            engine.get().startSync()
+        } catch (exception: pEpException) {
+            Timber.e("%s %s", TAG, "Could not engine.get().startSync()", exception)
         }
-
     }
 
-    override fun stopSync() = runBlocking(PlanckDispatcher) {
+    override suspend fun stopSync() = withContext(PlanckDispatcher) {
         Timber.d("%s %s", TAG, "stopSync")
         engine.get().stopSync()
     }
@@ -997,12 +1004,12 @@ class PlanckProviderImplKotlin(
         partner: Identity,
         lang: String,
         isShort: Boolean
-    ): ResultCompat<String> {
+    ): ResultCompat<String?> {
         return ResultCompat.of { engine.get().get_trustwords(myself, partner, lang, !isShort) }
     }
 
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean,
-                            callback: SimpleResultCallback<String>) {
+                            callback: SimpleResultCallback<String?>) {
         engineScope.launch {
             trustwordsSuspend(myself, partner, lang, isShort, callback)
         }
@@ -1010,7 +1017,7 @@ class PlanckProviderImplKotlin(
 
     private fun trustwordsSuspend(
             myself: Identity, partner: Identity, lang: String, isShort: Boolean,
-            callback: SimpleResultCallback<String>) {
+            callback: SimpleResultCallback<String?>) {
         try {
             val result = engine.get().get_trustwords(myself, partner, lang, !isShort)
             notifyLoaded(result, callback)
@@ -1085,7 +1092,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun keyResetIdentity(ident: Identity, fpr: String?) = runBlocking(PlanckDispatcher) {
+    override fun keyResetIdentity(ident: Identity, fpr: String?) {
         val identity = updateIdentity(ident)
         try {
             engine.get().key_reset_identity(identity, fpr)
@@ -1097,7 +1104,7 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun keyResetUser(userId: String, fpr: String?) = runBlocking(PlanckDispatcher) {
+    override fun keyResetUser(userId: String, fpr: String?) {
         try {
             engine.get().key_reset_user(userId, fpr)
         } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
@@ -1119,39 +1126,13 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun leaveDeviceGroup(): ResultCompat<Unit> = runBlocking(PlanckDispatcher) {
+    override suspend fun leaveDeviceGroup(): ResultCompat<Unit> = withContext(PlanckDispatcher) {
         ResultCompat.of { engine.get().leave_device_group() }
     }
 
     @WorkerThread
-    override fun updateIdentity(id: Identity): Identity = runBlocking(PlanckDispatcher) {
-        engine.get().updateIdentity(id)
-    }
-
-    override val blacklistInfo: List<KeyListItem>?
-        @WorkerThread
-        get() = runBlocking(PlanckDispatcher) {
-            try {
-                val identities: MutableList<KeyListItem> = ArrayList()
-                val keys = engine.get().OpenPGP_list_keyinfo("")
-                keys?.forEach { key ->
-                    //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
-                }
-                return@runBlocking identities
-            } catch (e: pEpException) {
-                Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
-            }
-            null
-        }
-
-    @WorkerThread
-    override fun addToBlacklist(fpr: String) = runBlocking(PlanckDispatcher) {
-      //  engine.get().blacklist_add(fpr)
-    }
-
-    @WorkerThread
-    override fun deleteFromBlacklist(fpr: String) = runBlocking(PlanckDispatcher) {
-    //    engine.get().blacklist_delete(fpr)
+    override fun updateIdentity(id: Identity): Identity {
+        return engine.get().updateIdentity(id)
     }
 
     override val masterKeysInfo: List<KeyListItem>?
@@ -1163,7 +1144,7 @@ class PlanckProviderImplKotlin(
                 keys?.forEach { key -> identities.add(KeyListItem(key.first, key.second)) }
                 return identities
             } catch (e: pEpException) {
-                Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+                Timber.e(e, "%s %s", TAG, "getMasterKeysInfo")
             }
             return null
         }
@@ -1229,14 +1210,20 @@ class PlanckProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun setIdentityFlag(identity: Identity, sync: Boolean) = runBlocking(PlanckDispatcher) {
-        try {
-            when {
-                sync -> engine.get().enable_identity_for_sync(identity)
-                else -> engine.get().disable_identity_for_sync(identity)
+    override fun setIdentityFlag(identity: Identity, sync: Boolean) = runBlocking {
+        setIdentityFlagSuspend(identity, sync)
+    }
+
+    private suspend fun setIdentityFlagSuspend(identity: Identity, sync: Boolean) {
+        withContext(PlanckDispatcher) {
+            try {
+                when {
+                    sync -> engine.get().enable_identity_for_sync(identity)
+                    else -> engine.get().disable_identity_for_sync(identity)
+                }
+            } catch (e: pEpException) {
+                Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
             }
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
         }
     }
 
@@ -1252,30 +1239,15 @@ class PlanckProviderImplKotlin(
     @WorkerThread
     override fun printLog() {
         uiScope.launch {
-            log.split("\n")
+            getLog().split("\n")
                     .filter { it.isNotBlank() }
                     .toTypedArray()
                     .forEach { logLine -> Timber.i("%s %s", TAG, logLine) }
         }
     }
 
-    override fun getLog(callback: CompletedCallback): String {
-        var result = ""
-        uiScope.launch {
-            result = getLogSuspend()
-            callback.onComplete()
-        }
-        return result
-    }
-
-    override val log: String
-        @WorkerThread
-        get() = runBlocking(PlanckDispatcher) {
-            getLogSuspend()
-        }
-
-    private fun getLogSuspend(): String {
-        return engine.get().getCrashdumpLog(100)
+    override suspend fun getLog(): String = withContext(PlanckDispatcher) {
+        engine.get().getCrashdumpLog(100)
     }
 
     fun Message.isEncrypted(): Boolean {
@@ -1331,12 +1303,10 @@ class PlanckProviderImplKotlin(
         return engine.get().group_rating(group, manager)
     }
 
-    override val isDeviceGrouped: Boolean
-        @WorkerThread
-        get() = runBlocking(PlanckDispatcher) {
-            ResultCompat.of { engine.get().deviceGrouped() ?: false }
-                .onFailure { Timber.e(it) }.getOrDefault(false)
-        }
+    override suspend fun isDeviceGrouped(): Boolean = withContext(PlanckDispatcher) {
+        ResultCompat.of { engine.get().deviceGrouped() ?: false }
+            .onFailure { Timber.e(it) }.getOrDefault(false)
+    }
 
     @WorkerThread
     override fun getSignatureForText(text: String): ResultCompat<String> =

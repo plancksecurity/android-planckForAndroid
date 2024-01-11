@@ -11,10 +11,13 @@ import com.fsck.k9.planck.infrastructure.PollerFactory
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.SyncHandshakeSignal
 import io.mockk.called
 import io.mockk.clearMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -32,8 +35,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import security.planck.notification.GroupMailSignal
 import security.planck.timer.Timer
@@ -43,6 +49,9 @@ private const val UUID = "uuid1"
 
 @ExperimentalCoroutinesApi
 class SyncRepositoryTest : RobolectricTest() {
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
+
     private val k9: K9 = mockk(relaxed = true)
     private val account: Account = mockk {
         every { uuid }.returns(UUID)
@@ -71,6 +80,7 @@ class SyncRepositoryTest : RobolectricTest() {
         messagingControllerProvider,
         timer,
         pollerFactory,
+        coroutinesTestRule.testDispatcherProvider
     )
 
     private val syncStates = mutableListOf<SyncAppState>()
@@ -160,33 +170,35 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `setPlanckSyncEnabled(true) initializes sync if there any accounts, sync is enabled in app settings and not running`() {
-        every { planckProvider.isSyncRunning }.returns(false)
+    fun `setPlanckSyncEnabled(true) initializes sync if there any accounts, sync is enabled in app settings and not running`() = runTest {
+        coEvery { planckProvider.isSyncRunning() }.returns(false)
 
 
         syncRepository.setPlanckSyncEnabled(true)
+        advanceUntilIdle()
 
 
-        verify { planckProvider.updateSyncAccountsConfig() }
-        verify { planckProvider.startSync() }
+        coVerify { planckProvider.updateSyncAccountsConfig() }
+        coVerify { planckProvider.startSync() }
     }
 
     @Test
-    fun `setPlanckSyncEnabled(true) does not start sync if sync is already running`() {
-        every { planckProvider.isSyncRunning }.returns(true)
+    fun `setPlanckSyncEnabled(true) does not start sync if sync is already running`() = runTest {
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
 
 
         syncRepository.setPlanckSyncEnabled(true)
+        advanceUntilIdle()
 
 
-        verify { planckProvider.updateSyncAccountsConfig() }
-        verify(exactly = 0) { planckProvider.startSync() }
+        coVerify { planckProvider.updateSyncAccountsConfig() }
+        coVerify(exactly = 0) { planckProvider.startSync() }
     }
 
     @Test
     fun `setPlanckSyncEnabled(true) does not initialize sync if there are no accounts setup in device`() {
-        every { planckProvider.isSyncRunning }.returns(false)
-        every { preferences.accounts }.returns(emptyList())
+        coEvery { planckProvider.isSyncRunning() }.returns(false)
+        every { preferences.accounts }.answers { emptyList() }
 
 
         syncRepository.setPlanckSyncEnabled(true)
@@ -198,7 +210,7 @@ class SyncRepositoryTest : RobolectricTest() {
     @Test
     fun `setPlanckSyncEnabled(true) does not initialize sync if sync is disabled in app settings`() {
         every { K9.isPlanckSyncEnabled() }.returns(false)
-        every { planckProvider.isSyncRunning }.returns(false)
+        coEvery { planckProvider.isSyncRunning() }.returns(false)
 
 
         syncRepository.setPlanckSyncEnabled(true)
@@ -209,61 +221,63 @@ class SyncRepositoryTest : RobolectricTest() {
 
     @Test
     fun `setPlanckSyncEnabled(false) shuts down sync if device is not grouped and sync is running`() {
-        every { planckProvider.isSyncRunning }.returns(true)
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
         syncRepository.isGrouped = false
 
 
         syncRepository.setPlanckSyncEnabled(false)
 
 
-        verify { planckProvider.stopSync() }
+        coVerify { planckProvider.stopSync() }
         verify { k9.markSyncEnabled(false) }
     }
 
     @Test
-    fun `setPlanckSyncEnabled(false) does not shut down sync if device is not grouped and sync is not running`() {
-        every { planckProvider.isSyncRunning }.returns(false)
+    fun `setPlanckSyncEnabled(false) when device is not grouped does shut down sync even if sync is not running`() {
+        coEvery { planckProvider.isSyncRunning() }.returns(false)
         syncRepository.isGrouped = false
 
 
         syncRepository.setPlanckSyncEnabled(false)
 
 
-        verify(exactly = 0) { planckProvider.stopSync() }
-        verify(exactly = 0) { k9.markSyncEnabled(false) }
+        coVerify { planckProvider.stopSync() }
+        verify { k9.markSyncEnabled(false) }
     }
 
     @Test
-    fun `setPlanckSyncEnabled(false) leaves device group if device is grouped and sync is running`() {
-        every { planckProvider.isSyncRunning }.returns(true)
+    fun `setPlanckSyncEnabled(false) leaves device group and shuts down sync if device is grouped and sync is running`() {
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
         syncRepository.isGrouped = true
-        every { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
+        coEvery { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
 
         syncRepository.setPlanckSyncEnabled(false)
 
 
-        verify { planckProvider.leaveDeviceGroup() }
+        coVerify { planckProvider.leaveDeviceGroup() }
         assertEquals(false, syncRepository.isGrouped)
+        coVerify { planckProvider.stopSync() }
+        verify { k9.markSyncEnabled(false) }
     }
 
     @Test
     fun `setPlanckSyncEnabled(false) does not leave device group if sync is not running`() {
-        every { planckProvider.isSyncRunning }.returns(false)
+        coEvery { planckProvider.isSyncRunning() }.returns(false)
         syncRepository.isGrouped = true
-        every { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
+        coEvery { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
 
         syncRepository.setPlanckSyncEnabled(false)
 
 
-        verify(exactly = 0) { planckProvider.leaveDeviceGroup() }
+        coVerify(exactly = 0) { planckProvider.leaveDeviceGroup() }
         assertEquals(true, syncRepository.isGrouped)
     }
 
     @Test
     fun `setPlanckSyncEnabled(false) does not leave device group if PlanckProvider_leaveDeviceGroup() fails`() {
-        every { planckProvider.isSyncRunning }.returns(true)
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
         syncRepository.isGrouped = true
-        every { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.failure(RuntimeException("test")))
+        coEvery { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.failure(RuntimeException("test")))
 
         syncRepository.setPlanckSyncEnabled(false)
 
@@ -272,8 +286,9 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `allowManualSync() starts or resets timer`() {
+    fun `allowManualSync() starts or resets timer`() = runTest {
         syncRepository.allowTimedManualSync()
+        advanceUntilIdle()
 
 
         verify { timer.startOrReset(any(), any()) }
@@ -297,7 +312,7 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `userConnected() does nothing if current state is HandshakeReadyAwaitingUser`() {
+    fun `userConnected() does nothing if current state is HandshakeReadyAwaitingUser`() = runTest {
         syncRepository.setCurrentState(SyncState.HandshakeReadyAwaitingUser(myself, partner, false))
 
 
@@ -309,7 +324,7 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `userConnected() sets state to AwaitingOtherDevice in catchup allowance period and starts timer if current state is not HandshakeReadyAwaitingUser`() {
+    fun `userConnected() sets state to AwaitingOtherDevice in catchup allowance period and starts timer if current state is not HandshakeReadyAwaitingUser`() = runTest {
         syncRepository.userConnected()
 
 
@@ -321,27 +336,29 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
-    fun `userConnected() stops and restarts sync if current state is not HandshakeReadyAwaitingUser and device just left a device group`() {
+    fun `userConnected() stops and restarts sync if current state is not HandshakeReadyAwaitingUser and device just left a device group`() = runTest {
         every { k9.deviceJustLeftGroup() }.returns(true)
-        every { planckProvider.isSyncRunning }.returns(false)
+        coEvery { planckProvider.isSyncRunning() }.returns(false)
 
 
         syncRepository.userConnected()
+        advanceUntilIdle()
 
 
-        verify { planckProvider.stopSync() }
+        coVerify { planckProvider.stopSync() }
         verify { k9.markDeviceJustLeftGroup(false) }
-        verify { planckProvider.updateSyncAccountsConfig() }
-        verify { planckProvider.isSyncRunning }
-        verify { planckProvider.startSync() }
+        coVerify { planckProvider.updateSyncAccountsConfig() }
+        coVerify { planckProvider.isSyncRunning() }
+        coVerify { planckProvider.startSync() }
     }
 
     @Test
-    fun `userConnected() sets state to AwaitingOtherDevice and allows timed handshake if state is not HandshakeReadyAwaitingUser after time up`() {
-        every { planckProvider.isSyncRunning }.returns(true)
+    fun `userConnected() sets state to AwaitingOtherDevice and allows timed handshake if state is not HandshakeReadyAwaitingUser after time up`() = runTest {
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
 
 
         syncRepository.userConnected()
+        advanceUntilIdle()
 
 
         assertFirstStates(
@@ -350,14 +367,14 @@ class SyncRepositoryTest : RobolectricTest() {
             SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = false)
         )
         verify { timer.startOrReset(INITIAL_HANDSHAKE_AVAILABLE_WAIT, any()) }
-        verify { planckProvider.isSyncRunning }
-        verify { planckProvider.syncReset() }
+        coVerify { planckProvider.isSyncRunning() }
+        coVerify { planckProvider.syncReset() }
         verify { timer.startOrReset(MANUAL_SYNC_TIME_LIMIT, any()) }
     }
 
     @Test
-    fun `userConnected() does nothing if state is HandshakeReadyAwaitingUser after time up`() {
-        every { planckProvider.isSyncRunning }.returns(true)
+    fun `userConnected() does nothing if state is HandshakeReadyAwaitingUser after time up`() = runTest {
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
         stubTimer {
             syncRepository.setCurrentState(
                 SyncState.HandshakeReadyAwaitingUser(

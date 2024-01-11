@@ -67,7 +67,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         coEvery { syncRepository.setCurrentState(capture(stateSlot)) }.coAnswers {
             syncStateFlow.value = stateSlot.captured
         }
-        coEvery { planckProvider.isSyncRunning }.returns(true)
+        coEvery { planckProvider.isSyncRunning() }.returns(true)
         coEvery {
             planckProvider.trustwords(
                 myself,
@@ -117,17 +117,18 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
             SyncState.Idle,
             SyncState.Done,
         )
-        verify(exactly = 0) { planckProvider.cancelSync() }
+        coVerify(exactly = 0) { planckProvider.cancelSync() }
         verify(exactly = 0) { syncRepository.cancelSync() }
     }
 
     @Test
-    fun `if screen finishes and sync was not done, sync is cancelled`() {
+    fun `if screen finishes and sync was not done, sync is cancelled`() = runTest {
         viewModel.cancelIfNotDone()
+        advanceUntilIdle()
 
 
         assertStates(SyncState.Idle)
-        verify { planckProvider.cancelSync() }
+        coVerify { planckProvider.cancelSync() }
         verify { syncRepository.cancelSync() }
     }
 
@@ -171,6 +172,7 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
             viewModel.next()
             advanceUntilIdle()
             viewModel.acceptHandshake()
+            advanceUntilIdle()
 
 
             coVerify { planckProvider.acceptSync() }
@@ -184,20 +186,22 @@ class PlanckSyncWizardViewModelTest : RobolectricTest() {
         }
 
     @Test
-    fun `cancelHandshake() uses PlanckProvider and SyncRepository to cancel handshake`() {
+    fun `cancelHandshake() uses PlanckProvider and SyncRepository to cancel handshake`() = runTest {
         viewModel.cancelHandshake()
+        advanceUntilIdle()
 
 
-        verify { planckProvider.cancelSync() }
+        coVerify { planckProvider.cancelSync() }
         verify { syncRepository.cancelSync() }
     }
 
     @Test
-    fun `rejectHandshake() uses PlanckProvider to reject handshake and K9 to cancel sync`() {
+    fun `rejectHandshake() uses PlanckProvider to reject handshake and K9 to cancel sync`() = runTest {
         viewModel.rejectHandshake()
+        advanceUntilIdle()
 
 
-        verify { planckProvider.rejectSync() }
+        coVerify { planckProvider.rejectSync() }
         verify { syncRepository.cancelSync() }
     }
 

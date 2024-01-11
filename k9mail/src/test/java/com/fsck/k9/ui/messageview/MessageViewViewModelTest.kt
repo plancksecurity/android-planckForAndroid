@@ -13,17 +13,18 @@ import com.fsck.k9.extensions.isValidForHandshake
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
-import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.mailstore.MessageViewInfoExtractor
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
-import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.testutils.CoroutineTestRule
+import com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage
+import com.fsck.k9.ui.messageview.MessageViewEffect.NoEffect
+import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
+import com.fsck.k9.ui.messageview.MessageViewState.Idle
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import io.mockk.called
@@ -50,6 +51,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import security.planck.dialog.BackgroundTaskDialogView
+import security.planck.messaging.MessagingRepository
 
 private const val ACCOUNT_UUID = "uuid"
 private const val FOLDER_NAME = "folder"
@@ -71,11 +73,6 @@ class MessageViewViewModelTest : RobolectricTest() {
     private val planckProvider: PlanckProvider = mockk {
         coEvery { getRating(any<Address>()) }.returns(ResultCompat.success(Rating.pEpRatingReliable))
         every { keyResetIdentity(any(), any()) }.just(runs)
-    }
-    private val messageViewInfo: MessageViewInfo = mockk()
-    private val errorMessageViewInfo: MessageViewInfo = mockk()
-    private val infoExtractor: MessageViewInfoExtractor = mockk {
-        every { extractMessageForView(any(), null, any()) }.returns(messageViewInfo)
     }
     private val app: Application = mockk()
     private val messageReference: MessageReference =
@@ -106,15 +103,26 @@ class MessageViewViewModelTest : RobolectricTest() {
     }
     private val senderAddress = Address(MAIL1)
     private val senderIdentity: Identity = mockk()
+    private val repository: MessagingRepository = mockk {
+        coEvery { loadMessage(any()) }.answers {
+            messageViewUpdate.stateFlow.value = DecryptedMessageLoaded(localMessage)
+        }
+    }
+    private val messageViewUpdate = MessageViewUpdate().apply {
+        account = this@MessageViewViewModelTest.account
+        messageReference = this@MessageViewViewModelTest.messageReference
+    }
     private val viewModel = MessageViewViewModel(
         preferences,
         controller,
         planckProvider,
-        infoExtractor,
         app,
+        repository,
+        messageViewUpdate,
         coroutinesTestRule.testDispatcherProvider
     )
     private val receivedMessageStates = mutableListOf<MessageViewState>()
+    private val receivedMessageEffects = mutableListOf<MessageViewEffect>()
     private val receivedResetStates = mutableListOf<BackgroundTaskDialogView.State>()
     private val allowHandshakeSenderEvents = mutableListOf<Boolean>()
     private val flaggedToggledEvents = mutableListOf<Boolean>()
@@ -165,7 +173,7 @@ class MessageViewViewModelTest : RobolectricTest() {
 
     @Test
     fun `initial message state is Idle`() {
-        assertMessageStates(MessageViewState.Idle)
+        assertMessageStates(Idle)
     }
 
     @Test
@@ -187,11 +195,15 @@ class MessageViewViewModelTest : RobolectricTest() {
 
         verify { preferences.wasNot(called) }
         assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.ErrorLoadingMessage(IllegalStateException("null reference"), true),
+            Idle,
             justClass = true
         )
-        val last = receivedMessageStates.last() as MessageViewState.ErrorLoadingMessage
+        assertMessageEffects(
+            NoEffect,
+            ErrorLoadingMessage(IllegalStateException("null reference"), true),
+            justClass = true
+        )
+        val last = receivedMessageEffects.last() as ErrorLoadingMessage
         assertTrue(last.close)
         assertTrue(last.throwable is IllegalStateException)
     }
@@ -205,97 +217,27 @@ class MessageViewViewModelTest : RobolectricTest() {
 
 
         assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.ErrorLoadingMessage(null, true),
+            Idle,
+        )
+        assertMessageEffects(
+            NoEffect,
+            ErrorLoadingMessage(null, true),
             justClass = true
         )
-        val last = receivedMessageStates.last() as MessageViewState.ErrorLoadingMessage
+        val last = receivedMessageEffects.last() as ErrorLoadingMessage
         assertTrue(last.close)
         assertTrue(last.throwable is IllegalStateException)
     }
 
     @Test
-    fun `loadMessage() uses MessagingController to load message`() = runTest {
+    fun `loadMessage() uses MessagingRepository to load message`() = runTest {
         viewModel.initialize(REFERENCE_STRING)
         viewModel.loadMessage()
         advanceUntilIdle()
 
 
-        verify { controller.loadMessage(account, FOLDER_NAME, MESSAGE_UID) }
+        coVerify { repository.loadMessage(messageViewUpdate) }
     }
-
-    @Test
-    fun `loadMessage() sets state to DecryptedMessageLoaded if message does not need to be decrypted`() =
-        runTest {
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            assertMessageStates(
-                MessageViewState.Idle,
-                MessageViewState.DecryptedMessageLoaded(localMessage, false)
-            )
-        }
-
-    @Test
-    fun `loadMessage() sets state to ErrorLoadingMessage if message load fails`() = runTest {
-        every { controller.loadMessage(any(), any(), any()) }.throws(TestException("test"))
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.ErrorLoadingMessage(TestException("test"))
-        )
-    }
-
-    @Test
-    fun `loadMessage() sets state to ErrorLoadingMessage if loaded message is null`() = runTest {
-        every { controller.loadMessage(any(), any(), any()) }.returns(null)
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.ErrorLoadingMessage()
-        )
-    }
-
-    @Test
-    fun `loadMessage() sets rating to message from header if message has rating null`() = runTest {
-        every { localMessage.planckRating }.returns(null)
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        verify { localMessage.planckRating }
-        verify { PlanckUtils.extractRating(localMessage) }
-        verify { localMessage.planckRating = Rating.pEpRatingReliable }
-    }
-
-    @Test
-    fun `loadMessage() does not set rating to message from header if message rating is not null`() =
-        runTest {
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            verify(exactly = 0) { PlanckUtils.extractRating(localMessage) }
-            verify(exactly = 0) { localMessage.planckRating = Rating.pEpRatingReliable }
-        }
 
     @Test
     fun `loadMessage() allows to handshake sender if message is valid for handshake and sender rating is reliable`() =
@@ -306,7 +248,7 @@ class MessageViewViewModelTest : RobolectricTest() {
 
 
             verify { localMessage.isValidForHandshake() }
-            verify { planckProvider.getRating(any<Address>()) }
+            coVerify { planckProvider.getRating(any<Address>()) }
             verify { PlanckUtils.isRatingReliable(Rating.pEpRatingReliable) }
             assertAllowHandshakeEvents(false, true)
         }
@@ -340,9 +282,9 @@ class MessageViewViewModelTest : RobolectricTest() {
         }
 
     @Test
-    fun `loadMessage() does not allow to handshake sender if getting sender rating fails`() =
+    fun `ViewModel does not allow to handshake sender if getting loaded message sender rating fails`() =
         runTest {
-            every { planckProvider.getRating(any<Address>()) }.returns(
+            coEvery { planckProvider.getRating(any<Address>()) }.returns(
                 ResultCompat.failure(
                     TestException("test")
                 )
@@ -356,206 +298,6 @@ class MessageViewViewModelTest : RobolectricTest() {
 
             assertAllowHandshakeEvents(false, false)
         }
-
-    @Test
-    fun `loadMessage() uses MessageViewInfoExtractor to extract message info if message does not need to be decrypted`() =
-        runTest {
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            verify { infoExtractor.extractMessageForView(localMessage, null, false) }
-        }
-
-    @Test
-    fun `loadMessage() sets state to MessageDecoded if message is successfully decoded for view`() =
-        runTest {
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            assertMessageStates(
-                MessageViewState.Idle,
-                MessageViewState.DecryptedMessageLoaded(localMessage, false),
-                MessageViewState.MessageDecoded(messageViewInfo)
-            )
-        }
-
-    @Test
-    fun `loadMessage() sets state to ErrorDecodingMessage if message decoding fails`() = runTest {
-        every {
-            infoExtractor.extractMessageForView(
-                any(),
-                null,
-                any()
-            )
-        }.throws(TestException("test"))
-        every { MessageViewInfo.createWithErrorState(any(), any()) }.returns(errorMessageViewInfo)
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        verify { MessageViewInfo.createWithErrorState(localMessage, false) }
-        assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.DecryptedMessageLoaded(localMessage, false),
-            MessageViewState.ErrorDecodingMessage(errorMessageViewInfo, TestException("test"))
-        )
-    }
-
-    @Test
-    fun `loadMessage() sets state to EncryptedMessageLoaded`() = runTest {
-        every { localMessage.hasToBeDecrypted() }.returns(true)
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.EncryptedMessageLoaded(localMessage)
-        )
-    }
-
-    @Test
-    fun `loadMessage() decrypts message using PlanckProvider if message is fully downloaded and it needs to be decrypted`() =
-        runTest {
-            every { localMessage.hasToBeDecrypted() }.returns(true)
-
-
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            coVerify { planckProvider.decryptMessage(localMessage, account) }
-        }
-
-    @Test
-    fun `loadMessage() sets state to ErrorDecryptingMessageKeyMissing if decryption fails with KeyMissingException`() =
-        runTest {
-            every { localMessage.hasToBeDecrypted() }.returns(true)
-            coEvery { planckProvider.decryptMessage(any(), any<Account>()) }.returns(
-                Result.failure(
-                    KeyMissingException()
-                )
-            )
-
-
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            assertMessageStates(
-                MessageViewState.Idle,
-                MessageViewState.EncryptedMessageLoaded(localMessage),
-                MessageViewState.ErrorDecryptingMessageKeyMissing
-            )
-        }
-
-    @Test
-    fun `loadMessage() sets state to ErrorDecryptingMessage if decryption fails with any other exception`() =
-        runTest {
-            every { localMessage.hasToBeDecrypted() }.returns(true)
-            coEvery { planckProvider.decryptMessage(any(), any<Account>()) }.returns(
-                Result.failure(
-                    TestException("test")
-                )
-            )
-
-
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            assertMessageStates(
-                MessageViewState.Idle,
-                MessageViewState.EncryptedMessageLoaded(localMessage),
-                MessageViewState.ErrorDecryptingMessage(TestException("test"))
-            )
-        }
-
-    @Test
-    fun `loadMessage() stores the decrypted message in folder after decryption`() = runTest {
-        every { localMessage.hasToBeDecrypted() }.returns(true)
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        verify { folder.storeSmallMessage(decryptedMessage, any()) }
-    }
-
-    @Test
-    fun `loadMessage() sets state to ErrorDecryptingMessage if saving message to database fails`() =
-        runTest {
-            every { localMessage.hasToBeDecrypted() }.returns(true)
-            every { folder.storeSmallMessage(any(), any()) }.throws(TestException("test"))
-
-
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-
-
-            verify { folder.storeSmallMessage(decryptedMessage, any()) }
-            assertMessageStates(
-                MessageViewState.Idle,
-                MessageViewState.EncryptedMessageLoaded(localMessage),
-                MessageViewState.ErrorDecryptingMessage(TestException("test")),
-            )
-        }
-
-    @Test
-    fun `loadMessage() sets rating in decrypted message header`() = runTest {
-        every { localMessage.hasToBeDecrypted() }.returns(true)
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        verify { decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, "reliable") }
-    }
-
-    @Test
-    fun `loadMessage() loads again decrypted message if it is Dangerous`() = runTest {
-        every { localMessage.hasToBeDecrypted() }.returns(true)
-        coEvery { planckProvider.decryptMessage(any(), any<Account>()) }.answers {
-            every { localMessage.hasToBeDecrypted() }.returns(false)
-            Result.success(
-                PlanckProvider.DecryptResult(
-                    decryptedMessage, Rating.pEpRatingMistrust, -1, false
-                )
-            )
-        }
-
-
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-
-
-        verify { decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, "mistrust") }
-        verify { folder.storeSmallMessage(decryptedMessage, any()) }
-        assertMessageStates(
-            MessageViewState.Idle,
-            MessageViewState.EncryptedMessageLoaded(localMessage),
-            MessageViewState.DecryptedMessageLoaded(localMessage, true),
-        )
-    }
 
     @Test
     fun `canResetSenderKeys() is false if ViewModel was not initialized`() {
@@ -573,6 +315,7 @@ class MessageViewViewModelTest : RobolectricTest() {
     @Test
     fun `canResetSenderKeys() returns false if message has null from field`() = runTest {
         every { localMessage.from }.returns(null)
+        every { localMessage.isValidForHandshake() }.returns(false)
 
 
         viewModel.initialize(REFERENCE_STRING)
@@ -843,6 +586,19 @@ class MessageViewViewModelTest : RobolectricTest() {
         }
     }
 
+    private fun assertMessageEffects(
+        vararg effects: MessageViewEffect,
+        justClass: Boolean = false
+    ) {
+        effects.forEachIndexed { index, messageViewState ->
+            if (justClass) {
+                assertEquals(messageViewState::class, receivedMessageEffects[index]::class)
+            } else {
+                assertEquals(messageViewState, receivedMessageEffects[index])
+            }
+        }
+    }
+
     private fun assertResetStates(
         vararg states: BackgroundTaskDialogView.State,
         full: Boolean = true
@@ -869,6 +625,12 @@ class MessageViewViewModelTest : RobolectricTest() {
         viewModel.messageViewState.observeForever { value ->
             receivedMessageStates.add(value)
             println("received: $value")
+        }
+        viewModel.messageViewEffect.observeForever { event ->
+            event.getContentIfNotHandled()?.let { value ->
+                receivedMessageEffects.add(value)
+                println("received: $value")
+            }
         }
         viewModel.resetPartnerKeyState.observeForever { value ->
             println("received: $value")

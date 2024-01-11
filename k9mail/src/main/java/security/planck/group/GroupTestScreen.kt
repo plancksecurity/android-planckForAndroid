@@ -275,7 +275,7 @@ class GroupTestScreen : K9Activity() {
                     Address(groupAddress, groupUserName),
                     this@GroupTestScreen
                 )
-                planckProvider.queryGroupMailManagerAndMembers(planckProvider.myself(groupIdentity)!!)
+                planckProvider.queryGroupMailManagerAndMembers(planckProvider.myselfSuspend(groupIdentity)!!)
             }
         }
     }
@@ -289,12 +289,12 @@ class GroupTestScreen : K9Activity() {
                     Address(groupAddress, groupUserName),
                     this@GroupTestScreen
                 )
-                ResultCompat.of {
-                    val updatedGroup = planckProvider.myself(groupIdentity)!!
+                ResultCompat.ofSuspend {
+                    val updatedGroup = planckProvider.myselfSuspend(groupIdentity)!!
                     val manager = planckProvider.queryGroupMailManager(updatedGroup)
                     planckProvider.dissolveGroup(
                         updatedGroup,
-                        planckProvider.myself(manager)!!
+                        planckProvider.myselfSuspend(manager)!!
                     )
                 }
             }
@@ -314,7 +314,7 @@ class GroupTestScreen : K9Activity() {
                     val memberAddress = parts.first()
                     Address(memberAddress, memberUserName)
                 } else {
-                    return@runGroupOperation ResultCompat.failure(error("member missing or bad formatted"))
+                    return@runGroupOperation ResultCompat.failure(IllegalStateException("member missing or bad formatted"))
                 }
             }
             withContext(PlanckDispatcher) {
@@ -326,9 +326,9 @@ class GroupTestScreen : K9Activity() {
                     memberAddress,
                     this@GroupTestScreen
                 )
-                ResultCompat.of {
+                ResultCompat.ofSuspend {
                     planckProvider.inviteMemberToGroup(
-                        planckProvider.myself(groupIdentity)!!,
+                        planckProvider.myselfSuspend(groupIdentity)!!,
                         planckProvider.updateIdentity(memberIdentity)
                     )
                 }
@@ -349,7 +349,7 @@ class GroupTestScreen : K9Activity() {
                     val memberAddress = parts.first()
                     Address(memberAddress, memberUserName)
                 } else {
-                    return@runGroupOperation ResultCompat.failure(error("member missing or bad formatted"))
+                    return@runGroupOperation ResultCompat.failure(IllegalStateException("member missing or bad formatted"))
                 }
             }
             withContext(PlanckDispatcher) {
@@ -361,9 +361,9 @@ class GroupTestScreen : K9Activity() {
                     memberAddress,
                     this@GroupTestScreen
                 )
-                ResultCompat.of {
+                ResultCompat.ofSuspend {
                     planckProvider.removeMemberFromGroup(
-                        planckProvider.myself(groupIdentity)!!,
+                        planckProvider.myselfSuspend(groupIdentity)!!,
                         planckProvider.updateIdentity(memberIdentity)
                     )
                 }
@@ -403,12 +403,12 @@ class GroupTestScreen : K9Activity() {
                     }
                 }
 
-                ResultCompat.of {
+                ResultCompat.ofSuspend {
                     val memberIdentities =
                         if (memberIdentitiesList.isNotEmpty())
                             Vector(memberIdentitiesList.map { planckProvider.updateIdentity(it) })
                         else Vector()
-                    planckProvider.createGroup(groupIdentity, planckProvider.myself(manager)!!, memberIdentities)
+                    planckProvider.createGroup(groupIdentity, planckProvider.myselfSuspend(manager)!!, memberIdentities)
                 }
             }
         }
@@ -423,9 +423,9 @@ class GroupTestScreen : K9Activity() {
                     Address(groupAddress, groupUserName),
                     this@GroupTestScreen
                 )
-                ResultCompat.of {
+                ResultCompat.ofSuspend {
                     val manager = planckProvider.queryGroupMailManager(groupIdentity)
-                    planckProvider.groupRating(planckProvider.myself(groupIdentity)!!, manager)
+                    planckProvider.groupRating(planckProvider.myselfSuspend(groupIdentity)!!, manager)
                 }
             }
         }

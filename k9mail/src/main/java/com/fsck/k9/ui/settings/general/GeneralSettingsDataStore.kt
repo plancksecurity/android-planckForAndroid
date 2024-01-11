@@ -3,6 +3,8 @@ package com.fsck.k9.ui.settings.general
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.planck.DispatcherProvider
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
@@ -11,7 +13,8 @@ import javax.inject.Inject
 class GeneralSettingsDataStore @Inject constructor(
     private val app: K9,
     private val preferences: Preferences,
-    private val executorService: ExecutorService
+    private val executorService: ExecutorService,
+    private val dispatcherProvider: DispatcherProvider,
 ) : PreferenceDataStore() {
     var activity: androidx.fragment.app.FragmentActivity? = null
 
@@ -88,7 +91,7 @@ class GeneralSettingsDataStore @Inject constructor(
             "pep_passive_mode" -> app.setPlanckPassiveMode(value)
             "pep_subject_protection" -> app.setPlanckSubjectProtection(value)
             "pep_forward_warning" -> app.setPlanckForwardWarningEnabled(value)
-            "pep_enable_sync" -> app.setPlanckSyncEnabled(value) //TODO: CHECK
+            "pep_enable_sync" -> CoroutineScope(dispatcherProvider.planckDispatcher()).launch { app.setPlanckSyncEnabled(value) }
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
             "pep_use_passphrase_for_new_keys" -> K9.setPlanckUsePassphraseForNewKeys(value)
             else -> return

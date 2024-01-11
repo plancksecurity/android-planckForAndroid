@@ -35,7 +35,7 @@ class LeaveDeviceGroupViewModelTest {
 
     @Before
     fun setUp() {
-        coEvery { planckProvider.isDeviceGrouped }.returns(false)
+        coEvery { planckProvider.isDeviceGrouped() }.returns(false)
         coEvery { planckProvider.leaveDeviceGroup() }.returns(ResultCompat.success(Unit))
         receivedStates.clear()
         observeViewModel()
@@ -72,7 +72,7 @@ class LeaveDeviceGroupViewModelTest {
             advanceUntilIdle()
 
 
-            coVerify { planckProvider.isDeviceGrouped }
+            coVerify { planckProvider.isDeviceGrouped() }
             coVerify { syncRepository.isGrouped = false }
             assertStates(
                 BackgroundTaskDialogView.State.CONFIRMATION,
@@ -102,19 +102,19 @@ class LeaveDeviceGroupViewModelTest {
     }
 
     @Test
-    fun `leaveDeviceGroup() on success waits in loop if PlanckProvider_isDeviceGrouped returns true`() =
+    fun `leaveDeviceGroup() on success waits in loop if PlanckProvider_isDeviceGrouped returns true and it sets state to Error in Debug`() =
         runTest {
-            coEvery { planckProvider.isDeviceGrouped }.returns(true)
+            coEvery { planckProvider.isDeviceGrouped() }.returns(true)
             viewModel.leaveDeviceGroup()
             advanceUntilIdle()
 
 
-            coVerify(exactly = 5) { planckProvider.isDeviceGrouped }
+            coVerify(exactly = 6) { planckProvider.isDeviceGrouped() }
             coVerify { syncRepository.isGrouped = false }
             assertStates(
                 BackgroundTaskDialogView.State.CONFIRMATION,
                 BackgroundTaskDialogView.State.LOADING,
-                BackgroundTaskDialogView.State.SUCCESS
+                BackgroundTaskDialogView.State.ERROR
             )
         }
 
