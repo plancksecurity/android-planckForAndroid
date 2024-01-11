@@ -235,7 +235,7 @@ open class BaseTest {
     }
 
     fun sendMessageToBot(botName: String) {
-        val botEmail = "$botName@sq.planck.security"
+        val botEmail = "$botName@bot.planck.dev"
         sendMessage(botEmail)
     }
 

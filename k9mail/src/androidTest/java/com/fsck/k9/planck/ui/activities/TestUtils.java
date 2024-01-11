@@ -181,7 +181,7 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
     private String emailForDevice;
-    private static final String HOST = "@sq.planck.security";
+    private static final String HOST = "@bot.planck.dev";
     private Connection connection;
 
 
