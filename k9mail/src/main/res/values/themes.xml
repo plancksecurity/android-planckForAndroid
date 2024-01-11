@@ -375,6 +375,7 @@
         <item name="negativeButtonColor">@color/white_transparent_70</item>
         <item name="editTextStyle">@style/EditTextStyle</item>
         <item name="selectAuthKeyIconColor">@color/select_auth_key_icon_color_dark</item>
+        <item name="android:itemBackground">@color/dark_theme_options_menu_background</item>
 
     </style>
 
