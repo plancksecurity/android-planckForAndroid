@@ -93,7 +93,7 @@ class ST5SettingsScreenshotTest : BaseScreenshotTest() {
         expandSetting(R.string.sync_title)
         getScreenShotCurrentActivity("global settings trigger key sync")
         click(getString(R.string.cancel_action))
-        clickSettingDialog(R.string.passhphrase_new_keys_settings_title, "global passphrase setting")
+        //clickSettingDialog(R.string.passhphrase_new_keys_settings_title, "global passphrase setting") // only available in debug
 
         Espresso.pressBack()
     }
