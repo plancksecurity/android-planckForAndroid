@@ -1,11 +1,16 @@
 package com.fsck.k9.ui
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
 import com.fsck.k9.planck.ui.activities.TestUtils
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -16,13 +21,10 @@ class ST3MessageViewScreenshotTest : BaseScreenshotTest() {
     @Test
     fun openMessages() {
         openFirstScreen()
-        clickListItem(R.id.message_list, 0)
-        Espresso.pressBack()
-        sleep(500)
         getScreenShotMessageList("inbox initial status")
         messageClicks()
-        privacyStatus()
-        privacyStatusActions()
+        verifyPartner()
+        verifyPartnerActions()
         getScreenShotMessageList("inbox all status")
     }
 
@@ -38,16 +40,15 @@ class ST3MessageViewScreenshotTest : BaseScreenshotTest() {
         Espresso.pressBack()
     }
 
-    private fun privacyStatus() {
+    private fun verifyPartner() {
         setTestSet("E")
         clickListItem(R.id.message_list, 0)
         openPrivacyStatus()
         privacyStatusLanguageClicks()
         Espresso.pressBack()
-        Espresso.pressBack()
     }
 
-    private fun privacyStatusActions() {
+    private fun verifyPartnerActions() {
         setTestSet("F")
         rejectHandshake()
         acceptHandshake()
@@ -81,6 +82,9 @@ class ST3MessageViewScreenshotTest : BaseScreenshotTest() {
         click(getString(R.string.refile_action))
         sleep(500)
         getScreenShotMessageList("click refile... options menu")
+        click(getString(R.string.move_action))
+        sleep(500)
+        getScreenShotMessageList("Choose folder to move messsage")
         Espresso.pressBack()
     }
 
@@ -94,57 +98,63 @@ class ST3MessageViewScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun openPrivacyStatus() {
-        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
-        click(getString(R.string.pep_title_activity_privacy_status))
+        click(R.id.actionbar_message_view)
     }
 
     private fun privacyStatusLanguageClicks() {
         getScreenShotCurrentActivity("privacy status")
-        clickListChildItem(R.id.my_recycler_view, R.id.trustwords)
+        click(R.id.show_long_trustwords)
         sleep(1000)
         getScreenShotCurrentActivity("long trustwords")
-
-        clickListChildItem(R.id.my_recycler_view, R.id.change_language)
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         sleep(1000)
         getScreenShotCurrentActivity("click trustwords language")
-        Espresso.pressBack()
+        onView(withText("Deutsch")).inRoot(isPlatformPopup()).perform(ViewActions.click())
+        click(R.id.dissmissActionButton)
     }
 
     private fun rejectHandshake() {
         clickListItem(R.id.message_list, 0)
         openPrivacyStatus()
-        clickListChildItem(R.id.my_recycler_view, R.id.rejectHandshake)
+        runBlocking { waitForIdle() }
+        click(R.id.negativeActionButton)
         sleep(1000)
         getScreenShotCurrentActivity("reject handshake")
-        Espresso.pressBack()
-        getScreenShotCurrentActivity("red status")
+        click(R.id.afirmativeActionButton)
+        runBlocking { waitForIdle() }
+        click(R.id.afirmativeActionButton)
+        sleep(1000)
+        getScreenShotCurrentActivity("Dangerous status")
         Espresso.pressBack()
     }
 
     private fun acceptHandshake() {
         clickListItem(R.id.message_list, 1)
         openPrivacyStatus()
-        clickListChildItem(R.id.my_recycler_view, R.id.confirmHandshake)
+        runBlocking { waitForIdle() }
+        click(R.id.afirmativeActionButton)
         sleep(1000)
         getScreenShotCurrentActivity("accept handshake")
-        Espresso.pressBack()
-        getScreenShotCurrentActivity("green status")
+        click(R.id.afirmativeActionButton)
+        runBlocking { waitForIdle() }
+        click(R.id.afirmativeActionButton)
+        sleep(1000)
+        getScreenShotCurrentActivity("Verified status")
         Espresso.pressBack()
     }
 
     private fun resetCommunication() {
         clickListItem(R.id.message_list, 2)
-        openPrivacyStatus()
-        //click(R.id.button_identity_key_reset)
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.reset_sender_key_action))
         TestUtils.waitForIdle()
-        getScreenShotCurrentActivity("reset partner's keys confirmation")
-        click(context.getString(R.string.reset_partner_keys_confirmation_action))
+        getScreenShotCurrentActivity("reset sender's keys confirmation")
+        click(getString(R.string.reset_partner_keys_confirmation_action))
         sleep(1000)
-        getScreenShotCurrentActivity("reset partner's feedback dialog")
-        click(context.getString(R.string.close))
-        getScreenShotCurrentActivity("after reset partner keys")
-        Espresso.pressBack()
-        getScreenShotCurrentActivity("message after partner keys reset")
+        getScreenShotCurrentActivity("reset sender's feedback dialog")
+        click(getString(R.string.close))
+        sleep(1000)
+        getScreenShotCurrentActivity("message after sender keys reset")
         Espresso.pressBack()
     }
 
