@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -20,7 +21,6 @@ class ST2MessageListScreenshotTest : BaseScreenshotTest() {
         openCloseNavMenu()
         swipeRightAndLeft()
         openOptionsMenu()
-        //openFoldersList()
         selectAll()
     }
 
@@ -61,7 +61,7 @@ class ST2MessageListScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun selectAll() {
-        //Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        runBlocking { waitForIdle() }
         click(getString(R.string.batch_select_all))
         getScreenShotCurrentActivity("all items selected")
         Espresso.pressBack()
