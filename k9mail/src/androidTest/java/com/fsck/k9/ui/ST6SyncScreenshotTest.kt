@@ -1,9 +1,11 @@
 package com.fsck.k9.ui
 
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.fsck.k9.K9
 import com.fsck.k9.R
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +19,7 @@ class ST6SyncScreenshotTest : BaseScreenshotTest() {
     fun syncTest() {
         openFirstScreen()
         setTestSet("K")
+        restartSync()
         goToSettings()
         triggerSync()
         waitOtherDevice()
@@ -26,6 +29,11 @@ class ST6SyncScreenshotTest : BaseScreenshotTest() {
         selectLanguage()
         acceptSync()
         waitSyncFinish()
+    }
+
+    private fun restartSync() {
+        ApplicationProvider.getApplicationContext<K9>().setPlanckSyncEnabled(false)
+        ApplicationProvider.getApplicationContext<K9>().setPlanckSyncEnabled(true)
     }
 
     private fun goToSettings() {
