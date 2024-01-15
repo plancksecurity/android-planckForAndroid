@@ -10,13 +10,16 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.planck.ui.activities.UtilsPackage
 import kotlinx.coroutines.runBlocking
+import org.junit.FixMethodOrder
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ST1AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @get:Rule
@@ -162,28 +165,29 @@ class ST1AccountSetupScreenshotTest : BaseScreenshotTest() {
         closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
         click(R.id.manual_setup)
-        sleep(1500)
+        while(!viewIsDisplayed(getString(R.string.account_setup_incoming_title))) {
+            sleep(100)
+        }
 
-        // setup income
+        // setup incoming
         getScreenShotAccountSetup("without values")
         setTextTo(R.id.account_server, BuildConfig.PLANCK_TEST_EMAIL_SERVER)
         closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
         click(R.id.next)
-        sleep(1500)
+        while(!viewIsDisplayed(getString(R.string.account_setup_outgoing_title))) {
+            sleep(100)
+        }
 
-        // setup outcome
+        // setup outgoing
         getScreenShotAccountSetup("without values")
         setTextTo(R.id.account_server, BuildConfig.PLANCK_TEST_EMAIL_SERVER)
         closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
         click(R.id.next)
-        sleep(1500)
-
-        //getScreenShotAccountSetup("") // only for endUser
-        //click(R.id.next)
-        //sleep(1500)
-
+        while(!viewIsDisplayed(R.id.account_name)) {
+            sleep(100)
+        }
         getScreenShotCurrentActivity("without values")
         addTextTo(R.id.account_name, "John Smith")
         closeKeyboardWithDelay()

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.UiAutomation
 import android.content.Context
 import android.content.res.Resources
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -187,11 +189,19 @@ open class BaseTest {
                 .perform(RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(ViewMatchers.hasDescendant(ViewMatchers.withText(stringResource)), ViewActions.click()))
     }
 
+    fun viewIsDisplayed(text: String): Boolean {
+        return viewIsDisplayed(ViewMatchers.withText(text))
+    }
+
     fun viewIsDisplayed(viewId: Int): Boolean {
+        return viewIsDisplayed(ViewMatchers.withId(viewId))
+    }
+
+    private fun viewIsDisplayed(matcher: Matcher<View>?): Boolean {
         val isDisplayed = booleanArrayOf(true)
-        Espresso.onView(ViewMatchers.withId(viewId))
-                .withFailureHandler { _, _ -> isDisplayed[0] = false }
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(matcher)
+            .withFailureHandler { _, _ -> isDisplayed[0] = false }
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         return isDisplayed[0]
     }
 
@@ -235,7 +245,7 @@ open class BaseTest {
     }
 
     fun sendMessageToBot(botName: String) {
-        val botEmail = "$botName@sq.planck.security"
+        val botEmail = "$botName@bot.planck.dev"
         sendMessage(botEmail)
     }
 

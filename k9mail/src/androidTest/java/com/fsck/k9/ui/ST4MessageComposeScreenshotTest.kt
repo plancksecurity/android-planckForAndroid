@@ -27,7 +27,6 @@ class ST4MessageComposeScreenshotTest : BaseScreenshotTest() {
         Espresso.closeSoftKeyboard()
         openRecipientsLayout()
         openOptionsMenu()
-        //longClickStatus()
     }
 
     private fun openEmptyCompose() {
@@ -70,16 +69,4 @@ class ST4MessageComposeScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("click options menu")
         Espresso.pressBack()
     }
-
-    private fun longClickStatus() {
-        runBlocking { waitForIdle() }
-        longClick(R.id.actionbar_message_view)
-        sleep(2000)
-        getScreenShotCurrentActivity("message status")
-        clickPopUpMenuItem("Disable protection")
-        sleep(500)
-        getScreenShotCurrentActivity("unencrypted")
-        Espresso.pressBack()
-    }
-
 }
