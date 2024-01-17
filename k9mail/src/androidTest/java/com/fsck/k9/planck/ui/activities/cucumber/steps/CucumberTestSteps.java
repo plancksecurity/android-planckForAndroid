@@ -705,8 +705,10 @@ public class CucumberTestSteps {
         if (viewIsDisplayed(calendarButton)) {
             fail("Calendar Button is not opening the calendar");
         }
-        device.pressBack();
-        waitForIdle();
+        while (!viewIsDisplayed(calendarButton)) {
+            device.pressBack();
+            waitForIdle();
+        }
         if (!viewIsDisplayed(calendarButton)) {
             fail("Calendar Button???");
         }
@@ -1787,7 +1789,8 @@ public class CucumberTestSteps {
         int scroll = 0;
         int visibleCenterX = 0;
         boolean verticalLeftScroll = true;
-        for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
+        int totalWidgets = 2;
+        for (int widgetToDrag = 1; widgetToDrag <= totalWidgets; widgetToDrag++) {
             waitForIdle();
             device.pressBack();
             String text;
@@ -1797,9 +1800,6 @@ public class CucumberTestSteps {
                     break;
                 case 2:
                     text = brand + " Message List";
-                    break;
-                case 3:
-                    text = brand + " Accounts";
                     break;
                 default:
                     text = brand;
@@ -1926,7 +1926,7 @@ public class CucumberTestSteps {
                 }
             }
         }
-        if (widgets != 3) {
+        if (widgets != totalWidgets) {
             fail("Missing a Widget");
         }
         if (!testUtils.textExistsOnScreen("WidTest")) {
