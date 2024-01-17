@@ -3680,24 +3680,6 @@ public class TestUtils {
         }
     }
 
-    public void expandFolderFromNavigationMenu (String folderName) {
-        BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 object : device.findObjects(selector)) {
-            try {
-                if (object.getText().equals(folderName)) {
-                    waitForIdle();
-                    object.getParent().getChildren().get(1).longClick();
-                    waitForIdle();
-                    //object.getParent().getChildren().get(1).click();
-                    waitForIdle();
-                    return;
-                }
-            } catch (Exception ex){
-                Timber.i("Cannot find text on screen: " + ex);
-            }
-        }
-    }
-
     public JSONObject returnJSON (){
         return json;
     }
@@ -4217,18 +4199,6 @@ public class TestUtils {
         Espresso.onIdle();
         try {
             textView.dragTo(1000,1000,40);
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
-        }
-        waitForIdle();
-    }
-
-    public void scrollUpNavigation (){
-        waitForIdle();
-        UiObject textView = device.findObject(new UiSelector().text("Inbox").className("android.widget.TextView"));
-        waitForIdle();
-        try {
-            textView.dragTo(1000,100,40);
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
