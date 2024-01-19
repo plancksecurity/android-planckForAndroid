@@ -1164,6 +1164,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
+            case R.id.reset_partner_keys:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
