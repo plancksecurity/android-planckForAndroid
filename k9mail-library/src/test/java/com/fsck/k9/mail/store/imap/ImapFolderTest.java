@@ -1011,6 +1011,18 @@ public class ImapFolderTest {
     }
 
     @Test
+    public void getUidFromMessageId_shouldIssueUidSearchCommand() throws Exception {
+        ImapFolder folder = createFolder("Folder");
+        prepareImapFolderForOpen(OPEN_MODE_RW);
+        folder.open(OPEN_MODE_RW);
+        String messageId = "<00000000.0000000@example.org>";
+
+        folder.getUidFromMessageId(messageId);
+
+        verify(imapConnection).executeSimpleCommand("UID SEARCH HEADER MESSAGE-ID \"<00000000.0000000@example.org>\"");
+    }
+
+    @Test
     public void getUidFromMessageId() throws Exception {
         ImapFolder folder = createFolder("Folder");
         prepareImapFolderForOpen(OPEN_MODE_RW);
