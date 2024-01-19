@@ -442,10 +442,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT,
                     DEFAULT_ACCOUNT_SERVER_SEARCH_LIMIT
                 ),
-                RestrictionEntry(
-                    RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY,
-                    DEFAULT_ACCOUNT_STORE_MESSAGES_SECURELY
-                ),
                 RestrictionEntry(RESTRICTION_ACCOUNT_ENABLE_SYNC, DEFAULT_ACCOUNT_ENABLE_SYNC),
 
                 getMailSettingsRestrictionEntry(),
