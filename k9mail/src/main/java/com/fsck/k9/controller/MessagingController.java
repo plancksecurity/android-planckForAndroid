@@ -1720,7 +1720,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         String newUid = remoteFolder.getUidFromMessageId(couldNotDecryptMessageId); // get real uid just in case it changed
         if (newUid == null) return;
         String folderName = localFolder.getName();
-        LocalMessage couldNotDecryptMessage = loadMessage(account, folderName, newUid);
+        LocalMessage couldNotDecryptMessage = loadMessageWithoutMarkingRead(account, folderName, newUid);
         if (couldNotDecryptMessage != null) {
             PlanckProvider.DecryptResult result = planckProvider.decryptMessage(couldNotDecryptMessage, account.getEmail());
             Rating ratingToSave = PlanckUtils.shouldUseOutgoingRating(couldNotDecryptMessage, account, result.rating)
@@ -1738,6 +1738,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 );
                 if (savedMessage != null
                         && shouldMoveMessageToSuspiciousFolder(savedMessage, folderName)) {
+                    // avoid user tying to open a non-existing message from notification
+                    notificationController.removeNewMailNotification(account, couldNotDecryptMessage.makeMessageReference());
                     moveOrCopyMessageSynchronous(
                             account,
                             folderName,
@@ -3012,6 +3014,28 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         notificationController.removeNewMailNotification(account, message.makeMessageReference());
         markMessageAsReadOnView(account, message);
+
+        return message;
+    }
+
+    private LocalMessage loadMessageWithoutMarkingRead(
+            Account account,
+            String folderName,
+            String uid
+    ) throws MessagingException {
+        LocalStore localStore = account.getLocalStore();
+        LocalFolder localFolder = localStore.getFolder(folderName);
+        localFolder.open(Folder.OPEN_MODE_RW);
+
+        LocalMessage message = localFolder.getMessage(uid);
+        if (message == null || message.getId() == 0) {
+            return null;
+        }
+
+        FetchProfile fp = new FetchProfile();
+        fp.add(FetchProfile.Item.BODY);
+        localFolder.fetch(Collections.singletonList(message), fp, null);
+        localFolder.close();
 
         return message;
     }
