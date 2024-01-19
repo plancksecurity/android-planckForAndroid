@@ -409,7 +409,7 @@
     <string name="group_mail_notification_summary">You were added to mail group %1$s by %2$s</string>
     <string name="sync_dialog_awaiting_other_device">Waiting for the other device…</string>
     <string name="sync_dialog_sync_start_timeout">Key sync could not be started. Please try again.</string>
-    <string name="reset_sender_key_action">Reset sender keys</string>
+    <string name="reset_partner_key_action">Reset partner keys</string>
     <string name="confirm_trust_dialog_title">Confirm trust</string>
     <string name="reject_trust_dialog_title">Reject trust</string>
     <string name="confirm_trust_dialog_progress">Confirming trust with %s…</string>
