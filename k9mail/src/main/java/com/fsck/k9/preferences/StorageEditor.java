@@ -16,6 +16,7 @@ import timber.log.Timber;
 public class StorageEditor {
     private Storage storage;
     private final OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
+    private final CouldNotDecryptMessagesStorage couldNotDecryptMessagesStorage;
     private final AppAliveMonitorStorage appAliveMonitorStorage;
     private final AuditLogStorage auditLogStorage;
 
@@ -27,10 +28,12 @@ public class StorageEditor {
 
     StorageEditor(Storage storage,
                   OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage,
+                  CouldNotDecryptMessagesStorage couldNotDecryptMessagesStorage,
                   AppAliveMonitorStorage appAliveMonitorStorage,
                   AuditLogStorage auditLogStorage) {
         this.storage = storage;
         this.ongoingDecryptMessagesStorage = ongoingDecryptMessagesStorage;
+        this.couldNotDecryptMessagesStorage = couldNotDecryptMessagesStorage;
         this.appAliveMonitorStorage = appAliveMonitorStorage;
         this.auditLogStorage = auditLogStorage;
 
@@ -121,6 +124,14 @@ public class StorageEditor {
 
     public void removeOngoingDecryptMessageId(String messageId) {
         ongoingDecryptMessagesStorage.removeMessageId(messageId);
+    }
+
+    public void addCouldNotDecryptMessageId(String messageId) {
+        couldNotDecryptMessagesStorage.addMessageId(messageId);
+    }
+
+    public void removeCouldNotDecryptMessageId(String messageId) {
+        couldNotDecryptMessagesStorage.removeMessageId(messageId);
     }
 
     public void addOngoingDecryptMessageTempFilePaths(Collection<String> filePaths) {
