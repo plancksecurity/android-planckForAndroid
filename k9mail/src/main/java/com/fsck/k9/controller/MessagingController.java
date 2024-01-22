@@ -1720,11 +1720,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         String newUid = remoteFolder.getUidFromMessageId(couldNotDecryptMessageId); // get real uid just in case it changed
         if (newUid == null) return;
         String folderName = localFolder.getName();
-        LocalMessage couldNotDecryptMessage = loadMessageWithoutMarkingRead(account, folderName, newUid);
-        if (couldNotDecryptMessage != null) {
-            PlanckProvider.DecryptResult result = planckProvider.decryptMessage(couldNotDecryptMessage, account.getEmail());
-            Rating ratingToSave = PlanckUtils.shouldUseOutgoingRating(couldNotDecryptMessage, account, result.rating)
-                    ? planckProvider.getRating(couldNotDecryptMessage)
+        LocalMessage messageToDecrypt = loadMessageWithoutMarkingRead(account, folderName, newUid);
+        if (messageToDecrypt != null) {
+            PlanckProvider.DecryptResult result = planckProvider.decryptMessage(messageToDecrypt, account.getEmail());
+            Rating ratingToSave = PlanckUtils.shouldUseOutgoingRating(messageToDecrypt, account, result.rating)
+                    ? planckProvider.getRating(messageToDecrypt)
                     : result.rating;
             result.msg.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(ratingToSave));
             // sync UID so we know our mail
@@ -1739,7 +1739,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 if (savedMessage != null
                         && shouldMoveMessageToSuspiciousFolder(savedMessage, folderName)) {
                     // avoid user tying to open a non-existing message from notification
-                    notificationController.removeNewMailNotification(account, couldNotDecryptMessage.makeMessageReference());
+                    notificationController.removeNewMailNotification(account, messageToDecrypt.makeMessageReference());
                     moveOrCopyMessageSynchronous(
                             account,
                             folderName,
