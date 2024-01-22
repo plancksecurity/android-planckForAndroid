@@ -1668,7 +1668,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    private synchronized void tryToDecryptMessagesThatCouldNotDecryptBeforeSynchronous() throws MessagingException {
+    private void tryToDecryptMessagesThatCouldNotDecryptBeforeSynchronous() throws MessagingException {
         for (Account account : preferences.getAvailableAccounts()) {
             List<LocalFolder> localFolders = account.getLocalStore().getPersonalNamespaces(false);
             for (LocalFolder localFolder : localFolders) {
