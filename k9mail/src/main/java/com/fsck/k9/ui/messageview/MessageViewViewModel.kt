@@ -30,9 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import security.planck.dialog.BackgroundTaskDialogView
 import security.planck.messaging.MessagingRepository
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +38,6 @@ class MessageViewViewModel(
     private val preferences: Preferences,
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
-    private val context: Application,
     private val messagingRepository: MessagingRepository,
     private val messageViewUpdate: MessageViewUpdate,
     private val dispatcherProvider: DispatcherProvider,
@@ -51,14 +48,12 @@ class MessageViewViewModel(
         preferences: Preferences,
         controller: MessagingController,
         planckProvider: PlanckProvider,
-        context: Application,
         messagingRepository: MessagingRepository,
         dispatcherProvider: DispatcherProvider,
     ) : this(
         preferences,
         controller,
         planckProvider,
-        context,
         messagingRepository,
         MessageViewUpdate(),
         dispatcherProvider
@@ -88,10 +83,6 @@ class MessageViewViewModel(
     private val readToggledLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
     val readToggled: LiveData<Event<Boolean>> = readToggledLiveData
-
-    private val resetPartnerKeyStateLd: MutableLiveData<BackgroundTaskDialogView.State> =
-        MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
-    val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
 
     val messageSubject: String?
         get() = if (::message.isInitialized) message.subject else null
@@ -188,24 +179,6 @@ class MessageViewViewModel(
         }
     }
 
-    fun resetPlanckData() {
-        viewModelScope.launch {
-            resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.LOADING
-            kotlin.runCatching {
-                val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
-                withContext(dispatcherProvider.planckDispatcher()) {
-                    planckProvider.keyResetIdentity(resetIdentity, null)
-                }
-            }.onSuccess {
-                messagingRepository.loadMessage(messageViewUpdate)
-                resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
-            }.onFailure {
-                Timber.e(it)
-                resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.ERROR
-            }
-        }
-    }
-
     private suspend fun getSenderRating(message: LocalMessage): Rating =
         planckProvider.getRating(message.from.first()).getOrDefault(Rating.pEpRatingUndefined)
 
@@ -213,7 +186,9 @@ class MessageViewViewModel(
         !message.hasToBeDecrypted()
                 && message.from != null // sender not null
                 && message.from.size == 1 // only one sender
-                && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
+                && preferences.availableAccounts.none {
+            it.email.equals(message.from.first().address, true)
+        } // sender not one of my own accounts
                 && message.getRecipients(RecipientType.TO).size == 1 // only one recipient in TO
                 && message.getRecipients(RecipientType.CC)
             .isNullOrEmpty() // no recipients in CC
@@ -224,10 +199,6 @@ class MessageViewViewModel(
         messageRating: Rating
     ): Boolean {
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
-    }
-
-    fun partnerKeyResetFinished() {
-        resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.CONFIRMATION
     }
 
     fun isMessageValidForHandshake(): Boolean =

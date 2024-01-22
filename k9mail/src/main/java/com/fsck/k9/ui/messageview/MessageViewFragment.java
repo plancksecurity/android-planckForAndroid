@@ -86,11 +86,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import kotlin.ExceptionsKt;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
 import security.planck.ui.message_compose.PlanckFabMenu;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialogKt;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import security.planck.ui.verifypartner.VerifyPartnerFragment;
@@ -213,6 +215,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeVerifyPartnerResultListener();
+        initializeResetPartnerKeyResultListener();
 
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
@@ -223,6 +226,21 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
         doOnMessageList(K9Activity::hideSearchView);
+    }
+
+    private void initializeResetPartnerKeyResultListener() {
+        getParentFragmentManager().setFragmentResultListener(
+                ResetPartnerKeyDialog.REQUEST_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(ResetPartnerKeyDialog.REQUEST_KEY)) {
+                        boolean keyResetSuccess = result.getBoolean(ResetPartnerKeyDialog.RESULT_KEY_SUCCESS);
+                        if (keyResetSuccess) {
+                            displayMessage();
+                        }
+                    }
+                }
+        );
     }
 
     private void initializeVerifyPartnerResultListener() {
@@ -479,8 +497,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void resetSenderKey() {
-        if (shouldDisplayResetSenderKeyOption()) {
-            ResetPartnerKeyDialog.showResetPartnerKeyDialog(this);
+        if (viewModel.canResetSenderKeys()) {
+            ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(
+                    this,
+                    viewModel.getMessageFrom()[0].getAddress()
+            );
         }
     }
 
