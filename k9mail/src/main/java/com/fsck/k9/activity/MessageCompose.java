@@ -126,6 +126,7 @@ import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
@@ -301,6 +302,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
         initializeVerifyPartnerResultListener();
+        initializeResetPartnerKeyResultListener();
         uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -540,6 +542,21 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.ACCOUNT, account.isPlanckPrivacyProtected());
         Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
         restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
+    }
+
+    private void initializeResetPartnerKeyResultListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                ResetPartnerKeyDialog.REQUEST_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(ResetPartnerKeyDialog.REQUEST_KEY)) {
+                        boolean keyResetSuccess = result.getBoolean(ResetPartnerKeyDialog.RESULT_KEY_SUCCESS);
+                        if (keyResetSuccess) {
+                            recipientPresenter.handleResetPartnerKeyResult();
+                        }
+                    }
+                }
+        );
     }
 
     private void initializeVerifyPartnerResultListener() {
@@ -1165,6 +1182,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
             case R.id.reset_partner_keys:
+                recipientPresenter.resetPartnerKeys();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1211,6 +1229,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (!account.hasDraftsFolder()) {
             menu.findItem(R.id.save).setEnabled(false);
         }
+        recipientMvpView.setResetPartnerKeysItem(menu.findItem(R.id.reset_partner_keys));
 
         // grab our icon and set it to the wanted color.
         //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
