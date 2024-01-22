@@ -1312,6 +1312,29 @@ class ImapFolder extends Folder<ImapMessage> {
     }
 
     @Override
+    public String getUidFromMessageId(String messageId) throws MessagingException {
+        try {
+            if (K9MailLib.isDebug()) {
+                Timber.d("Looking for UID for message with message-id %s for %s", messageId, getLogId());
+            }
+
+            String command = String.format("UID SEARCH HEADER MESSAGE-ID %s", ImapUtility.encodeString(messageId));
+            List<ImapResponse> responses = executeSimpleCommand(command);
+
+            for (ImapResponse response : responses) {
+                if (response.getTag() == null && ImapResponseParser.equalsIgnoreCase(response.get(0), "SEARCH")
+                        && response.size() > 1) {
+                    return response.getString(1);
+                }
+            }
+
+            return null;
+        } catch (IOException ioe) {
+            throw new MessagingException("Could not find UID for message based on Message-ID", ioe);
+        }
+    }
+
+    @Override
     public void expunge() throws MessagingException {
         open(OPEN_MODE_RW);
         checkOpen();

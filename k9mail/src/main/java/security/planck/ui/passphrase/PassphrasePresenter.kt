@@ -1,6 +1,7 @@
 package security.planck.ui.passphrase
 
 import com.fsck.k9.K9
+import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 class PassphrasePresenter @Inject constructor(
     private val planck: PlanckProvider,
+    private val controller: MessagingController,
     private val dispatcherProvider: DispatcherProvider,
 ) {
     lateinit var view: PassphraseInputView
@@ -58,6 +60,7 @@ class PassphrasePresenter @Inject constructor(
                     withContext(dispatcherProvider.planckDispatcher()) {
                         planck.configPassphrase(passphrase)
                     }
+                    controller.tryToDecryptMessagesThatCouldNotDecryptBefore()
                     finish()
                 }
             }

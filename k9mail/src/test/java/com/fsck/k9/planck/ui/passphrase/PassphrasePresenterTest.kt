@@ -8,12 +8,16 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.fsck.k9.K9
 import com.fsck.k9.RobolectricTest
+import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.runs
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -30,13 +34,16 @@ import security.planck.ui.passphrase.PassphrasePresenter
 import security.planck.ui.passphrase.PassphraseRequirementType
 
 @ExperimentalCoroutinesApi
-class PassphrasePresenterTest: RobolectricTest() {
+class PassphrasePresenterTest : RobolectricTest() {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
-    lateinit var  context: Context
+    lateinit var context: Context
     private val view: PassphraseInputView = mockk(relaxed = true)
     private lateinit var presenter: PassphrasePresenter
     private val planckProvider: PlanckProvider = mockk(relaxed = true)
+    private val controller: MessagingController = mockk {
+        every { tryToDecryptMessagesThatCouldNotDecryptBefore() }.just(runs)
+    }
 
     @Before
     fun setup() {
@@ -44,7 +51,11 @@ class PassphrasePresenterTest: RobolectricTest() {
         mockkStatic(PassphraseProvider::class)
         mockkObject(PassphraseProvider)
         mockkStatic(K9::class)
-        presenter = PassphrasePresenter(planckProvider, coroutinesTestRule.testDispatcherProvider)
+        presenter = PassphrasePresenter(
+            planckProvider,
+            controller,
+            coroutinesTestRule.testDispatcherProvider
+        )
     }
 
     @After
@@ -53,6 +64,7 @@ class PassphrasePresenterTest: RobolectricTest() {
         unmockkStatic(PassphraseProvider::class)
         unmockkStatic(K9::class)
     }
+
     @Test
     fun `when initializing the present view is also initialized`() {
         presenter.init(view, PassphraseRequirementType.MISSING_PASSPHRASE)
@@ -76,8 +88,8 @@ class PassphrasePresenterTest: RobolectricTest() {
         presenter.init(view, PassphraseRequirementType.WRONG_PASSPHRASE)
 
 
-        verify {view.showRetryPasswordRequest() }
-        verify {view.enableNonSyncDismiss() }
+        verify { view.showRetryPasswordRequest() }
+        verify { view.enableNonSyncDismiss() }
     }
 
     @Test
@@ -88,6 +100,7 @@ class PassphrasePresenterTest: RobolectricTest() {
         verify { view.showSyncPasswordRequest() }
         verify { view.enableSyncDismiss() }
     }
+
     @Test
     fun `when initializing the present view listeners are initialized`() {
         presenter.init(view, PassphraseRequirementType.MISSING_PASSPHRASE)
@@ -152,23 +165,38 @@ class PassphrasePresenterTest: RobolectricTest() {
 
         verify { PassphraseProvider.passphrase = passphrase }
         verify { PassphraseProvider.stop() }
-        verify{ view.finish() }
+        verify { view.finish() }
     }
 
     @Test
-    fun `when we deliver a valid sync passphrase we deliver it to the PlanckProvider and close the dialog`() = runTest {
-        presenter.init(view, PassphraseRequirementType.SYNC_PASSPHRASE)
-        val passphrase = "passphrase"
+    fun `when we deliver a valid sync passphrase we deliver it to the PlanckProvider and close the dialog`() =
+        runTest {
+            presenter.init(view, PassphraseRequirementType.SYNC_PASSPHRASE)
+            val passphrase = "passphrase"
 
 
-        presenter.deliverPassphrase(passphrase)
-        advanceUntilIdle()
+            presenter.deliverPassphrase(passphrase)
+            advanceUntilIdle()
 
 
-        coVerify { planckProvider.configPassphrase(passphrase) }
-        coVerify { PassphraseProvider.stop() }
-        coVerify { view.finish() }
-    }
+            verify { planckProvider.configPassphrase(passphrase) }
+            verify { PassphraseProvider.stop() }
+            verify { view.finish() }
+        }
+
+    @Test
+    fun `when we deliver a valid sync passphrase, MessagingController tries to decrypt messages that could not decrypt before`() =
+        runTest {
+            presenter.init(view, PassphraseRequirementType.SYNC_PASSPHRASE)
+            val passphrase = "passphrase"
+
+
+            presenter.deliverPassphrase(passphrase)
+            advanceUntilIdle()
+
+
+            verify { controller.tryToDecryptMessagesThatCouldNotDecryptBefore() }
+        }
 
     @Test
     fun `when we deliver a valid passphrase for new keys we set it to the PassphraseProvider and K9 and close the dialog`() {

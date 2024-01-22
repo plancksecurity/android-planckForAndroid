@@ -113,6 +113,10 @@ public abstract class Folder<T extends Message> {
 
     public abstract String getUidFromMessageId(Message message) throws MessagingException;
 
+    public String getUidFromMessageId(String messageId) throws MessagingException {
+        return null;
+    }
+
     public void expunge() throws MessagingException
         {}
 

@@ -10,7 +10,6 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckProvider.CompletedCallback
 import com.fsck.k9.planck.infrastructure.Poller
 import com.fsck.k9.planck.infrastructure.PollerFactory
-import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
 import foundation.pEp.jniadapter.Identity
@@ -94,6 +93,7 @@ class PlanckSyncRepository @Inject constructor(
             SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted -> {
                 syncStateMutableFlow.value = SyncState.Done
                 isGrouped = true
+                messagingController.get().tryToDecryptMessagesThatCouldNotDecryptBefore()
             }
 
             SyncHandshakeSignal.SyncNotifySole -> {

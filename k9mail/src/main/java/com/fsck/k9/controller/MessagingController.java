@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -71,6 +72,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
+import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckProviderFactory;
@@ -1652,6 +1654,104 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
+    public void tryToDecryptMessagesThatCouldNotDecryptBefore() {
+        putBackground("tryToDecryptMessagesThatCouldNotDecryptBefore", null, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    tryToDecryptMessagesThatCouldNotDecryptBeforeSynchronous();
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+    }
+
+    private void tryToDecryptMessagesThatCouldNotDecryptBeforeSynchronous() throws MessagingException {
+        for (Account account : preferences.getAvailableAccounts()) {
+            List<LocalFolder> localFolders = account.getLocalStore().getPersonalNamespaces(false);
+            for (LocalFolder localFolder : localFolders) {
+                tryToDecryptMessagesThatCouldNotDecryptBeforeSynchronous(account, localFolder);
+            }
+        }
+    }
+
+    private void tryToDecryptMessagesThatCouldNotDecryptBeforeSynchronous(
+            Account account,
+            LocalFolder localFolder
+    ) throws MessagingException {
+        Folder<? extends Message> remoteFolder = null;
+        try {
+            if (shouldTryToDecryptEncryptedMessagesForFolder(localFolder)) {
+                final RemoteStore remoteStore = account.getRemoteStore();
+                localFolder.open(Folder.OPEN_MODE_RW);
+                remoteFolder = remoteStore.getFolder(localFolder.getName());
+                remoteFolder.open(Folder.OPEN_MODE_RO);
+                String[] idsToProcess = preferences.getStorage()
+                        .getCouldNotDecryptMessages().toArray(new String[0]);
+
+                for (String couldNotDecryptMessageId : idsToProcess) {
+                    tryToDecryptMessageThatCouldNotDecrypt(
+                            account,
+                            localFolder,
+                            remoteFolder,
+                            couldNotDecryptMessageId
+                    );
+                }
+            }
+        } finally {
+            closeFolder(localFolder);
+            closeFolder(remoteFolder);
+        }
+    }
+
+    private static boolean shouldTryToDecryptEncryptedMessagesForFolder(LocalFolder localFolder) { // TODO: 18/1/24 review this condition
+        return localFolder.getDisplayClass().equals(Folder.FolderClass.FIRST_CLASS)
+                && !localFolder.getName().equals(Account.OUTBOX);
+    }
+
+    private void tryToDecryptMessageThatCouldNotDecrypt(
+            Account account,
+            LocalFolder localFolder,
+            Folder<? extends Message> remoteFolder,
+            String couldNotDecryptMessageId
+    ) throws MessagingException {
+        String newUid = remoteFolder.getUidFromMessageId(couldNotDecryptMessageId); // get real uid just in case it changed
+        if (newUid == null) return;
+        String folderName = localFolder.getName();
+        LocalMessage messageToDecrypt = loadMessageWithoutMarkingRead(account, folderName, newUid);
+        if (messageToDecrypt != null) {
+            PlanckProvider.DecryptResult result = planckProvider.decryptMessage(messageToDecrypt, account.getEmail());
+            Rating ratingToSave = PlanckUtils.shouldUseOutgoingRating(messageToDecrypt, account, result.rating)
+                    ? planckProvider.getRating(messageToDecrypt)
+                    : result.rating;
+            result.msg.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(ratingToSave));
+            // sync UID so we know our mail
+            result.msg.setUid(newUid);
+            if (!EncryptionVerifier.isEncrypted(result.msg)) { // message actually decrypted
+                LocalMessage savedMessage = localFolder.storeSmallMessage(
+                        result.msg,
+                        () -> {
+                            preferences.getStorage().edit().removeCouldNotDecryptMessageId(couldNotDecryptMessageId);
+                        }
+                );
+                if (savedMessage != null
+                        && shouldMoveMessageToSuspiciousFolder(savedMessage, folderName)) {
+                    // avoid user tying to open a non-existing message from notification
+                    notificationController.removeNewMailNotification(account, messageToDecrypt.makeMessageReference());
+                    moveOrCopyMessageSynchronous(
+                            account,
+                            folderName,
+                            Collections.singletonList(savedMessage),
+                            Store.PLANCK_SUSPICIOUS_FOLDER,
+                            false
+                    );
+                }
+            }
+        }
+    }
+
     private <T extends Message> void downloadSmallMessages(final Account account, final Folder<T> remoteFolder,
                                                            final LocalFolder localFolder,
                                                            List<T> smallMessages,
@@ -1729,6 +1829,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         decryptedMessage,
                                         result.rating
                                 );
+                                if (EncryptionVerifier.isEncrypted(decryptedMessage)) {
+                                    storageEditor.addCouldNotDecryptMessageId(message.getMessageId());
+                                }
                             }
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
@@ -2911,6 +3014,28 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         notificationController.removeNewMailNotification(account, message.makeMessageReference());
         markMessageAsReadOnView(account, message);
+
+        return message;
+    }
+
+    private LocalMessage loadMessageWithoutMarkingRead(
+            Account account,
+            String folderName,
+            String uid
+    ) throws MessagingException {
+        LocalStore localStore = account.getLocalStore();
+        LocalFolder localFolder = localStore.getFolder(folderName);
+        localFolder.open(Folder.OPEN_MODE_RW);
+
+        LocalMessage message = localFolder.getMessage(uid);
+        if (message == null || message.getId() == 0) {
+            return null;
+        }
+
+        FetchProfile fp = new FetchProfile();
+        fp.add(FetchProfile.Item.BODY);
+        localFolder.fetch(Collections.singletonList(message), fp, null);
+        localFolder.close();
 
         return message;
     }
