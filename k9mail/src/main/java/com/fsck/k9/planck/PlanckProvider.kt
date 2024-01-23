@@ -267,6 +267,7 @@ interface PlanckProvider {
     )
 
     fun queryGroupMailManager(group: Identity): Identity
+    suspend fun isGroupAddress(address: Address): Result<Boolean>
     fun queryGroupMailMembers(group: Identity): Vector<Identity>?
     fun joinGroupMail(group: Identity, member: Identity, manager: Identity)
     fun queryGroupMailManagerAndMembers(group: Identity): ResultCompat<Vector<Identity>>
