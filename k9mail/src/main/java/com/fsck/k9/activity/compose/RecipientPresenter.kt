@@ -1,355 +1,288 @@
-package com.fsck.k9.activity.compose;
+package com.fsck.k9.activity.compose
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.os.Handler
+import android.view.Menu
+import androidx.annotation.VisibleForTesting
+import androidx.loader.app.LoaderManager
+import com.fsck.k9.Account
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
+import com.fsck.k9.R
+import com.fsck.k9.activity.MessageReference
+import com.fsck.k9.activity.compose.ComposeCryptoStatus.AttachErrorState
+import com.fsck.k9.activity.compose.ComposeCryptoStatus.ComposeCryptoStatusBuilder
+import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState
+import com.fsck.k9.helper.Contacts
+import com.fsck.k9.helper.MailTo
+import com.fsck.k9.helper.ReplyToParser
+import com.fsck.k9.mail.Address
+import com.fsck.k9.mail.Flag
+import com.fsck.k9.mail.Message
+import com.fsck.k9.mail.Message.RecipientType
+import com.fsck.k9.message.ComposePgpInlineDecider
+import com.fsck.k9.message.MessageBuilder
+import com.fsck.k9.message.PgpMessageBuilder
+import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.PlanckProvider.ProtectionScope
+import com.fsck.k9.planck.PlanckUIArtefactCache
+import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.infrastructure.Poller
+import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.Rating
+import org.openintents.openpgp.OpenPgpApiManager
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState
+import org.openintents.openpgp.util.OpenPgpServiceConnection
+import security.planck.echo.MessageReceivedListener
+import timber.log.Timber
+import java.util.Arrays
+import java.util.Collections
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.Menu;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.loader.app.LoaderManager;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.Identity;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.activity.compose.ComposeCryptoStatus.AttachErrorState;
-import com.fsck.k9.activity.compose.ComposeCryptoStatus.ComposeCryptoStatusBuilder;
-import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
-import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.helper.MailTo;
-import com.fsck.k9.helper.ReplyToParser;
-import com.fsck.k9.helper.ReplyToParser.ReplyToAddresses;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Flag;
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.message.ComposePgpInlineDecider;
-import com.fsck.k9.message.MessageBuilder;
-import com.fsck.k9.message.PgpMessageBuilder;
-import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.PlanckUIArtefactCache;
-import com.fsck.k9.planck.PlanckUtils;
-import com.fsck.k9.planck.infrastructure.Poller;
-
-import org.openintents.openpgp.OpenPgpApiManager;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
-import org.openintents.openpgp.util.OpenPgpServiceConnection;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import foundation.pEp.jniadapter.Rating;
-import security.planck.echo.MessageReceivedListener;
-import timber.log.Timber;
-
-
-public class RecipientPresenter implements MessageReceivedListener {
-    private static final String STATE_KEY_CC_SHOWN = "state:ccShown";
-    private static final String STATE_KEY_BCC_SHOWN = "state:bccShown";
-    private static final String STATE_KEY_LAST_FOCUSED_TYPE = "state:lastFocusedType";
-    private static final String STATE_KEY_CURRENT_CRYPTO_MODE = "state:currentCryptoMode";
-    private static final String STATE_KEY_CRYPTO_ENABLE_PGP_INLINE = "state:cryptoEnablePgpInline";
-    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
-    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
-
-    private static final int CONTACT_PICKER_TO = 1;
-    private static final int CONTACT_PICKER_CC = 2;
-    private static final int CONTACT_PICKER_BCC = 3;
-    private static final int OPENPGP_USER_INTERACTION = 4;
-    public static final int POLLING_INTERVAL = 1200;
-    public static final String STATE_RATING = "rating";
-
-    private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
-    private static final int ZERO_RECIPIENTS = 0;
-    private static final int ONE_ADDRESS = 1;
-
-
-    // transient state, which is either obtained during construction and initialization, or cached
-    private final Context context;
-    private final RecipientMvpView recipientMvpView;
-    private RecipientSelectPresenter toPresenter;
-    private RecipientSelectPresenter ccPresenter;
-    private RecipientSelectPresenter bccPresenter;
-    private final ComposePgpInlineDecider composePgpInlineDecider;
-    private final RecipientsChangedListener listener;
-    private Poller poller;
-    private ReplyToParser replyToParser;
-    private Account account;
-    private Boolean hasContactPicker;
-    @Nullable
-    private ComposeCryptoStatus cachedCryptoStatus;
-    private OpenPgpApiManager openPgpApiManager;
-
-    private OpenPgpServiceConnection openPgpServiceConnection;
-    private PlanckProvider planck;
+class RecipientPresenter(// transient state, which is either obtained during construction and initialization, or cached
+    private val context: Context,
+    loaderManager: LoaderManager?,
+    private val openPgpApiManager: OpenPgpApiManager,
+    private val recipientMvpView: RecipientMvpView,
+    account: Account,
+    private val composePgpInlineDecider: ComposePgpInlineDecider,
+    private val planck: PlanckProvider,
+    private val replyToParser: ReplyToParser,
+    private val listener: RecipientsChangedListener
+) : MessageReceivedListener {
+    private var toPresenter: RecipientSelectPresenter? = null
+    private var ccPresenter: RecipientSelectPresenter? = null
+    private var bccPresenter: RecipientSelectPresenter? = null
+    private var poller: Poller? = null
+    private var account: Account? = null
+    private var hasContactPicker: Boolean? = null
+    private var cachedCryptoStatus: ComposeCryptoStatus? = null
+    private var openPgpServiceConnection: OpenPgpServiceConnection? = null
 
     // persistent state, saved during onSaveInstanceState
-    private RecipientType lastFocusedType = RecipientType.TO;
+    private var lastFocusedType = RecipientType.TO
+
     // TODO initialize cryptoMode to other values under some circumstances, e.g. if we reply to an encrypted e-mail
-    private CryptoMode currentCryptoMode = CryptoMode.OPPORTUNISTIC;
-    private boolean cryptoEnablePgpInline = false;
-    private boolean forceUnencrypted = false;
-    private boolean isAlwaysSecure = false;
-    private Rating privacyState = Rating.pEpRatingUnencrypted;
-    private boolean isReplyToEncryptedMessage = false;
-    private long lastRequestTime;
-    PlanckUIArtefactCache planckUiCache;
+    private var currentCryptoMode = CryptoMode.OPPORTUNISTIC
+    private var cryptoEnablePgpInline = false
+    var isForceUnencrypted = false
+        private set
 
-
-    public RecipientPresenter(Context context,  LoaderManager loaderManager,
-            OpenPgpApiManager openPgpApiManager, RecipientMvpView recipientMvpView, Account account,
-            ComposePgpInlineDecider composePgpInlineDecider,
-            PlanckProvider planckProvider,
-            ReplyToParser replyToParser, RecipientsChangedListener recipientsChangedListener) {
-        this.recipientMvpView = recipientMvpView;
-        this.context = context;
-        this.composePgpInlineDecider = composePgpInlineDecider;
-        this.replyToParser = replyToParser;
-        this.planck = planckProvider;
-        this.listener = recipientsChangedListener;
-        this.openPgpApiManager = openPgpApiManager;
-
-        recipientMvpView.setPresenter(this);
-        planckUiCache = PlanckUIArtefactCache.getInstance(context.getApplicationContext());
-        recipientMvpView.setLoaderManager(loaderManager);
-        onSwitchAccount(account);
-        updateCryptoStatus();
-    }
-
-    public void setPresenter(RecipientSelectPresenter presenter, RecipientType type) {
-        switch (type) {
-            case TO:
-                this.toPresenter = presenter;
-                break;
-            case CC:
-                this.ccPresenter = presenter;
-                break;
-            case BCC:
-                this.bccPresenter = presenter;
-                break;
+    @JvmField
+    var isAlwaysSecure = false
+    private var privacyState: Rating? = Rating.pEpRatingUnencrypted
+    private val isReplyToEncryptedMessage = false
+    private var lastRequestTime: Long = 0
+    var planckUiCache: PlanckUIArtefactCache
+    fun setPresenter(presenter: RecipientSelectPresenter?, type: RecipientType?) {
+        when (type) {
+            RecipientType.TO -> toPresenter = presenter
+            RecipientType.CC -> ccPresenter = presenter
+            RecipientType.BCC -> bccPresenter = presenter
         }
     }
 
-    private void setupPlanckStatusPolling() {
+    private fun setupPlanckStatusPolling() {
         if (poller == null) {
-            poller = new Poller(new Handler());
-            poller.init(POLLING_INTERVAL, this::loadPEpStatus);
+            poller = Poller(Handler())
+            poller?.init(POLLING_INTERVAL.toLong()) { loadPEpStatus() }
         } else {
-            poller.stopPolling();
+            poller?.stopPolling()
         }
-        poller.startPolling();
+        poller?.startPolling()
     }
 
-    public List<Address> getToAddresses() {
-        return toPresenter.getAddresses();
+    val toAddresses: List<Address>
+        get() = toPresenter!!.addresses
+    val ccAddresses: List<Address>
+        get() = ccPresenter!!.addresses
+    val bccAddresses: List<Address>
+        get() = bccPresenter!!.addresses
+
+    fun clearUnsecureRecipients() {
+        toPresenter!!.clearUnsecureAddresses()
+        ccPresenter!!.clearUnsecureAddresses()
+        bccPresenter!!.clearUnsecureAddresses()
     }
 
-    public List<Address> getCcAddresses() {
-        return ccPresenter.getAddresses();
-    }
-
-    public List<Address> getBccAddresses() {
-        return bccPresenter.getAddresses();
-    }
-
-    public void clearUnsecureRecipients() {
-        toPresenter.clearUnsecureAddresses();
-        ccPresenter.clearUnsecureAddresses();
-        bccPresenter.clearUnsecureAddresses();
-    }
-
-    public void startHandshakeWithSingleRecipient(MessageReference relatedMessageReference) {
-        refreshRecipients();
+    fun startHandshakeWithSingleRecipient(relatedMessageReference: MessageReference?) {
+        refreshRecipients()
         if (canHandshakeSingleAddress(
-                getToAddresses(),
-                getCcAddresses(),
-                getBccAddresses()
-        )) {
-            recipientMvpView.setMessageReference(relatedMessageReference);
-            recipientMvpView.onPlanckPrivacyStatus();
+                toAddresses,
+                ccAddresses,
+                bccAddresses
+            )
+        ) {
+            recipientMvpView.setMessageReference(relatedMessageReference)
+            recipientMvpView.onPlanckPrivacyStatus()
         }
     }
 
-    public void refreshRecipients() {
-        ArrayList<foundation.pEp.jniadapter.Identity> recipients = new ArrayList<>();
-        recipients.addAll(PlanckUtils.createIdentities(getToAddresses(), context.getApplicationContext()));
-        recipients.addAll(PlanckUtils.createIdentities(getCcAddresses(), context.getApplicationContext()));
-        recipients.addAll(PlanckUtils.createIdentities(getBccAddresses(), context.getApplicationContext()));
-        planckUiCache.setRecipients(account, recipients);
+    fun refreshRecipients() {
+        val recipients = ArrayList<Identity>()
+        recipients.addAll(PlanckUtils.createIdentities(toAddresses, context.applicationContext))
+        recipients.addAll(PlanckUtils.createIdentities(ccAddresses, context.applicationContext))
+        recipients.addAll(PlanckUtils.createIdentities(bccAddresses, context.applicationContext))
+        planckUiCache.setRecipients(account, recipients)
     }
 
-    private List<Recipient> getAllRecipients() {
-        ArrayList<Recipient> result = new ArrayList<>();
-
-        result.addAll(toPresenter.getRecipients());
-        result.addAll(ccPresenter.getRecipients());
-        result.addAll(bccPresenter.getRecipients());
-
-        return result;
-    }
-
-    public boolean checkRecipientsOkForSending() {
-        toPresenter.tryPerformCompletion();
-        ccPresenter.tryPerformCompletion();
-        bccPresenter.tryPerformCompletion();
-
-        if (toPresenter.reportedUncompletedRecipients()
-        || ccPresenter.reportedUncompletedRecipients()
-        || bccPresenter.reportedUncompletedRecipients()) return true;
-
-        if (addressesAreEmpty(getToAddresses(), getCcAddresses(), getBccAddresses())) {
-            toPresenter.showNoRecipientsError();
-            return true;
+    private val allRecipients: List<Recipient>
+        get() {
+            val result = mutableListOf<Recipient>()
+            result.addAll(toPresenter!!.recipients)
+            result.addAll(ccPresenter!!.recipients)
+            result.addAll(bccPresenter!!.recipients)
+            return result
         }
 
-        return false;
+    fun checkRecipientsOkForSending(): Boolean {
+        toPresenter!!.tryPerformCompletion()
+        ccPresenter!!.tryPerformCompletion()
+        bccPresenter!!.tryPerformCompletion()
+        if (toPresenter!!.reportedUncompletedRecipients()
+            || ccPresenter!!.reportedUncompletedRecipients()
+            || bccPresenter!!.reportedUncompletedRecipients()
+        ) return true
+        if (addressesAreEmpty(toAddresses, ccAddresses, bccAddresses)) {
+            toPresenter!!.showNoRecipientsError()
+            return true
+        }
+        return false
     }
 
-    public void initFromReplyToMessage(Message message, boolean isReplyAll) {
-        ReplyToAddresses replyToAddresses = isReplyAll ?
-                replyToParser.getRecipientsToReplyAllTo(message, account) :
-                replyToParser.getRecipientsToReplyTo(message, account);
-
-        addToAddresses(replyToAddresses.to);
-        addCcAddresses(replyToAddresses.cc);
-
-        boolean shouldSendAsPgpInline = composePgpInlineDecider.shouldReplyInline(message);
+    fun initFromReplyToMessage(message: Message?, isReplyAll: Boolean) {
+        val replyToAddresses = if (isReplyAll) replyToParser.getRecipientsToReplyAllTo(
+            message,
+            account
+        ) else replyToParser.getRecipientsToReplyTo(message, account)
+        addToAddresses(*replyToAddresses.to)
+        addCcAddresses(*replyToAddresses.cc)
+        val shouldSendAsPgpInline = composePgpInlineDecider.shouldReplyInline(message)
         if (shouldSendAsPgpInline) {
-            cryptoEnablePgpInline = true;
+            cryptoEnablePgpInline = true
         }
     }
 
-    public void initFromMailto(MailTo mailTo) {
-        addToAddresses(mailTo.getTo());
-        addCcAddresses(mailTo.getCc());
-        addBccAddresses(mailTo.getBcc());
+    fun initFromMailto(mailTo: MailTo) {
+        addToAddresses(*mailTo.to)
+        addCcAddresses(*mailTo.cc)
+        addBccAddresses(*mailTo.bcc)
     }
 
-    public void initFromSendOrViewIntent(Intent intent) {
-        String[] extraEmail = intent.getStringArrayExtra(Intent.EXTRA_EMAIL);
-        String[] extraCc = intent.getStringArrayExtra(Intent.EXTRA_CC);
-        String[] extraBcc = intent.getStringArrayExtra(Intent.EXTRA_BCC);
-
+    fun initFromSendOrViewIntent(intent: Intent) {
+        val extraEmail = intent.getStringArrayExtra(Intent.EXTRA_EMAIL)
+        val extraCc = intent.getStringArrayExtra(Intent.EXTRA_CC)
+        val extraBcc = intent.getStringArrayExtra(Intent.EXTRA_BCC)
         if (extraEmail != null) {
-            addToAddresses(addressFromStringArray(extraEmail));
+            addToAddresses(*addressFromStringArray(extraEmail))
         }
-
         if (extraCc != null) {
-            addCcAddresses(addressFromStringArray(extraCc));
+            addCcAddresses(*addressFromStringArray(extraCc))
         }
-
         if (extraBcc != null) {
-            addBccAddresses(addressFromStringArray(extraBcc));
+            addBccAddresses(*addressFromStringArray(extraBcc))
         }
     }
 
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        recipientMvpView.setCcVisibility(savedInstanceState.getBoolean(STATE_KEY_CC_SHOWN));
-        recipientMvpView.setBccVisibility(savedInstanceState.getBoolean(STATE_KEY_BCC_SHOWN));
-        lastFocusedType = RecipientType.valueOf(savedInstanceState.getString(STATE_KEY_LAST_FOCUSED_TYPE));
-        currentCryptoMode = CryptoMode.valueOf(savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE));
-        cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE);
-        forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
-        isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
-        privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
-        updateRecipientExpanderVisibility();
-        recipientMvpView.setPlanckRating(privacyState);
+    fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        recipientMvpView.setCcVisibility(savedInstanceState.getBoolean(STATE_KEY_CC_SHOWN))
+        recipientMvpView.setBccVisibility(savedInstanceState.getBoolean(STATE_KEY_BCC_SHOWN))
+        lastFocusedType = RecipientType.valueOf(
+            savedInstanceState.getString(
+                STATE_KEY_LAST_FOCUSED_TYPE
+            )!!
+        )
+        currentCryptoMode = CryptoMode.valueOf(
+            savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE)!!
+        )
+        cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE)
+        isForceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED)
+        isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE)
+        privacyState = savedInstanceState.getSerializable(STATE_RATING) as Rating?
+        updateRecipientExpanderVisibility()
+        recipientMvpView.planckRating = privacyState
     }
 
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
-        outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
-        outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
-        outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString());
-        outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline);
-        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
-        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure);
-        outState.putSerializable(STATE_RATING, privacyState);
+    fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible)
+        outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible)
+        outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString())
+        outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString())
+        outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline)
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, isForceUnencrypted)
+        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure)
+        outState.putSerializable(STATE_RATING, privacyState)
     }
 
-    public void initFromDraftMessage(Message message) {
-        initRecipientsFromDraftMessage(message);
-        initPgpInlineFromDraftMessage(message);
-        setAlwaysSecure(message.isSet(Flag.X_PEP_NEVER_UNSECURE));
+    fun initFromDraftMessage(message: Message) {
+        initRecipientsFromDraftMessage(message)
+        initPgpInlineFromDraftMessage(message)
+        isAlwaysSecure = message.isSet(Flag.X_PEP_NEVER_UNSECURE)
     }
 
-    private void initRecipientsFromDraftMessage(Message message) {
-        addToAddresses(message.getRecipients(RecipientType.TO));
-
-        Address[] ccRecipients = message.getRecipients(RecipientType.CC);
-        addCcAddresses(ccRecipients);
-
-        Address[] bccRecipients = message.getRecipients(RecipientType.BCC);
-        addBccAddresses(bccRecipients);
+    private fun initRecipientsFromDraftMessage(message: Message) {
+        addToAddresses(*message.getRecipients(RecipientType.TO))
+        val ccRecipients = message.getRecipients(RecipientType.CC)
+        addCcAddresses(*ccRecipients)
+        val bccRecipients = message.getRecipients(RecipientType.BCC)
+        addBccAddresses(*bccRecipients)
     }
 
-    private void initPgpInlineFromDraftMessage(Message message) {
-        cryptoEnablePgpInline = message.isSet(Flag.X_DRAFT_OPENPGP_INLINE);
+    private fun initPgpInlineFromDraftMessage(message: Message) {
+        cryptoEnablePgpInline = message.isSet(Flag.X_DRAFT_OPENPGP_INLINE)
     }
 
-    private void addToAddresses(Address... toAddresses) {
-        addRecipientsFromAddresses(RecipientType.TO, toAddresses);
+    private fun addToAddresses(vararg toAddresses: Address) {
+        addRecipientsFromAddresses(RecipientType.TO, *toAddresses)
     }
 
-    private void addCcAddresses(Address... ccAddresses) {
-        if (ccAddresses.length > 0) {
-            addRecipientsFromAddresses(RecipientType.CC, ccAddresses);
-            recipientMvpView.setCcVisibility(true);
-            updateRecipientExpanderVisibility();
+    private fun addCcAddresses(vararg ccAddresses: Address) {
+        if (ccAddresses.size > 0) {
+            addRecipientsFromAddresses(RecipientType.CC, *ccAddresses)
+            recipientMvpView.setCcVisibility(true)
+            updateRecipientExpanderVisibility()
         }
     }
 
-    public void addBccAddresses(Address... bccRecipients) {
-        if (bccRecipients.length > 0) {
-            addRecipientsFromAddresses(RecipientType.BCC, bccRecipients);
-            String bccAddress = account.getAlwaysBcc();
+    fun addBccAddresses(vararg bccRecipients: Address) {
+        if (bccRecipients.size > 0) {
+            addRecipientsFromAddresses(RecipientType.BCC, *bccRecipients)
+            val bccAddress = account!!.alwaysBcc
 
             // If the auto-bcc is the only entry in the BCC list, don't show the Bcc fields.
-            boolean alreadyVisible = recipientMvpView.isBccVisible();
-            boolean singleBccRecipientFromAccount =
-                    bccRecipients.length == 1 && bccRecipients[0].toString().equals(bccAddress);
-            recipientMvpView.setBccVisibility(alreadyVisible || !singleBccRecipientFromAccount);
-            updateRecipientExpanderVisibility();
+            val alreadyVisible = recipientMvpView.isBccVisible
+            val singleBccRecipientFromAccount =
+                bccRecipients.size == 1 && bccRecipients[0].toString() == bccAddress
+            recipientMvpView.setBccVisibility(alreadyVisible || !singleBccRecipientFromAccount)
+            updateRecipientExpanderVisibility()
         }
     }
 
-    public void onPrepareOptionsMenu(Menu menu) {
-        boolean noContactPickerAvailable = !hasContactPicker();
+    fun onPrepareOptionsMenu(menu: Menu) {
+        val noContactPickerAvailable = !hasContactPicker()
         if (noContactPickerAvailable) {
-            menu.findItem(R.id.add_from_contacts).setVisible(false);
+            menu.findItem(R.id.add_from_contacts).setVisible(false)
         }
     }
 
-    public void onSwitchAccount(Account account) {
-        this.account = account;
-
-        if (account.isAlwaysShowCcBcc()) {
-            recipientMvpView.setCcVisibility(true);
-            recipientMvpView.setBccVisibility(true);
-            updateRecipientExpanderVisibility();
+    fun onSwitchAccount(account: Account) {
+        this.account = account
+        if (account.isAlwaysShowCcBcc) {
+            recipientMvpView.setCcVisibility(true)
+            recipientMvpView.setBccVisibility(true)
+            updateRecipientExpanderVisibility()
         }
-
-        String openPgpProvider = account.getOpenPgpProvider();
-        recipientMvpView.setCryptoProvider(openPgpProvider);
-        openPgpApiManager.setOpenPgpProvider(openPgpProvider, openPgpCallback);
+        val openPgpProvider = account.openPgpProvider
+        recipientMvpView.setCryptoProvider(openPgpProvider)
+        openPgpApiManager.setOpenPgpProvider(openPgpProvider, openPgpCallback)
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public void onSwitchIdentity(Identity identity) {
+    fun onSwitchIdentity(identity: com.fsck.k9.Identity?) {
 
         // TODO decide what actually to do on identity switch?
         /*
@@ -359,270 +292,219 @@ public class RecipientPresenter implements MessageReceivedListener {
         mBccView.setText("");
         mBccView.addAddress(new Address(mAccount.getAlwaysBcc(), ""));
         */
-
     }
 
-    private static Address[] addressFromStringArray(String[] addresses) {
-        return addressFromStringArray(Arrays.asList(addresses));
+    fun onClickToLabel() {
+        recipientMvpView.requestFocusOnToField()
     }
 
-    private static Address[] addressFromStringArray(List<String> addresses) {
-        ArrayList<Address> result = new ArrayList<>(addresses.size());
-
-        for (String addressStr : addresses) {
-            Collections.addAll(result, Address.parseUnencoded(addressStr));
-        }
-
-        return result.toArray(new Address[result.size()]);
+    fun onClickCcLabel() {
+        recipientMvpView.requestFocusOnCcField()
     }
 
-    void onClickToLabel() {
-        recipientMvpView.requestFocusOnToField();
+    fun onClickBccLabel() {
+        recipientMvpView.requestFocusOnBccField()
     }
 
-    void onClickCcLabel() {
-        recipientMvpView.requestFocusOnCcField();
+    fun onClickRecipientExpander() {
+        recipientMvpView.setCcVisibility(true)
+        recipientMvpView.setBccVisibility(true)
+        updateRecipientExpanderVisibility()
     }
 
-    void onClickBccLabel() {
-        recipientMvpView.requestFocusOnBccField();
-    }
-
-    void onClickRecipientExpander() {
-        recipientMvpView.setCcVisibility(true);
-        recipientMvpView.setBccVisibility(true);
-        updateRecipientExpanderVisibility();
-    }
-
-    private void hideEmptyExtendedRecipientFields() {
-        if (getCcAddresses().isEmpty()) {
-            recipientMvpView.setCcVisibility(false);
+    private fun hideEmptyExtendedRecipientFields() {
+        if (ccAddresses.isEmpty()) {
+            recipientMvpView.setCcVisibility(false)
             if (lastFocusedType == RecipientType.CC) {
-                lastFocusedType = RecipientType.TO;
+                lastFocusedType = RecipientType.TO
             }
         }
-        if (getBccAddresses().isEmpty()) {
-            recipientMvpView.setBccVisibility(false);
+        if (bccAddresses.isEmpty()) {
+            recipientMvpView.setBccVisibility(false)
             if (lastFocusedType == RecipientType.BCC) {
-                lastFocusedType = RecipientType.TO;
+                lastFocusedType = RecipientType.TO
             }
         }
-        updateRecipientExpanderVisibility();
+        updateRecipientExpanderVisibility()
     }
 
-    private void updateRecipientExpanderVisibility() {
-        boolean notBothAreVisible = !(recipientMvpView.isCcVisible() && recipientMvpView.isBccVisible());
-        recipientMvpView.setRecipientExpanderVisibility(notBothAreVisible);
+    private fun updateRecipientExpanderVisibility() {
+        val notBothAreVisible = !(recipientMvpView.isCcVisible && recipientMvpView.isBccVisible)
+        recipientMvpView.setRecipientExpanderVisibility(notBothAreVisible)
     }
 
-    public void updateCryptoStatus() {
-        cachedCryptoStatus = null;
-        loadPEpStatus();
-
-        OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
-
-        Long accountCryptoKey = account.getOpenPgpKey();
+    fun updateCryptoStatus() {
+        cachedCryptoStatus = null
+        loadPEpStatus()
+        val openPgpProviderState = openPgpApiManager.openPgpProviderState
+        var accountCryptoKey: Long? = account!!.openPgpKey
         if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
-            accountCryptoKey = null;
+            accountCryptoKey = null
         }
     }
 
-    public ComposeCryptoStatus getCurrentCryptoStatus() {
-        if (cachedCryptoStatus == null) {
-            ComposeCryptoStatusBuilder builder = new ComposeCryptoStatusBuilder()
+    val currentCryptoStatus: ComposeCryptoStatus?
+        get() {
+            if (cachedCryptoStatus == null) {
+                val builder = ComposeCryptoStatusBuilder()
                     .setOpenPgpProviderState(OpenPgpProviderState.UNCONFIGURED)
                     .setCryptoMode(currentCryptoMode)
                     .setEnablePgpInline(cryptoEnablePgpInline)
-                    .setRecipients(getAllRecipients());
-
-            long accountCryptoKey = account.getOpenPgpKey();
-            if (accountCryptoKey != Account.NO_OPENPGP_KEY) {
-                // TODO split these into individual settings? maybe after key is bound to identity
-                builder.setSigningKeyId(accountCryptoKey);
-                builder.setSelfEncryptId(accountCryptoKey);
+                    .setRecipients(allRecipients)
+                val accountCryptoKey = account!!.openPgpKey
+                if (accountCryptoKey != Account.NO_OPENPGP_KEY) {
+                    // TODO split these into individual settings? maybe after key is bound to identity
+                    builder.setSigningKeyId(accountCryptoKey)
+                    builder.setSelfEncryptId(accountCryptoKey)
+                }
+                cachedCryptoStatus = builder.build()
             }
-
-            cachedCryptoStatus = builder.build();
+            return cachedCryptoStatus
         }
-
-        return cachedCryptoStatus;
-    }
-
-    public boolean isForceTextMessageFormat() {
-        if (cryptoEnablePgpInline) {
-            ComposeCryptoStatus cryptoStatus = getCurrentCryptoStatus();
-            return cryptoStatus.isEncryptionEnabled() || cryptoStatus.isSigningEnabled();
+    val isForceTextMessageFormat: Boolean
+        get() = if (cryptoEnablePgpInline) {
+            val cryptoStatus = currentCryptoStatus
+            cryptoStatus!!.isEncryptionEnabled || cryptoStatus.isSigningEnabled
         } else {
-            return false;
+            false
+        }
+
+    fun onRecipientsChanged() {
+        updateCryptoStatus()
+        listener.onRecipientsChanged()
+    }
+
+    fun showError(throwable: Throwable?) {
+        recipientMvpView.showError(throwable)
+    }
+
+    fun onCryptoModeChanged(cryptoMode: CryptoMode) {
+        currentCryptoMode = cryptoMode
+        updateCryptoStatus()
+    }
+
+    fun onCryptoPgpInlineChanged(enablePgpInline: Boolean) {
+        cryptoEnablePgpInline = enablePgpInline
+        updateCryptoStatus()
+    }
+
+    private fun addRecipientsFromAddresses(
+        recipientType: RecipientType,
+        vararg addresses: Address
+    ) {
+        object : RecipientLoader(context, account!!.openPgpProvider!!, *addresses) {
+            override fun deliverResult(result: List<Recipient>?) {
+                val recipientArray = result!!.toTypedArray<Recipient>()
+                addRecipients(recipientType, *recipientArray)
+                stopLoading()
+                abandon()
+            }
+        }.startLoading()
+    }
+
+    fun addRecipients(recipientType: RecipientType?, vararg recipients: Recipient) {
+        when (recipientType) {
+            RecipientType.TO -> {
+                toPresenter!!.addRecipients(*recipients)
+            }
+
+            RecipientType.CC -> {
+                ccPresenter!!.addRecipients(*recipients)
+            }
+
+            RecipientType.BCC -> {
+                bccPresenter!!.addRecipients(*recipients)
+            }
+
+            else -> {}
         }
     }
 
-    void onRecipientsChanged() {
-        updateCryptoStatus();
-        listener.onRecipientsChanged();
-    }
-
-    void showError(Throwable throwable) {
-        recipientMvpView.showError(throwable);
-    }
-
-    public void onCryptoModeChanged(CryptoMode cryptoMode) {
-        currentCryptoMode = cryptoMode;
-        updateCryptoStatus();
-    }
-
-    public void onCryptoPgpInlineChanged(boolean enablePgpInline) {
-        cryptoEnablePgpInline = enablePgpInline;
-        updateCryptoStatus();
-    }
-
-    private void addRecipientsFromAddresses(final RecipientType recipientType, final Address... addresses) {
-        new RecipientLoader(context, account.getOpenPgpProvider(), addresses) {
-            @Override
-            public void deliverResult(List<Recipient> result) {
-                Recipient[] recipientArray = result.toArray(new Recipient[result.size()]);
-                addRecipients(recipientType, recipientArray);
-
-                stopLoading();
-                abandon();
-            }
-        }.startLoading();
-    }
-
-    public void addRecipients(RecipientType recipientType, Recipient... recipients) {
-        switch (recipientType) {
-            case TO: {
-                toPresenter.addRecipients(recipients);
-                break;
-            }
-            case CC: {
-                ccPresenter.addRecipients(recipients);
-                break;
-            }
-            case BCC: {
-                bccPresenter.addRecipients(recipients);
-                break;
-            }
-        }
-    }
-
-    private void addRecipientFromContactUri(final RecipientType recipientType, final Uri uri) {
-        new RecipientLoader(context, account.getOpenPgpProvider(), uri, false) {
-            @Override
-            public void deliverResult(List<Recipient> result) {
+    private fun addRecipientFromContactUri(recipientType: RecipientType, uri: Uri?) {
+        object : RecipientLoader(context, account!!.openPgpProvider, uri, false) {
+            override fun deliverResult(result: List<Recipient>?) {
                 // TODO handle multiple available mail addresses for a contact?
-                if (result.isEmpty()) {
-                    recipientMvpView.showErrorContactNoAddress();
-                    return;
+                if (result!!.isEmpty()) {
+                    recipientMvpView.showErrorContactNoAddress()
+                    return
                 }
-
-                Recipient recipient = result.get(0);
-                addRecipients(recipientType, recipient);
-
-                stopLoading();
-                abandon();
+                val recipient = result[0]
+                addRecipients(recipientType, recipient)
+                stopLoading()
+                abandon()
             }
-        }.startLoading();
+        }.startLoading()
     }
 
-    void onToFocused() {
-        lastFocusedType = RecipientType.TO;
+    fun onToFocused() {
+        lastFocusedType = RecipientType.TO
     }
 
-    void onCcFocused() {
-        lastFocusedType = RecipientType.CC;
+    fun onCcFocused() {
+        lastFocusedType = RecipientType.CC
     }
 
-    void onBccFocused() {
-        lastFocusedType = RecipientType.BCC;
+    fun onBccFocused() {
+        lastFocusedType = RecipientType.BCC
     }
 
-    public void onMenuAddFromContacts() {
-        int requestCode = recipientTypeToRequestCode(lastFocusedType);
-        recipientMvpView.showContactPicker(requestCode);
+    fun onMenuAddFromContacts() {
+        val requestCode = recipientTypeToRequestCode(lastFocusedType)
+        recipientMvpView.showContactPicker(requestCode)
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case CONTACT_PICKER_TO:
-            case CONTACT_PICKER_CC:
-            case CONTACT_PICKER_BCC:
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            CONTACT_PICKER_TO,
+            CONTACT_PICKER_CC,
+            CONTACT_PICKER_BCC -> {
                 if (resultCode != Activity.RESULT_OK || data == null) {
-                    return;
+                    return
                 }
-                RecipientType recipientType = recipientTypeFromRequestCode(requestCode);
-                addRecipientFromContactUri(recipientType, data.getData());
-                break;
-            case OPENPGP_USER_INTERACTION:
-                openPgpApiManager.onUserInteractionResult();
-                break;
+                val recipientType = recipientTypeFromRequestCode(requestCode)
+                addRecipientFromContactUri(recipientType, data.data)
+            }
+
+            OPENPGP_USER_INTERACTION -> openPgpApiManager.onUserInteractionResult()
         }
     }
 
-    public void handleVerifyPartnerIdentityResult() {
-        loadPEpStatus();
+    fun handleVerifyPartnerIdentityResult() {
+        loadPEpStatus()
     }
 
-    private static int recipientTypeToRequestCode(RecipientType type) {
-        switch (type) {
-            case TO: {
-                return CONTACT_PICKER_TO;
-            }
-            case CC: {
-                return CONTACT_PICKER_CC;
-            }
-            case BCC: {
-                return CONTACT_PICKER_BCC;
-            }
-        }
-
-        throw new AssertionError("Unhandled case: " + type);
-    }
-
-    private static RecipientType recipientTypeFromRequestCode(int type) {
-        switch (type) {
-            case CONTACT_PICKER_TO: {
-                return RecipientType.TO;
-            }
-            case CONTACT_PICKER_CC: {
-                return RecipientType.CC;
-            }
-            case CONTACT_PICKER_BCC: {
-                return RecipientType.BCC;
-            }
-        }
-
-        throw new AssertionError("Unhandled case: " + type);
-    }
-
-    public void onNonRecipientFieldFocused() {
-        if (!account.isAlwaysShowCcBcc()) {
-            hideEmptyExtendedRecipientFields();
+    fun onNonRecipientFieldFocused() {
+        if (!account!!.isAlwaysShowCcBcc) {
+            hideEmptyExtendedRecipientFields()
         }
     }
 
-    void onClickCryptoStatus() {
-        switch (openPgpApiManager.getOpenPgpProviderState()) {
-            case UNCONFIGURED:
-                Timber.e("click on crypto status while unconfigured - this should not really happen?!");
-                return;
-            case OK:
-                if (cachedCryptoStatus.isSignOnly()) {
-                    recipientMvpView.showErrorIsSignOnly();
+    fun onClickCryptoStatus() {
+        when (openPgpApiManager.openPgpProviderState) {
+            OpenPgpProviderState.UNCONFIGURED -> {
+                Timber.e("click on crypto status while unconfigured - this should not really happen?!")
+                return
+            }
+
+            OpenPgpProviderState.OK -> {
+                if (cachedCryptoStatus!!.isSignOnly) {
+                    recipientMvpView.showErrorIsSignOnly()
                 } else {
-                    recipientMvpView.showCryptoDialog(currentCryptoMode);
+                    recipientMvpView.showCryptoDialog(currentCryptoMode)
                 }
-                return;
+                return
+            }
 
-            case UI_REQUIRED:
+            OpenPgpProviderState.UI_REQUIRED -> {
                 // TODO show openpgp settings
-                PendingIntent pendingIntent = openPgpApiManager.getUserInteractionPendingIntent();
-                recipientMvpView.launchUserInteractionPendingIntent(pendingIntent, OPENPGP_USER_INTERACTION);
-                break;
+                val pendingIntent = openPgpApiManager.userInteractionPendingIntent
+                recipientMvpView.launchUserInteractionPendingIntent(
+                    pendingIntent,
+                    OPENPGP_USER_INTERACTION
+                )
+            }
 
-            case UNINITIALIZED:
-            case ERROR:
-                openPgpApiManager.refreshConnection();
+            OpenPgpProviderState.UNINITIALIZED, OpenPgpProviderState.ERROR -> openPgpApiManager.refreshConnection()
         }
     }
 
@@ -633,340 +515,398 @@ public class RecipientPresenter implements MessageReceivedListener {
      *
      * @return True, if the device supports picking contacts. False, otherwise.
      */
-    private boolean hasContactPicker() {
+    private fun hasContactPicker(): Boolean {
         if (hasContactPicker == null) {
-            Contacts contacts = Contacts.getInstance(context);
-
-            PackageManager packageManager = context.getPackageManager();
-            List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(contacts.contactPickerIntent(), 0);
-            hasContactPicker = !resolveInfoList.isEmpty();
+            val contacts = Contacts.getInstance(
+                context
+            )
+            val packageManager = context.packageManager
+            val resolveInfoList =
+                packageManager.queryIntentActivities(contacts.contactPickerIntent(), 0)
+            hasContactPicker = !resolveInfoList.isEmpty()
         }
-
-        return hasContactPicker;
+        return hasContactPicker!!
     }
 
-    public void showPgpSendError(SendErrorState sendErrorState) {
-        switch (sendErrorState) {
-            case PROVIDER_ERROR:
-                recipientMvpView.showErrorOpenPgpConnection();
-                break;
-            case SIGN_KEY_NOT_CONFIGURED:
-                recipientMvpView.showErrorMissingSignKey();
-                break;
-            case PRIVATE_BUT_MISSING_KEYS:
-                recipientMvpView.showErrorPrivateButMissingKeys();
-                break;
-            default:
-                throw new AssertionError("not all error states handled, this is a bug!");
+    fun showPgpSendError(sendErrorState: SendErrorState?) {
+        when (sendErrorState) {
+            SendErrorState.PROVIDER_ERROR -> recipientMvpView.showErrorOpenPgpConnection()
+            SendErrorState.SIGN_KEY_NOT_CONFIGURED -> recipientMvpView.showErrorMissingSignKey()
+            SendErrorState.PRIVATE_BUT_MISSING_KEYS -> recipientMvpView.showErrorPrivateButMissingKeys()
+            else -> throw AssertionError("not all error states handled, this is a bug!")
         }
     }
 
-    void showPgpAttachError(AttachErrorState attachErrorState) {
-        switch (attachErrorState) {
-            case IS_INLINE:
-                recipientMvpView.showErrorInlineAttach();
-                break;
-            default:
-                throw new AssertionError("not all error states handled, this is a bug!");
+    internal fun showPgpAttachError(attachErrorState: AttachErrorState?) {
+        when (attachErrorState) {
+            AttachErrorState.IS_INLINE -> recipientMvpView.showErrorInlineAttach()
+            else -> throw AssertionError("not all error states handled, this is a bug!")
         }
     }
 
-    public void builderSetProperties(MessageBuilder messageBuilder) {
-        if (messageBuilder instanceof PgpMessageBuilder) {
-            throw new IllegalArgumentException("PpgMessageBuilder must be called with ComposeCryptoStatus argument!");
-        }
-
-        messageBuilder.setTo(getToAddresses());
-        messageBuilder.setCc(getCcAddresses());
-        messageBuilder.setBcc(getBccAddresses());
+    fun builderSetProperties(messageBuilder: MessageBuilder) {
+        require(messageBuilder !is PgpMessageBuilder) { "PpgMessageBuilder must be called with ComposeCryptoStatus argument!" }
+        messageBuilder.setTo(toAddresses)
+        messageBuilder.setCc(ccAddresses)
+        messageBuilder.setBcc(bccAddresses)
     }
 
-    public void builderSetProperties(PgpMessageBuilder pgpBuilder) {
-        pgpBuilder.setOpenPgpApi(openPgpApiManager.getOpenPgpApi());
-        pgpBuilder.setCryptoStatus(getCurrentCryptoStatus());
+    fun builderSetProperties(pgpBuilder: PgpMessageBuilder) {
+        pgpBuilder.setOpenPgpApi(openPgpApiManager.openPgpApi)
+        pgpBuilder.setCryptoStatus(currentCryptoStatus)
     }
 
-    public void onCryptoPgpSignOnlyDisabled() {
-        onCryptoPgpInlineChanged(false);
-        onCryptoModeChanged(CryptoMode.OPPORTUNISTIC);
+    fun onCryptoPgpSignOnlyDisabled() {
+        onCryptoPgpInlineChanged(false)
+        onCryptoModeChanged(CryptoMode.OPPORTUNISTIC)
     }
 
-    private boolean checkAndIncrementPgpInlineDialogCounter() {
-        int pgpInlineDialogCounter = K9.getPgpInlineDialogCounter();
+    private fun checkAndIncrementPgpInlineDialogCounter(): Boolean {
+        val pgpInlineDialogCounter = K9.getPgpInlineDialogCounter()
         if (pgpInlineDialogCounter < PGP_DIALOG_DISPLAY_THRESHOLD) {
-            K9.setPgpInlineDialogCounter(pgpInlineDialogCounter + 1);
-            return true;
+            K9.setPgpInlineDialogCounter(pgpInlineDialogCounter + 1)
+            return true
         }
-        return false;
+        return false
     }
 
+    fun switchPrivacyProtection(scope: ProtectionScope?, vararg protection: Boolean) {
+        val bccAdresses = bccAddresses
+        if (bccAdresses == null || bccAdresses.size == 0) {
+            when (scope) {
+                ProtectionScope.MESSAGE -> {
+                    if (protection.size > 0) throw RuntimeException("On message only switch allowed")
+                    isForceUnencrypted = !isForceUnencrypted
+                }
 
-    public void switchPrivacyProtection(PlanckProvider.ProtectionScope scope, boolean... protection) {
-        List<Address> bccAdresses = getBccAddresses();
-        if (bccAdresses == null || bccAdresses.size() == 0) {
-            switch (scope) {
-                case MESSAGE:
-                    if (protection.length > 0)
-                        throw new RuntimeException("On message only switch allowed");
-                    forceUnencrypted = !forceUnencrypted;
-                    break;
-                case ACCOUNT:
-                    if (protection.length < 1)
-                        throw new RuntimeException("On account only explicit boolean allowed");
-                    forceUnencrypted = !protection[0];
-                    break;
+                ProtectionScope.ACCOUNT -> {
+                    if (protection.size < 1) throw RuntimeException("On account only explicit boolean allowed")
+                    isForceUnencrypted = !protection[0]
+                }
             }
         } else {
-            forceUnencrypted = !forceUnencrypted;
+            isForceUnencrypted = !isForceUnencrypted
         }
-        updateCryptoStatus();
+        updateCryptoStatus()
     }
 
-    public boolean isForceUnencrypted() {
-        return forceUnencrypted;
+    fun onResume() {
+        notifyRecipientsChanged()
+        updateCryptoStatus()
     }
 
-    public boolean isAlwaysSecure() {
-        return isAlwaysSecure;
+    fun handlepEpState() {
+        recipientMvpView.handlepEpState(allRecipients.isEmpty())
     }
 
-    public void onResume() {
-        notifyRecipientsChanged();
-        updateCryptoStatus();
-    }
-
-    public void handlepEpState() {
-        recipientMvpView.handlepEpState(getAllRecipients().isEmpty());
-    }
-
-    public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
-        Rating currentRating = recipientMvpView.getPlanckRating();
-        return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
+    fun isForwardedMessageWeakestThanOriginal(originalMessageRating: Rating): Boolean {
+        val currentRating = recipientMvpView.planckRating
+        return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value
     }
 
     @VisibleForTesting
-    void setOpenPgpServiceConnection(OpenPgpServiceConnection openPgpServiceConnection, String cryptoProvider) {
-        this.openPgpServiceConnection = openPgpServiceConnection;
+    fun setOpenPgpServiceConnection(
+        openPgpServiceConnection: OpenPgpServiceConnection?,
+        cryptoProvider: String?
+    ) {
+        this.openPgpServiceConnection = openPgpServiceConnection
         //this.cryptoProvider = cryptoProvider;
     }
 
-    public void setAlwaysSecure(Boolean alwaysSecure) {
-        isAlwaysSecure = alwaysSecure;
-    }
-    public boolean shouldSaveRemotely() {
+    fun shouldSaveRemotely(): Boolean {
         // TODO more appropriate logic?
-        return cachedCryptoStatus == null || !cachedCryptoStatus.isEncryptionEnabled();
+        return cachedCryptoStatus == null || !cachedCryptoStatus!!.isEncryptionEnabled
     }
 
-    @Override
-    public void messageReceived() {
-        updateCryptoStatus();
-        if (account.isPlanckPrivacyProtected() && K9.isPlanckForwardWarningEnabled()) {
-            toPresenter.updateRecipientsFromMessage();
-            ccPresenter.updateRecipientsFromMessage();
+    override fun messageReceived() {
+        updateCryptoStatus()
+        if (account!!.isPlanckPrivacyProtected && K9.isPlanckForwardWarningEnabled()) {
+            toPresenter!!.updateRecipientsFromMessage()
+            ccPresenter!!.updateRecipientsFromMessage()
         }
     }
 
-    public void handleResetPartnerKeyResult() {
-        loadPEpStatus();
+    fun handleResetPartnerKeyResult() {
+        loadPEpStatus()
     }
 
-    public boolean canResetSenderKeys(
-            List<Address> newToAdresses,
-            List<Address> newCcAdresses,
-            List<Address> newBccAdresses
-    ) {
-        return recipientConditionsForKeyReset(newToAdresses, newCcAdresses, newBccAdresses)
-                && ratingConditionsForSenderKeyReset();
+    fun canResetSenderKeys(
+        newToAdresses: List<Address>,
+        newCcAdresses: List<Address>,
+        newBccAdresses: List<Address>
+    ): Boolean {
+        return (recipientConditionsForKeyReset(newToAdresses, newCcAdresses, newBccAdresses)
+                && ratingConditionsForSenderKeyReset())
     }
 
-    private void handleSingleAddressKeyResetAllowance(
-            List<Address> newToAdresses,
-            List<Address> newCcAdresses,
-            List<Address> newBccAdresses
+    private fun handleSingleAddressKeyResetAllowance(
+        newToAdresses: List<Address>,
+        newCcAdresses: List<Address>,
+        newBccAdresses: List<Address>
     ) {
         if (canResetSenderKeys(newToAdresses, newCcAdresses, newBccAdresses)) {
-            recipientMvpView.showResetPartnerKeyOption();
+            recipientMvpView.showResetPartnerKeyOption()
         } else {
-            recipientMvpView.hideResetPartnerKeyOption();
+            recipientMvpView.hideResetPartnerKeyOption()
         }
     }
 
-    private boolean recipientConditionsForKeyReset(
-            List<Address> newToAdresses,
-            List<Address> newCcAdresses,
-            List<Address> newBccAdresses
-    ) {
-        return account != null && account.isPlanckPrivacyProtected()
-                && newToAdresses.size() == ONE_ADDRESS
-                && newBccAdresses.isEmpty()
+    private fun recipientConditionsForKeyReset(
+        newToAdresses: List<Address>,
+        newCcAdresses: List<Address>,
+        newBccAdresses: List<Address>
+    ): Boolean {
+        return (account != null && account!!.isPlanckPrivacyProtected && newToAdresses.size == ONE_ADDRESS && newBccAdresses.isEmpty()
                 && newCcAdresses.isEmpty()
-                && !Preferences.getPreferences(context).containsAccountByEmail(newToAdresses.get(0).getAddress());
+                && !Preferences.getPreferences(context)
+            .containsAccountByEmail(newToAdresses[0].address))
     }
 
-    private boolean ratingConditionsForSenderKeyReset() {
-        return !PlanckUtils.isRatingUnsecure(privacyState) || (privacyState == Rating.pEpRatingMistrust);
+    private fun ratingConditionsForSenderKeyReset(): Boolean {
+        return !PlanckUtils.isRatingUnsecure(privacyState!!) || privacyState === Rating.pEpRatingMistrust
     }
 
-    public void resetPartnerKeys() {
-        recipientMvpView.resetPartnerKeys(toPresenter.getAddresses().get(0).getAddress());
+    fun resetPartnerKeys() {
+        recipientMvpView.resetPartnerKeys(toPresenter!!.addresses[0].address)
     }
 
-    public interface RecipientsChangedListener {
-        void onRecipientsChanged();
+    interface RecipientsChangedListener {
+        fun onRecipientsChanged()
     }
 
-    private final OpenPgpApiManagerCallback openPgpCallback = new OpenPgpApiManagerCallback() {
-        @Override
-        public void onOpenPgpProviderStatusChanged() {
+    private val openPgpCallback: OpenPgpApiManagerCallback = object : OpenPgpApiManagerCallback {
+        override fun onOpenPgpProviderStatusChanged() {
             //asyncUpdateCryptoStatus();
-            if (openPgpApiManager.getOpenPgpProviderState() == OpenPgpProviderState.UI_REQUIRED) {
-                recipientMvpView.showErrorOpenPgpUserInteractionRequired();
-            }
-            }
-
-        @Override
-        public void onOpenPgpProviderError(OpenPgpProviderError error) {
-            switch (error) {
-                case ConnectionLost:
-                    openPgpApiManager.refreshConnection();
-                    break;
-                case VersionIncompatible:
-                    //recipientMvpView.showErrorOpenPgpIncompatible();
-                    break;
-                case ConnectionFailed:
-                default:
-                    recipientMvpView.showErrorOpenPgpConnection();
-                    break;
+            if (openPgpApiManager.openPgpProviderState == OpenPgpProviderState.UI_REQUIRED) {
+                recipientMvpView.showErrorOpenPgpUserInteractionRequired()
             }
         }
-    };
 
-    public enum CryptoMode {
+        override fun onOpenPgpProviderError(error: OpenPgpProviderError) {
+            when (error) {
+                OpenPgpProviderError.ConnectionLost -> openPgpApiManager.refreshConnection()
+                OpenPgpProviderError.VersionIncompatible -> {
+                    //recipientMvpView.showErrorOpenPgpIncompatible();
+                }
+
+                else -> recipientMvpView.showErrorOpenPgpConnection()
+            }
+        }
+    }
+
+    init {
+        recipientMvpView.setPresenter(this)
+        planckUiCache = PlanckUIArtefactCache.getInstance(context.applicationContext)
+        recipientMvpView.setLoaderManager(loaderManager)
+        onSwitchAccount(account)
+        updateCryptoStatus()
+    }
+
+    enum class CryptoMode {
         DISABLE,
         SIGN_ONLY,
         OPPORTUNISTIC,
-        PRIVATE,
+        PRIVATE
     }
 
-    private void loadPEpStatus() {
-        Address fromAddress = recipientMvpView.getFromAddress();
-        List<Address> newToAdresses = getToAddresses();
-        List<Address> newCcAdresses = getCcAddresses();
-        List<Address> newBccAdresses = getBccAddresses();
+    private fun loadPEpStatus() {
+        val fromAddress = recipientMvpView.fromAddress
+        val newToAdresses = toAddresses
+        val newCcAdresses = ccAddresses
+        val newBccAdresses = bccAddresses
         if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
-            showDefaultStatus();
-            recipientMvpView.hideUnsecureDeliveryWarning();
-            recipientMvpView.hideSingleRecipientHandshakeBanner();
-            recipientMvpView.messageRatingLoaded();
-            return;
+            showDefaultStatus()
+            recipientMvpView.hideUnsecureDeliveryWarning()
+            recipientMvpView.hideSingleRecipientHandshakeBanner()
+            recipientMvpView.messageRatingLoaded()
+            return
         }
-        recipientMvpView.messageRatingIsBeingLoaded();
-        long requestTime = System.currentTimeMillis();
-        lastRequestTime = requestTime;
-        planck.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PlanckProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                if (isRequestOutdated(requestTime)) {
-                    return;
+        recipientMvpView.messageRatingIsBeingLoaded()
+        val requestTime = System.currentTimeMillis()
+        lastRequestTime = requestTime
+        planck.getRating(
+            fromAddress,
+            newToAdresses,
+            newCcAdresses,
+            newBccAdresses,
+            object : PlanckProvider.ResultCallback<Rating> {
+                override fun onLoaded(rating: Rating) {
+                    if (isRequestOutdated(requestTime)) {
+                        return
+                    }
+                    if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
+                        showDefaultStatus()
+                        recipientMvpView.hideUnsecureDeliveryWarning()
+                        recipientMvpView.hideSingleRecipientHandshakeBanner()
+                        recipientMvpView.hideResetPartnerKeyOption()
+                    } else {
+                        privacyState = rating
+                        handleSingleAddressHandshakeFeedback(
+                            newToAdresses,
+                            newCcAdresses,
+                            newBccAdresses
+                        )
+                        handleSingleAddressKeyResetAllowance(
+                            newToAdresses,
+                            newCcAdresses,
+                            newBccAdresses
+                        )
+                        showRatingFeedback(rating)
+                    }
+                    recipientMvpView.messageRatingLoaded()
                 }
-                if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
-                    showDefaultStatus();
-                    recipientMvpView.hideUnsecureDeliveryWarning();
-                    recipientMvpView.hideSingleRecipientHandshakeBanner();
-                    recipientMvpView.hideResetPartnerKeyOption();
-                } else {
-                    privacyState = rating;
-                    handleSingleAddressHandshakeFeedback(newToAdresses, newCcAdresses, newBccAdresses);
-                    handleSingleAddressKeyResetAllowance(newToAdresses, newCcAdresses, newBccAdresses);
-                    showRatingFeedback(rating);
+
+                override fun onError(throwable: Throwable) {
+                    recipientMvpView.showError(throwable)
+                    recipientMvpView.hideResetPartnerKeyOption()
+                    if (isRequestOutdated(requestTime)) {
+                        return
+                    }
+                    showDefaultStatus()
+                    recipientMvpView.messageRatingLoaded()
                 }
-                recipientMvpView.messageRatingLoaded();
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                recipientMvpView.showError(throwable);
-                recipientMvpView.hideResetPartnerKeyOption();
-                if (isRequestOutdated(requestTime)) {
-                    return;
-                }
-                showDefaultStatus();
-                recipientMvpView.messageRatingLoaded();
-            }
-        });
+            })
     }
 
-    private boolean isRequestOutdated(long requestTime) {
-        return lastRequestTime > requestTime;
+    private fun isRequestOutdated(requestTime: Long): Boolean {
+        return lastRequestTime > requestTime
     }
 
-    private boolean addressesAreEmpty(List<Address> newToAdresses, List<Address> newCcAdresses, List<Address> newBccAdresses) {
-        return newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty();
+    private fun addressesAreEmpty(
+        newToAdresses: List<Address>,
+        newCcAdresses: List<Address>,
+        newBccAdresses: List<Address>
+    ): Boolean {
+        return newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()
     }
 
-    public void handleUnsecureDeliveryWarning() {
-        int unsecureRecipientsCount = K9.isPlanckForwardWarningEnabled()
-                && account.isPlanckPrivacyProtected()
-                ? getUnsecureRecipientsCount()
-                : ZERO_RECIPIENTS;
-        handleUnsecureDeliveryWarning(unsecureRecipientsCount);
+    fun handleUnsecureDeliveryWarning() {
+        val unsecureRecipientsCount = if (K9.isPlanckForwardWarningEnabled()
+            && account!!.isPlanckPrivacyProtected
+        ) unsecureRecipientsCount else ZERO_RECIPIENTS
+        handleUnsecureDeliveryWarning(unsecureRecipientsCount)
     }
 
-    private void handleUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+    private fun handleUnsecureDeliveryWarning(unsecureRecipientsCount: Int) {
         if (unsecureRecipientsCount > ZERO_RECIPIENTS) {
-            recipientMvpView.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+            recipientMvpView.showUnsecureDeliveryWarning(unsecureRecipientsCount)
         } else {
-            recipientMvpView.hideUnsecureDeliveryWarning();
+            recipientMvpView.hideUnsecureDeliveryWarning()
         }
     }
 
-    private void handleSingleAddressHandshakeFeedback(
-            List<Address> newToAdresses,
-            List<Address> newCcAdresses,
-            List<Address> newBccAdresses
+    private fun handleSingleAddressHandshakeFeedback(
+        newToAdresses: List<Address>,
+        newCcAdresses: List<Address>,
+        newBccAdresses: List<Address>
     ) {
         if (canHandshakeSingleAddress(newToAdresses, newCcAdresses, newBccAdresses)) {
-            recipientMvpView.showSingleRecipientHandshakeBanner();
+            recipientMvpView.showSingleRecipientHandshakeBanner()
         } else {
-            recipientMvpView.hideSingleRecipientHandshakeBanner();
+            recipientMvpView.hideSingleRecipientHandshakeBanner()
         }
     }
 
-    private boolean canHandshakeSingleAddress(
-            List<Address> newToAdresses,
-            List<Address> newCcAdresses,
-            List<Address> newBccAdresses
-    ) {
-        return newToAdresses.size() == ONE_ADDRESS
-                && newBccAdresses.isEmpty()
+    private fun canHandshakeSingleAddress(
+        newToAdresses: List<Address>,
+        newCcAdresses: List<Address>,
+        newBccAdresses: List<Address>
+    ): Boolean {
+        return ((newToAdresses.size == ONE_ADDRESS && newBccAdresses.isEmpty()
                 && newCcAdresses.isEmpty()
-                && PlanckUtils.isRatingReliable(privacyState)
-                && account!= null && account.isPlanckPrivacyProtected()
-                && !newToAdresses.get(0).getAddress().equalsIgnoreCase(account.getEmail()); // recipient not my own account
+                && PlanckUtils.isRatingReliable(privacyState!!) && account != null) && account!!.isPlanckPrivacyProtected
+                && !newToAdresses[0].address.equals(
+            account!!.email,
+            ignoreCase = true
+        )) // recipient not my own account
     }
 
-    private int getUnsecureRecipientsCount() {
-        return toPresenter.getUnsecureAddressChannelCount() +
-                ccPresenter.getUnsecureAddressChannelCount() +
-                bccPresenter.getUnsecureAddressChannelCount();
+    private val unsecureRecipientsCount: Int
+        get() = toPresenter!!.unsecureAddressChannelCount +
+                ccPresenter!!.unsecureAddressChannelCount +
+                bccPresenter!!.unsecureAddressChannelCount
+
+    private fun showDefaultStatus() {
+        privacyState = Rating.pEpRatingUndefined
+        showRatingFeedback(privacyState!!)
     }
 
-    private void showDefaultStatus() {
-        privacyState = Rating.pEpRatingUndefined;
-        showRatingFeedback(privacyState);
+    private fun showRatingFeedback(rating: Rating) {
+        recipientMvpView.planckRating = rating
+        handlepEpState()
     }
 
-    private void showRatingFeedback(Rating rating) {
-        recipientMvpView.setPlanckRating(rating);
-        handlepEpState();
+    fun notifyRecipientsChanged() {
+        recipientMvpView.doUiOperationRestoringFocus {
+            toPresenter!!.notifyRecipientsChanged()
+            ccPresenter!!.notifyRecipientsChanged()
+            bccPresenter!!.notifyRecipientsChanged()
+        }
     }
 
-    public void notifyRecipientsChanged() {
-        recipientMvpView.doUiOperationRestoringFocus(() -> {
-            toPresenter.notifyRecipientsChanged();
-            ccPresenter.notifyRecipientsChanged();
-            bccPresenter.notifyRecipientsChanged();
-        });
+    companion object {
+        private const val STATE_KEY_CC_SHOWN = "state:ccShown"
+        private const val STATE_KEY_BCC_SHOWN = "state:bccShown"
+        private const val STATE_KEY_LAST_FOCUSED_TYPE = "state:lastFocusedType"
+        private const val STATE_KEY_CURRENT_CRYPTO_MODE = "state:currentCryptoMode"
+        private const val STATE_KEY_CRYPTO_ENABLE_PGP_INLINE = "state:cryptoEnablePgpInline"
+        private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
+        private const val STATE_ALWAYS_SECURE = "alwaysSecure"
+        private const val CONTACT_PICKER_TO = 1
+        private const val CONTACT_PICKER_CC = 2
+        private const val CONTACT_PICKER_BCC = 3
+        private const val OPENPGP_USER_INTERACTION = 4
+        const val POLLING_INTERVAL = 1200
+        const val STATE_RATING = "rating"
+        private const val PGP_DIALOG_DISPLAY_THRESHOLD = 2
+        private const val ZERO_RECIPIENTS = 0
+        private const val ONE_ADDRESS = 1
+        private fun addressFromStringArray(addresses: Array<String>): Array<Address> {
+            return addressFromStringArray(Arrays.asList(*addresses))
+        }
+
+        private fun addressFromStringArray(addresses: List<String>): Array<Address> {
+            val result = ArrayList<Address>(addresses.size)
+            for (addressStr in addresses) {
+                Collections.addAll(result, *Address.parseUnencoded(addressStr))
+            }
+            return result.toTypedArray<Address>()
+        }
+
+        private fun recipientTypeToRequestCode(type: RecipientType): Int {
+            return when (type) {
+                RecipientType.TO -> {
+                    CONTACT_PICKER_TO
+                }
+
+                RecipientType.CC -> {
+                    CONTACT_PICKER_CC
+                }
+
+                RecipientType.BCC -> {
+                    CONTACT_PICKER_BCC
+                }
+
+                else -> throw AssertionError("Unhandled case: $type")
+            }
+        }
+
+        private fun recipientTypeFromRequestCode(type: Int): RecipientType {
+            return when (type) {
+                CONTACT_PICKER_TO -> {
+                    RecipientType.TO
+                }
+
+                CONTACT_PICKER_CC -> {
+                    RecipientType.CC
+                }
+
+                CONTACT_PICKER_BCC -> {
+                    RecipientType.BCC
+                }
+
+                else -> throw AssertionError("Unhandled case: $type")
+            }
+        }
     }
 }
