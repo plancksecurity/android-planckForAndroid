@@ -21,7 +21,7 @@ fun LocalMessage?.isValidForHandshake() = this != null
         && PlanckUtils.isRatingReliable(planckRating)
         && getRecipients(Message.RecipientType.CC).isNullOrEmpty()
         && getRecipients(Message.RecipientType.BCC).isNullOrEmpty()
-        && !getRecipients(Message.RecipientType.TO).isNullOrEmpty()
+        && getRecipients(Message.RecipientType.TO).size == 1
 
 private fun LocalMessage.hasSingleSenderNotMe(): Boolean =
     from != null
