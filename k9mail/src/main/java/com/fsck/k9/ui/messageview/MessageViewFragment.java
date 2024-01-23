@@ -71,6 +71,7 @@ import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
+import com.fsck.k9.ui.messageview.MessageViewEffect.MessageOperationError;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 import com.google.android.material.snackbar.Snackbar;
@@ -86,12 +87,12 @@ import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import kotlin.ExceptionsKt;
-import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
 import security.planck.ui.message_compose.PlanckFabMenu;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialogKt;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
@@ -134,7 +135,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessageReference mMessageReference;
     private MessagingController mController;
     private DownloadManager downloadManager;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private MessageCryptoPresenter messageCryptoPresenter;
 
     /**
@@ -376,7 +377,20 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             showDownloadMessageNetworkError((ErrorDownloadingNetworkError) effect);
         } else if (effect.equals(MessageMovedToSuspiciousFolder.INSTANCE)) {
             messageMovedToSuspiciousFolder();
+        } else if (effect instanceof MessageOperationError) {
+            showMessageOperationError((MessageOperationError) effect);
         }
+    }
+
+    private void showMessageOperationError(MessageOperationError effect) {
+        FeedbackTools.showLongFeedback(
+                getView(),
+                BuildConfig.DEBUG
+                        ? ExceptionsKt.stackTraceToString(effect.getThrowable())
+                        : getString(R.string.error_happened_restart_app),
+                Snackbar.LENGTH_LONG,
+                ERROR_DEBUG_FEEDBACK_MAX_LINES
+        );
     }
 
     private void messageMovedToSuspiciousFolder() {
@@ -1065,10 +1079,21 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        if (viewModel.isMessageValidForHandshake()) {
-            String myAddress = mAccount.getEmail();
-            VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, viewModel.getMessageFrom()[0].getAddress(), myAddress, getMessageReference(), true);
-        }
+        viewModel.doIfMessageValidForHandshake(
+                () -> {
+                    if (isAdded()) {
+                        String myAddress = mAccount.getEmail();
+                        VerifyPartnerFragmentKt.showVerifyPartnerDialog(
+                                MessageViewFragment.this,
+                                viewModel.getFirstSender().getAddress(),
+                                myAddress,
+                                getMessageReference(),
+                                true
+                        );
+                    }
+                    return null;
+                }
+        );
     }
 
     private void allowHandshakeWithSender() {

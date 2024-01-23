@@ -11,4 +11,6 @@ sealed interface MessageViewEffect {
     data class ErrorDownloadingNetworkError(val throwable: Throwable) : MessageViewEffect
 
     object MessageMovedToSuspiciousFolder : MessageViewEffect
+
+    data class MessageOperationError(val throwable: Throwable) : MessageViewEffect
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
@@ -89,6 +90,9 @@ class MessageViewViewModel(
     val messageFrom: Array<Address>
         get() = message.from
 
+    val firstSender: Address
+        get() = message.from.first()
+
     init {
         messageViewUpdate.stateFlow.onEach { state ->
             if (state is EncryptedMessageLoaded) message = state.message
@@ -138,7 +142,7 @@ class MessageViewViewModel(
     }
 
     private suspend fun checkCanHandshakeSender() {
-        (message.isValidForHandshake()
+        (isMessageValidForHandshake()
                 && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
             allowHandshakeSenderLiveData.postValue(Event(it))
         }
@@ -201,8 +205,23 @@ class MessageViewViewModel(
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
-    fun isMessageValidForHandshake(): Boolean =
-        ::message.isInitialized && message.isValidForHandshake()
+    fun doIfMessageValidForHandshake(block: () -> Unit) {
+        viewModelScope.launch {
+            if (::message.isInitialized && isMessageValidForHandshake()) {
+                block()
+            }
+        }
+    }
+
+    private suspend fun isMessageValidForHandshake(): Boolean {
+        return message.isValidForHandshake()
+                && !planckProvider.isGroupAddress(firstSender)
+            .onFailure {
+                if (BuildConfig.DEBUG) {
+                    messageViewEffectLiveData.value = Event(MessageViewEffect.MessageOperationError(it))
+                }
+            }.getOrDefault(true)
+    }
 
     fun isMessageSMime(): Boolean = ::message.isInitialized && message.isSet(Flag.X_SMIME_SIGNED)
     fun isMessageFlagged(): Boolean = ::message.isInitialized && message.isSet(Flag.FLAGGED)
