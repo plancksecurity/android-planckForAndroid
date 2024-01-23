@@ -36,6 +36,10 @@ import com.fsck.k9.ui.getEnum
 import com.fsck.k9.ui.putEnum
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
@@ -79,7 +83,9 @@ class RecipientPresenter(
     private var privacyState: Rating = Rating.pEpRatingUndefined
     private val isReplyToEncryptedMessage = false
     private var lastRequestTime: Long = 0
-    var planckUiCache: PlanckUIArtefactCache
+    private var planckUiCache: PlanckUIArtefactCache
+    private val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     fun setPresenter(presenter: RecipientSelectPresenter, type: RecipientType?) {
         when (type) {
             RecipientType.TO -> toPresenter = presenter
@@ -113,15 +119,17 @@ class RecipientPresenter(
     }
 
     fun startHandshakeWithSingleRecipient(relatedMessageReference: MessageReference?) {
-        refreshRecipients()
-        if (canHandshakeSingleAddress(
-                toAddresses,
-                ccAddresses,
-                bccAddresses
-            )
-        ) {
-            recipientMvpView.setMessageReference(relatedMessageReference)
-            recipientMvpView.onPlanckPrivacyStatus()
+        uiScope.launch {
+            refreshRecipients()
+            if (canHandshakeSingleAddress(
+                    toAddresses,
+                    ccAddresses,
+                    bccAddresses
+                )
+            ) {
+                recipientMvpView.setMessageReference(relatedMessageReference)
+                recipientMvpView.onPlanckPrivacyStatus()
+            }
         }
     }
 
@@ -803,14 +811,16 @@ class RecipientPresenter(
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
     ) {
-        if (canHandshakeSingleAddress(newToAdresses, newCcAdresses, newBccAdresses)) {
-            recipientMvpView.showSingleRecipientHandshakeBanner()
-        } else {
-            recipientMvpView.hideSingleRecipientHandshakeBanner()
+        uiScope.launch {
+            if (canHandshakeSingleAddress(newToAdresses, newCcAdresses, newBccAdresses)) {
+                recipientMvpView.showSingleRecipientHandshakeBanner()
+            } else {
+                recipientMvpView.hideSingleRecipientHandshakeBanner()
+            }
         }
     }
 
-    private fun canHandshakeSingleAddress(
+    private suspend fun canHandshakeSingleAddress(
         newToAdresses: List<Address>,
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
@@ -823,6 +833,10 @@ class RecipientPresenter(
             account.email,
             ignoreCase = true
         ) // recipient not my own account
+                && !planck.isGroupAddress(newToAdresses.first())
+            .onFailure {
+                recipientMvpView.showError(it)
+            }.getOrDefault(true)
     }
 
     private val unsecureRecipientsCount: Int
