@@ -249,7 +249,7 @@ public class ComposeCryptoStatus {
         return null;
     }
 
-    enum AttachErrorState {
+    public enum AttachErrorState {
         IS_INLINE
     }
 

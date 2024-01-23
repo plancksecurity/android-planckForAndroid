@@ -32,6 +32,8 @@ import com.fsck.k9.planck.PlanckProvider.ProtectionScope
 import com.fsck.k9.planck.PlanckUIArtefactCache
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.Poller
+import com.fsck.k9.ui.getEnum
+import com.fsck.k9.ui.putEnum
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import org.openintents.openpgp.OpenPgpApiManager
@@ -41,12 +43,12 @@ import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState
 import org.openintents.openpgp.util.OpenPgpServiceConnection
 import security.planck.echo.MessageReceivedListener
 import timber.log.Timber
-import java.util.Arrays
 import java.util.Collections
 
-class RecipientPresenter(// transient state, which is either obtained during construction and initialization, or cached
+class RecipientPresenter(
+    // transient state, which is either obtained during construction and initialization, or cached
     private val context: Context,
-    loaderManager: LoaderManager?,
+    loaderManager: LoaderManager,
     private val openPgpApiManager: OpenPgpApiManager,
     private val recipientMvpView: RecipientMvpView,
     account: Account,
@@ -55,11 +57,11 @@ class RecipientPresenter(// transient state, which is either obtained during con
     private val replyToParser: ReplyToParser,
     private val listener: RecipientsChangedListener
 ) : MessageReceivedListener {
-    private var toPresenter: RecipientSelectPresenter? = null
-    private var ccPresenter: RecipientSelectPresenter? = null
-    private var bccPresenter: RecipientSelectPresenter? = null
+    private lateinit var toPresenter: RecipientSelectPresenter
+    private lateinit var ccPresenter: RecipientSelectPresenter
+    private lateinit var bccPresenter: RecipientSelectPresenter
     private var poller: Poller? = null
-    private var account: Account? = null
+    private lateinit var account: Account
     private var hasContactPicker: Boolean? = null
     private var cachedCryptoStatus: ComposeCryptoStatus? = null
     private var openPgpServiceConnection: OpenPgpServiceConnection? = null
@@ -73,17 +75,17 @@ class RecipientPresenter(// transient state, which is either obtained during con
     var isForceUnencrypted = false
         private set
 
-    @JvmField
     var isAlwaysSecure = false
-    private var privacyState: Rating? = Rating.pEpRatingUnencrypted
+    private var privacyState: Rating = Rating.pEpRatingUndefined
     private val isReplyToEncryptedMessage = false
     private var lastRequestTime: Long = 0
     var planckUiCache: PlanckUIArtefactCache
-    fun setPresenter(presenter: RecipientSelectPresenter?, type: RecipientType?) {
+    fun setPresenter(presenter: RecipientSelectPresenter, type: RecipientType?) {
         when (type) {
             RecipientType.TO -> toPresenter = presenter
             RecipientType.CC -> ccPresenter = presenter
             RecipientType.BCC -> bccPresenter = presenter
+            else -> {}
         }
     }
 
@@ -98,16 +100,16 @@ class RecipientPresenter(// transient state, which is either obtained during con
     }
 
     val toAddresses: List<Address>
-        get() = toPresenter!!.addresses
+        get() = toPresenter.addresses
     val ccAddresses: List<Address>
-        get() = ccPresenter!!.addresses
+        get() = ccPresenter.addresses
     val bccAddresses: List<Address>
-        get() = bccPresenter!!.addresses
+        get() = bccPresenter.addresses
 
     fun clearUnsecureRecipients() {
-        toPresenter!!.clearUnsecureAddresses()
-        ccPresenter!!.clearUnsecureAddresses()
-        bccPresenter!!.clearUnsecureAddresses()
+        toPresenter.clearUnsecureAddresses()
+        ccPresenter.clearUnsecureAddresses()
+        bccPresenter.clearUnsecureAddresses()
     }
 
     fun startHandshakeWithSingleRecipient(relatedMessageReference: MessageReference?) {
@@ -134,22 +136,22 @@ class RecipientPresenter(// transient state, which is either obtained during con
     private val allRecipients: List<Recipient>
         get() {
             val result = mutableListOf<Recipient>()
-            result.addAll(toPresenter!!.recipients)
-            result.addAll(ccPresenter!!.recipients)
-            result.addAll(bccPresenter!!.recipients)
+            result.addAll(toPresenter.recipients)
+            result.addAll(ccPresenter.recipients)
+            result.addAll(bccPresenter.recipients)
             return result
         }
 
     fun checkRecipientsOkForSending(): Boolean {
-        toPresenter!!.tryPerformCompletion()
-        ccPresenter!!.tryPerformCompletion()
-        bccPresenter!!.tryPerformCompletion()
-        if (toPresenter!!.reportedUncompletedRecipients()
-            || ccPresenter!!.reportedUncompletedRecipients()
-            || bccPresenter!!.reportedUncompletedRecipients()
+        toPresenter.tryPerformCompletion()
+        ccPresenter.tryPerformCompletion()
+        bccPresenter.tryPerformCompletion()
+        if (toPresenter.reportedUncompletedRecipients()
+            || ccPresenter.reportedUncompletedRecipients()
+            || bccPresenter.reportedUncompletedRecipients()
         ) return true
         if (addressesAreEmpty(toAddresses, ccAddresses, bccAddresses)) {
-            toPresenter!!.showNoRecipientsError()
+            toPresenter.showNoRecipientsError()
             return true
         }
         return false
@@ -192,18 +194,13 @@ class RecipientPresenter(// transient state, which is either obtained during con
     fun onRestoreInstanceState(savedInstanceState: Bundle) {
         recipientMvpView.setCcVisibility(savedInstanceState.getBoolean(STATE_KEY_CC_SHOWN))
         recipientMvpView.setBccVisibility(savedInstanceState.getBoolean(STATE_KEY_BCC_SHOWN))
-        lastFocusedType = RecipientType.valueOf(
-            savedInstanceState.getString(
-                STATE_KEY_LAST_FOCUSED_TYPE
-            )!!
-        )
-        currentCryptoMode = CryptoMode.valueOf(
-            savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE)!!
-        )
+        lastFocusedType = savedInstanceState.getEnum(STATE_KEY_LAST_FOCUSED_TYPE, RecipientType.TO)
+        currentCryptoMode =
+            savedInstanceState.getEnum(STATE_KEY_CURRENT_CRYPTO_MODE, CryptoMode.OPPORTUNISTIC)
         cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE)
         isForceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED)
         isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE)
-        privacyState = savedInstanceState.getSerializable(STATE_RATING) as Rating?
+        privacyState = savedInstanceState.getEnum<Rating>(STATE_RATING, Rating.pEpRatingUndefined)
         updateRecipientExpanderVisibility()
         recipientMvpView.planckRating = privacyState
     }
@@ -211,12 +208,12 @@ class RecipientPresenter(// transient state, which is either obtained during con
     fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible)
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible)
-        outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString())
-        outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString())
+        outState.putEnum(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType)
+        outState.putEnum(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode)
         outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline)
         outState.putBoolean(STATE_FORCE_UNENCRYPTED, isForceUnencrypted)
         outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure)
-        outState.putSerializable(STATE_RATING, privacyState)
+        outState.putEnum(STATE_RATING, privacyState)
     }
 
     fun initFromDraftMessage(message: Message) {
@@ -242,7 +239,7 @@ class RecipientPresenter(// transient state, which is either obtained during con
     }
 
     private fun addCcAddresses(vararg ccAddresses: Address) {
-        if (ccAddresses.size > 0) {
+        if (ccAddresses.isNotEmpty()) {
             addRecipientsFromAddresses(RecipientType.CC, *ccAddresses)
             recipientMvpView.setCcVisibility(true)
             updateRecipientExpanderVisibility()
@@ -250,14 +247,14 @@ class RecipientPresenter(// transient state, which is either obtained during con
     }
 
     fun addBccAddresses(vararg bccRecipients: Address) {
-        if (bccRecipients.size > 0) {
+        if (bccRecipients.isNotEmpty()) {
             addRecipientsFromAddresses(RecipientType.BCC, *bccRecipients)
-            val bccAddress = account!!.alwaysBcc
+            val bccAddress = account.alwaysBcc
 
             // If the auto-bcc is the only entry in the BCC list, don't show the Bcc fields.
             val alreadyVisible = recipientMvpView.isBccVisible
             val singleBccRecipientFromAccount =
-                bccRecipients.size == 1 && bccRecipients[0].toString() == bccAddress
+                bccRecipients.size == 1 && bccRecipients.first().toString() == bccAddress
             recipientMvpView.setBccVisibility(alreadyVisible || !singleBccRecipientFromAccount)
             updateRecipientExpanderVisibility()
         }
@@ -337,13 +334,13 @@ class RecipientPresenter(// transient state, which is either obtained during con
         cachedCryptoStatus = null
         loadPEpStatus()
         val openPgpProviderState = openPgpApiManager.openPgpProviderState
-        var accountCryptoKey: Long? = account!!.openPgpKey
+        var accountCryptoKey: Long? = account.openPgpKey
         if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
             accountCryptoKey = null
         }
     }
 
-    val currentCryptoStatus: ComposeCryptoStatus?
+    val currentCryptoStatus: ComposeCryptoStatus
         get() {
             if (cachedCryptoStatus == null) {
                 val builder = ComposeCryptoStatusBuilder()
@@ -351,7 +348,7 @@ class RecipientPresenter(// transient state, which is either obtained during con
                     .setCryptoMode(currentCryptoMode)
                     .setEnablePgpInline(cryptoEnablePgpInline)
                     .setRecipients(allRecipients)
-                val accountCryptoKey = account!!.openPgpKey
+                val accountCryptoKey = account.openPgpKey
                 if (accountCryptoKey != Account.NO_OPENPGP_KEY) {
                     // TODO split these into individual settings? maybe after key is bound to identity
                     builder.setSigningKeyId(accountCryptoKey)
@@ -359,12 +356,12 @@ class RecipientPresenter(// transient state, which is either obtained during con
                 }
                 cachedCryptoStatus = builder.build()
             }
-            return cachedCryptoStatus
+            return cachedCryptoStatus!!
         }
     val isForceTextMessageFormat: Boolean
         get() = if (cryptoEnablePgpInline) {
             val cryptoStatus = currentCryptoStatus
-            cryptoStatus!!.isEncryptionEnabled || cryptoStatus.isSigningEnabled
+            cryptoStatus.isEncryptionEnabled || cryptoStatus.isSigningEnabled
         } else {
             false
         }
@@ -392,12 +389,14 @@ class RecipientPresenter(// transient state, which is either obtained during con
         recipientType: RecipientType,
         vararg addresses: Address
     ) {
-        object : RecipientLoader(context, account!!.openPgpProvider!!, *addresses) {
+        object : RecipientLoader(context, account.openPgpProvider, *addresses) {
             override fun deliverResult(result: List<Recipient>?) {
-                val recipientArray = result!!.toTypedArray<Recipient>()
-                addRecipients(recipientType, *recipientArray)
-                stopLoading()
-                abandon()
+                result?.let {
+                    val recipientArray = result.toTypedArray<Recipient>()
+                    addRecipients(recipientType, *recipientArray)
+                    stopLoading()
+                    abandon()
+                }
             }
         }.startLoading()
     }
@@ -405,15 +404,15 @@ class RecipientPresenter(// transient state, which is either obtained during con
     fun addRecipients(recipientType: RecipientType?, vararg recipients: Recipient) {
         when (recipientType) {
             RecipientType.TO -> {
-                toPresenter!!.addRecipients(*recipients)
+                toPresenter.addRecipients(*recipients)
             }
 
             RecipientType.CC -> {
-                ccPresenter!!.addRecipients(*recipients)
+                ccPresenter.addRecipients(*recipients)
             }
 
             RecipientType.BCC -> {
-                bccPresenter!!.addRecipients(*recipients)
+                bccPresenter.addRecipients(*recipients)
             }
 
             else -> {}
@@ -421,17 +420,19 @@ class RecipientPresenter(// transient state, which is either obtained during con
     }
 
     private fun addRecipientFromContactUri(recipientType: RecipientType, uri: Uri?) {
-        object : RecipientLoader(context, account!!.openPgpProvider, uri, false) {
+        object : RecipientLoader(context, account.openPgpProvider, uri, false) {
             override fun deliverResult(result: List<Recipient>?) {
                 // TODO handle multiple available mail addresses for a contact?
-                if (result!!.isEmpty()) {
-                    recipientMvpView.showErrorContactNoAddress()
-                    return
+                result?.let {
+                    if (result.isEmpty()) {
+                        recipientMvpView.showErrorContactNoAddress()
+                        return
+                    }
+                    val recipient = result.first()
+                    addRecipients(recipientType, recipient)
+                    stopLoading()
+                    abandon()
                 }
-                val recipient = result[0]
-                addRecipients(recipientType, recipient)
-                stopLoading()
-                abandon()
             }
         }.startLoading()
     }
@@ -474,7 +475,7 @@ class RecipientPresenter(// transient state, which is either obtained during con
     }
 
     fun onNonRecipientFieldFocused() {
-        if (!account!!.isAlwaysShowCcBcc) {
+        if (!account.isAlwaysShowCcBcc) {
             hideEmptyExtendedRecipientFields()
         }
     }
@@ -487,7 +488,7 @@ class RecipientPresenter(// transient state, which is either obtained during con
             }
 
             OpenPgpProviderState.OK -> {
-                if (cachedCryptoStatus!!.isSignOnly) {
+                if (cachedCryptoStatus?.isSignOnly == true) {
                     recipientMvpView.showErrorIsSignOnly()
                 } else {
                     recipientMvpView.showCryptoDialog(currentCryptoMode)
@@ -497,9 +498,8 @@ class RecipientPresenter(// transient state, which is either obtained during con
 
             OpenPgpProviderState.UI_REQUIRED -> {
                 // TODO show openpgp settings
-                val pendingIntent = openPgpApiManager.userInteractionPendingIntent
                 recipientMvpView.launchUserInteractionPendingIntent(
-                    pendingIntent,
+                    openPgpApiManager.userInteractionPendingIntent,
                     OPENPGP_USER_INTERACTION
                 )
             }
@@ -523,9 +523,9 @@ class RecipientPresenter(// transient state, which is either obtained during con
             val packageManager = context.packageManager
             val resolveInfoList =
                 packageManager.queryIntentActivities(contacts.contactPickerIntent(), 0)
-            hasContactPicker = !resolveInfoList.isEmpty()
+            hasContactPicker = resolveInfoList.isNotEmpty()
         }
-        return hasContactPicker!!
+        return hasContactPicker ?: false
     }
 
     fun showPgpSendError(sendErrorState: SendErrorState?) {
@@ -537,7 +537,7 @@ class RecipientPresenter(// transient state, which is either obtained during con
         }
     }
 
-    internal fun showPgpAttachError(attachErrorState: AttachErrorState?) {
+    fun showPgpAttachError(attachErrorState: AttachErrorState?) {
         when (attachErrorState) {
             AttachErrorState.IS_INLINE -> recipientMvpView.showErrorInlineAttach()
             else -> throw AssertionError("not all error states handled, this is a bug!")
@@ -571,18 +571,19 @@ class RecipientPresenter(// transient state, which is either obtained during con
     }
 
     fun switchPrivacyProtection(scope: ProtectionScope?, vararg protection: Boolean) {
-        val bccAdresses = bccAddresses
-        if (bccAdresses == null || bccAdresses.size == 0) {
+        if (bccAddresses.isEmpty()) {
             when (scope) {
                 ProtectionScope.MESSAGE -> {
-                    if (protection.size > 0) throw RuntimeException("On message only switch allowed")
+                    if (protection.isNotEmpty()) throw RuntimeException("On message only switch allowed")
                     isForceUnencrypted = !isForceUnencrypted
                 }
 
                 ProtectionScope.ACCOUNT -> {
-                    if (protection.size < 1) throw RuntimeException("On account only explicit boolean allowed")
-                    isForceUnencrypted = !protection[0]
+                    if (protection.isEmpty()) throw RuntimeException("On account only explicit boolean allowed")
+                    isForceUnencrypted = !protection.first()
                 }
+
+                else -> {}
             }
         } else {
             isForceUnencrypted = !isForceUnencrypted
@@ -615,14 +616,14 @@ class RecipientPresenter(// transient state, which is either obtained during con
 
     fun shouldSaveRemotely(): Boolean {
         // TODO more appropriate logic?
-        return cachedCryptoStatus == null || !cachedCryptoStatus!!.isEncryptionEnabled
+        return cachedCryptoStatus == null || (cachedCryptoStatus?.isEncryptionEnabled ?: false)
     }
 
     override fun messageReceived() {
         updateCryptoStatus()
-        if (account!!.isPlanckPrivacyProtected && K9.isPlanckForwardWarningEnabled()) {
-            toPresenter!!.updateRecipientsFromMessage()
-            ccPresenter!!.updateRecipientsFromMessage()
+        if (account.isPlanckPrivacyProtected && K9.isPlanckForwardWarningEnabled()) {
+            toPresenter.updateRecipientsFromMessage()
+            ccPresenter.updateRecipientsFromMessage()
         }
     }
 
@@ -656,18 +657,20 @@ class RecipientPresenter(// transient state, which is either obtained during con
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
     ): Boolean {
-        return (account != null && account!!.isPlanckPrivacyProtected && newToAdresses.size == ONE_ADDRESS && newBccAdresses.isEmpty()
+        return account.isPlanckPrivacyProtected
+                && newToAdresses.size == ONE_ADDRESS
+                && newBccAdresses.isEmpty()
                 && newCcAdresses.isEmpty()
                 && !Preferences.getPreferences(context)
-            .containsAccountByEmail(newToAdresses[0].address))
+            .containsAccountByEmail(newToAdresses.first().address)
     }
 
     private fun ratingConditionsForSenderKeyReset(): Boolean {
-        return !PlanckUtils.isRatingUnsecure(privacyState!!) || privacyState === Rating.pEpRatingMistrust
+        return !PlanckUtils.isRatingUnsecure(privacyState) || privacyState === Rating.pEpRatingMistrust
     }
 
     fun resetPartnerKeys() {
-        recipientMvpView.resetPartnerKeys(toPresenter!!.addresses[0].address)
+        recipientMvpView.resetPartnerKeys(toPresenter.addresses.first().address)
     }
 
     interface RecipientsChangedListener {
@@ -782,7 +785,7 @@ class RecipientPresenter(// transient state, which is either obtained during con
 
     fun handleUnsecureDeliveryWarning() {
         val unsecureRecipientsCount = if (K9.isPlanckForwardWarningEnabled()
-            && account!!.isPlanckPrivacyProtected
+            && account.isPlanckPrivacyProtected
         ) unsecureRecipientsCount else ZERO_RECIPIENTS
         handleUnsecureDeliveryWarning(unsecureRecipientsCount)
     }
@@ -812,23 +815,24 @@ class RecipientPresenter(// transient state, which is either obtained during con
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
     ): Boolean {
-        return ((newToAdresses.size == ONE_ADDRESS && newBccAdresses.isEmpty()
+        return newToAdresses.size == ONE_ADDRESS && newBccAdresses.isEmpty()
                 && newCcAdresses.isEmpty()
-                && PlanckUtils.isRatingReliable(privacyState!!) && account != null) && account!!.isPlanckPrivacyProtected
-                && !newToAdresses[0].address.equals(
-            account!!.email,
+                && PlanckUtils.isRatingReliable(privacyState)
+                && account.isPlanckPrivacyProtected
+                && !newToAdresses.first().address.equals(
+            account.email,
             ignoreCase = true
-        )) // recipient not my own account
+        ) // recipient not my own account
     }
 
     private val unsecureRecipientsCount: Int
-        get() = toPresenter!!.unsecureAddressChannelCount +
-                ccPresenter!!.unsecureAddressChannelCount +
-                bccPresenter!!.unsecureAddressChannelCount
+        get() = toPresenter.unsecureAddressChannelCount +
+                ccPresenter.unsecureAddressChannelCount +
+                bccPresenter.unsecureAddressChannelCount
 
     private fun showDefaultStatus() {
         privacyState = Rating.pEpRatingUndefined
-        showRatingFeedback(privacyState!!)
+        showRatingFeedback(privacyState)
     }
 
     private fun showRatingFeedback(rating: Rating) {
@@ -838,9 +842,9 @@ class RecipientPresenter(// transient state, which is either obtained during con
 
     fun notifyRecipientsChanged() {
         recipientMvpView.doUiOperationRestoringFocus {
-            toPresenter!!.notifyRecipientsChanged()
-            ccPresenter!!.notifyRecipientsChanged()
-            bccPresenter!!.notifyRecipientsChanged()
+            toPresenter.notifyRecipientsChanged()
+            ccPresenter.notifyRecipientsChanged()
+            bccPresenter.notifyRecipientsChanged()
         }
     }
 
@@ -861,11 +865,8 @@ class RecipientPresenter(// transient state, which is either obtained during con
         private const val PGP_DIALOG_DISPLAY_THRESHOLD = 2
         private const val ZERO_RECIPIENTS = 0
         private const val ONE_ADDRESS = 1
-        private fun addressFromStringArray(addresses: Array<String>): Array<Address> {
-            return addressFromStringArray(Arrays.asList(*addresses))
-        }
 
-        private fun addressFromStringArray(addresses: List<String>): Array<Address> {
+        private fun addressFromStringArray(addresses: Array<String>): Array<Address> {
             val result = ArrayList<Address>(addresses.size)
             for (addressStr in addresses) {
                 Collections.addAll(result, *Address.parseUnencoded(addressStr))
