@@ -1,10 +1,8 @@
 package com.fsck.k9.ui.messageview
 
-import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
-import com.fsck.k9.RobolectricTest
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.extensions.hasToBeDecrypted
@@ -61,7 +59,7 @@ private const val MAIL1 = "test1@test.ch"
 private const val MAIL2 = "test2@test.ch"
 
 @ExperimentalCoroutinesApi
-class MessageViewViewModelTest : RobolectricTest() {
+class MessageViewViewModelTest {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
@@ -74,7 +72,6 @@ class MessageViewViewModelTest : RobolectricTest() {
         coEvery { getRating(any<Address>()) }.returns(ResultCompat.success(Rating.pEpRatingReliable))
         every { keyResetIdentity(any(), any()) }.just(runs)
     }
-    private val app: Application = mockk()
     private val messageReference: MessageReference =
         spyk(MessageReference(ACCOUNT_UUID, FOLDER_NAME, MESSAGE_UID, null))
     private val account: Account = mockk {
@@ -85,10 +82,18 @@ class MessageViewViewModelTest : RobolectricTest() {
     private val folder: LocalFolder = mockk {
         every { name }.returns(FOLDER_NAME)
     }
+    private val senderAddress: Address = mockk {
+        every { address }.returns(MAIL1)
+        every { personal }.returns(null)
+    }
+    private val otherAddress: Address = mockk {
+        every { address }.returns(MAIL2)
+        every { personal }.returns(null)
+    }
     private val localMessage: LocalMessage = mockk {
         every { planckRating }.returns(Rating.pEpRatingReliable)
         every { account }.returns(this@MessageViewViewModelTest.account)
-        every { from }.returns(arrayOf(Address(MAIL1)))
+        every { from }.returns(arrayOf(senderAddress))
         every { planckRating = any() }.just(runs)
         every { isSet(Flag.X_DOWNLOADED_FULL) }.returns(true)
         every { isSet(Flag.FLAGGED) }.returns(false)
@@ -101,7 +106,6 @@ class MessageViewViewModelTest : RobolectricTest() {
         every { uid = any() }.just(runs)
         every { setHeader(any(), any()) }.just(runs)
     }
-    private val senderAddress = Address(MAIL1)
     private val senderIdentity: Identity = mockk()
     private val repository: MessagingRepository = mockk {
         coEvery { loadMessage(any()) }.answers {
@@ -112,15 +116,7 @@ class MessageViewViewModelTest : RobolectricTest() {
         account = this@MessageViewViewModelTest.account
         messageReference = this@MessageViewViewModelTest.messageReference
     }
-    private val viewModel = MessageViewViewModel(
-        preferences,
-        controller,
-        planckProvider,
-        app,
-        repository,
-        messageViewUpdate,
-        coroutinesTestRule.testDispatcherProvider
-    )
+    private lateinit var viewModel: MessageViewViewModel
     private val receivedMessageStates = mutableListOf<MessageViewState>()
     private val receivedMessageEffects = mutableListOf<MessageViewEffect>()
     private val receivedResetStates = mutableListOf<BackgroundTaskDialogView.State>()
@@ -130,6 +126,12 @@ class MessageViewViewModelTest : RobolectricTest() {
 
     @Before
     fun setUp() {
+        receivedMessageStates.clear()
+        receivedResetStates.clear()
+        allowHandshakeSenderEvents.clear()
+        flaggedToggledEvents.clear()
+        readToggledEvents.clear()
+        createViewModel()
         every { preferences.getAccount(any()) }.returns(account)
         mockkStatic(MessageReference::class)
         every { controller.loadMessage(any(), any(), any()) }.returns(localMessage)
@@ -155,12 +157,18 @@ class MessageViewViewModelTest : RobolectricTest() {
             storedMessage
         }
         stubCanResetSenderKeysSuccess()
-        receivedMessageStates.clear()
-        receivedResetStates.clear()
-        allowHandshakeSenderEvents.clear()
-        flaggedToggledEvents.clear()
-        readToggledEvents.clear()
         observeViewModel()
+    }
+
+    private fun createViewModel() {
+        viewModel = MessageViewViewModel(
+            preferences,
+            controller,
+            planckProvider,
+            repository,
+            messageViewUpdate,
+            coroutinesTestRule.testDispatcherProvider
+        )
     }
 
     @After
@@ -186,11 +194,12 @@ class MessageViewViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `initialize() sets state to loading error if reference is wrong`() {
+    fun `initialize() sets state to loading error if reference is wrong`() = runTest {
         every { MessageReference.parse(any()) }.returns(null)
 
 
         viewModel.initialize(REFERENCE_STRING)
+        advanceUntilIdle()
 
 
         verify { preferences.wasNot(called) }
@@ -209,11 +218,12 @@ class MessageViewViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `initialize() sets state to ErrorLoadingMessage if account was removed`() {
+    fun `initialize() sets state to ErrorLoadingMessage if account was removed`() = runTest {
         every { preferences.getAccount(any()) }.returns(null)
 
 
         viewModel.initialize(REFERENCE_STRING)
+        advanceUntilIdle()
 
 
         assertMessageStates(
@@ -329,7 +339,7 @@ class MessageViewViewModelTest : RobolectricTest() {
     @Test
     fun `canResetSenderKeys() returns false if message sender is an account in the device`() =
         runTest {
-            every { localMessage.from }.returns(arrayOf(Address(MAIL2)))
+            every { localMessage.from }.returns(arrayOf(otherAddress))
 
 
             viewModel.initialize(REFERENCE_STRING)
@@ -342,7 +352,7 @@ class MessageViewViewModelTest : RobolectricTest() {
 
     @Test
     fun `canResetSenderKeys() returns false if message has more than one sender`() = runTest {
-        every { localMessage.from }.returns(arrayOf(Address(MAIL2), Address(MAIL2)))
+        every { localMessage.from }.returns(arrayOf(otherAddress, senderAddress))
 
 
         viewModel.initialize(REFERENCE_STRING)
@@ -356,7 +366,7 @@ class MessageViewViewModelTest : RobolectricTest() {
     @Test
     fun `canResetSenderKeys() returns false if message does not have exactly one recipient in to field`() =
         runTest {
-            every { localMessage.getRecipients(any()) }.returns(arrayOf(Address(MAIL1)))
+            every { localMessage.getRecipients(any()) }.returns(arrayOf(senderAddress))
 
 
             viewModel.initialize(REFERENCE_STRING)
@@ -387,82 +397,6 @@ class MessageViewViewModelTest : RobolectricTest() {
 
 
             assertTrue(viewModel.canResetSenderKeys())
-        }
-
-    @Test
-    fun `initial value for resetPartnerKeyState is Confirmation`() {
-        assertResetStates(BackgroundTaskDialogView.State.CONFIRMATION)
-    }
-
-    @Test
-    fun `resetPlanckData sets resetPartnerKeyState to Loading`() = runTest {
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-        viewModel.resetPlanckData()
-        advanceUntilIdle()
-
-
-        assertResetStates(
-            BackgroundTaskDialogView.State.CONFIRMATION,
-            BackgroundTaskDialogView.State.LOADING,
-            full = false
-        )
-    }
-
-    @Test
-    fun `resetPlanckData uses PlanckProvider to reset sender identity`() = runTest {
-        viewModel.initialize(REFERENCE_STRING)
-        viewModel.loadMessage()
-        advanceUntilIdle()
-        viewModel.resetPlanckData()
-        advanceUntilIdle()
-
-
-        verify { PlanckUtils.createIdentity(senderAddress, any()) }
-        verify { planckProvider.keyResetIdentity(senderIdentity, null) }
-    }
-
-    @Test
-    fun `resetPlanckData sets resetPartnerKeyState to Success if operation was successful`() =
-        runTest {
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-            viewModel.resetPlanckData()
-            advanceUntilIdle()
-
-
-            assertResetStates(
-                BackgroundTaskDialogView.State.CONFIRMATION,
-                BackgroundTaskDialogView.State.LOADING,
-                BackgroundTaskDialogView.State.SUCCESS
-            )
-        }
-
-    @Test
-    fun `resetPlanckData sets resetPartnerKeyState to Error if operation was not successful`() =
-        runTest {
-            coEvery {
-                planckProvider.keyResetIdentity(
-                    any(),
-                    null
-                )
-            }.throws(RuntimeException("test"))
-
-
-            viewModel.initialize(REFERENCE_STRING)
-            viewModel.loadMessage()
-            advanceUntilIdle()
-            viewModel.resetPlanckData()
-            advanceUntilIdle()
-
-
-            assertResetStates(
-                BackgroundTaskDialogView.State.CONFIRMATION,
-                BackgroundTaskDialogView.State.LOADING,
-                BackgroundTaskDialogView.State.ERROR
-            )
         }
 
     @Test
@@ -599,16 +533,6 @@ class MessageViewViewModelTest : RobolectricTest() {
         }
     }
 
-    private fun assertResetStates(
-        vararg states: BackgroundTaskDialogView.State,
-        full: Boolean = true
-    ) {
-        if (full) assertEquals(states.size, receivedResetStates.size)
-        states.forEachIndexed { index, resetState ->
-            assertEquals(resetState, receivedResetStates[index])
-        }
-    }
-
     private fun assertAllowHandshakeEvents(vararg events: Boolean) {
         assertEquals(events.toList(), allowHandshakeSenderEvents)
     }
@@ -625,6 +549,7 @@ class MessageViewViewModelTest : RobolectricTest() {
         viewModel.messageViewState.observeForever { value ->
             receivedMessageStates.add(value)
             println("received: $value")
+            println("states: $receivedMessageStates")
         }
         viewModel.messageViewEffect.observeForever { event ->
             event.getContentIfNotHandled()?.let { value ->
@@ -632,13 +557,10 @@ class MessageViewViewModelTest : RobolectricTest() {
                 println("received: $value")
             }
         }
-        viewModel.resetPartnerKeyState.observeForever { value ->
-            println("received: $value")
-            receivedResetStates.add(value)
-        }
         viewModel.allowHandshakeSender.observeForever { event ->
             event.getContentIfNotHandled()?.let {
                 allowHandshakeSenderEvents.add(it)
+                println("effects: $receivedMessageEffects")
             }
         }
         viewModel.flaggedToggled.observeForever { event ->

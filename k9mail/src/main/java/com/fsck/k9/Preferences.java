@@ -220,6 +220,15 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean containsAccountByEmail(String email) {
+        for (Account account : getAvailableAccounts()) {
+            if (account.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*public synchronized List<String> getMasterKeys(String uid) {
         keysInOrder = new LinkedList<>();
         String keysFRPs = getStorage().getString(uid, null);

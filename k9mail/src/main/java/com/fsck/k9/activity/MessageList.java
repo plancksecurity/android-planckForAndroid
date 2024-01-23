@@ -29,7 +29,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -80,7 +79,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import security.planck.group.GroupTestScreen;
-import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.intro.WelcomeMessageKt;
@@ -1116,7 +1114,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 GroupTestScreen.start(this);
                 return true;
             }
-            case R.id.reset_sender_keys: {
+            case R.id.reset_partner_keys: {
                 mMessageViewFragment.resetSenderKey();
                 return true;
             }
@@ -1282,7 +1280,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
-        resetSenderKey = menu.findItem(R.id.reset_sender_keys);
+        resetSenderKey = menu.findItem(R.id.reset_partner_keys);
 
         menu.findItem(R.id.tutorial).setVisible(
                 !BuildConfig.IS_ENTERPRISE
@@ -1352,7 +1350,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
-            menu.findItem(R.id.reset_sender_keys).setVisible(false);
+            menu.findItem(R.id.reset_partner_keys).setVisible(false);
         } else {
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
             checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
@@ -1376,7 +1374,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
-            menu.findItem(R.id.reset_sender_keys).setVisible(mMessageViewFragment.shouldDisplayResetSenderKeyOption());
+            menu.findItem(R.id.reset_partner_keys).setVisible(mMessageViewFragment.shouldDisplayResetSenderKeyOption());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {

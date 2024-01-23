@@ -75,9 +75,9 @@
 
     <!-- MessageView -->
     <item
-        android:id="@+id/reset_sender_keys"
+        android:id="@+id/reset_partner_keys"
         app:showAsAction="never"
-        android:title="@string/reset_sender_key_action"
+        android:title="@string/reset_partner_key_action"
         android:visible="false"/>
 
     <!-- MessageView -->

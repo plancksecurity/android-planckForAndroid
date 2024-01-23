@@ -19,6 +19,7 @@ import androidx.loader.app.LoaderManager;
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.AttachErrorState;
@@ -766,6 +767,51 @@ public class RecipientPresenter implements MessageReceivedListener {
         }
     }
 
+    public void handleResetPartnerKeyResult() {
+        loadPEpStatus();
+    }
+
+    public boolean canResetSenderKeys(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        return recipientConditionsForKeyReset(newToAdresses, newCcAdresses, newBccAdresses)
+                && ratingConditionsForSenderKeyReset();
+    }
+
+    private void handleSingleAddressKeyResetAllowance(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        if (canResetSenderKeys(newToAdresses, newCcAdresses, newBccAdresses)) {
+            recipientMvpView.showResetPartnerKeyOption();
+        } else {
+            recipientMvpView.hideResetPartnerKeyOption();
+        }
+    }
+
+    private boolean recipientConditionsForKeyReset(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        return account != null && account.isPlanckPrivacyProtected()
+                && newToAdresses.size() == ONE_ADDRESS
+                && newBccAdresses.isEmpty()
+                && newCcAdresses.isEmpty()
+                && !Preferences.getPreferences(context).containsAccountByEmail(newToAdresses.get(0).getAddress());
+    }
+
+    private boolean ratingConditionsForSenderKeyReset() {
+        return !PlanckUtils.isRatingUnsecure(privacyState) || (privacyState == Rating.pEpRatingMistrust);
+    }
+
+    public void resetPartnerKeys() {
+        recipientMvpView.resetPartnerKeys(toPresenter.getAddresses().get(0).getAddress());
+    }
+
     public interface RecipientsChangedListener {
         void onRecipientsChanged();
     }
@@ -828,9 +874,11 @@ public class RecipientPresenter implements MessageReceivedListener {
                     showDefaultStatus();
                     recipientMvpView.hideUnsecureDeliveryWarning();
                     recipientMvpView.hideSingleRecipientHandshakeBanner();
+                    recipientMvpView.hideResetPartnerKeyOption();
                 } else {
                     privacyState = rating;
                     handleSingleAddressHandshakeFeedback(newToAdresses, newCcAdresses, newBccAdresses);
+                    handleSingleAddressKeyResetAllowance(newToAdresses, newCcAdresses, newBccAdresses);
                     showRatingFeedback(rating);
                 }
                 recipientMvpView.messageRatingLoaded();
@@ -839,6 +887,7 @@ public class RecipientPresenter implements MessageReceivedListener {
             @Override
             public void onError(Throwable throwable) {
                 recipientMvpView.showError(throwable);
+                recipientMvpView.hideResetPartnerKeyOption();
                 if (isRequestOutdated(requestTime)) {
                     return;
                 }
@@ -889,14 +938,12 @@ public class RecipientPresenter implements MessageReceivedListener {
             List<Address> newCcAdresses,
             List<Address> newBccAdresses
     ) {
-        if (!newBccAdresses.isEmpty()) return false;
-        List<Address> candidates = new ArrayList<>();
-        candidates.addAll(newToAdresses);
-        candidates.addAll(newCcAdresses);
-        return candidates.size() == ONE_ADDRESS
+        return newToAdresses.size() == ONE_ADDRESS
+                && newBccAdresses.isEmpty()
+                && newCcAdresses.isEmpty()
                 && PlanckUtils.isRatingReliable(privacyState)
                 && account!= null && account.isPlanckPrivacyProtected()
-                && !candidates.get(0).getAddress().equalsIgnoreCase(account.getEmail()); // recipient not my own account
+                && !newToAdresses.get(0).getAddress().equalsIgnoreCase(account.getEmail()); // recipient not my own account
     }
 
     private int getUnsecureRecipientsCount() {

@@ -146,7 +146,7 @@ class ST3MessageViewScreenshotTest : BaseScreenshotTest() {
     private fun resetCommunication() {
         clickListItem(R.id.message_list, 2)
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
-        click(getString(R.string.reset_sender_key_action))
+        click(getString(R.string.reset_partner_key_action))
         TestUtils.waitForIdle()
         getScreenShotCurrentActivity("reset sender's keys confirmation")
         click(getString(R.string.reset_partner_keys_confirmation_action))

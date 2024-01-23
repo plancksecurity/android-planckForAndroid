@@ -28,4 +28,10 @@
         android:alphabeticShortcut="q"
         android:icon="?attr/iconActionCancel"
         android:title="@string/discard_action" />
+
+    <item
+        android:id="@+id/reset_partner_keys"
+        app:showAsAction="never"
+        android:title="@string/reset_partner_key_action"
+        android:visible="false"/>
 </menu>
