@@ -140,7 +140,7 @@ class MessageViewViewModel(
 
     private suspend fun checkCanResetSenderKeys() {
         (canResetSenderKeys()).also {
-                    allowResetPartnerKeyLiveData.postValue(Event(it))
+            allowResetPartnerKeyLiveData.postValue(Event(it))
         }
     }
 
@@ -156,7 +156,7 @@ class MessageViewViewModel(
     }
 
     private suspend fun canHandshakeSender() = isMessageValidForHandshake()
-                && PlanckUtils.isRatingReliable(getSenderRating(message))
+            && PlanckUtils.isRatingReliable(getSenderRating(message))
 
     fun toggleFlagged() {
         if (::message.isInitialized) {
@@ -211,7 +211,8 @@ class MessageViewViewModel(
                 && !planckProvider.isGroupAddress(firstSender)
             .onFailure {
                 if (BuildConfig.DEBUG) {
-                    messageViewEffectLiveData.value = Event(MessageViewEffect.MessageOperationError(it))
+                    messageViewEffectLiveData.value =
+                        Event(MessageViewEffect.MessageOperationError(it))
                 }
             }.getOrDefault(true)
 
@@ -221,10 +222,26 @@ class MessageViewViewModel(
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
-    fun doIfCanHandshakeSender(block: () -> Unit) {
+    fun handshakeSender() {
         viewModelScope.launch {
             if (::message.isInitialized && canHandshakeSender()) {
-                block()
+                messageViewEffectLiveData.value = Event(
+                    MessageViewEffect.NavigateToVerifyPartner(
+                        firstSender.address,
+                        account.email,
+                        messageReference
+                    )
+                )
+            }
+        }
+    }
+
+    fun resetSenderKeys() {
+        viewModelScope.launch {
+            if (::message.isInitialized && canResetSenderKeys()) {
+                messageViewEffectLiveData.value = Event(
+                    MessageViewEffect.NavigateToResetPartnerKey(firstSender.address)
+                )
             }
         }
     }
@@ -242,7 +259,8 @@ class MessageViewViewModel(
                 && !planckProvider.isGroupAddress(firstSender)
             .onFailure {
                 if (BuildConfig.DEBUG) {
-                    messageViewEffectLiveData.value = Event(MessageViewEffect.MessageOperationError(it))
+                    messageViewEffectLiveData.value =
+                        Event(MessageViewEffect.MessageOperationError(it))
                 }
             }.getOrDefault(true)
     }

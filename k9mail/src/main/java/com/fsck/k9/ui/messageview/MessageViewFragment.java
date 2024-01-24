@@ -2,6 +2,7 @@ package com.fsck.k9.ui.messageview;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.fsck.k9.ui.messageview.MessageViewEffect.*;
 import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorDownloadingMessageNotFound;
 import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorDownloadingNetworkError;
 import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage;
@@ -391,7 +392,28 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageMovedToSuspiciousFolder();
         } else if (effect instanceof MessageOperationError) {
             showMessageOperationError((MessageOperationError) effect);
+        } else if (effect instanceof NavigateToResetPartnerKey) {
+            navigateToResetPartnerKey((NavigateToResetPartnerKey) effect);
+        } else if (effect instanceof  NavigateToVerifyPartner) {
+            navigateToVerifyPartner((NavigateToVerifyPartner) effect);
         }
+    }
+
+    private void navigateToVerifyPartner(NavigateToVerifyPartner effect) {
+        VerifyPartnerFragmentKt.showVerifyPartnerDialog(
+                MessageViewFragment.this,
+                effect.getPartner(),
+                effect.getMyAddress(),
+                effect.getMessageReference(),
+                true
+        );
+    }
+
+    private void navigateToResetPartnerKey(NavigateToResetPartnerKey effect) {
+        ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(
+                MessageViewFragment.this,
+                effect.getPartner()
+        );
     }
 
     private void showMessageOperationError(MessageOperationError effect) {
@@ -519,15 +541,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void resetSenderKey() {
-        viewModel.doIfCanResetSenderKeys(() -> {
-            if (isAdded()) {
-                ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(
-                        MessageViewFragment.this,
-                        viewModel.getFirstSender().getAddress()
-                );
-            }
-            return null;
-        });
+        viewModel.resetSenderKeys();
     }
 
     private void setupSwipeDetector() {
@@ -1090,21 +1104,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        viewModel.doIfCanHandshakeSender(
-                () -> {
-                    if (isAdded()) {
-                        String myAddress = mAccount.getEmail();
-                        VerifyPartnerFragmentKt.showVerifyPartnerDialog(
-                                MessageViewFragment.this,
-                                viewModel.getFirstSender().getAddress(),
-                                myAddress,
-                                getMessageReference(),
-                                true
-                        );
-                    }
-                    return null;
-                }
-        );
+        viewModel.handshakeSender();
     }
 
     private void allowHandshakeWithSender() {
