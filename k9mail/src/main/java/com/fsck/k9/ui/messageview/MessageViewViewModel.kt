@@ -9,8 +9,8 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.extensions.isValidForHandshake
+import com.fsck.k9.extensions.isValidForPartnerKeyReset
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message.RecipientType
@@ -197,17 +197,7 @@ class MessageViewViewModel(
         planckProvider.getRating(message.from.first()).getOrDefault(Rating.pEpRatingUndefined)
 
     private suspend fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
-        !message.hasToBeDecrypted()
-                && message.from != null // sender not null
-                && message.from.size == 1 // only one sender
-                && preferences.availableAccounts.none {
-            it.email.equals(message.from.first().address, true)
-        } // sender not one of my own accounts
-                && message.getRecipients(RecipientType.TO).size == 1 // only one recipient in TO
-                && message.getRecipients(RecipientType.CC)
-            .isNullOrEmpty() // no recipients in CC
-                && message.getRecipients(RecipientType.BCC)
-            .isNullOrEmpty() // no recipients in BCC
+        message.isValidForPartnerKeyReset(preferences)
                 && !planckProvider.isGroupAddress(firstSender)
             .onFailure {
                 if (BuildConfig.DEBUG) {
@@ -246,16 +236,8 @@ class MessageViewViewModel(
         }
     }
 
-    fun doIfCanResetSenderKeys(block: () -> Unit) {
-        viewModelScope.launch {
-            if (::message.isInitialized && canResetSenderKeys()) {
-                block()
-            }
-        }
-    }
-
     private suspend fun isMessageValidForHandshake(): Boolean {
-        return message.isValidForHandshake()
+        return message.isValidForHandshake(preferences)
                 && !planckProvider.isGroupAddress(firstSender)
             .onFailure {
                 if (BuildConfig.DEBUG) {
