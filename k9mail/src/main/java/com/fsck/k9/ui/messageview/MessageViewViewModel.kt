@@ -1,6 +1,5 @@
 package com.fsck.k9.ui.messageview
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -77,6 +76,10 @@ class MessageViewViewModel(
         MutableLiveData(Event(false))
     val allowHandshakeSender: LiveData<Event<Boolean>> = allowHandshakeSenderLiveData
 
+    private val allowResetPartnerKeyLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val allowResetPartnerKey: LiveData<Event<Boolean>> = allowResetPartnerKeyLiveData
+
     private val flaggedToggledLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
     val flaggedToggled: LiveData<Event<Boolean>> = flaggedToggledLiveData
@@ -99,6 +102,7 @@ class MessageViewViewModel(
             else if (state is DecryptedMessageLoaded) {
                 message = state.message
                 checkCanHandshakeSender()
+                checkCanResetSenderKeys()
             }
             messageViewStateLiveData.value = state
         }.launchIn(viewModelScope)
@@ -134,12 +138,16 @@ class MessageViewViewModel(
         }
     }
 
-    fun canResetSenderKeys(): Boolean {
-        return ::message.isInitialized
-                && (message.account?.isPlanckPrivacyProtected ?: false)
+    private suspend fun checkCanResetSenderKeys() {
+        (canResetSenderKeys()).also {
+                    allowResetPartnerKeyLiveData.postValue(Event(it))
+        }
+    }
+
+    private suspend fun canResetSenderKeys() =
+        (message.account?.isPlanckPrivacyProtected ?: false)
                 && messageConditionsForSenderKeyReset(message)
                 && ratingConditionsForSenderKeyReset(message.planckRating)
-    }
 
     private suspend fun checkCanHandshakeSender() {
         (canHandshakeSender()).also {
@@ -188,7 +196,7 @@ class MessageViewViewModel(
     private suspend fun getSenderRating(message: LocalMessage): Rating =
         planckProvider.getRating(message.from.first()).getOrDefault(Rating.pEpRatingUndefined)
 
-    private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
+    private suspend fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
         !message.hasToBeDecrypted()
                 && message.from != null // sender not null
                 && message.from.size == 1 // only one sender
@@ -200,6 +208,12 @@ class MessageViewViewModel(
             .isNullOrEmpty() // no recipients in CC
                 && message.getRecipients(RecipientType.BCC)
             .isNullOrEmpty() // no recipients in BCC
+                && !planckProvider.isGroupAddress(firstSender)
+            .onFailure {
+                if (BuildConfig.DEBUG) {
+                    messageViewEffectLiveData.value = Event(MessageViewEffect.MessageOperationError(it))
+                }
+            }.getOrDefault(true)
 
     private fun ratingConditionsForSenderKeyReset(
         messageRating: Rating
@@ -210,6 +224,14 @@ class MessageViewViewModel(
     fun doIfCanHandshakeSender(block: () -> Unit) {
         viewModelScope.launch {
             if (::message.isInitialized && canHandshakeSender()) {
+                block()
+            }
+        }
+    }
+
+    fun doIfCanResetSenderKeys(block: () -> Unit) {
+        viewModelScope.launch {
+            if (::message.isInitialized && canResetSenderKeys()) {
                 block()
             }
         }

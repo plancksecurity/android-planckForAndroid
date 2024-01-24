@@ -318,6 +318,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         });
         viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), this::allowOrDisallowSenderHandshake);
+        viewModel.getAllowResetPartnerKey().observe(getViewLifecycleOwner(), this::allowOrDisallowResetPartnerKeys);
         viewModel.getFlaggedToggled().observe(getViewLifecycleOwner(), this::flaggedToggled);
         viewModel.getReadToggled().observe(getViewLifecycleOwner(), this::readToggled);
     }
@@ -346,6 +347,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 allowHandshakeWithSender();
             } else {
                 disAllowHandshakeWithSender();
+            }
+        }
+    }
+
+    private void allowOrDisallowResetPartnerKeys(Event<Boolean> event) {
+        Boolean value = event.getContentIfNotHandled();
+        if (value != null) {
+            if (value) {
+                allowResetPartnerKeys();
+            } else {
+                disAllowResetPartnerKeys();
             }
         }
     }
@@ -506,17 +518,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         doOnActivity(activity -> activity.setResult(RESULT_CANCELED));
     }
 
-    public boolean shouldDisplayResetSenderKeyOption() {
-        return viewModel.canResetSenderKeys();
-    }
-
     public void resetSenderKey() {
-        if (viewModel.canResetSenderKeys()) {
-            ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(
-                    this,
-                    viewModel.getMessageFrom()[0].getAddress()
-            );
-        }
+        viewModel.doIfCanResetSenderKeys(() -> {
+            if (isAdded()) {
+                ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(
+                        MessageViewFragment.this,
+                        viewModel.getFirstSender().getAddress()
+                );
+            }
+            return null;
+        });
     }
 
     private void setupSwipeDetector() {
@@ -1110,6 +1121,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
+    private void allowResetPartnerKeys() {
+        mFragmentListener.displayResetPartnerKeysOption();
+    }
+
+    private void disAllowResetPartnerKeys() {
+        mFragmentListener.hideResetPartnerKeysOption();
+    }
+
     public interface MessageViewFragmentListener {
         void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
                        Rating pEpRating);
@@ -1135,6 +1154,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         void updateMenu();
 
         void refreshMessageViewFragment();
+
+        void displayResetPartnerKeysOption();
+        void hideResetPartnerKeysOption();
     }
 
     public boolean isInitialized() {
