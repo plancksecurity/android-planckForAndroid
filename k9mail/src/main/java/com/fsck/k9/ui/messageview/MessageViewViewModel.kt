@@ -142,11 +142,13 @@ class MessageViewViewModel(
     }
 
     private suspend fun checkCanHandshakeSender() {
-        (isMessageValidForHandshake()
-                && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
+        (canHandshakeSender()).also {
             allowHandshakeSenderLiveData.postValue(Event(it))
         }
     }
+
+    private suspend fun canHandshakeSender() = isMessageValidForHandshake()
+                && PlanckUtils.isRatingReliable(getSenderRating(message))
 
     fun toggleFlagged() {
         if (::message.isInitialized) {
@@ -205,9 +207,9 @@ class MessageViewViewModel(
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
-    fun doIfMessageValidForHandshake(block: () -> Unit) {
+    fun doIfCanHandshakeSender(block: () -> Unit) {
         viewModelScope.launch {
-            if (::message.isInitialized && isMessageValidForHandshake()) {
+            if (::message.isInitialized && canHandshakeSender()) {
                 block()
             }
         }

@@ -1079,7 +1079,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        viewModel.doIfMessageValidForHandshake(
+        viewModel.doIfCanHandshakeSender(
                 () -> {
                     if (isAdded()) {
                         String myAddress = mAccount.getEmail();
