@@ -962,7 +962,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
                 @Override
                 public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
-                    return false;
+                    if (isArchive()) menu.findItem(R.id.archive).setVisible(false);
+                    if (isSpam()) menu.findItem(R.id.spam).setVisible(false);
+                    return true;
                 }
 
                 @Override
@@ -2316,13 +2318,15 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             mMarkAsUnread = menu.findItem(R.id.mark_as_unread);
             mFlag = menu.findItem(R.id.flag);
             mUnflag = menu.findItem(R.id.unflag);
+            MenuItem archive = menu.findItem(R.id.archive);
+            MenuItem spam = menu.findItem(R.id.spam);
 
             // we don't support cross account actions atm
             if (!singleAccountMode) {
                 // show alls
                 menu.findItem(R.id.move).setVisible(true);
-                menu.findItem(R.id.archive).setVisible(true);
-                menu.findItem(R.id.spam).setVisible(true);
+                archive.setVisible(true);
+                spam.setVisible(true);
                 menu.findItem(R.id.copy).setVisible(true);
 
                 Set<String> accountUuids = getAccountUuidsForSelected();
@@ -2335,6 +2339,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 }
 
             }
+            if (isArchive()) archive.setVisible(false);
+            if (isSpam()) spam.setVisible(false);
             return true;
         }
 
@@ -2841,6 +2847,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         return (folderName != null && folderName.equals(account.getArchiveFolderName()));
     }
 
+    private boolean isSpam() {
+        return (folderName != null && folderName.equals(account.getSpamFolderName()));
+    }
+
     public boolean isRemoteFolder() {
         if (search.isManualSearch() || isOutbox()) {
             return false;
@@ -3308,6 +3318,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             mMarkAsUnread = menu.findItem(R.id.mark_as_unread);
             mFlag = menu.findItem(R.id.flag);
             mUnflag = menu.findItem(R.id.unflag);
+            if (isArchive()) menu.findItem(R.id.archive).setVisible(false);
+            if (isSpam()) menu.findItem(R.id.spam).setVisible(false);
 
             // we don't support cross account actions atm
             if (!singleAccountMode) {
