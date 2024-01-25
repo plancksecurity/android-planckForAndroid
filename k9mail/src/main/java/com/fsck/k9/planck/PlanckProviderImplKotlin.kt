@@ -1267,6 +1267,23 @@ class PlanckProviderImplKotlin(
     override fun queryGroupMailManager(group: Identity): Identity = engine.get().adapter_group_query_manager(group)
 
     @WorkerThread
+    override suspend fun isGroupAddress(address: Address): Result<Boolean> =
+        withContext(PlanckDispatcher) {
+            kotlin.runCatching {
+                val identity = PlanckUtils.createIdentity(address, context)
+                val updatedIdentity = updateIdentity(identity)
+                engine.get().adapter_group_query_manager(updatedIdentity)
+                true
+            }.onFailure {
+                if (it is pEpGroupNotFound) {
+                    return@withContext Result.success(false)
+                } else {
+                    Timber.e(it)
+                }
+            }
+        }
+
+    @WorkerThread
     override fun queryGroupMailMembers(group: Identity): Vector<Identity>? =
         engine.get().adapter_group_query_members(group)
 

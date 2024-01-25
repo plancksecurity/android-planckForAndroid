@@ -310,7 +310,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return planckRating;
     }
 
-    void handlepEpState(boolean forceHide) {
+    void handlePlanckState(boolean forceHide) {
         if (mAccount.isPlanckPrivacyProtected()) {
             activity.setToolbarRating(planckRating, forceHide);
         } else {

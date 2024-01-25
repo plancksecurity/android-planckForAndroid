@@ -305,7 +305,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private ProgressBar mActionBarProgress;
     private MenuItem mMenuButtonCheckMail;
     private MenuItem flaggedCheckbox;
-    private MenuItem resetSenderKey;
+    private MenuItem resetPartnerKeys;
     private View mActionButtonIndeterminateProgress;
     private int mLastDirection = (K9.messageViewShowNext()) ? NEXT : PREVIOUS;
 
@@ -1280,13 +1280,22 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
-        resetSenderKey = menu.findItem(R.id.reset_partner_keys);
+        initializeResetPartnerKeysItem(menu);
 
         menu.findItem(R.id.tutorial).setVisible(
                 !BuildConfig.IS_ENTERPRISE
         );
         menu.findItem(R.id.group_test).setVisible(BuildConfig.DEBUG);
         return true;
+    }
+
+    private void initializeResetPartnerKeysItem(Menu menu) {
+        boolean resetVisible = false;
+        if (resetPartnerKeys != null) {
+            resetVisible = resetPartnerKeys.isVisible(); // keep previous visibility
+        }
+        resetPartnerKeys = menu.findItem(R.id.reset_partner_keys);
+        resetPartnerKeys.setVisible(resetVisible);
     }
 
     private void checkFlagMenuItemChecked(boolean check) {
@@ -1350,7 +1359,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
-            menu.findItem(R.id.reset_partner_keys).setVisible(false);
+            resetPartnerKeys.setVisible(false);
         } else {
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
             checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
@@ -1374,7 +1383,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
-            menu.findItem(R.id.reset_partner_keys).setVisible(mMessageViewFragment.shouldDisplayResetSenderKeyOption());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {
@@ -1914,6 +1922,16 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void disableDeleteAction() {
         mMenu.findItem(R.id.delete).setEnabled(false);
+    }
+
+    @Override
+    public void displayResetPartnerKeysOption() {
+        resetPartnerKeys.setVisible(true);
+    }
+
+    @Override
+    public void hideResetPartnerKeysOption() {
+        resetPartnerKeys.setVisible(false);
     }
 
     private void onToggleTheme() {

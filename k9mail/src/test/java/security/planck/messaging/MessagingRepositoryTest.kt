@@ -125,7 +125,6 @@ class MessagingRepositoryTest {
         every { MessageReference.parse(any()) }.returns(messageReference)
         mockkStatic("com.fsck.k9.extensions.LocalMessageKt")
         every { localMessage.hasToBeDecrypted() }.returns(false)
-        every { localMessage.isValidForHandshake() }.returns(true)
         every { localMessage.isMessageIncomplete() }.returns(false)
         mockkStatic(PlanckUtils::class)
         every { PlanckUtils.extractRating(any()) }.returns(Rating.pEpRatingReliable)
