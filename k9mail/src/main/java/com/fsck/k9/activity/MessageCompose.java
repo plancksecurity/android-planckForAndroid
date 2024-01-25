@@ -1188,8 +1188,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         return super.onOptionsItemSelected(item);
     }
 
-    private void handlePEpState() {
-        recipientPresenter.handlepEpState();
+    private void handlePlanckState() {
+        recipientPresenter.handlePlanckState();
     }
 
     private void onPlanckPrivacyStatus() {
@@ -1234,7 +1234,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         // grab our icon and set it to the wanted color.
         //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
         //  TODO> Review after rebase
-        handlePEpState();       // fire once to get everything set up.
+        handlePlanckState();       // fire once to get everything set up.
 
         return true;
     }

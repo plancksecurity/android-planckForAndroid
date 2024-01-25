@@ -99,7 +99,7 @@ class RecipientPresenter(
     private fun setupPlanckStatusPolling() {
         if (poller == null) {
             poller = Poller(Handler())
-            poller?.init(POLLING_INTERVAL.toLong()) { loadPEpStatus() }
+            poller?.init(POLLING_INTERVAL.toLong()) { loadPlanckStatus() }
         } else {
             poller?.stopPolling()
         }
@@ -134,7 +134,7 @@ class RecipientPresenter(
         }
     }
 
-    fun refreshRecipients() {
+    private fun refreshRecipients() {
         val recipients = ArrayList<Identity>()
         recipients.addAll(PlanckUtils.createIdentities(toAddresses, context.applicationContext))
         recipients.addAll(PlanckUtils.createIdentities(ccAddresses, context.applicationContext))
@@ -341,7 +341,7 @@ class RecipientPresenter(
 
     fun updateCryptoStatus() {
         cachedCryptoStatus = null
-        loadPEpStatus()
+        loadPlanckStatus()
         val openPgpProviderState = openPgpApiManager.openPgpProviderState
         var accountCryptoKey: Long? = account.openPgpKey
         if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
@@ -480,7 +480,7 @@ class RecipientPresenter(
     }
 
     fun handleVerifyPartnerIdentityResult() {
-        loadPEpStatus()
+        loadPlanckStatus()
     }
 
     fun onNonRecipientFieldFocused() {
@@ -605,8 +605,8 @@ class RecipientPresenter(
         updateCryptoStatus()
     }
 
-    fun handlepEpState() {
-        recipientMvpView.handlepEpState(allRecipients.isEmpty())
+    fun handlePlanckState() {
+        recipientMvpView.handlePlanckState(allRecipients.isEmpty())
     }
 
     fun isForwardedMessageWeakestThanOriginal(originalMessageRating: Rating): Boolean {
@@ -637,16 +637,20 @@ class RecipientPresenter(
     }
 
     fun handleResetPartnerKeyResult() {
-        loadPEpStatus()
+        loadPlanckStatus()
     }
 
-    fun canResetSenderKeys(
+    private suspend fun canResetSenderKeys(
         newToAdresses: List<Address>,
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
     ): Boolean {
-        return (recipientConditionsForKeyReset(newToAdresses, newCcAdresses, newBccAdresses)
-                && ratingConditionsForSenderKeyReset())
+        return recipientConditionsForKeyReset(newToAdresses, newCcAdresses, newBccAdresses)
+                && ratingConditionsForSenderKeyReset()
+                && !planck.isGroupAddress(newToAdresses.first())
+            .onFailure {
+                recipientMvpView.showError(it)
+            }.getOrDefault(true)
     }
 
     private fun handleSingleAddressKeyResetAllowance(
@@ -654,10 +658,12 @@ class RecipientPresenter(
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
     ) {
-        if (canResetSenderKeys(newToAdresses, newCcAdresses, newBccAdresses)) {
-            recipientMvpView.showResetPartnerKeyOption()
-        } else {
-            recipientMvpView.hideResetPartnerKeyOption()
+        uiScope.launch {
+            if (canResetSenderKeys(newToAdresses, newCcAdresses, newBccAdresses)) {
+                recipientMvpView.showResetPartnerKeyOption()
+            } else {
+                recipientMvpView.hideResetPartnerKeyOption()
+            }
         }
     }
 
@@ -674,11 +680,15 @@ class RecipientPresenter(
     }
 
     private fun ratingConditionsForSenderKeyReset(): Boolean {
-        return !PlanckUtils.isRatingUnsecure(privacyState) || privacyState === Rating.pEpRatingMistrust
+        return !PlanckUtils.isRatingUnsecure(privacyState) || privacyState == Rating.pEpRatingMistrust
     }
 
     fun resetPartnerKeys() {
-        recipientMvpView.resetPartnerKeys(toPresenter.addresses.first().address)
+        uiScope.launch {
+            if (canResetSenderKeys(toAddresses, ccAddresses, bccAddresses))  {
+                recipientMvpView.resetPartnerKeys(toPresenter.addresses.first().address)
+            }
+        }
     }
 
     interface RecipientsChangedListener {
@@ -719,7 +729,7 @@ class RecipientPresenter(
         PRIVATE
     }
 
-    private fun loadPEpStatus() {
+    private fun loadPlanckStatus() {
         val fromAddress = recipientMvpView.fromAddress
         val newToAdresses = toAddresses
         val newCcAdresses = ccAddresses
@@ -767,7 +777,7 @@ class RecipientPresenter(
                 }
 
                 override fun onError(throwable: Throwable) {
-                    recipientMvpView.showError(throwable)
+                    recipientMvpView.showError(throwable) // no need to hide handshake banner as it is replaced by error banner
                     recipientMvpView.hideResetPartnerKeyOption()
                     if (isRequestOutdated(requestTime)) {
                         return
@@ -824,14 +834,12 @@ class RecipientPresenter(
         newCcAdresses: List<Address>,
         newBccAdresses: List<Address>
     ): Boolean {
-        return newToAdresses.size == ONE_ADDRESS && newBccAdresses.isEmpty()
+        return newToAdresses.size == ONE_ADDRESS
+                && newBccAdresses.isEmpty()
                 && newCcAdresses.isEmpty()
                 && PlanckUtils.isRatingReliable(privacyState)
                 && account.isPlanckPrivacyProtected
-                && !newToAdresses.first().address.equals(
-            account.email,
-            ignoreCase = true
-        ) // recipient not my own account
+                && !preferences.containsAccountByEmail(newToAdresses.first().address) // recipient not my own account
                 && !planck.isGroupAddress(newToAdresses.first())
             .onFailure {
                 recipientMvpView.showError(it)
@@ -850,7 +858,7 @@ class RecipientPresenter(
 
     private fun showRatingFeedback(rating: Rating) {
         recipientMvpView.planckRating = rating
-        handlepEpState()
+        handlePlanckState()
     }
 
     fun notifyRecipientsChanged() {
