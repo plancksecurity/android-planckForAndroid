@@ -387,14 +387,6 @@
             </restriction>
 
             <restriction
-                android:defaultValue="@bool/default_pep_save_encrypted"
-                android:description="@string/account_settings_save_encrypted_summary_enabled"
-                android:key="planck_save_encrypted_on_server"
-                android:restrictionType="bool"
-                android:title="@string/pep_mistrust_server_and_store_mails_encrypted" />
-
-
-            <restriction
                 android:description="@string/mail_settings_description"
                 android:key="planck_mail_settings"
                 android:restrictionType="bundle"

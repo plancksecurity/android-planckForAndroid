@@ -1,7 +1,6 @@
 package security.planck.messaging
 
 import com.fsck.k9.Account
-import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.extensions.hasToBeDecrypted
@@ -20,6 +19,8 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.testutils.CoroutineTestRule
+import com.fsck.k9.preferences.Storage
+import com.fsck.k9.preferences.StorageEditor
 import com.fsck.k9.ui.messageview.MessageViewEffect
 import com.fsck.k9.ui.messageview.MessageViewState
 import com.fsck.k9.ui.messageview.MessageViewUpdate
@@ -52,13 +53,19 @@ import org.junit.Test
 private const val ACCOUNT_UUID = "uuid"
 private const val FOLDER_NAME = "folder"
 private const val MESSAGE_UID = "uid"
+private const val MESSAGE_ID = "messageId"
 
 @ExperimentalCoroutinesApi
 class MessagingRepositoryTest {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
-    private val preferences: Preferences = mockk()
+    private val storageEditor: StorageEditor = mockk {
+        every { removeCouldNotDecryptMessageId(any()) }.just(runs)
+    }
+    private val storage: Storage = mockk {
+        every { edit() }.returns(storageEditor)
+    }
     private val controller: MessagingController = mockk()
     private val planckProvider: PlanckProvider = mockk()
     private val messageViewInfo: MessageViewInfo = mockk()
@@ -85,6 +92,7 @@ class MessagingRepositoryTest {
         every { isSet(Flag.SEEN) }.returns(false)
         every { folder }.returns(this@MessagingRepositoryTest.folder)
         every { uid }.returns(MESSAGE_UID)
+        every { messageId }.returns(MESSAGE_ID)
     }
     private val storedMessage = localMessage
     private val decryptedMessage: MimeMessage = mockk {
@@ -94,6 +102,7 @@ class MessagingRepositoryTest {
     private val senderIdentity: Identity = mockk()
     private val appIoScope: CoroutineScope = CoroutineScope(UnconfinedTestDispatcher())
     private val repository = MessagingRepository(
+        storage,
         controller,
         planckProvider,
         infoExtractor,
@@ -109,7 +118,6 @@ class MessagingRepositoryTest {
 
     @Before
     fun setUp() {
-        every { preferences.getAccount(any()) }.returns(account)
         mockkStatic(MessageReference::class)
         every { controller.loadMessage(any(), any(), any()) }.returns(localMessage)
         every { controller.setFlag(any(), any(), any<List<Message>>(), any(), any()) }.just(runs)
@@ -117,7 +125,6 @@ class MessagingRepositoryTest {
         every { MessageReference.parse(any()) }.returns(messageReference)
         mockkStatic("com.fsck.k9.extensions.LocalMessageKt")
         every { localMessage.hasToBeDecrypted() }.returns(false)
-        every { localMessage.isValidForHandshake() }.returns(true)
         every { localMessage.isMessageIncomplete() }.returns(false)
         mockkStatic(PlanckUtils::class)
         every { PlanckUtils.extractRating(any()) }.returns(Rating.pEpRatingReliable)
@@ -154,6 +161,18 @@ class MessagingRepositoryTest {
 
         verify { controller.loadMessage(account, FOLDER_NAME, MESSAGE_UID) }
     }
+
+    @Test
+    fun `loadMessage() removes message id from storage if message does not need to be decrypted`() =
+        runTest {
+            repository.loadMessage(messageViewUpdate)
+            advanceUntilIdle()
+
+
+            verify { localMessage.messageId }
+            verify { storage.edit() }
+            verify { storageEditor.removeCouldNotDecryptMessageId(MESSAGE_ID) }
+        }
 
     @Test
     fun `loadMessage() sets state to DecryptedMessageLoaded if message does not need to be decrypted`() =

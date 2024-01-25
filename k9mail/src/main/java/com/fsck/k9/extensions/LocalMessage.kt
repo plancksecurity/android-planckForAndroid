@@ -1,5 +1,6 @@
 package com.fsck.k9.extensions
 
+import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mail.internet.MessageExtractor
@@ -15,19 +16,28 @@ fun LocalMessage.isMessageIncomplete(): Boolean {
     return !isSet(Flag.X_DOWNLOADED_FULL) && !isSet(Flag.X_DOWNLOADED_PARTIAL)
 }
 
-fun LocalMessage?.isValidForHandshake() = this != null
-        && (account?.isPlanckPrivacyProtected ?: false)
-        && hasSingleSenderNotMe()
-        && PlanckUtils.isRatingReliable(planckRating)
-        && getRecipients(Message.RecipientType.CC).isNullOrEmpty()
-        && getRecipients(Message.RecipientType.BCC).isNullOrEmpty()
-        && !getRecipients(Message.RecipientType.TO).isNullOrEmpty()
+fun LocalMessage.isValidForHandshake(preferences: Preferences) =
+    (account?.isPlanckPrivacyProtected ?: false)
+            && hasSingleSenderNotMe(preferences)
+            && hasSingleToRecipient()
+            && PlanckUtils.isRatingReliable(planckRating)
 
-private fun LocalMessage.hasSingleSenderNotMe(): Boolean =
+fun LocalMessage.isValidForPartnerKeyReset(preferences: Preferences) =
+    (account?.isPlanckPrivacyProtected ?: false)
+            && hasSingleSenderNotMe(preferences)
+            && hasSingleToRecipient()
+
+private fun LocalMessage.hasSingleToRecipient() =
+    getRecipients(Message.RecipientType.CC).isNullOrEmpty() // no recipients in CC
+            && getRecipients(Message.RecipientType.BCC).isNullOrEmpty() // no recipients in BCC
+            && getRecipients(Message.RecipientType.TO).size == 1 // only one recipient in TO
+
+private fun LocalMessage.hasSingleSenderNotMe(preferences: Preferences): Boolean =
     from != null
-            && from.size == 1
-            // sender not my own account
-            && !from.first().address.equals(account.email, ignoreCase = true)
+            && from.size == 1 // only one sender
+            && preferences.availableAccounts.none {
+        it.email.equals(from.first().address, true)
+    } // sender not one of my own accounts
 
 private fun isMessageFullDownloaded(localMessage: LocalMessage): Boolean {
     return localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !MessageExtractor.hasMissingParts(

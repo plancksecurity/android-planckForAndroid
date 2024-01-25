@@ -1,11 +1,12 @@
 package com.fsck.k9.ui
 
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.fsck.k9.K9
 import com.fsck.k9.R
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -18,9 +19,10 @@ class ST6SyncScreenshotTest : BaseScreenshotTest() {
     fun syncTest() {
         openFirstScreen()
         setTestSet("K")
+        restartSync()
         goToSettings()
         triggerSync()
-        waitSyncDialog()
+        waitOtherDevice()
         clickNext()
         showLongTrustwords()
         showLanguageList()
@@ -29,21 +31,30 @@ class ST6SyncScreenshotTest : BaseScreenshotTest() {
         waitSyncFinish()
     }
 
+    private fun restartSync() {
+        ApplicationProvider.getApplicationContext<K9>().setPlanckSyncEnabled(false)
+        ApplicationProvider.getApplicationContext<K9>().setPlanckSyncEnabled(true)
+    }
+
     private fun goToSettings() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         click(getString(R.string.action_settings))
     }
 
     private fun triggerSync() {
+        clickSetting(R.string.privacy_preferences)
         expandSetting(R.string.sync_title)
         testUtils.pressOKButtonInDialog()
     }
 
-    private fun waitSyncDialog() {
-        while (getCurrentActivity()?.localClassName?.contains("ImportWizardFrompEp") == false) {
+    private fun waitOtherDevice() {
+        if (viewIsDisplayed(R.id.waiting_for_sync)) {
+            getScreenShotCurrentActivity("awaiting the other device for sync")
+        }
+        while (viewIsDisplayed(R.id.waiting_for_sync)) {
             sleep(2000)
         }
-        getScreenShotCurrentActivity("first screen")
+        getScreenShotCurrentActivity("awaiting user to start sync process")
     }
 
     private fun acceptSync() {

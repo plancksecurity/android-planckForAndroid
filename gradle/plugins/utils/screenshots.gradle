@@ -1,6 +1,7 @@
-task generateScreenshots() {
+ext.adb = "$System.env.ANDROID_SDK/platform-tools/adb"
+tasks.register('generateScreenshots') {
     doLast {
-        def command = "adb shell am instrument -w -e testType screenshot com.fsck.k9.planck.ui.activities.test/com.fsck.k9.planck.ui.activities.test.CucumberTestCase"
+        def command = "${adb} shell am instrument -w -e testType screenshot com.fsck.k9.planck.ui.activities.test/com.fsck.k9.planck.ui.activities.test.CucumberTestCase"
         exec {
             commandLine command.split(' ')
         }

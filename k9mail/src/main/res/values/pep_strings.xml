@@ -68,8 +68,6 @@
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">planck - Trust server and store messages unprotected</string>
-    <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
     <string name="pep_enable_privacy_protection">Enable planck privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
@@ -409,7 +407,7 @@
     <string name="group_mail_notification_summary">You were added to mail group %1$s by %2$s</string>
     <string name="sync_dialog_awaiting_other_device">Waiting for the other device…</string>
     <string name="sync_dialog_sync_start_timeout">Key sync could not be started. Please try again.</string>
-    <string name="reset_sender_key_action">Reset sender keys</string>
+    <string name="reset_partner_key_action">Reset partner keys</string>
     <string name="confirm_trust_dialog_title">Confirm trust</string>
     <string name="reject_trust_dialog_title">Reject trust</string>
     <string name="confirm_trust_dialog_progress">Confirming trust with %s…</string>

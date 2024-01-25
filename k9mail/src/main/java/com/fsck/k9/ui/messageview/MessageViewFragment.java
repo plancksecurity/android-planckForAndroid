@@ -2,6 +2,7 @@ package com.fsck.k9.ui.messageview;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.fsck.k9.ui.messageview.MessageViewEffect.*;
 import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorDownloadingMessageNotFound;
 import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorDownloadingNetworkError;
 import static com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage;
@@ -71,6 +72,7 @@ import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
+import com.fsck.k9.ui.messageview.MessageViewEffect.MessageOperationError;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 import com.google.android.material.snackbar.Snackbar;
@@ -91,6 +93,8 @@ import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
 import security.planck.ui.message_compose.PlanckFabMenu;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialogKt;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import security.planck.ui.verifypartner.VerifyPartnerFragment;
@@ -132,7 +136,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private MessageReference mMessageReference;
     private MessagingController mController;
     private DownloadManager downloadManager;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private MessageCryptoPresenter messageCryptoPresenter;
 
     /**
@@ -213,6 +217,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeVerifyPartnerResultListener();
+        initializeResetPartnerKeyResultListener();
 
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
@@ -223,6 +228,21 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
         doOnMessageList(K9Activity::hideSearchView);
+    }
+
+    private void initializeResetPartnerKeyResultListener() {
+        getParentFragmentManager().setFragmentResultListener(
+                ResetPartnerKeyDialog.REQUEST_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(ResetPartnerKeyDialog.REQUEST_KEY)) {
+                        boolean keyResetSuccess = result.getBoolean(ResetPartnerKeyDialog.RESULT_KEY_SUCCESS);
+                        if (keyResetSuccess) {
+                            displayMessage();
+                        }
+                    }
+                }
+        );
     }
 
     private void initializeVerifyPartnerResultListener() {
@@ -299,6 +319,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         });
         viewModel.getAllowHandshakeSender().observe(getViewLifecycleOwner(), this::allowOrDisallowSenderHandshake);
+        viewModel.getAllowResetPartnerKey().observe(getViewLifecycleOwner(), this::allowOrDisallowResetPartnerKeys);
         viewModel.getFlaggedToggled().observe(getViewLifecycleOwner(), this::flaggedToggled);
         viewModel.getReadToggled().observe(getViewLifecycleOwner(), this::readToggled);
     }
@@ -331,6 +352,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
+    private void allowOrDisallowResetPartnerKeys(Event<Boolean> event) {
+        Boolean value = event.getContentIfNotHandled();
+        if (value != null) {
+            if (value) {
+                allowResetPartnerKeys();
+            } else {
+                disAllowResetPartnerKeys();
+            }
+        }
+    }
+
     private void renderMessageViewState(MessageViewState messageViewState) {
         if (messageViewState.equals(Loading.INSTANCE)) {
             mMessageView.setToLoadingState();
@@ -358,7 +390,41 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             showDownloadMessageNetworkError((ErrorDownloadingNetworkError) effect);
         } else if (effect.equals(MessageMovedToSuspiciousFolder.INSTANCE)) {
             messageMovedToSuspiciousFolder();
+        } else if (effect instanceof MessageOperationError) {
+            showMessageOperationError((MessageOperationError) effect);
+        } else if (effect instanceof NavigateToResetPartnerKey) {
+            navigateToResetPartnerKey((NavigateToResetPartnerKey) effect);
+        } else if (effect instanceof  NavigateToVerifyPartner) {
+            navigateToVerifyPartner((NavigateToVerifyPartner) effect);
         }
+    }
+
+    private void navigateToVerifyPartner(NavigateToVerifyPartner effect) {
+        VerifyPartnerFragmentKt.showVerifyPartnerDialog(
+                MessageViewFragment.this,
+                effect.getPartner(),
+                effect.getMyAddress(),
+                effect.getMessageReference(),
+                true
+        );
+    }
+
+    private void navigateToResetPartnerKey(NavigateToResetPartnerKey effect) {
+        ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(
+                MessageViewFragment.this,
+                effect.getPartner()
+        );
+    }
+
+    private void showMessageOperationError(MessageOperationError effect) {
+        FeedbackTools.showLongFeedback(
+                getView(),
+                BuildConfig.DEBUG
+                        ? ExceptionsKt.stackTraceToString(effect.getThrowable())
+                        : getString(R.string.error_happened_restart_app),
+                Snackbar.LENGTH_LONG,
+                ERROR_DEBUG_FEEDBACK_MAX_LINES
+        );
     }
 
     private void messageMovedToSuspiciousFolder() {
@@ -474,14 +540,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         doOnActivity(activity -> activity.setResult(RESULT_CANCELED));
     }
 
-    public boolean shouldDisplayResetSenderKeyOption() {
-        return viewModel.canResetSenderKeys();
-    }
-
     public void resetSenderKey() {
-        if (shouldDisplayResetSenderKeyOption()) {
-            ResetPartnerKeyDialog.showResetPartnerKeyDialog(this);
-        }
+        viewModel.resetSenderKeys();
     }
 
     private void setupSwipeDetector() {
@@ -1044,10 +1104,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPEpPrivacyStatus() {
         refreshRecipients(getContext());
-        if (viewModel.isMessageValidForHandshake()) {
-            String myAddress = mAccount.getEmail();
-            VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, viewModel.getMessageFrom()[0].getAddress(), myAddress, getMessageReference(), true);
-        }
+        viewModel.handshakeSender();
     }
 
     private void allowHandshakeWithSender() {
@@ -1062,6 +1119,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             planckSecurityStatusLayout.setOnClickListener(null);
             mMessageView.getMessageHeader().hideSingleRecipientHandshakeBanner();
         }
+    }
+
+    private void allowResetPartnerKeys() {
+        mFragmentListener.displayResetPartnerKeysOption();
+    }
+
+    private void disAllowResetPartnerKeys() {
+        mFragmentListener.hideResetPartnerKeysOption();
     }
 
     public interface MessageViewFragmentListener {
@@ -1089,6 +1154,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         void updateMenu();
 
         void refreshMessageViewFragment();
+
+        void displayResetPartnerKeysOption();
+        void hideResetPartnerKeysOption();
     }
 
     public boolean isInitialized() {

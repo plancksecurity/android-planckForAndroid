@@ -18,6 +18,10 @@ function checkoutRepo() {
     cd "$1" || exit
     git fetch
     git checkout "$2"
+    if [ $2 = "develop" ]; then
+        echo "pulling branch $2 in repo $1"
+        git pull
+    fi
     )
 }
 

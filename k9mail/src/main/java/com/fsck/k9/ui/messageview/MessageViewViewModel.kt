@@ -1,16 +1,16 @@
 package com.fsck.k9.ui.messageview
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.extensions.hasToBeDecrypted
 import com.fsck.k9.extensions.isValidForHandshake
+import com.fsck.k9.extensions.isValidForPartnerKeyReset
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message.RecipientType
@@ -30,9 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import security.planck.dialog.BackgroundTaskDialogView
 import security.planck.messaging.MessagingRepository
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +38,6 @@ class MessageViewViewModel(
     private val preferences: Preferences,
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
-    private val context: Application,
     private val messagingRepository: MessagingRepository,
     private val messageViewUpdate: MessageViewUpdate,
     private val dispatcherProvider: DispatcherProvider,
@@ -51,14 +48,12 @@ class MessageViewViewModel(
         preferences: Preferences,
         controller: MessagingController,
         planckProvider: PlanckProvider,
-        context: Application,
         messagingRepository: MessagingRepository,
         dispatcherProvider: DispatcherProvider,
     ) : this(
         preferences,
         controller,
         planckProvider,
-        context,
         messagingRepository,
         MessageViewUpdate(),
         dispatcherProvider
@@ -81,6 +76,10 @@ class MessageViewViewModel(
         MutableLiveData(Event(false))
     val allowHandshakeSender: LiveData<Event<Boolean>> = allowHandshakeSenderLiveData
 
+    private val allowResetPartnerKeyLiveData: MutableLiveData<Event<Boolean>> =
+        MutableLiveData(Event(false))
+    val allowResetPartnerKey: LiveData<Event<Boolean>> = allowResetPartnerKeyLiveData
+
     private val flaggedToggledLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(false))
     val flaggedToggled: LiveData<Event<Boolean>> = flaggedToggledLiveData
@@ -89,14 +88,13 @@ class MessageViewViewModel(
         MutableLiveData(Event(false))
     val readToggled: LiveData<Event<Boolean>> = readToggledLiveData
 
-    private val resetPartnerKeyStateLd: MutableLiveData<BackgroundTaskDialogView.State> =
-        MutableLiveData(BackgroundTaskDialogView.State.CONFIRMATION)
-    val resetPartnerKeyState: LiveData<BackgroundTaskDialogView.State> = resetPartnerKeyStateLd
-
     val messageSubject: String?
         get() = if (::message.isInitialized) message.subject else null
     val messageFrom: Array<Address>
         get() = message.from
+
+    val firstSender: Address
+        get() = message.from.first()
 
     init {
         messageViewUpdate.stateFlow.onEach { state ->
@@ -104,6 +102,7 @@ class MessageViewViewModel(
             else if (state is DecryptedMessageLoaded) {
                 message = state.message
                 checkCanHandshakeSender()
+                checkCanResetSenderKeys()
             }
             messageViewStateLiveData.value = state
         }.launchIn(viewModelScope)
@@ -139,19 +138,25 @@ class MessageViewViewModel(
         }
     }
 
-    fun canResetSenderKeys(): Boolean {
-        return ::message.isInitialized
-                && (message.account?.isPlanckPrivacyProtected ?: false)
-                && messageConditionsForSenderKeyReset(message)
-                && ratingConditionsForSenderKeyReset(message.planckRating)
+    private suspend fun checkCanResetSenderKeys() {
+        (canResetSenderKeys()).also {
+            allowResetPartnerKeyLiveData.postValue(Event(it))
+        }
     }
 
+    private suspend fun canResetSenderKeys() =
+        (message.account?.isPlanckPrivacyProtected ?: false)
+                && messageConditionsForSenderKeyReset(message)
+                && ratingConditionsForSenderKeyReset(message.planckRating)
+
     private suspend fun checkCanHandshakeSender() {
-        (message.isValidForHandshake()
-                && PlanckUtils.isRatingReliable(getSenderRating(message))).also {
+        (canHandshakeSender()).also {
             allowHandshakeSenderLiveData.postValue(Event(it))
         }
     }
+
+    private suspend fun canHandshakeSender() = isMessageValidForHandshake()
+            && PlanckUtils.isRatingReliable(getSenderRating(message))
 
     fun toggleFlagged() {
         if (::message.isInitialized) {
@@ -188,37 +193,18 @@ class MessageViewViewModel(
         }
     }
 
-    fun resetPlanckData() {
-        viewModelScope.launch {
-            resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.LOADING
-            kotlin.runCatching {
-                val resetIdentity = PlanckUtils.createIdentity(message.from.first(), context)
-                withContext(dispatcherProvider.planckDispatcher()) {
-                    planckProvider.keyResetIdentity(resetIdentity, null)
-                }
-            }.onSuccess {
-                messagingRepository.loadMessage(messageViewUpdate)
-                resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.SUCCESS
-            }.onFailure {
-                Timber.e(it)
-                resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.ERROR
-            }
-        }
-    }
-
     private suspend fun getSenderRating(message: LocalMessage): Rating =
         planckProvider.getRating(message.from.first()).getOrDefault(Rating.pEpRatingUndefined)
 
-    private fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
-        !message.hasToBeDecrypted()
-                && message.from != null // sender not null
-                && message.from.size == 1 // only one sender
-                && preferences.availableAccounts.none { it.email == message.from.first().address } // sender not one of my own accounts
-                && message.getRecipients(RecipientType.TO).size == 1 // only one recipient in TO
-                && message.getRecipients(RecipientType.CC)
-            .isNullOrEmpty() // no recipients in CC
-                && message.getRecipients(RecipientType.BCC)
-            .isNullOrEmpty() // no recipients in BCC
+    private suspend fun messageConditionsForSenderKeyReset(message: LocalMessage): Boolean =
+        message.isValidForPartnerKeyReset(preferences)
+                && !planckProvider.isGroupAddress(firstSender)
+            .onFailure {
+                if (BuildConfig.DEBUG) {
+                    messageViewEffectLiveData.value =
+                        Event(MessageViewEffect.MessageOperationError(it))
+                }
+            }.getOrDefault(true)
 
     private fun ratingConditionsForSenderKeyReset(
         messageRating: Rating
@@ -226,12 +212,40 @@ class MessageViewViewModel(
         return !PlanckUtils.isRatingUnsecure(messageRating) || (messageRating == Rating.pEpRatingMistrust)
     }
 
-    fun partnerKeyResetFinished() {
-        resetPartnerKeyStateLd.value = BackgroundTaskDialogView.State.CONFIRMATION
+    fun handshakeSender() {
+        viewModelScope.launch {
+            if (::message.isInitialized && canHandshakeSender()) {
+                messageViewEffectLiveData.value = Event(
+                    MessageViewEffect.NavigateToVerifyPartner(
+                        firstSender.address,
+                        account.email,
+                        messageReference
+                    )
+                )
+            }
+        }
     }
 
-    fun isMessageValidForHandshake(): Boolean =
-        ::message.isInitialized && message.isValidForHandshake()
+    fun resetSenderKeys() {
+        viewModelScope.launch {
+            if (::message.isInitialized && canResetSenderKeys()) {
+                messageViewEffectLiveData.value = Event(
+                    MessageViewEffect.NavigateToResetPartnerKey(firstSender.address)
+                )
+            }
+        }
+    }
+
+    private suspend fun isMessageValidForHandshake(): Boolean {
+        return message.isValidForHandshake(preferences)
+                && !planckProvider.isGroupAddress(firstSender)
+            .onFailure {
+                if (BuildConfig.DEBUG) {
+                    messageViewEffectLiveData.value =
+                        Event(MessageViewEffect.MessageOperationError(it))
+                }
+            }.getOrDefault(true)
+    }
 
     fun isMessageSMime(): Boolean = ::message.isInitialized && message.isSet(Flag.X_SMIME_SIGNED)
     fun isMessageFlagged(): Boolean = ::message.isInitialized && message.isSet(Flag.FLAGGED)

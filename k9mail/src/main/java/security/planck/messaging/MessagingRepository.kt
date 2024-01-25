@@ -18,6 +18,7 @@ import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.exceptions.KeyMissingException
 import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
+import com.fsck.k9.preferences.Storage
 import com.fsck.k9.ui.messageview.MessageViewEffect
 import com.fsck.k9.ui.messageview.MessageViewState
 import com.fsck.k9.ui.messageview.MessageViewUpdate
@@ -31,6 +32,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MessagingRepository @Inject constructor(
+    private val storage: Storage,
     private val controller: MessagingController,
     private val planckProvider: PlanckProvider,
     private val infoExtractor: MessageViewInfoExtractor,
@@ -73,6 +75,7 @@ class MessagingRepository @Inject constructor(
         val loadedState = if (message.hasToBeDecrypted()) {
             MessageViewState.EncryptedMessageLoaded(message)
         } else {
+            storage.edit().removeCouldNotDecryptMessageId(message.messageId)
             MessageViewState.DecryptedMessageLoaded(message)
         }
 

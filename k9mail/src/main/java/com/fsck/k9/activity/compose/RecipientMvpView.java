@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -28,6 +29,7 @@ import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
 import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
+import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialogKt;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -67,6 +69,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     PlanckUIArtefactCache pEpUiCache;
     private RecipientPresenter presenter;
     private MessageReference messageReference;
+    private MenuItem resetPartnerKeysItem;
 
 
     public RecipientMvpView(MessageCompose activity) {
@@ -307,7 +310,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return planckRating;
     }
 
-    void handlepEpState(boolean forceHide) {
+    void handlePlanckState(boolean forceHide) {
         if (mAccount.isPlanckPrivacyProtected()) {
             activity.setToolbarRating(planckRating, forceHide);
         } else {
@@ -361,6 +364,22 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public void showError(Throwable throwable) {
         activity.setAndShowError(throwable);
+    }
+
+    public void setResetPartnerKeysItem(MenuItem resetPartnerKeysItem) {
+        this.resetPartnerKeysItem = resetPartnerKeysItem;
+    }
+
+    public void resetPartnerKeys(String partner) {
+        ResetPartnerKeyDialogKt.showResetPartnerKeyDialog(activity, partner);
+    }
+
+    public void showResetPartnerKeyOption() {
+        resetPartnerKeysItem.setVisible(true);
+    }
+
+    public void hideResetPartnerKeyOption() {
+        resetPartnerKeysItem.setVisible(false);
     }
 
     public enum CryptoStatusDisplayType {

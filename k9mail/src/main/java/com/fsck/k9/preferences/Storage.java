@@ -39,6 +39,7 @@ public class Storage {
 
     private Context context = null;
     private final OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
+    private final CouldNotDecryptMessagesStorage couldNotDecryptMessagesStorage;
     private final AppAliveMonitorStorage appAliveMonitorStorage;
     private final AuditLogStorage auditLogStorage;
 
@@ -190,6 +191,7 @@ public class Storage {
     private Storage(Context context) {
         this.context = context;
         ongoingDecryptMessagesStorage = new OngoingDecryptMessagesStorage(context);
+        couldNotDecryptMessagesStorage = new CouldNotDecryptMessagesStorage(context);
         appAliveMonitorStorage = new AppAliveMonitorStorage(context);
         auditLogStorage = new AuditLogStorage(context);
         loadValues();
@@ -272,6 +274,7 @@ public class Storage {
         return new StorageEditor(
                 this,
                 ongoingDecryptMessagesStorage,
+                couldNotDecryptMessagesStorage,
                 appAliveMonitorStorage,
                 auditLogStorage
         );
@@ -361,6 +364,10 @@ public class Storage {
 
     public Set<String> getOngoingDecryptMessages() {
         return ongoingDecryptMessagesStorage.getOngoingDecryptMessages();
+    }
+
+    public Set<String> getCouldNotDecryptMessages() {
+        return couldNotDecryptMessagesStorage.getEncryptedMessages();
     }
 
     public Set<String> getOngoingDecryptMessageTempFilePaths() {
