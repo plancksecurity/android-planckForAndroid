@@ -59,7 +59,9 @@ class RecipientPresenter(
     private val composePgpInlineDecider: ComposePgpInlineDecider,
     private val planck: PlanckProvider,
     private val replyToParser: ReplyToParser,
-    private val listener: RecipientsChangedListener
+    private val listener: RecipientsChangedListener,
+    private val planckUiCache: PlanckUIArtefactCache,
+    private val preferences: Preferences,
 ) : MessageReceivedListener {
     private lateinit var toPresenter: RecipientSelectPresenter
     private lateinit var ccPresenter: RecipientSelectPresenter
@@ -83,7 +85,6 @@ class RecipientPresenter(
     private var privacyState: Rating = Rating.pEpRatingUndefined
     private val isReplyToEncryptedMessage = false
     private var lastRequestTime: Long = 0
-    private var planckUiCache: PlanckUIArtefactCache
     private val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun setPresenter(presenter: RecipientSelectPresenter, type: RecipientType?) {
@@ -669,8 +670,7 @@ class RecipientPresenter(
                 && newToAdresses.size == ONE_ADDRESS
                 && newBccAdresses.isEmpty()
                 && newCcAdresses.isEmpty()
-                && !Preferences.getPreferences(context)
-            .containsAccountByEmail(newToAdresses.first().address)
+                && !preferences.containsAccountByEmail(newToAdresses.first().address)
     }
 
     private fun ratingConditionsForSenderKeyReset(): Boolean {
@@ -707,7 +707,6 @@ class RecipientPresenter(
 
     init {
         recipientMvpView.setPresenter(this)
-        planckUiCache = PlanckUIArtefactCache.getInstance(context.applicationContext)
         recipientMvpView.setLoaderManager(loaderManager)
         onSwitchAccount(account)
         updateCryptoStatus()

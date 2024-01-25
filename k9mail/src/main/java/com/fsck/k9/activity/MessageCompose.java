@@ -375,7 +375,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
                 openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
                 planck,
-                new ReplyToParser(), this
+                new ReplyToParser(), this, uiCache, Preferences.getPreferences(this)
         );
         recipientPresenter.updateCryptoStatus();
 
