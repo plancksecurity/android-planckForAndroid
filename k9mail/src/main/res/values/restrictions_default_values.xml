@@ -8,7 +8,6 @@
     <bool name="default_debug_logging">false</bool>
     <bool name="default_enable_echo_protocol">false</bool>
     <bool name="default_remote_search_enabled">true</bool>
-    <bool name="default_pep_save_encrypted">true</bool>
     <bool name="default_pep_enable_sync_account">true</bool>
     <bool name="default_use_signature">true</bool>
     <bool name="default_signature_before_quoted_message">false</bool>

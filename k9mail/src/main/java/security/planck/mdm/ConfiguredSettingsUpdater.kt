@@ -228,15 +228,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     )
                 }
 
-            RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
-                account?.let {
-                    saveAccountSaveMessagesSecurely(
-                        accountBundle,
-                        accountSettingEntry,
-                        account
-                    )
-                }
-
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
                 account?.let { saveAccountEnableSync(accountBundle, accountSettingEntry, account) }
 
@@ -1128,20 +1119,6 @@ class ConfiguredSettingsUpdater @Inject constructor(
             }
         }
         account.updateSetting(ManageableSetting(value = value, locked = locked))
-    }
-
-    private fun saveAccountSaveMessagesSecurely(
-        restrictions: Bundle,
-        entry: RestrictionEntry,
-        account: Account
-    ) {
-        updateAccountBoolean(
-            account,
-            restrictions,
-            entry,
-        ) { newValue ->
-            setPlanckStoreEncryptedOnServer(newValue)
-        }
     }
 
     private fun saveAccountEnableSync(

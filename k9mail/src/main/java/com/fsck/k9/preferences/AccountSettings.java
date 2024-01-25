@@ -243,9 +243,6 @@ public class AccountSettings {
         s.put("pEpSync", Settings.versions(
                 new V(53, new BooleanSetting(true))
         ));
-        s.put("pEpStoreEncryptedOnServer", Settings.versions(
-                new V(53, new BooleanSetting(true))
-        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 

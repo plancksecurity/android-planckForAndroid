@@ -22,28 +22,19 @@ class TrustedMessageController {
                                                  MimeMessage decryptedMessage,
                                                  Account account,
                                                  boolean alreadyDecrypted) {
-        return account.isPlanckPrivacyProtected()
-                && !account.isUntrustedSever()
-                && result.flags == -1
-                && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
-                && !alreadyDecrypted
-                && result.rating.value >= Rating.pEpRatingUnreliable.value;
+        return false;
     }
 
     <T extends Message> boolean shouldAppendMessageInTrustedServer(T message, Account account) {
-        return !account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE);
+        return false;
     }
 
     boolean getAlreadyDecrypted(Message sourceMessage, PlanckProvider.DecryptResult decryptResult, Account account, Rating rating) {
-        return account.isPlanckPrivacyProtected()
-                && !account.isUntrustedSever()
-                && !sourceMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
-                && !rating.equals(Rating.pEpRatingUndefined)
-                && !decryptResult.isFormerlyEncryptedReUploadedMessage;
+        return false;
     }
 
     boolean shouldAppendMessageOnUntrustedServer(Account account, Rating rating) {
-        return !account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined);
+        return false;
     }
 
     Message getOwnMessageCopy(Context context, PlanckProvider planckProvider, Account account, LocalMessage localMessage) throws MessagingException {
@@ -58,8 +49,7 @@ class TrustedMessageController {
 
         if (localMessage.getFlags().contains(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) return localMessage;
 
-        if (account.isUntrustedSever() ||
-                localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
+        if (localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) {
             encryptedMessage = encryptUntrustedMessage(context, planckProvider, account, localMessage);
         } else { // Trusted
             localMessage.setInternalDate(localMessage.getSentDate());

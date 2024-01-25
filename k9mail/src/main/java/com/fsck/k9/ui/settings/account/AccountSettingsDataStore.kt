@@ -36,7 +36,6 @@ class AccountSettingsDataStore(
             "remote_search_enabled" -> account.allowRemoteSearch()
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
             "pep_disable_privacy_protection" -> account.isPlanckPrivacyProtected()
-            "pep_save_encrypted" -> account.isUntrustedSever
             "pep_enable_sync_account" -> account.isPlanckSyncEnabled
             else -> defValue
         }
@@ -67,7 +66,6 @@ class AccountSettingsDataStore(
             "remote_search_enabled" -> account.setAllowRemoteSearch(value)
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
             "pep_disable_privacy_protection" -> account.setPlanckPrivacyProtection(value)
-            "pep_save_encrypted" -> account.setPlanckStoreEncryptedOnServer(value)
             "pep_enable_sync_account" -> setSyncEnabled(value)
             else -> return
         }

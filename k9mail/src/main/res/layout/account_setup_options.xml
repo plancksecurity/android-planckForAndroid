@@ -69,13 +69,6 @@
 
                 android:textColor="?android:attr/textColorPrimary" />
 
-            <CheckBox
-                android:id="@+id/account_trust_server"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/pep_trust_server_and_store_mails_unprotected"
-                android:textColor="?android:attr/textColorPrimary" />
-
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"

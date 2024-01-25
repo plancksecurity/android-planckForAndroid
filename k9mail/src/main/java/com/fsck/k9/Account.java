@@ -245,8 +245,6 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String IDENTITY_NAME_KEY = "name";
     public static final String IDENTITY_EMAIL_KEY = "email";
     public static final String IDENTITY_DESCRIPTION_KEY = "description";
-
-    public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
     public static final boolean DEFAULT_PEP_PRIVACY_PROTECTED = true;
     public static final int DEFAULT_CHIP_COLOR = 0xFF0000FF;
     /*
@@ -366,8 +364,6 @@ public class Account implements BaseAccount, StoreConfig {
     private ManageableSetting<Boolean> allowRemoteSearch;
     private boolean remoteSearchFullText;
     private ManageableSetting<Integer> remoteSearchNumResults;
-
-    private boolean planckUntrustedServer;
     private ManageableSetting<Boolean> planckPrivacyProtected;
 
     /**
@@ -478,7 +474,6 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setRingtone("content://settings/system/notification_sound");
         notificationSetting.setLedColor(chipColor);
 
-        planckUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         planckPrivacyProtected = new ManageableSetting<>(
                 DEFAULT_PEP_PRIVACY_PROTECTED
         );
@@ -648,7 +643,6 @@ public class Account implements BaseAccount, StoreConfig {
         isEnabled = storage.getBoolean(accountUuid + ".enabled", true);
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
-        planckUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
 
         planckPrivacyProtected = ManageableSettingKt.deserializeBooleanManageableSetting(
                 storage.getString(
@@ -974,7 +968,6 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".ringtone", notificationSetting.getRingtone());
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
-        editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", planckUntrustedServer);
         editor.putString(
                 accountUuid + ".pEpPrivacyProtected",
                 ManageableSettingKt.serializeBooleanManageableSetting(planckPrivacyProtected)
@@ -1953,16 +1946,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public synchronized NotificationSetting getNotificationSetting() {
         return notificationSetting;
-    }
-
-
-    // TODO: pEp: do we really *need* synchronized here?!
-    public synchronized boolean isUntrustedSever() {
-        return planckUntrustedServer;
-    }
-
-    public synchronized void setPlanckStoreEncryptedOnServer(boolean mPlanckStoreEncryptedOnServer) {
-        this.planckUntrustedServer = mPlanckStoreEncryptedOnServer;
     }
 
     /**

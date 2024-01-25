@@ -82,7 +82,6 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
             <br/>
             <p><b>Enable server search:</b> ${account.allowRemoteSearch()}</p>
             <p><b>Server search limit:</b> ${account.remoteSearchNumResults}</p>
-            <p><b>Store messages securely:</b> ${account.isUntrustedSever}</p>
             <p><b>PlanckProvider Sync this account:</b> ${account.isPlanckSyncEnabled}</p>
             <br/>
             <p><b>Mail settings:</b></p>

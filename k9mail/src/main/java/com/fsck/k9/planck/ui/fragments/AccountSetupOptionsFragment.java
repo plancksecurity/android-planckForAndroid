@@ -43,7 +43,6 @@ public class AccountSetupOptionsFragment extends Fragment {
     private CheckBox mNotifyView;
     private CheckBox mNotifySyncView;
     private CheckBox mPushEnable;
-    private CheckBox mUntrustedServer;
 
     private Account mAccount;
     private View rootView;
@@ -74,7 +73,6 @@ public class AccountSetupOptionsFragment extends Fragment {
         mNotifySyncView = (CheckBox)rootView.findViewById(R.id.account_notify_sync);
         mPushEnable = (CheckBox)rootView.findViewById(R.id.account_enable_push);
 
-        mUntrustedServer = (CheckBox) rootView.findViewById(R.id.account_trust_server);
         rootView.findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,8 +165,6 @@ public class AccountSetupOptionsFragment extends Fragment {
         } else {
             mAccount.setFolderPushMode(Account.FolderMode.NONE);
         }
-
-        mAccount.setPlanckStoreEncryptedOnServer(!mUntrustedServer.isChecked());
 
         if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount())) {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);

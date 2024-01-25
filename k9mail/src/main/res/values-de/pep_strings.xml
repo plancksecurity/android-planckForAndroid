@@ -28,8 +28,6 @@
     <string name="pep_receivedSecretKey">Es wurde der folgende private Schlüssel empfangen:</string>
     <string name="pep_username">Benutzername</string>
     <string name="pep_userAddress">Benutzeradresse</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">planck - Dem Server vertrauen und Nachrichten ungeschützt speichern</string>
-    <string name="pep_mistrust_server_and_store_mails_encrypted">Nachrichten geschützt speichern</string>
     <string name="pep_enable_privacy_protection">planck-Datenschutz</string>
     <string name="pep_explanation">Erklärung</string>
     <string name="pep_suggestion">Vorschlag</string>
@@ -228,8 +226,6 @@
     <string name="pgp_key_import_title">PGP Schlüsselimport aus dem Dateisystem</string>
     <string name="change_language_explanation">App wird zum Startbildschirm wechseln um die Änderung abzuschliessen</string>
     <string name="change_language_title">Sprache ändern</string>
-    <string name="account_settings_save_encrypted_summary_disabled">Verschlüsselte Nachrichten entschlüsseln und auf dem Server ungesichert speichern.</string>
-    <string name="account_settings_save_encrypted_summary_enabled">Verschlüsselte Nachrichten auf dem Server ebenso sicher speichern.</string>
     <string name="global_settings_subject_protection_summary">Nachricht schützen, wenn der Kommunikationspartner OpenPGP verwendet</string>
     <string name="global_settings_passive_mode_summary">Keinen Schlüssel mitsenden, wenn der Kommunikationspartner kein planck verwendet</string>
     <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>
