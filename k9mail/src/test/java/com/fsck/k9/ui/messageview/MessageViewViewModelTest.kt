@@ -21,6 +21,8 @@ import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import com.fsck.k9.ui.messageview.MessageViewEffect.ErrorLoadingMessage
+import com.fsck.k9.ui.messageview.MessageViewEffect.NavigateToResetPartnerKey
+import com.fsck.k9.ui.messageview.MessageViewEffect.NavigateToVerifyPartner
 import com.fsck.k9.ui.messageview.MessageViewEffect.NoEffect
 import com.fsck.k9.ui.messageview.MessageViewState.DecryptedMessageLoaded
 import com.fsck.k9.ui.messageview.MessageViewState.Idle
@@ -127,6 +129,7 @@ class MessageViewViewModelTest {
     @Before
     fun setUp() {
         receivedMessageStates.clear()
+        receivedMessageEffects.clear()
         allowHandshakeSenderEvents.clear()
         allowPartnerKeyResetEvents.clear()
         flaggedToggledEvents.clear()
@@ -268,6 +271,111 @@ class MessageViewViewModelTest {
             coVerify { planckProvider.getRating(senderAddress) }
             verify { PlanckUtils.isRatingReliable(Rating.pEpRatingReliable) }
             assertAllowHandshakeEvents(false, true)
+        }
+
+    @Test
+    fun `handshakeSender() does same checks as when allowing to handshake sender`() =
+        runTest {
+            viewModel.initialize(REFERENCE_STRING)
+            viewModel.loadMessage()
+            advanceUntilIdle()
+            viewModel.handshakeSender()
+            advanceUntilIdle()
+
+
+            verify(exactly = 2) { localMessage.isValidForHandshake(preferences) }
+            coVerify(exactly = 3) { planckProvider.isGroupAddress(senderAddress) }
+            coVerify(exactly = 2) { planckProvider.getRating(senderAddress) }
+            verify(exactly = 2) { PlanckUtils.isRatingReliable(Rating.pEpRatingReliable) }
+            assertAllowHandshakeEvents(false, true)
+        }
+
+    @Test
+    fun `handshakeSender() sets effect to NavigateToVerifyPartner`() =
+        runTest {
+            viewModel.initialize(REFERENCE_STRING)
+            viewModel.loadMessage()
+            advanceUntilIdle()
+            viewModel.handshakeSender()
+            advanceUntilIdle()
+
+
+            assertMessageEffects(
+                NoEffect,
+                NoEffect,
+                NavigateToVerifyPartner(MAIL1, MAIL2, messageReference)
+            )
+        }
+
+    @Test
+    fun `handshakeSender() does not set effect to NavigateToVerifyPartner if conditions do not match`() =
+        runTest {
+            every { account.isPlanckPrivacyProtected }.returns(false)
+
+
+            viewModel.initialize(REFERENCE_STRING)
+            viewModel.loadMessage()
+            advanceUntilIdle()
+            viewModel.handshakeSender()
+            advanceUntilIdle()
+
+
+            assertMessageEffects(
+                NoEffect,
+                NoEffect
+            )
+        }
+
+    @Test
+    fun `resetSenderKeys() does same checks as when allowing to reset partner keys`() =
+        runTest {
+            viewModel.initialize(REFERENCE_STRING)
+            viewModel.loadMessage()
+            advanceUntilIdle()
+            viewModel.resetSenderKeys()
+            advanceUntilIdle()
+
+
+            verify(exactly = 1) { localMessage.isValidForHandshake(preferences) }
+            coVerify(exactly = 3) { planckProvider.isGroupAddress(senderAddress) }
+            verify(exactly = 2) { PlanckUtils.isRatingUnsecure(Rating.pEpRatingReliable) }
+            assertAllowHandshakeEvents(false, true)
+        }
+
+    @Test
+    fun `resetSenderKeys() sets effect to NavigateToResetPartnerKey`() =
+        runTest {
+            viewModel.initialize(REFERENCE_STRING)
+            viewModel.loadMessage()
+            advanceUntilIdle()
+            viewModel.resetSenderKeys()
+            advanceUntilIdle()
+
+
+            assertMessageEffects(
+                NoEffect,
+                NoEffect,
+                NavigateToResetPartnerKey(MAIL1)
+            )
+        }
+
+    @Test
+    fun `resetSenderKeys() does not set effect to NavigateToVerifyPartnerKey if conditions do not match`() =
+        runTest {
+            every { account.isPlanckPrivacyProtected }.returns(false)
+
+
+            viewModel.initialize(REFERENCE_STRING)
+            viewModel.loadMessage()
+            advanceUntilIdle()
+            viewModel.resetSenderKeys()
+            advanceUntilIdle()
+
+
+            assertMessageEffects(
+                NoEffect,
+                NoEffect
+            )
         }
 
     @Test
