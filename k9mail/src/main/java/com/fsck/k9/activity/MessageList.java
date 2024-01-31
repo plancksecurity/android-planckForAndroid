@@ -1118,10 +1118,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.resetSenderKey();
                 return true;
             }
-            case R.id.compose: {
-                MessageActions.actionCompose(this, mAccount);
-                return true;
-            }
             // MessageList
             case R.id.check_mail: {
                 mMessageListFragment.checkMail();
@@ -1336,7 +1332,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.next_message).setVisible(false);
             menu.findItem(R.id.previous_message).setVisible(false);
             menu.findItem(R.id.delete).setVisible(false);
-            menu.findItem(R.id.compose).setVisible(false);
             menu.findItem(R.id.archive).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
@@ -1440,7 +1435,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         } else {
             menu.findItem(R.id.set_sort).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(true);
-            menu.findItem(R.id.compose).setVisible(true);
             menu.findItem(R.id.mark_all_as_read).setVisible(
                     mMessageListFragment.isMarkAllAsReadSupported());
 
@@ -1455,7 +1449,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             if (mMessageListFragment.isManualSearch()) {
                 drawerLayoutView.setDrawerEnabled(false);
                 menu.findItem(R.id.check_mail).setVisible(false);
-                menu.findItem(R.id.compose).setVisible(false);
                 menu.findItem(R.id.show_folder_list).setVisible(false);
                 menu.findItem(R.id.settings).setVisible(false);
             }
