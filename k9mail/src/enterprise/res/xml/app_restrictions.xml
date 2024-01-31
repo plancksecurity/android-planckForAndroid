@@ -78,7 +78,7 @@
             android:title="@string/locked_restriction_title" />
     </restriction>
 
-    <restriction
+    <!--restriction
         android:description="@string/enable_planck_sync_description"
         android:key="enable_planck_sync"
         android:restrictionType="bundle"
@@ -95,7 +95,7 @@
             android:key="enable_planck_sync_locked"
             android:restrictionType="bool"
             android:title="@string/locked_restriction_title" />
-    </restriction>
+    </restriction-->
 
     <restriction
         android:defaultValue="@bool/default_use_pep_sync_folder"
