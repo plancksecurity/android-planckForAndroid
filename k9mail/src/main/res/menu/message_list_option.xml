@@ -27,19 +27,19 @@
 
     <!-- MessageView -->
     <item
-        android:id="@+id/previous_message"
-        android:title="@string/previous_action"
-        android:icon="?attr/iconActionPreviousMessage"
-        app:showAsAction="never"
-    />
-
-    <!-- MessageView -->
-    <item
         android:id="@+id/next_message"
         android:title="@string/next_action"
         android:icon="?attr/iconActionNextMessage"
         app:showAsAction="never"
     />
+
+    <!-- MessageView -->
+    <item
+        android:id="@+id/previous_message"
+        android:title="@string/previous_action"
+        android:icon="?attr/iconActionPreviousMessage"
+        app:showAsAction="never"
+        />
 
     <!-- MessageList -->
     <item
@@ -75,13 +75,6 @@
 
     <!-- MessageView -->
     <item
-        android:id="@+id/reset_partner_keys"
-        app:showAsAction="never"
-        android:title="@string/reset_partner_key_action"
-        android:visible="false"/>
-
-    <!-- MessageView -->
-    <item
         android:id="@+id/archive"
         android:icon="?attr/iconActionArchive"
         app:showAsAction="never"
@@ -105,33 +98,6 @@
         app:showAsAction="never"
         android:title="@string/copy_action"/>
 
-    <!-- MessageView -->
-    <item
-        android:id="@+id/refile"
-        android:icon="?attr/iconActionSingleMessageOptions"
-        app:showAsAction="never"
-        android:title="@string/refile_action">
-        <menu>
-            <item
-                android:id="@+id/refile_archive"
-                android:title="@string/archive_action"/>
-
-            <!-- MessageView -->
-            <item
-                android:id="@+id/refile_spam"
-                android:title="@string/spam_action"/>
-
-            <!-- MessageView -->
-            <item
-                android:id="@+id/refile_move"
-                android:title="@string/move_action"/>
-
-            <!-- MessageView -->
-            <item
-                android:id="@+id/refile_copy"
-                android:title="@string/copy_action"/>
-        </menu>
-    </item>
     <!-- MessageView -->
     <item
         android:id="@+id/toggle_unread"
@@ -221,6 +187,13 @@
         android:icon="?attr/iconActionSettings"
         app:showAsAction="never"
         android:title="@string/action_settings"/>
+
+    <!-- MessageView -->
+    <item
+        android:id="@+id/reset_partner_keys"
+        app:showAsAction="never"
+        android:title="@string/reset_partner_key_action"
+        android:visible="false"/>
 
     <item
         android:id="@+id/tutorial"

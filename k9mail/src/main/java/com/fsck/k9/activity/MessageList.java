@@ -1206,23 +1206,19 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.onToggleRead();
                 return true;
             }
-            case R.id.archive:
-            case R.id.refile_archive: {
+            case R.id.archive: {
                 mMessageViewFragment.onArchive();
                 return true;
             }
-            case R.id.spam:
-            case R.id.refile_spam: {
+            case R.id.spam: {
                 mMessageViewFragment.onSpam();
                 return true;
             }
-            case R.id.move:
-            case R.id.refile_move: {
+            case R.id.move: {
                 mMessageViewFragment.onMove();
                 return true;
             }
-            case R.id.copy:
-            case R.id.refile_copy: {
+            case R.id.copy: {
                 mMessageViewFragment.onCopy();
                 return true;
             }
@@ -1336,7 +1332,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.move).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.spam).setVisible(false);
-            menu.findItem(R.id.refile).setVisible(false);
             menu.findItem(R.id.toggle_unread).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
@@ -1380,10 +1375,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
              */
             if (mMessageViewFragment.isCopyCapable()) {
                 menu.findItem(R.id.copy).setVisible(K9.isMessageViewCopyActionVisible());
-                menu.findItem(R.id.refile_copy).setVisible(true);
             } else {
                 menu.findItem(R.id.copy).setVisible(false);
-                menu.findItem(R.id.refile_copy).setVisible(false);
             }
 
             if (mMessageViewFragment.isMoveCapable()) {
@@ -1395,16 +1388,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                         K9.isMessageViewArchiveActionVisible());
                 menu.findItem(R.id.spam).setVisible(canMessageBeMovedToSpam &&
                         K9.isMessageViewSpamActionVisible());
-
-                menu.findItem(R.id.refile_move).setVisible(true);
-                menu.findItem(R.id.refile_archive).setVisible(canMessageBeArchived);
-                menu.findItem(R.id.refile_spam).setVisible(canMessageBeMovedToSpam);
             } else {
                 menu.findItem(R.id.move).setVisible(false);
                 menu.findItem(R.id.archive).setVisible(false);
                 menu.findItem(R.id.spam).setVisible(false);
-
-                menu.findItem(R.id.refile).setVisible(false);
             }
 
             if (mMessageViewFragment.allHeadersVisible()) {

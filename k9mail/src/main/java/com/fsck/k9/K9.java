@@ -359,11 +359,11 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static SplitViewMode sSplitViewMode = SplitViewMode.NEVER;
     private static boolean sColorizeMissingContactPictures = DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE;
 
-    private static boolean sMessageViewArchiveActionVisible = false;
+    private static boolean sMessageViewArchiveActionVisible = true;
     private static boolean sMessageViewDeleteActionVisible = true;
-    private static boolean sMessageViewMoveActionVisible = false;
-    private static boolean sMessageViewCopyActionVisible = false;
-    private static boolean sMessageViewSpamActionVisible = false;
+    private static boolean sMessageViewMoveActionVisible = true;
+    private static boolean sMessageViewCopyActionVisible = true;
+    private static boolean sMessageViewSpamActionVisible = true;
     private static String planckExtraAccounts = "";
     //private static boolean pEpUseKeyserver = false;
     private static boolean planckPassiveMode = false;
@@ -1059,11 +1059,11 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         sColorizeMissingContactPictures = storage.getBoolean("colorizeMissingContactPictures", DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE);
 
-        sMessageViewArchiveActionVisible = storage.getBoolean("messageViewArchiveActionVisible", false);
+        sMessageViewArchiveActionVisible = storage.getBoolean("messageViewArchiveActionVisible", true);
         sMessageViewDeleteActionVisible = storage.getBoolean("messageViewDeleteActionVisible", true);
-        sMessageViewMoveActionVisible = storage.getBoolean("messageViewMoveActionVisible", false);
-        sMessageViewCopyActionVisible = storage.getBoolean("messageViewCopyActionVisible", false);
-        sMessageViewSpamActionVisible = storage.getBoolean("messageViewSpamActionVisible", false);
+        sMessageViewMoveActionVisible = storage.getBoolean("messageViewMoveActionVisible", true);
+        sMessageViewCopyActionVisible = storage.getBoolean("messageViewCopyActionVisible", true);
+        sMessageViewSpamActionVisible = storage.getBoolean("messageViewSpamActionVisible", true);
 
         sPgpInlineDialogCounter = storage.getInt("pgpInlineDialogCounter", 0);
         sPgpSignOnlyDialogCounter = storage.getInt("pgpSignOnlyDialogCounter", 0);
