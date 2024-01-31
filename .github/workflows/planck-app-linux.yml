@@ -19,13 +19,13 @@ jobs:
         run: |
           ls -r ${{ github.workspace }}/core
       # dependencies
-      #- run: apt-get update && apt-get upgrade -yqq
-      - run: apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
+      - run: sudo apt-get update && apt-get upgrade -yqq
+      - run: sudo apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
               capnproto libsqlite3-dev build-essential curl wget software-properties-common libtool patch \
               ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales
 
-      - run: apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
-      - run: apt-get install -yqq asn1c
-      - run: update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+      - run: sudo apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
+      - run: sudo apt-get install -yqq asn1c
+      - run: sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
       - run: curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
       - run: echo "🍏 This job's status is ${{ job.status }}."
