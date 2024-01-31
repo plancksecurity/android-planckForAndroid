@@ -100,6 +100,8 @@ class PlanckSyncRepository @Inject constructor(
                 isGrouped = false
                 if (syncState.allowSyncNewDevices) {
                     startOrResetManualSyncTimer()
+                } else {
+                    cancelIfCancelledByPartner()
                 }
             }
 
@@ -108,6 +110,8 @@ class PlanckSyncRepository @Inject constructor(
                 k9.markSyncEnabled(true)
                 if (syncState.allowSyncNewDevices) {
                     startOrResetManualSyncTimer()
+                } else {
+                    cancelIfCancelledByPartner()
                 }
             }
 
@@ -128,6 +132,17 @@ class PlanckSyncRepository @Inject constructor(
             else -> {}
         }
     }
+
+    private fun cancelIfCancelledByPartner() {
+        engineScope.launch {
+            if (soleOrInGroupMeansCancel()) {
+                cancelSync()
+            }
+        }
+    }
+
+    private fun soleOrInGroupMeansCancel() = (syncState is SyncState.HandshakeReadyAwaitingUser
+            || syncState is SyncState.PerformingHandshake)
 
     private fun foundPartnerDevice(
         myself: Identity,
@@ -283,7 +298,7 @@ class PlanckSyncRepository @Inject constructor(
         }
     }
 
-    private suspend fun PlanckSyncRepository.resetSyncIfDeviceGroupLeft() {
+    private suspend fun resetSyncIfDeviceGroupLeft() {
         if (k9.deviceJustLeftGroup()) {
             planckProvider.stopSync()
             k9.markDeviceJustLeftGroup(false)
