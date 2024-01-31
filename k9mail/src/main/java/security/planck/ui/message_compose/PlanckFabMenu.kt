@@ -17,12 +17,12 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private val slideUpReply = AnimationUtils.loadAnimation(context, R.anim.slide_up_reply)
-    private val slideUpReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_up_reply_all)
-    private val slideUpForward = AnimationUtils.loadAnimation(context, R.anim.slide_up_forward)
-    private val slideDownReply = AnimationUtils.loadAnimation(context, R.anim.slide_down_reply)
-    private val slideDownReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_down_reply_all)
-    private val slideDownForward = AnimationUtils.loadAnimation(context, R.anim.slide_down_forward)
+    private val slideOutReply = AnimationUtils.loadAnimation(context, R.anim.slide_out_reply)
+    private val slideOutReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_out_reply_all)
+    private val slideOutForward = AnimationUtils.loadAnimation(context, R.anim.slide_out_forward)
+    private val slideInReply = AnimationUtils.loadAnimation(context, R.anim.slide_in_reply)
+    private val slideInReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_in_reply_all)
+    private val slideInForward = AnimationUtils.loadAnimation(context, R.anim.slide_out_forward)
 
     val presenter: PlanckFabMenuPresenter = PlanckFabMenuPresenter(this)
 
@@ -52,9 +52,9 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     }
 
     override fun openMenu() {
-        binding.fabForward.startAnimation(slideUpForward)
-        binding.fabReplyAll.startAnimation(slideUpReplyAll)
-        binding.fabReply.startAnimation(slideUpReply)
+        binding.fabForward.startAnimation(slideOutForward)
+        binding.fabReplyAll.startAnimation(slideOutReplyAll)
+        binding.fabReply.startAnimation(slideOutReply)
         binding.fabReply.show()
         binding.fabReplyAll.show()
         binding.fabForward.show()
@@ -62,9 +62,9 @@ class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
     }
 
     override fun closeMenu() {
-        binding.fabForward.startAnimation(slideDownForward)
-        binding.fabReplyAll.startAnimation(slideDownReplyAll)
-        binding.fabReply.startAnimation(slideDownReply)
+        binding.fabForward.startAnimation(slideInForward)
+        binding.fabReplyAll.startAnimation(slideInReplyAll)
+        binding.fabReply.startAnimation(slideInReply)
         binding.fabReply.hide()
         binding.fabReplyAll.hide()
         binding.fabForward.hide()
