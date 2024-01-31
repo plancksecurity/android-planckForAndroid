@@ -1,4 +1,4 @@
-name: Planck Android app pipeline
+name: Planck Android app pipeline macos
 run-name: ${{ github.actor }} is building the Planck Android app
 on: [push]
 jobs:
