@@ -107,28 +107,6 @@
 
     <!-- MessageView -->
     <item
-        android:id="@+id/single_message_options"
-        android:icon="?attr/iconActionSingleMessageOptions"
-        app:showAsAction="never"
-        android:title="@string/single_message_options_action">
-        <menu>
-            <item
-                android:id="@+id/reply"
-                android:title="@string/reply_action"/>
-            <item
-                android:id="@+id/reply_all"
-                android:title="@string/reply_all_action"/>
-            <item
-                android:id="@+id/forward"
-                android:title="@string/forward_action"/>
-            <item
-                android:id="@+id/share"
-                android:title="@string/send_alternate_action"/>
-        </menu>
-    </item>
-
-    <!-- MessageView -->
-    <item
         android:id="@+id/refile"
         android:icon="?attr/iconActionSingleMessageOptions"
         app:showAsAction="never"

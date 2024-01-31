@@ -1202,18 +1202,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.onDelete();
                 return true;
             }
-            case R.id.reply: {
-                mMessageViewFragment.onReply();
-                return true;
-            }
-            case R.id.reply_all: {
-                mMessageViewFragment.onReplyAll();
-                return true;
-            }
-            case R.id.forward: {
-                mMessageViewFragment.onForward();
-                return true;
-            }
             case R.id.share: {
                 mMessageViewFragment.onSendAlternate();
                 return true;
@@ -1347,7 +1335,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             menu.findItem(R.id.next_message).setVisible(false);
             menu.findItem(R.id.previous_message).setVisible(false);
-            menu.findItem(R.id.single_message_options).setVisible(false);
             menu.findItem(R.id.delete).setVisible(false);
             menu.findItem(R.id.compose).setVisible(false);
             menu.findItem(R.id.archive).setVisible(false);

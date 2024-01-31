@@ -97,7 +97,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="spam_action">Spam</string>
     <string name="forward_action">Weiterleiten</string>
     <string name="move_action">Verschieben</string>
-    <string name="single_message_options_action">Senden…</string>
     <string name="refile_action">Sortieren…</string>
     <string name="done_action">Fertig</string>
     <string name="discard_action">Verwerfen</string>
