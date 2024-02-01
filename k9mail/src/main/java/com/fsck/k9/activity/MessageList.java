@@ -1257,6 +1257,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.message_list_option, menu);
+        menu.setGroupDividerEnabled(true);
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
