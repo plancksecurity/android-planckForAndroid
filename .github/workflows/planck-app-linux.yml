@@ -27,6 +27,7 @@ jobs:
       #- run: sudo apt-get upgrade
       - run: sudo apt search capnproto
       - run: sudo apt-cache search capnproto
+      - run: sudo apt-cache policy capnproto
       - run: sudo apt search ant
       - run: sudo apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
           capnproto=0.8.0-2ubuntu2 libsqlite3-dev build-essential curl wget software-properties-common libtool patch \
