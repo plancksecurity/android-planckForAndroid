@@ -95,7 +95,7 @@ dependencies {
     implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
     implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar" //UI design, albeit could be remade to our own lib
     implementation "com.karumi:dexter:${versions.dexter}" //Permissions, however it is archieved
-    implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}" //Attachment handler
+    implementation "de.cketti.safecontentresolver:safe-content-resolver-v21:${versions.safeContentResolver}" //Attachment handler
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
     implementation "org.jsoup:jsoup:${versions.jsoup}" //Html parser
     implementation "com.takisoft.preferencex:preferencex:${versions.preferencesFix}"
@@ -108,8 +108,8 @@ dependencies {
     // Arch dependencies
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
-    implementation "com.xwray:groupie:${versions.groupie}"
-    implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
+    implementation "com.github.lisawray.groupie:groupie:${versions.groupie}"
+    implementation "com.github.lisawray.groupie:groupie-viewbinding:${versions.groupie}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
     //Coroutines
