@@ -1,19 +1,21 @@
 package com.fsck.k9.activity.loader;
 
 
+import android.content.Context;
+
+import androidx.loader.content.AsyncTaskLoader;
+
+import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.activity.misc.Attachment.LoadingState;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.content.Context;
-import androidx.loader.content.AsyncTaskLoader;
-
-import com.fsck.k9.activity.misc.Attachment;
-import com.fsck.k9.activity.misc.Attachment.LoadingState;
 import de.cketti.safecontentresolver.SafeContentResolver;
-import de.cketti.safecontentresolver.SafeContentResolverCompat;
-import org.apache.commons.io.IOUtils;
 import timber.log.Timber;
 
 /**
@@ -59,7 +61,7 @@ public class AttachmentContentLoader extends AsyncTaskLoader<Attachment> {
 
             Timber.v("Saving attachment to %s", file.getAbsolutePath());
 
-            SafeContentResolver safeContentResolver = SafeContentResolverCompat.newInstance(context);
+            SafeContentResolver safeContentResolver = SafeContentResolver.newInstance(context);
             InputStream in = safeContentResolver.openInputStream(sourceAttachment.uri);
             try {
                 FileOutputStream out = new FileOutputStream(file);

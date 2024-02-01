@@ -11,17 +11,17 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.observeNotNull
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import com.xwray.groupie.Section
-import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_settings.*
+import kotlinx.android.synthetic.main.activity_settings.settings_list
 
 @AndroidEntryPoint
 class K9SettingsActivity : K9Activity() {
     private val viewModel: SettingsViewModel by viewModels()
 
-    private lateinit var settingsAdapter: GroupAdapter<ViewHolder>
+    private lateinit var settingsAdapter: GroupAdapter<GroupieViewHolder>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
