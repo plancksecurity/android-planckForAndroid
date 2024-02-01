@@ -20,6 +20,7 @@ jobs:
           ls -r ${{ github.workspace }}/core
       # dependencies
       - run: sudo add-apt-repository universe
+      - run: sudo add-apt-repository multiverse
       - run: sudo apt-get update -yqq
       - run: sudo apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
               capnproto libsqlite3-dev build-essential curl wget software-properties-common libtool patch \
