@@ -20,6 +20,7 @@ jobs:
           ls -r ${{ github.workspace }}/core
       # dependencies
       - run: cat /etc/lsb-release
+      - run: uname -m
       - run: sudo add-apt-repository universe -y
       - run: sudo add-apt-repository multiverse -y
       - run: sudo apt-get update -yqq
