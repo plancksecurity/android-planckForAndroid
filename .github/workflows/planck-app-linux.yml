@@ -22,6 +22,8 @@ jobs:
       - run: sudo add-apt-repository universe -y
       - run: sudo add-apt-repository multiverse -y
       - run: sudo apt-get update -yqq
+      - run: sudo apt search capnproto
+      - run: sudo apt search ant
       - run: sudo apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle-dev libssl-dev \
               capnproto libsqlite3-dev build-essential curl wget software-properties-common libtool patch \
               ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales
