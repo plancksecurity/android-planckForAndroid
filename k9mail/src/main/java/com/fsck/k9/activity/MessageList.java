@@ -1369,26 +1369,20 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 menu.findItem(R.id.toggle_unread).setTitle(R.string.mark_as_read_action);
             }
 
-            menu.findItem(R.id.delete).setVisible(K9.isMessageViewDeleteActionVisible());
+            menu.findItem(R.id.delete).setVisible(true);
 
             /*
              * Set visibility of copy, move, archive, spam in action bar and refile submenu
              */
-            if (mMessageViewFragment.isCopyCapable()) {
-                menu.findItem(R.id.copy).setVisible(K9.isMessageViewCopyActionVisible());
-            } else {
-                menu.findItem(R.id.copy).setVisible(false);
-            }
+            menu.findItem(R.id.copy).setVisible(mMessageViewFragment.isCopyCapable());
 
             if (mMessageViewFragment.isMoveCapable()) {
                 boolean canMessageBeArchived = mMessageViewFragment.canMessageBeArchived();
                 boolean canMessageBeMovedToSpam = mMessageViewFragment.canMessageBeMovedToSpam();
 
-                menu.findItem(R.id.move).setVisible(K9.isMessageViewMoveActionVisible());
-                menu.findItem(R.id.archive).setVisible(canMessageBeArchived &&
-                        K9.isMessageViewArchiveActionVisible());
-                menu.findItem(R.id.spam).setVisible(canMessageBeMovedToSpam &&
-                        K9.isMessageViewSpamActionVisible());
+                menu.findItem(R.id.move).setVisible(true);
+                menu.findItem(R.id.archive).setVisible(canMessageBeArchived);
+                menu.findItem(R.id.spam).setVisible(canMessageBeMovedToSpam);
             } else {
                 menu.findItem(R.id.move).setVisible(false);
                 menu.findItem(R.id.archive).setVisible(false);
