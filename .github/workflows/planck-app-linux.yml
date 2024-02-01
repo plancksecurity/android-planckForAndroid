@@ -19,6 +19,7 @@ jobs:
         run: |
           ls -r ${{ github.workspace }}/core
       # dependencies
+      - run: lsb_release -a
       - run: sudo add-apt-repository universe -y
       - run: sudo add-apt-repository multiverse -y
       - run: sudo apt-get update -yqq
