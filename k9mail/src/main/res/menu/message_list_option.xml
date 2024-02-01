@@ -17,29 +17,23 @@
         android:visible="false"
         app:showAsAction="never" />
 
-    <!-- MessageView -->
-    <item
-        android:id="@+id/flag"
-        android:icon="?attr/flagUncheckedIcon"
-        android:title="@string/flag_action"
-        android:checkable="true"
-        app:showAsAction="ifRoom" />
+    <group android:id="@+id/next_and_previous">
+        <!-- MessageView -->
+        <item
+            android:id="@+id/next_message"
+            android:title="@string/next_action"
+            android:icon="?attr/iconActionNextMessage"
+            app:showAsAction="never"
+            />
 
-    <!-- MessageView -->
-    <item
-        android:id="@+id/previous_message"
-        android:title="@string/previous_action"
-        android:icon="?attr/iconActionPreviousMessage"
-        app:showAsAction="never"
-    />
-
-    <!-- MessageView -->
-    <item
-        android:id="@+id/next_message"
-        android:title="@string/next_action"
-        android:icon="?attr/iconActionNextMessage"
-        app:showAsAction="never"
-    />
+        <!-- MessageView -->
+        <item
+            android:id="@+id/previous_message"
+            android:title="@string/previous_action"
+            android:icon="?attr/iconActionPreviousMessage"
+            app:showAsAction="never"
+            />
+    </group>
 
     <!-- MessageList -->
     <item
@@ -64,102 +58,53 @@
         app:showAsAction="never"
         android:title="@string/check_mail_action"/>
 
-    <!-- MessageView -->
+    <group android:id="@+id/mail_actions">
+        <!-- MessageView -->
+        <item
+            android:id="@+id/flag"
+            android:icon="?attr/flagUncheckedIcon"
+            android:title="@string/flag_action"
+            android:checkable="true"
+            app:showAsAction="ifRoom" />
+        <!-- MessageView -->
+        <item
+            android:id="@+id/delete"
+            android:alphabeticShortcut="q"
+            android:icon="?attr/iconActionDelete"
+            app:showAsAction="ifRoom"
+            android:title="@string/delete_action"/>
+        <!-- MessageView -->
+        <item
+            android:id="@+id/archive"
+            android:icon="?attr/iconActionArchive"
+            app:showAsAction="never"
+            android:title="@string/archive_action"/>
+        <!-- MessageView -->
+        <item
+            android:id="@+id/spam"
+            android:icon="?attr/iconActionSpam"
+            app:showAsAction="never"
+            android:title="@string/spam_action"/>
+        <!-- MessageView -->
+        <item
+            android:id="@+id/move"
+            android:icon="@drawable/ic_folder_toolbar"
+            app:showAsAction="never"
+            android:title="@string/move_action"/>
+        <!-- MessageView -->
+        <item
+            android:id="@+id/copy"
+            android:icon="?attr/iconActionCopy"
+            app:showAsAction="never"
+            android:title="@string/copy_action"/>
 
-    <item
-        android:id="@+id/delete"
-        android:alphabeticShortcut="q"
-        android:icon="?attr/iconActionDelete"
-        app:showAsAction="ifRoom"
-        android:title="@string/delete_action"/>
-
-    <!-- MessageView -->
-    <item
-        android:id="@+id/reset_partner_keys"
-        app:showAsAction="never"
-        android:title="@string/reset_partner_key_action"
-        android:visible="false"/>
-
-    <!-- MessageView -->
-    <item
-        android:id="@+id/archive"
-        android:icon="?attr/iconActionArchive"
-        app:showAsAction="never"
-        android:title="@string/archive_action"/>
-    <!-- MessageView -->
-    <item
-        android:id="@+id/spam"
-        android:icon="?attr/iconActionSpam"
-        app:showAsAction="never"
-        android:title="@string/spam_action"/>
-    <!-- MessageView -->
-    <item
-        android:id="@+id/move"
-        android:icon="@drawable/ic_folder_toolbar"
-        app:showAsAction="never"
-        android:title="@string/move_action"/>
-    <!-- MessageView -->
-    <item
-        android:id="@+id/copy"
-        android:icon="?attr/iconActionCopy"
-        app:showAsAction="never"
-        android:title="@string/copy_action"/>
-
-    <!-- MessageView -->
-    <item
-        android:id="@+id/single_message_options"
-        android:icon="?attr/iconActionSingleMessageOptions"
-        app:showAsAction="never"
-        android:title="@string/single_message_options_action">
-        <menu>
-            <item
-                android:id="@+id/reply"
-                android:title="@string/reply_action"/>
-            <item
-                android:id="@+id/reply_all"
-                android:title="@string/reply_all_action"/>
-            <item
-                android:id="@+id/forward"
-                android:title="@string/forward_action"/>
-            <item
-                android:id="@+id/share"
-                android:title="@string/send_alternate_action"/>
-        </menu>
-    </item>
-
-    <!-- MessageView -->
-    <item
-        android:id="@+id/refile"
-        android:icon="?attr/iconActionSingleMessageOptions"
-        app:showAsAction="never"
-        android:title="@string/refile_action">
-        <menu>
-            <item
-                android:id="@+id/refile_archive"
-                android:title="@string/archive_action"/>
-
-            <!-- MessageView -->
-            <item
-                android:id="@+id/refile_spam"
-                android:title="@string/spam_action"/>
-
-            <!-- MessageView -->
-            <item
-                android:id="@+id/refile_move"
-                android:title="@string/move_action"/>
-
-            <!-- MessageView -->
-            <item
-                android:id="@+id/refile_copy"
-                android:title="@string/copy_action"/>
-        </menu>
-    </item>
-    <!-- MessageView -->
-    <item
-        android:id="@+id/toggle_unread"
-        android:alphabeticShortcut="u"
-        app:showAsAction="never"
-        android:title="@string/mark_as_unread_action"/>
+        <!-- MessageView -->
+        <item
+            android:id="@+id/toggle_unread"
+            android:alphabeticShortcut="u"
+            app:showAsAction="never"
+            android:title="@string/mark_as_unread_action"/>
+    </group>
 
     <item android:id="@+id/show_headers"
           app:showAsAction="never"
@@ -199,14 +144,6 @@
                 android:title="@string/sort_by_attach"/>
         </menu>
     </item>
-
-    <!-- always -->
-    <item
-        android:id="@+id/compose"
-        android:alphabeticShortcut="c"
-        android:icon="?attr/iconActionCompose"
-        app:showAsAction="never"
-        android:title="@string/compose_action"/>
 
     <!-- MessageList -->
     <item
@@ -251,6 +188,13 @@
         android:icon="?attr/iconActionSettings"
         app:showAsAction="never"
         android:title="@string/action_settings"/>
+
+    <!-- MessageView -->
+    <item
+        android:id="@+id/reset_partner_keys"
+        app:showAsAction="never"
+        android:title="@string/reset_partner_key_action"
+        android:visible="false"/>
 
     <item
         android:id="@+id/tutorial"

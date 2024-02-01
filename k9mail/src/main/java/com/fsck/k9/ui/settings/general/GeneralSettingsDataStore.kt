@@ -175,15 +175,6 @@ class GeneralSettingsDataStore @Inject constructor(
                     if (K9.confirmMarkAllRead()) add("mark_all_read")
                 }
             }
-            "messageview_visible_refile_actions" -> {
-                mutableSetOf<String>().apply {
-                    if (K9.isMessageViewDeleteActionVisible()) add("delete")
-                    if (K9.isMessageViewArchiveActionVisible()) add("archive")
-                    if (K9.isMessageViewMoveActionVisible()) add("move")
-                    if (K9.isMessageViewCopyActionVisible()) add("copy")
-                    if (K9.isMessageViewSpamActionVisible()) add("spam")
-                }
-            }
             "volume_navigation" -> {
                 mutableSetOf<String>().apply {
                     if (K9.useVolumeKeysForNavigationEnabled()) add("message")
@@ -206,13 +197,6 @@ class GeneralSettingsDataStore @Inject constructor(
                 K9.setConfirmSpam("spam" in checkedValues)
                 K9.setConfirmDiscardMessage("discard" in checkedValues)
                 K9.setConfirmMarkAllRead("mark_all_read" in checkedValues)
-            }
-            "messageview_visible_refile_actions" -> {
-                K9.setMessageViewDeleteActionVisible("delete" in checkedValues)
-                K9.setMessageViewArchiveActionVisible("archive" in checkedValues)
-                K9.setMessageViewMoveActionVisible("move" in checkedValues)
-                K9.setMessageViewCopyActionVisible("copy" in checkedValues)
-                K9.setMessageViewSpamActionVisible("spam" in checkedValues)
             }
             "volume_navigation" -> {
                 K9.setUseVolumeKeysForNavigation("message" in checkedValues)

@@ -358,12 +358,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean sThreadedViewEnabled = true;
     private static SplitViewMode sSplitViewMode = SplitViewMode.NEVER;
     private static boolean sColorizeMissingContactPictures = DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE;
-
-    private static boolean sMessageViewArchiveActionVisible = false;
-    private static boolean sMessageViewDeleteActionVisible = true;
-    private static boolean sMessageViewMoveActionVisible = false;
-    private static boolean sMessageViewCopyActionVisible = false;
-    private static boolean sMessageViewSpamActionVisible = false;
     private static String planckExtraAccounts = "";
     //private static boolean pEpUseKeyserver = false;
     private static boolean planckPassiveMode = false;
@@ -650,12 +644,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         editor.putBoolean("threadedView", sThreadedViewEnabled);
         editor.putString("splitViewMode", sSplitViewMode.name());
         editor.putBoolean("colorizeMissingContactPictures", sColorizeMissingContactPictures);
-
-        editor.putBoolean("messageViewArchiveActionVisible", sMessageViewArchiveActionVisible);
-        editor.putBoolean("messageViewDeleteActionVisible", sMessageViewDeleteActionVisible);
-        editor.putBoolean("messageViewMoveActionVisible", sMessageViewMoveActionVisible);
-        editor.putBoolean("messageViewCopyActionVisible", sMessageViewCopyActionVisible);
-        editor.putBoolean("messageViewSpamActionVisible", sMessageViewSpamActionVisible);
 
         editor.putInt("pgpInlineDialogCounter", sPgpInlineDialogCounter);
         editor.putInt("pgpSignOnlyDialogCounter", sPgpSignOnlyDialogCounter);
@@ -1058,12 +1046,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         }
 
         sColorizeMissingContactPictures = storage.getBoolean("colorizeMissingContactPictures", DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE);
-
-        sMessageViewArchiveActionVisible = storage.getBoolean("messageViewArchiveActionVisible", false);
-        sMessageViewDeleteActionVisible = storage.getBoolean("messageViewDeleteActionVisible", true);
-        sMessageViewMoveActionVisible = storage.getBoolean("messageViewMoveActionVisible", false);
-        sMessageViewCopyActionVisible = storage.getBoolean("messageViewCopyActionVisible", false);
-        sMessageViewSpamActionVisible = storage.getBoolean("messageViewSpamActionVisible", false);
 
         sPgpInlineDialogCounter = storage.getInt("pgpInlineDialogCounter", 0);
         sPgpSignOnlyDialogCounter = storage.getInt("pgpSignOnlyDialogCounter", 0);
@@ -1677,46 +1659,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
     public static void setColorizeMissingContactPictures(boolean enabled) {
         sColorizeMissingContactPictures = enabled;
-    }
-
-    public static boolean isMessageViewArchiveActionVisible() {
-        return sMessageViewArchiveActionVisible;
-    }
-
-    public static void setMessageViewArchiveActionVisible(boolean visible) {
-        sMessageViewArchiveActionVisible = visible;
-    }
-
-    public static boolean isMessageViewDeleteActionVisible() {
-        return sMessageViewDeleteActionVisible;
-    }
-
-    public static void setMessageViewDeleteActionVisible(boolean visible) {
-        sMessageViewDeleteActionVisible = visible;
-    }
-
-    public static boolean isMessageViewMoveActionVisible() {
-        return sMessageViewMoveActionVisible;
-    }
-
-    public static void setMessageViewMoveActionVisible(boolean visible) {
-        sMessageViewMoveActionVisible = visible;
-    }
-
-    public static boolean isMessageViewCopyActionVisible() {
-        return sMessageViewCopyActionVisible;
-    }
-
-    public static void setMessageViewCopyActionVisible(boolean visible) {
-        sMessageViewCopyActionVisible = visible;
-    }
-
-    public static boolean isMessageViewSpamActionVisible() {
-        return sMessageViewSpamActionVisible;
-    }
-
-    public static void setMessageViewSpamActionVisible(boolean visible) {
-        sMessageViewSpamActionVisible = visible;
     }
 
     public static int getPgpInlineDialogCounter() {

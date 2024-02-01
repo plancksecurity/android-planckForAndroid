@@ -1118,10 +1118,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.resetSenderKey();
                 return true;
             }
-            case R.id.compose: {
-                MessageActions.actionCompose(this, mAccount);
-                return true;
-            }
             // MessageList
             case R.id.check_mail: {
                 mMessageListFragment.checkMail();
@@ -1202,18 +1198,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.onDelete();
                 return true;
             }
-            case R.id.reply: {
-                mMessageViewFragment.onReply();
-                return true;
-            }
-            case R.id.reply_all: {
-                mMessageViewFragment.onReplyAll();
-                return true;
-            }
-            case R.id.forward: {
-                mMessageViewFragment.onForward();
-                return true;
-            }
             case R.id.share: {
                 mMessageViewFragment.onSendAlternate();
                 return true;
@@ -1222,23 +1206,19 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.onToggleRead();
                 return true;
             }
-            case R.id.archive:
-            case R.id.refile_archive: {
+            case R.id.archive: {
                 mMessageViewFragment.onArchive();
                 return true;
             }
-            case R.id.spam:
-            case R.id.refile_spam: {
+            case R.id.spam: {
                 mMessageViewFragment.onSpam();
                 return true;
             }
-            case R.id.move:
-            case R.id.refile_move: {
+            case R.id.move: {
                 mMessageViewFragment.onMove();
                 return true;
             }
-            case R.id.copy:
-            case R.id.refile_copy: {
+            case R.id.copy: {
                 mMessageViewFragment.onCopy();
                 return true;
             }
@@ -1277,6 +1257,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.message_list_option, menu);
+        menu.setGroupDividerEnabled(true);
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
@@ -1347,14 +1328,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             menu.findItem(R.id.next_message).setVisible(false);
             menu.findItem(R.id.previous_message).setVisible(false);
-            menu.findItem(R.id.single_message_options).setVisible(false);
             menu.findItem(R.id.delete).setVisible(false);
-            menu.findItem(R.id.compose).setVisible(false);
             menu.findItem(R.id.archive).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
             menu.findItem(R.id.copy).setVisible(false);
             menu.findItem(R.id.spam).setVisible(false);
-            menu.findItem(R.id.refile).setVisible(false);
             menu.findItem(R.id.toggle_unread).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
@@ -1391,38 +1369,24 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 menu.findItem(R.id.toggle_unread).setTitle(R.string.mark_as_read_action);
             }
 
-            menu.findItem(R.id.delete).setVisible(K9.isMessageViewDeleteActionVisible());
+            menu.findItem(R.id.delete).setVisible(true);
 
             /*
              * Set visibility of copy, move, archive, spam in action bar and refile submenu
              */
-            if (mMessageViewFragment.isCopyCapable()) {
-                menu.findItem(R.id.copy).setVisible(K9.isMessageViewCopyActionVisible());
-                menu.findItem(R.id.refile_copy).setVisible(true);
-            } else {
-                menu.findItem(R.id.copy).setVisible(false);
-                menu.findItem(R.id.refile_copy).setVisible(false);
-            }
+            menu.findItem(R.id.copy).setVisible(mMessageViewFragment.isCopyCapable());
 
             if (mMessageViewFragment.isMoveCapable()) {
                 boolean canMessageBeArchived = mMessageViewFragment.canMessageBeArchived();
                 boolean canMessageBeMovedToSpam = mMessageViewFragment.canMessageBeMovedToSpam();
 
-                menu.findItem(R.id.move).setVisible(K9.isMessageViewMoveActionVisible());
-                menu.findItem(R.id.archive).setVisible(canMessageBeArchived &&
-                        K9.isMessageViewArchiveActionVisible());
-                menu.findItem(R.id.spam).setVisible(canMessageBeMovedToSpam &&
-                        K9.isMessageViewSpamActionVisible());
-
-                menu.findItem(R.id.refile_move).setVisible(true);
-                menu.findItem(R.id.refile_archive).setVisible(canMessageBeArchived);
-                menu.findItem(R.id.refile_spam).setVisible(canMessageBeMovedToSpam);
+                menu.findItem(R.id.move).setVisible(true);
+                menu.findItem(R.id.archive).setVisible(canMessageBeArchived);
+                menu.findItem(R.id.spam).setVisible(canMessageBeMovedToSpam);
             } else {
                 menu.findItem(R.id.move).setVisible(false);
                 menu.findItem(R.id.archive).setVisible(false);
                 menu.findItem(R.id.spam).setVisible(false);
-
-                menu.findItem(R.id.refile).setVisible(false);
             }
 
             if (mMessageViewFragment.allHeadersVisible()) {
@@ -1453,7 +1417,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         } else {
             menu.findItem(R.id.set_sort).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(true);
-            menu.findItem(R.id.compose).setVisible(true);
             menu.findItem(R.id.mark_all_as_read).setVisible(
                     mMessageListFragment.isMarkAllAsReadSupported());
 
@@ -1468,7 +1431,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             if (mMessageListFragment.isManualSearch()) {
                 drawerLayoutView.setDrawerEnabled(false);
                 menu.findItem(R.id.check_mail).setVisible(false);
-                menu.findItem(R.id.compose).setVisible(false);
                 menu.findItem(R.id.show_folder_list).setVisible(false);
                 menu.findItem(R.id.settings).setVisible(false);
             }
