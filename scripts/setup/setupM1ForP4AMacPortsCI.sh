@@ -7,8 +7,8 @@
 #                                REQUIRED PARAM                                #
 ################################################################################
 # path to yml2 folder absolute path
-YML2_PATH=$HOME/yml2
 PROJECT_PATH=$HOME/work/android-planckForAndroid/android-planckForAndroid
+YML2_PATH=$PROJECT_PATH/core/yml2
 
 ###########################################################
 # Color
