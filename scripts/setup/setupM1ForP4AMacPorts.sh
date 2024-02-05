@@ -82,8 +82,8 @@ xcode-select --install
 
 # MacPorts
 curl -O https://distfiles.macports.org/MacPorts/MacPorts-2.9.1.tar.bz2
-tar xf MacPorts-2.8.1.tar.bz2
-cd MacPorts-2.8.1/ || exit
+tar xf MacPorts-2.9.1.tar.bz2
+cd MacPorts-2.9.1/ || exit
 ./configure
 make
 sudo make install
