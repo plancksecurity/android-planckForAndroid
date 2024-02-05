@@ -100,6 +100,10 @@ export ANDROID_NDK=\$ANDROID_SDK/ndk/25.1.8937393
 export PATH=\$PATH:\$ANDROID_SDK/platform-tools
 export PATH=\$PATH:\$ANDROID_SDK/tools
 export PATH=\$PATH:\$ANDROID_NDK
+export ANDROID_HOME=/usr/lib/android-sdk
+export ANDROID_NDK=$ANDROID_HOME/ndk/25.1.8937393
+export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH
+export PATH=$ANDROID_NDK:\$PATH
 """ >> "$HOME"/.zshenv
 
 source "$HOME"/.zshenv
@@ -184,3 +188,12 @@ android.useAndroidX=true
 org.gradle.jvmargs=-Xmx4096m -XX:MaxPermSize=16384m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 """ >> "$HOME"/.gradle/gradle.properties
 cat "$HOME"/.gradle/gradle.properties
+
+# download android sdk
+mkdir -p "$ANDROID_HOME"/cmdline-tools/latest
+curl -sL --connect-timeout 30 --retry 5 --retry-delay 5 \
+https://dl.google.com/android/repository/platform-tools-latest-darwin.zip -o android-sdk.zip
+unzip android-sdk.zip -d .
+mv cmdline-tools/* "$ANDROID_HOME"/cmdline-tools/latest
+rm android-sdk.zip
+rm -r cmdline-tools

@@ -21,6 +21,7 @@ jobs:
         run: |
           ls -r ${{ github.workspace }}/core
       - run: sh scripts/setup/setupM1ForP4AMacPortsCI.sh
+      - run: which adb
       - name: Build dependencies
         run: ./gradlew -q externalNativeBuildDebug
       - run: echo "🍏 This job's status is ${{ job.status }}."
