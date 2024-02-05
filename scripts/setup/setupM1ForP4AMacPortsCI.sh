@@ -8,7 +8,7 @@
 ################################################################################
 # path to yml2 folder absolute path
 PROJECT_PATH=$HOME/work/android-planckForAndroid/android-planckForAndroid
-YML2_PATH=$PROJECT_PATH/core/yml2
+YML2_PATH=$HOME/yml2
 
 ###########################################################
 # Color
@@ -167,7 +167,7 @@ git clone https://github.com/vlm/asn1c.git "$HOME"/code/asn1c
 }
 # yml2
 [ -d "$YML2_PATH" ] || {
-git clone git@github.com:plancksecurity/foundation-yml2.git "$YML2_PATH"
+git clone https://github.com/plancksecurity/foundation-yml2.git "$YML2_PATH"
 (
 cd "$YML2_PATH" || exit
 git checkout v2.7.6
