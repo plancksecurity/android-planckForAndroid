@@ -22,6 +22,5 @@ jobs:
           ls -r ${{ github.workspace }}/core
       - run: sh scripts/setup/setupM1ForP4AMacPortsCI.sh
       - name: Build dependencies
-        working-directory: $HOME/work/android-planckForAndroid/android-planckForAndroid
         run: ./gradlew -q externalNativeBuildDebug
       - run: echo "🍏 This job's status is ${{ job.status }}."
