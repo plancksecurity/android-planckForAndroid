@@ -191,6 +191,7 @@ mkdir -p "$ANDROID_HOME"/cmdline-tools/latest
 curl -sL --connect-timeout 30 --retry 5 --retry-delay 5 \
 https://dl.google.com/android/repository/platform-tools-latest-darwin.zip -o android-sdk.zip
 unzip android-sdk.zip -d .
+ls -la
 mv cmdline-tools/* "$ANDROID_HOME"/cmdline-tools/latest
 rm android-sdk.zip
 rm -r cmdline-tools
