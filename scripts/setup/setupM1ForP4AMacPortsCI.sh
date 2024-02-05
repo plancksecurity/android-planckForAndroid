@@ -7,6 +7,7 @@
 #                                REQUIRED PARAM                                #
 ################################################################################
 # path to yml2 folder absolute path
+PROJECT_PATH=$HOME/work/android-planckForAndroid/android-planckForAndroid
 YML2_PATH=$HOME/yml2
 
 ###########################################################
@@ -99,6 +100,7 @@ export ANDROID_NDK=\$ANDROID_SDK/ndk/25.1.8937393
 export PATH=\$PATH:\$ANDROID_SDK/platform-tools
 export PATH=\$PATH:\$ANDROID_SDK/tools
 export PATH=\$PATH:\$ANDROID_NDK
+export ANDROID_HOME=\$ANDROID_SDK
 """ >> "$HOME"/.zshenv
 
 source "$HOME"/.zshenv
@@ -166,27 +168,30 @@ git clone https://github.com/vlm/asn1c.git "$HOME"/code/asn1c
 }
 # yml2
 [ -d "$YML2_PATH" ] || {
-git clone git@github.com:plancksecurity/foundation-yml2.git "$YML2_PATH"
+git clone https://github.com/plancksecurity/foundation-yml2.git "$YML2_PATH"
 (
 cd "$YML2_PATH" || exit
 git checkout v2.7.6
 )
 }
 
+echo "YML2_PATH=$HOME/yml2" >> "$PROJECT_PATH"/core/planckJNIWrapper/local.conf
+
 # GRADLE PROPERTIES TO GIVE GRADLE ENOUGH MEMORY
 mkdir "$HOME"/.gradle
 echo """
 threadsToUse=8
 android.useAndroidX=true
-org.gradle.jvmargs=-Xmx4096m
+org.gradle.jvmargs=-Xmx4096m -XX:MaxPermSize=16384m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 """ >> "$HOME"/.gradle/gradle.properties
+cat "$HOME"/.gradle/gradle.properties
 
-# ANDROID STUDIO
-[[ -d "/Applications/Android Studio.app" && -d "$HOME/Library/Android/sdk/emulator" ]] || open https://developer.android.com/studio
-until [ -d "/Applications/Android Studio.app" ]
-do
-  echo "$(__yellow M1 machine setup finished! Now download and install Android Studio. Once installed it will be run for the first time, please just follow the wizard instructions.)"
-  sleep 5
-done
-
-open -a "Android Studio"
+# download android sdk
+mkdir -p "$ANDROID_HOME"/cmdline-tools/latest
+curl -sL --connect-timeout 30 --retry 5 --retry-delay 5 \
+https://dl.google.com/android/repository/platform-tools-latest-darwin.zip -o android-sdk.zip
+unzip android-sdk.zip -d .
+ls -la
+mv cmdline-tools/* "$ANDROID_HOME"/cmdline-tools/latest
+rm android-sdk.zip
+rm -r cmdline-tools
