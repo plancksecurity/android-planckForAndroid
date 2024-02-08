@@ -11,6 +11,8 @@ import com.fsck.k9.planck.infrastructure.PollerFactory
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.manualsync.SyncAppState
 import com.fsck.k9.planck.manualsync.SyncState
+import com.fsck.k9.planck.manualsync.SyncState.HandshakeReadyAwaitingUser
+import com.fsck.k9.planck.manualsync.SyncState.PerformingHandshake
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.SyncHandshakeSignal
@@ -324,14 +326,14 @@ class SyncRepositoryTest : RobolectricTest() {
 
     @Test
     fun `userConnected() does nothing if current state is HandshakeReadyAwaitingUser`() = runTest {
-        syncRepository.setCurrentState(SyncState.HandshakeReadyAwaitingUser(myself, partner, false))
+        syncRepository.setCurrentState(HandshakeReadyAwaitingUser(myself, partner, false))
 
 
         syncRepository.userConnected()
 
 
         verify { timer.wasNot(called) }
-        assertStates(SyncState.Idle, SyncState.HandshakeReadyAwaitingUser(myself, partner, false))
+        assertStates(SyncState.Idle, HandshakeReadyAwaitingUser(myself, partner, false))
     }
 
     @Test
@@ -392,7 +394,7 @@ class SyncRepositoryTest : RobolectricTest() {
             coEvery { planckProvider.isSyncRunning() }.returns(true)
             stubTimer {
                 syncRepository.setCurrentState(
-                    SyncState.HandshakeReadyAwaitingUser(
+                    HandshakeReadyAwaitingUser(
                         myself,
                         partner,
                         false
@@ -407,7 +409,7 @@ class SyncRepositoryTest : RobolectricTest() {
             assertStates(
                 SyncState.Idle,
                 SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = true),
-                SyncState.HandshakeReadyAwaitingUser(myself, partner, false)
+                HandshakeReadyAwaitingUser(myself, partner, false)
             )
             verify { timer.startOrReset(INITIAL_HANDSHAKE_AVAILABLE_WAIT, any()) }
             verify { planckProvider.wasNot(called) }
@@ -424,14 +426,14 @@ class SyncRepositoryTest : RobolectricTest() {
 
     @Test
     fun `userDisconnected() cancels timer and sets state to Idle`() {
-        syncRepository.setCurrentState(SyncState.HandshakeReadyAwaitingUser(myself, partner, false))
+        syncRepository.setCurrentState(HandshakeReadyAwaitingUser(myself, partner, false))
         syncRepository.userDisconnected()
 
 
         verify { timer.cancel() }
         assertStates(
             SyncState.Idle,
-            SyncState.HandshakeReadyAwaitingUser(myself, partner, false),
+            HandshakeReadyAwaitingUser(myself, partner, false),
             SyncState.Idle,
         )
     }
@@ -545,6 +547,42 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
+    fun `notifyHandshake(SyncNotifySole) sets state to Cancelled if received in state HandshakeReadyAwaitingUser`() =
+        runTest {
+            syncRepository.setCurrentState(HandshakeReadyAwaitingUser(myself, partner, true))
+
+
+            notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifySole)
+            advanceUntilIdle()
+
+
+            assertStates(
+                SyncState.Idle,
+                HandshakeReadyAwaitingUser(myself, partner, true),
+                SyncState.Cancelled
+            )
+            verify { timer.cancel() }
+        }
+
+    @Test
+    fun `notifyHandshake(SyncNotifySole) sets state to Cancelled if received in state PerformingHandshake`() =
+        runTest {
+            syncRepository.setCurrentState(PerformingHandshake)
+
+
+            notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifySole)
+            advanceUntilIdle()
+
+
+            assertStates(
+                SyncState.Idle,
+                PerformingHandshake,
+                SyncState.Cancelled
+            )
+            verify { timer.cancel() }
+        }
+
+    @Test
     fun `notifyHandshake(SyncNotifyInGroup) marks sync as enabled, sets grouped to true and restarts timer if current state allows it`() {
         syncRepository.isGrouped = false
         syncRepository.setCurrentState(SyncState.AwaitingOtherDevice(inCatchupAllowancePeriod = false))
@@ -573,6 +611,42 @@ class SyncRepositoryTest : RobolectricTest() {
     }
 
     @Test
+    fun `notifyHandshake(SyncNotifyInGroup) sets state to Cancelled if received in state HandshakeReadyAwaitingUser`() =
+        runTest {
+            syncRepository.setCurrentState(HandshakeReadyAwaitingUser(myself, partner, false))
+
+
+            notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInGroup)
+            advanceUntilIdle()
+
+
+            assertStates(
+                SyncState.Idle,
+                HandshakeReadyAwaitingUser(myself, partner, false),
+                SyncState.Cancelled
+            )
+            verify { timer.cancel() }
+        }
+
+    @Test
+    fun `notifyHandshake(SyncNotifyInGroup) sets state to Cancelled if received in state PerformingHandshake`() =
+        runTest {
+            syncRepository.setCurrentState(PerformingHandshake)
+
+
+            notifyHandshake(myself, partner, SyncHandshakeSignal.SyncNotifyInGroup)
+            advanceUntilIdle()
+
+
+            assertStates(
+                SyncState.Idle,
+                PerformingHandshake,
+                SyncState.Cancelled
+            )
+            verify { timer.cancel() }
+        }
+
+    @Test
     fun `notifyHandshake(SyncNotifyInitAddOurDevice) sets state to HandshakeReadyAwaitingUser if handshake is not locked and device is not grouped`() {
         syncRepository.isGrouped = false
 
@@ -583,7 +657,7 @@ class SyncRepositoryTest : RobolectricTest() {
         verify { timer.cancel() }
         assertStates(
             SyncState.Idle,
-            SyncState.HandshakeReadyAwaitingUser(myself, partner, false)
+            HandshakeReadyAwaitingUser(myself, partner, false)
         )
     }
 
@@ -623,7 +697,7 @@ class SyncRepositoryTest : RobolectricTest() {
         verify { timer.cancel() }
         assertStates(
             SyncState.Idle,
-            SyncState.HandshakeReadyAwaitingUser(myself, partner, false)
+            HandshakeReadyAwaitingUser(myself, partner, false)
         )
     }
 
@@ -661,7 +735,7 @@ class SyncRepositoryTest : RobolectricTest() {
         verify { timer.cancel() }
         assertStates(
             SyncState.Idle,
-            SyncState.HandshakeReadyAwaitingUser(myself, partner, true)
+            HandshakeReadyAwaitingUser(myself, partner, true)
         )
     }
 

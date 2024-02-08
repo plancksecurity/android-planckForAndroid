@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<security.planck.ui.message_compose.PlanckFabMenu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fab_menu"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabForward"
+        style="@style/PlanckFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/fabReplyAll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_forward_light_opaque"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabReplyAll"
+        style="@style/PlanckFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@id/fabReply"
+        app:srcCompat="@drawable/ic_reply_all_light_opaque"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabReply"
+        style="@style/PlanckFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@id/openCloseButton"
+        app:srcCompat="@drawable/ic_reply_light_opaque"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/openCloseButton"
+        style="@style/PlanckFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_reply_planck" />
+
+</security.planck.ui.message_compose.PlanckFabMenu>

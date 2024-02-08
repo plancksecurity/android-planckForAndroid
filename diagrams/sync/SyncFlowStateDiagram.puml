@@ -87,6 +87,9 @@ Wizard_Start --> HandshakeReadyAwaitingUser : Handshake already\navailable
 CatchupAllowancePeriod -up------> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
 AwaitingOtherDevice --> HandshakeReadyAwaitingUser : Handshake available\nbefore timeup
 HandshakeReadyAwaitingUser --> UserHandshaking : "Next" button clicked
+HandshakeReadyAwaitingUser ----> Cancelled : SYNC_NOTIFY_SOLE/\nSYNC_NOTIFY_GROUPED
+UserHandshaking --> Cancelled : SYNC_NOTIFY_SOLE/\nSYNC_NOTIFY_GROUPED
+AwaitingHandshakeCompletion --> Cancelled : SYNC_NOTIFY_SOLE/\nSYNC_NOTIFY_GROUPED
 
 
 
