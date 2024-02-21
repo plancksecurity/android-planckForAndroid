@@ -810,7 +810,7 @@ public class CucumberTestSteps {
     @When("^I reset partner key$")
     public void I_reset_partner_key() {
         waitForIdle();
-        testUtils.selectFromMenu(testUtils.stringToID("reset_sender_key_action"));
+        testUtils.selectFromMenu(testUtils.stringToID("reset_partner_key_action"));
         waitForIdle();
         onView(withId(R.id.acceptButton)).perform(click());
         waitForIdle();
@@ -1921,8 +1921,8 @@ public class CucumberTestSteps {
                 fail("Cannot find the folder: " + folder);
         }
         waitForIdle();
-        testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
-        waitForIdle();
+        //testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
+        //waitForIdle();
         testUtils.selectFromMenu(testUtils.stringToID(action));
         while (!testUtils.textExistsOnScreen(resources.getString(testUtils.stringToID(folder)))) {
             waitForIdle();
@@ -2607,7 +2607,7 @@ public class CucumberTestSteps {
             default:
                 break;
         }
-        testUtils.selectFromMenu(R.string.single_message_options_action);
+        //testUtils.selectFromMenu(R.string.single_message_options_action);
         testUtils.clickTextOnScreen(R.string.compose_title_forward);
         I_enter_text_in_field(testUtils.getFormatAccount(), "messageTo");
         //I_fill_subject_field("New");
