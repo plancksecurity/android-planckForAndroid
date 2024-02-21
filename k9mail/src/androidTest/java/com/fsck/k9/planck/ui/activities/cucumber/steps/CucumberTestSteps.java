@@ -655,6 +655,32 @@ public class CucumberTestSteps {
         testUtils.compareMessageBodyWithText(cucumberBody);
     }
 
+    @When("^I save (\\S+) from JSON")
+    public void I_save_from_JSON(String fieldName) {
+        try {
+            testUtils.saveFromJSON(fieldName);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @When("^I save (\\S+) from JSON of (\\d+) messages")
+    public void I_save_from_JSON_of_messages(String fieldName, int messages) {
+        StringBuilder savedJSON = new StringBuilder();
+        for (int i = 0; i < messages; i++) {
+            I_send_message_to_address(1, "bot1", "message " + (i + 1), "saving the field " + fieldName + " " + messages + " times.");
+            I_click_the_last_message_received();
+            try {
+                savedJSON.append(testUtils.saveFromJSON(fieldName) + "\n");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            testUtils.pressBack();
+        }
+        Timber.i("***** " + fieldName + " saved from " + messages + " messages *****");
+        Timber.i("***** " + "\n" + String.valueOf(savedJSON));
+    }
+
     @When("^I check that the Calendar is correct and body text is (\\S+)")
     public void I_check_calendar(String bodyText) {
         timeRequiredForThisMethod(10);
