@@ -4039,6 +4039,16 @@ public class TestUtils {
         waitUntilIdle();
     }
 
+    public String saveFromJSON(String keyWordFromBody) throws JSONException {
+        if (json.toString().contains(keyWordFromBody)) {
+            String s = json.toString().substring(json.toString().lastIndexOf(keyWordFromBody ) + 14);
+            return s.substring(0,64);
+        } else {
+            fail("Couldn't find " + keyWordFromBody + " in the JSON file! ");
+        }
+        return "";
+    }
+
     private void compareTextWithWebViewText(String textToCompare) {
         boolean bodyRead = false;
         UiObject2 wb;
