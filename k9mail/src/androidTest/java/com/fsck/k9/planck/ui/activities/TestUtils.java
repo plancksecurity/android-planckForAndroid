@@ -55,6 +55,7 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
+import androidx.webkit.WebViewCompat;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
@@ -212,7 +213,7 @@ public class TestUtils {
     }
 
     private void trustedServer() {
-        if (testConfig.getTrusted_server(account)) {
+  /*      if (testConfig.getTrusted_server(account)) {
             waitForIdle();
             clickView(R.id.manual_setup);
             waitForIdle();
@@ -234,7 +235,7 @@ public class TestUtils {
             }
         } else {
             clickNextButton();
-        }
+        }*/
     }
 
     private void clickNextButton() {
