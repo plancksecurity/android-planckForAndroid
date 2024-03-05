@@ -1921,8 +1921,6 @@ public class CucumberTestSteps {
                 fail("Cannot find the folder: " + folder);
         }
         waitForIdle();
-        testUtils.selectFromMenu(testUtils.stringToID("refile_action"));
-        waitForIdle();
         testUtils.selectFromMenu(testUtils.stringToID(action));
         while (!testUtils.textExistsOnScreen(resources.getString(testUtils.stringToID(folder)))) {
             waitForIdle();
