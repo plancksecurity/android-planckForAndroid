@@ -43,17 +43,21 @@ import org.json.JSONObject;
 import org.junit.runner.RunWith;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -781,7 +785,10 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(80);
         TestUtils.getJSONObject("trustwords");
         testUtils.goToHandshakeDialog();
-        confirmAllTrustWords(TestUtils.jsonArray);
+        while (TestUtils.json == null) {
+            TestUtils.saveJSON();
+        }
+        confirmAllTrustWords();
     }
 
     @When("^I click mistrust words$")
@@ -850,13 +857,13 @@ public class CucumberTestSteps {
 
     private void checkTrustWords(JSONArray array, String words) {
         BySelector selector = By.clazz("android.widget.ListView");
-        int size = 1;
+        int size = 2;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             waitForIdle();
-            testUtils.openOptionsMenu();
-            if (size == 1) {
-                size = calculateNewSize(size, selector);
-            }
+            TestUtils.openOptionsMenu();
+            //if (size == 1) {
+            //    size = calculateNewSize(size, selector);
+            //}
             waitForIdle();
             selectLanguage(positionToClick, size, selector);
             waitForIdle();
@@ -865,6 +872,8 @@ public class CucumberTestSteps {
             } else {
                 getTrustWords();
             }
+            Timber.i("Estoy en 1A: " + array);
+            Timber.i("Estoy en 1B: " + trustWords);
             assertTextInJSONArray(trustWords, array, words);
         }
     }
@@ -909,18 +918,27 @@ public class CucumberTestSteps {
         }
     }
 
-    private void confirmAllTrustWords(String webViewText) {
-        BySelector selector = By.clazz("android.widget.CheckedTextView");
-        int size = 1;
+    private void confirmAllTrustWords() {
+        int size = 2;
+        onView(withId(R.id.show_long_trustwords)).perform(click());
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             waitForIdle();
-            testUtils.selectFromMenu(R.string.settings_language_label);
-            size = calculateNewSize(size, selector);
+            TestUtils.openOptionsMenu();
             waitForIdle();
-            selectLanguage(positionToClick, size, selector);
-            //getTrustWords();
-            String[] trustWordsSplited = trustWords.split("\\s+");
-            checkWordIsInText(trustWordsSplited, webViewText);
+            if (positionToClick == 0) {
+                testUtils.clickTextOnScreen("English");
+            } else if (positionToClick == 1) {
+                testUtils.clickTextOnScreen("Deutsch");
+            }
+            getTrustWords();
+            String[] trustWordsSplit = trustWords.split("\\s+");
+            for (int trustWord = 0; trustWord < trustWordsSplit.length; trustWord++) {
+                Timber.i("Estoy en trustWord: " + trustWordsSplit[trustWord]);
+                if (!assertAWordIsInTheJSONFile(trustWordsSplit[trustWord])) {
+                    fail("Cannot confirm the TrustWords");
+                }
+            }
+            //checkWordIsInText(trustWordsSplit, webViewText);
         }
     }
 
@@ -936,9 +954,6 @@ public class CucumberTestSteps {
         waitForIdle();
         for (int position = 0; position < size; position++) {
             if (position == positionToClick) {
-                while (device.findObjects(selector).get(0).getChildren().size() <= 1) {
-                    waitForIdle();
-                }
                 try {
                     waitForIdle();
                     device.findObjects(selector).get(0).getChildren().get(position).longClick();
@@ -976,6 +991,33 @@ public class CucumberTestSteps {
                 fail("Text not found in Trustwords");
             }
         }
+    }
+
+    public boolean assertAWordIsInTheJSONFile (String text) {
+        File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
+        File[] listOfFiles = directory.listFiles();
+        assert listOfFiles != null;
+        File newFile = new File(directory, listOfFiles[0].getName());
+        if(!newFile.exists())
+        {
+            fail("No JSON file");
+        }
+        final Scanner scanner;
+        try {
+            scanner = new Scanner(newFile);
+            while (scanner.hasNextLine()) {
+                final String lineFromFile = scanner.nextLine();
+                Timber.i("Estoy en assert1: " + lineFromFile);
+                Timber.i("Estoy en assert2: " + lineFromFile.contains(text));
+                if(lineFromFile.contains(text)) {
+                    return true;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            fail("Cannot find the text in the JSON file: " + e.getMessage());
+        }
+        fail("Cannot find the text " + text + " in the JSON file");
+        return false;
     }
 
     private String getWebviewText() {
@@ -3384,7 +3426,6 @@ public class CucumberTestSteps {
 
     @Then("^I save test report$")
     public void I_save_report2() {
-        Log.e("TEST","Estoy en save report");
         try  {
 
 
@@ -3394,10 +3435,8 @@ public class CucumberTestSteps {
             if (responseCode != 200) {
                 // Not OK.
             }
-            Log.e("TEST","Estoy en hecho en "+responseCode);
             return;
         } catch (Exception exception) {
-            Log.e("TEST","Estoy en NO hecho: " + exception);
             return;
         }
     }
