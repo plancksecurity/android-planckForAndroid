@@ -212,7 +212,7 @@ public class TestUtils {
     }
 
     private void trustedServer() {
-        if (testConfig.getTrusted_server(account)) {
+        /*if (testConfig.getTrusted_server(account)) {
             waitForIdle();
             clickView(R.id.manual_setup);
             waitForIdle();
@@ -234,7 +234,7 @@ public class TestUtils {
             }
         } else {
             clickNextButton();
-        }
+        }*/
     }
 
     private void clickNextButton() {
@@ -2832,7 +2832,6 @@ public class TestUtils {
                 openOptionsMenu();
                 selectFromScreen(viewId);
                 waitForIdle();
-                Espresso.onIdle();
                 return;
             } catch (Exception ex) {
                 Timber.i("Toolbar is not closed yet");
@@ -2927,7 +2926,7 @@ public class TestUtils {
         }
     }
 
-    public void openOptionsMenu() {
+    public static void openOptionsMenu() {
         while (true) {
             try {
                 waitForIdle();
@@ -3037,14 +3036,11 @@ public class TestUtils {
                     if (object.getText().equals(text)) {
                         try {
                             waitForIdle();
-                            Espresso.onIdle();
                             object.longClick();
                             waitForIdle();
-                            Espresso.onIdle();
                             return;
                         } catch (Exception ex1) {
                             waitForIdle();
-                            Espresso.onIdle();
                             return;
                         }
                     }
@@ -3583,9 +3579,8 @@ public class TestUtils {
         waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        for (int i=0; i<5; i++){
+        for (int i=0; i<8; i++){
             waitForIdle();
-            waitUntilIdle();
             onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
             swipeUpScreen();
         }
@@ -3594,7 +3589,6 @@ public class TestUtils {
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
-        waitUntilIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
             try {
@@ -3633,9 +3627,20 @@ public class TestUtils {
         }
     }
 
+    public static void saveJSON() {
+        json = getJSON();
+    }
+
     private static JSONObject getJSON(){
         try {
-            String js = readJsonFile("results.json");
+            File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
+            String js = null;
+            waitForIdle();
+            File[] listOfFiles = directory.listFiles();
+            assert listOfFiles != null;
+            if (listOfFiles.length > 0) {
+               js  = readJsonFile(listOfFiles[0].getName());
+            }
             JSONObject jsonObject = new JSONObject(js);
             return jsonObject;
         } catch (JSONException e) {
@@ -5122,12 +5127,12 @@ public class TestUtils {
     }
 
     private static String readJsonFile(String fileName) {
-        File directory = new File(Environment.getExternalStorageDirectory().toString());
-        File newFile = new File(directory, "Download/" + fileName);
+        File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
         swipeUpScreen();
         downloadAttachedFile(fileName);
-        waitUntilIdle();
         waitForIdle();
+        File[] listOfFiles = directory.listFiles();
+        File newFile = new File(directory, listOfFiles[0].getName());
         if(!newFile.exists())
         {
             return "no json file";
@@ -5144,8 +5149,6 @@ public class TestUtils {
             fin.close();
         } catch (Exception e) {
             Timber.i("Error reading config file, trying again");
-        } finally {
-            newFile.delete();
         }
         return jsonText.toString();
     }
