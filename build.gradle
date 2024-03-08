@@ -4,7 +4,7 @@ buildscript {
                 'compileSdk'           : 33,
                 'targetSdk'            : 33,
                 'minSdk'               : 30,
-                'versionCode'          : 528,
+                'versionCode'          : 524,
         ]
 
         versions = [
@@ -51,7 +51,7 @@ buildscript {
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',
                 'hilt'               : '2.45',
-                'groupie'            : '2.8.1',
+                'groupie'            : '2.1.0',
                 'ankoCoroutines'     : '0.10.4',
                 'kotlinCoroutines'   : '1.6.4',
                 'kotlinSerialization': '1.0.0',
@@ -83,7 +83,7 @@ buildscript {
     }
 
     repositories {
-        mavenCentral()
+        jcenter()
         maven { url 'https://maven.google.com' }
         google()
     }
@@ -103,7 +103,7 @@ plugins {
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
         maven { url 'https://jitpack.io' }
     }
 }
@@ -114,7 +114,7 @@ project.ext {
 
 subprojects {
     repositories {
-        mavenCentral()
+        jcenter()
         google()
     }
 }

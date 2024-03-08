@@ -788,9 +788,7 @@ class PlanckProviderImplKotlin(
 
     @WorkerThread //Already done
     override fun getRating(message: com.fsck.k9.mail.Message): Rating = runBlocking {
-        withContext(PlanckDispatcher) {
-            getRatingSuspend(message)
-        }
+        getRatingSuspend(message)
     }
 
     private suspend fun getRatingSuspend(message: com.fsck.k9.mail.Message): Rating {

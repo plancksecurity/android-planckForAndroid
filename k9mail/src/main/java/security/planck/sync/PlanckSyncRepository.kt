@@ -205,10 +205,9 @@ class PlanckSyncRepository @Inject constructor(
     private suspend fun setPlanckSyncEnabledSuspend(enabled: Boolean) {
         if (enabled) {
             planckInitSyncEnvironment()
+        } else if (isGrouped) {
+            leaveDeviceGroup()
         } else {
-            if (isGrouped) {
-                leaveDeviceGroup()
-            }
             shutdownSync()
         }
     }
@@ -278,8 +277,10 @@ class PlanckSyncRepository @Inject constructor(
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: start")
         }
-        planckProvider.stopSync()
-        k9.markSyncEnabled(false)
+        if (planckProvider.isSyncRunning()) {
+            planckProvider.stopSync()
+            k9.markSyncEnabled(false)
+        }
         if (BuildConfig.DEBUG) {
             Log.e("pEpEngine", "shutdownSync: end")
         }
