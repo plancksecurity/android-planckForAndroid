@@ -159,7 +159,6 @@ public class CucumberTestSteps {
                 }
             }
         } catch (Exception e) {
-            Log.e("TEST","Estoy en BeforeCatch: " + e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -782,12 +781,11 @@ public class CucumberTestSteps {
 
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
-        timeRequiredForThisMethod(80);
-        TestUtils.getJSONObject("trustwords");
+        //TestUtils.getJSONObject("trustwords");
         testUtils.goToHandshakeDialog();
-        while (TestUtils.json == null) {
-            TestUtils.saveJSON();
-        }
+        //while (TestUtils.json == null) {
+        //    TestUtils.saveJSON();
+        //}
         confirmAllTrustWords();
     }
 
@@ -872,8 +870,6 @@ public class CucumberTestSteps {
             } else {
                 getTrustWords();
             }
-            Timber.i("Estoy en 1A: " + array);
-            Timber.i("Estoy en 1B: " + trustWords);
             assertTextInJSONArray(trustWords, array, words);
         }
     }
@@ -933,9 +929,8 @@ public class CucumberTestSteps {
             getTrustWords();
             String[] trustWordsSplit = trustWords.split("\\s+");
             for (int trustWord = 0; trustWord < trustWordsSplit.length; trustWord++) {
-                Timber.i("Estoy en trustWord: " + trustWordsSplit[trustWord]);
                 if (!assertAWordIsInTheJSONFile(trustWordsSplit[trustWord])) {
-                    fail("Cannot confirm the TrustWords");
+                    fail("Error: Cannot confirm the TrustWords");
                 }
             }
             //checkWordIsInText(trustWordsSplit, webViewText);
@@ -1000,23 +995,21 @@ public class CucumberTestSteps {
         File newFile = new File(directory, listOfFiles[0].getName());
         if(!newFile.exists())
         {
-            fail("No JSON file");
+            fail("Error: No JSON file");
         }
         final Scanner scanner;
         try {
             scanner = new Scanner(newFile);
             while (scanner.hasNextLine()) {
                 final String lineFromFile = scanner.nextLine();
-                Timber.i("Estoy en assert1: " + lineFromFile);
-                Timber.i("Estoy en assert2: " + lineFromFile.contains(text));
                 if(lineFromFile.contains(text)) {
                     return true;
                 }
             }
         } catch (FileNotFoundException e) {
-            fail("Cannot find the text in the JSON file: " + e.getMessage());
+            fail("Error: Cannot find the text " + text + " in the JSON file: " + e.getMessage());
         }
-        fail("Cannot find the text " + text + " in the JSON file");
+        fail("Error: Cannot find the text " + text + " in the JSON file");
         return false;
     }
 
@@ -1107,6 +1100,18 @@ public class CucumberTestSteps {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @When("^I save session_key from JSON of (\\d+) messages")
+    public void I_save_session_key_of_messages(int messages) {
+        String key = "";
+        for (int i = 1; i < messages + 1; i++) {
+            I_send_message_to_address(1, "bot1", "Message " + i, "Total messages " + messages);
+            I_click_the_last_message_received();
+            key = key + testUtils.saveSessionKey() + '\n';
+            I_go_back_to_the_Inbox();
+        }
+        Timber.i("******All the session keys****** \n" + key);
     }
 
     private int getTotalMessagesSize() {
@@ -3168,7 +3173,6 @@ public class CucumberTestSteps {
 
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_status_text_is(String status) {
-        timeRequiredForThisMethod(10);
         try {
             TestUtils.swipeUpScreen();
             TestUtils.swipeDownScreen();
