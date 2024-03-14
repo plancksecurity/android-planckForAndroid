@@ -74,6 +74,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -86,6 +87,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
@@ -141,6 +143,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.in;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static foundation.pEp.jniadapter.Rating.pEpRatingMistrust;
@@ -3572,7 +3575,21 @@ public class TestUtils {
         } catch (Exception ex) {
             Timber.i("Cannot close keyboard");
         }
-        downloadJSon();
+        File newFile = null;
+        while (true) {
+            try {
+                downloadJSon();
+                File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
+                File[] listOfFiles = directory.listFiles();
+                assert listOfFiles != null;
+                newFile = new File(directory, listOfFiles[0].getName());
+                if (newFile.exists()) {
+                    return;
+                }
+            } catch (Exception exception) {
+                swipeDownMessageList();
+            }
+        }
     }
 
     private void downloadJSon() {
@@ -3590,19 +3607,20 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 object : device.findObjects(selector)) {
-            try {
-                if (object.getText().contains("results.json")) {
-                    waitForIdle();
-                    while (json == null) {
-                        try {
-                            Thread.sleep(2000);
-                            downloadAttachedFile("results.json");
-                            waitForIdle();
-                            json = getJSON();
-                        } catch (Exception ex) {
-                            swipeUpScreen();
-                            boolean jsonExists = false;
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().contains("results.json")) {
+                        waitForIdle();
+                        while (json == null) {
+                            try {
+                                Thread.sleep(2000);
+                                downloadAttachedFile("results.json");
+                                waitForIdle();
+                                json = getJSON();
+                            } catch (Exception ex) {
+                                swipeUpScreen();
+                                boolean jsonExists = false;
                                 try {
                                     waitForIdle();
                                     if (object.getText().contains("results.json")) {
@@ -3611,18 +3629,19 @@ public class TestUtils {
                                 } catch (Exception json) {
                                     Timber.i("Cannot find json file on the screen: " + json);
                                 }
-                            if (!jsonExists) {
-                                waitForIdle();
-                                return;
+                                if (!jsonExists) {
+                                    waitForIdle();
+                                    return;
+                                }
                             }
                         }
+                        return;
+                    } else {
+                        swipeUpScreen();
                     }
-                    return;
-                } else {
-                    swipeUpScreen();
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
                 }
-            } catch (Exception ex){
-                Timber.i("Cannot find text on screen: " + ex);
             }
         }
     }
@@ -5124,6 +5143,32 @@ public class TestUtils {
                 }
         }
         waitForIdle();
+    }
+
+    public String saveSessionKey () {
+        String session_key = "";
+        File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
+        File[] listOfFiles = directory.listFiles();
+        assert listOfFiles != null;
+        File newFile = new File(directory, listOfFiles[0].getName());
+        if(!newFile.exists())
+        {
+            fail("Error: No JSON file");
+        }
+        final Scanner scanner;
+        try {
+            scanner = new Scanner(newFile);
+            while (scanner.hasNextLine()) {
+                final String lineFromFile = scanner.nextLine();
+                if(lineFromFile.contains("session_key")) {
+                    int index = lineFromFile.lastIndexOf("session_key");
+                    return lineFromFile.substring(index + 15, index + 64 + 15);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            fail("Error: Cannot find the session key: " + e.getMessage());
+        }
+        return session_key;
     }
 
     private static String readJsonFile(String fileName) {
