@@ -105,6 +105,13 @@
         android:title="@string/pep_sync_folder" />
 
     <restriction
+        android:defaultValue="@bool/default_use_passphrase_for_new_keys"
+        android:description="@string/use_passphrase_for_new_keys_description"
+        android:key="use_passphrase_for_new_keys"
+        android:restrictionType="bool"
+        android:title="@string/use_passphrase_for_new_keys_title" />
+
+    <restriction
         android:description="@string/debug_enable_debug_logging_summary"
         android:key="debug_logging"
         android:restrictionType="bundle"
