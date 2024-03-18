@@ -40,7 +40,7 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
     }
 
     override fun init() {
-        setUpFloatingWindow(R.dimen.floating_height)
+        setUpFloatingWindowWrapHeight()
         binding.afirmativeActionButton.isEnabled = false
     }
 
