@@ -77,6 +77,14 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
         afirmativeActionButton.isEnabled = enabled
     }
 
+    override fun showPassphraseError() {
+        passphrase_container.error = "Passphrase needs to contain at least 12 characters, including uppercase and lowercase letters, numbers and symbols."
+    }
+
+    override fun hidePassphraseError() {
+        passphrase_container.error = null
+    }
+
     override fun showRetryPasswordRequest() {
         description.setText(R.string.passhphrase_body_wrong_passphrase)
     }

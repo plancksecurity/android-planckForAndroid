@@ -7,6 +7,8 @@ interface PassphraseInputView {
     fun enableNonSyncDismiss()
     fun finish(passphraseAdded: Boolean = false)
     fun enableActionConfirmation(enabled: Boolean)
+    fun showPassphraseError()
+    fun hidePassphraseError()
     fun showRetryPasswordRequest()
     fun showPasswordRequest()
     fun showSyncPasswordRequest()
