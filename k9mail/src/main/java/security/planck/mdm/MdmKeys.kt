@@ -25,6 +25,8 @@ const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION = "audit_log_data_time_reten
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_VALUE = "audit_log_data_time_retention_value"
 const val RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION_LOCKED = "audit_log_data_time_retention_locked"
 const val RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS = "use_passphrase_for_new_keys"
+const val RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS_VALUE = "use_passphrase_for_new_keys_value"
+const val RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS_LOCKED = "use_passphrase_for_new_keys_locked"
 
 const val RESTRICTION_PLANCK_ACCOUNTS_SETTINGS = "planck_accounts_settings"
 const val RESTRICTION_PLANCK_ACCOUNT_SETTINGS = "planck_account_settings"

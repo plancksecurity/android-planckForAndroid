@@ -99,7 +99,14 @@ class ConfiguredSettingsUpdater @Inject constructor(
     }
 
     private fun saveUsePassphraseForNewKeys(restrictions: Bundle, entry: RestrictionEntry) {
-        K9.setPlanckUsePassphraseForNewKeys(getBooleanOrDefault(restrictions, entry))
+        saveBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS_VALUE,
+            lockedKey = RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS_LOCKED
+        ) {
+            K9.setPlanckUsePassphraseForNewKeys(it)
+        }
     }
 
     private fun saveAccountsSettings(
