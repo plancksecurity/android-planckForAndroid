@@ -692,6 +692,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         //Debug.waitForDebugger();
         app = this;
         Globals.setContext(this);
+        performOperationsOnUpdate();
 
         provisioningManager.startProvisioning();
     }
@@ -725,7 +726,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
          * doesn't work in Android and MimeMessage does not have access to a Context.
          */
         BinaryTempFileBody.setTempDirectory(getCacheDir());
-        clearBodyCacheIfAppUpgrade();
 
         LocalKeyStore.setKeyStoreLocation(
                 planckSystemFileLocator.getKeyStoreFolder().toString()
@@ -839,9 +839,9 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
-    private void clearBodyCacheIfAppUpgrade() {
+    private void performOperationsOnUpdate() {
         AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
-        appUpdater.clearBodyCacheIfAppUpgrade();
+        appUpdater.performOperationsOnUpdate();
     }
 
     private void refreshFoldersForAllAccounts() {
