@@ -9,10 +9,10 @@ import com.fsck.k9.planck.DefaultDispatcherProvider
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.preferences.Storage
 import com.fsck.k9.preferences.StorageEditor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
+import security.planck.mdm.serializeBooleanManageableSetting
 import java.io.File
 
 class AppUpdater
@@ -20,13 +20,11 @@ class AppUpdater
 constructor(
     private val context: Context,
     private val cacheDir: File,
-    dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
 ) {
 
     private val storage: Storage
         get() = Preferences.getPreferences(context).storage
-
-    private val scope: CoroutineScope by lazy { CoroutineScope(dispatcherProvider.io() + SupervisorJob()) }
 
     fun performOperationsOnUpdate() {
         if (appWasJustUpdated(context) == NO_APP_VERSION) {
@@ -66,12 +64,12 @@ constructor(
 
     }
 
-    private fun updateAppSettingsAndVersion(oldVersion: Long, newVersion: Long, storage: Storage) {
-        scope.launch {
+    private fun updateAppSettingsAndVersion(oldVersion: Long, newVersion: Long, storage: Storage) = runBlocking {
+        withContext(dispatcherProvider.io()) {
             val editor = storage.edit()
             updateAppSettings(oldVersion, newVersion, storage, editor)
             K9.setAppVersionCode(newVersion) // version code updated every time
-            K9.save(editor)
+            editor.putLong("appVersionCode", newVersion)
             editor.commit()
         }
     }
@@ -99,7 +97,8 @@ constructor(
             BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS
         )
         editor.remove("pEpUsePassphraseForNewKeys")
-        K9.setPlanckUsePassphraseForNewKeys(ManageableSetting(previousValue))
+        val newSetting = ManageableSetting(previousValue)
+        editor.putString("pEpUsePassphraseForNewKeys", serializeBooleanManageableSetting(newSetting))
     }
 
     private fun v317Update(editor: StorageEditor) {

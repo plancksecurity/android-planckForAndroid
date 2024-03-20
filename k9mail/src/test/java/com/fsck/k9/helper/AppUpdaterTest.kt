@@ -16,13 +16,14 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import security.planck.mdm.ManageableSetting
+import security.planck.mdm.serializeBooleanManageableSetting
 import java.io.File
 
 private const val CURRENT_APP_VERSION = 531L
@@ -30,7 +31,7 @@ private const val CURRENT_APP_VERSION = 531L
 @ExperimentalCoroutinesApi
 class AppUpdaterTest {
     @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
+    var coroutinesTestRule = CoroutineTestRule(UnconfinedTestDispatcher())
     private val packageInfo: PackageInfo = mockk {
         every { longVersionCode }.returns(CURRENT_APP_VERSION)
     }
@@ -80,11 +81,11 @@ class AppUpdaterTest {
 
 
         appUpdater.performOperationsOnUpdate()
-        advanceUntilIdle()
 
 
         verify { verifyV317Update() }
         verify { verifyV3111Update() }
+        verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
     }
 
     @Test
@@ -94,11 +95,11 @@ class AppUpdaterTest {
 
 
             appUpdater.performOperationsOnUpdate()
-            advanceUntilIdle()
 
 
             verify(exactly = 0) { verifyV317Update() }
             verify { verifyV3111Update() }
+            verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
         }
 
     @Test
@@ -108,11 +109,11 @@ class AppUpdaterTest {
 
 
             appUpdater.performOperationsOnUpdate()
-            advanceUntilIdle()
 
 
             verify(exactly = 0) { verifyV317Update() }
             verify(exactly = 0) { verifyV3111Update() }
+            verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
         }
 
     private fun verifyV317Update() {
@@ -127,6 +128,7 @@ class AppUpdaterTest {
         storage.getBoolean("pEpUsePassphraseForNewKeys", BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
         storageEditor.remove("pEpUsePassphraseForNewKeys")
         K9.setPlanckUsePassphraseForNewKeys(ManageableSetting(false))
+        storageEditor.putString("pEpUsePassphraseForNewKeys", serializeBooleanManageableSetting(ManageableSetting(false)))
     }
 
 
@@ -141,6 +143,7 @@ class AppUpdaterTest {
 
             verify { cacheFile.listFiles() }
             verify { bodyFile.delete() }
+            verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
         }
 
     @Test
@@ -153,5 +156,6 @@ class AppUpdaterTest {
 
         verify { cacheFile.wasNot(called) }
         verify { bodyFile.wasNot(called) }
+        verify(exactly = 0) { storageEditor.putLong("appVersionCode", any()) }
     }
 }
