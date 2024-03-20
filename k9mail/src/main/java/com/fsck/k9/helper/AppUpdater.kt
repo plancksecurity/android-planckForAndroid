@@ -5,16 +5,28 @@ import android.content.pm.PackageInfo
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.planck.DefaultDispatcherProvider
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.preferences.Storage
 import com.fsck.k9.preferences.StorageEditor
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import security.planck.mdm.ManageableSetting
 import java.io.File
 
-class AppUpdater(private val context: Context, private val cacheDir: File) {
+class AppUpdater
+@JvmOverloads
+constructor(
+    private val context: Context,
+    private val cacheDir: File,
+    dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
+) {
+
+    private val storage: Storage
+        get() = Preferences.getPreferences(context).storage
+
+    private val scope: CoroutineScope by lazy { CoroutineScope(dispatcherProvider.io() + SupervisorJob()) }
 
     fun performOperationsOnUpdate() {
         if (appWasJustUpdated(context) == NO_APP_VERSION) {
@@ -23,9 +35,8 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
     }
 
     private fun clearBodyCacheOnAppUpgrade() {
-        val dir = File(cacheDir.absolutePath)
-        if (dir.exists()) {
-            dir.listFiles()?.forEach { file ->
+        if (cacheDir.exists()) {
+            cacheDir.listFiles()?.forEach { file ->
                 val isBody = file.name.contains("body")
                 if (isBody) {
                     file.delete()
@@ -38,26 +49,25 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
     private fun appWasJustUpdated(context: Context): Int {
         val packageInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
         val appVersionCode = packageInfo.longVersionCode % VERSION_OFFSET
-
-        val oldVersionCode = K9.getAppVersionCode() % VERSION_OFFSET
+        val oldVersionCode = storage.getLong("appVersionCode", -1) % VERSION_OFFSET
         return when {
             oldVersionCode == -1L -> {
-                updateAppSettingsAndVersion(oldVersionCode, appVersionCode, context)
+                updateAppSettingsAndVersion(oldVersionCode, appVersionCode, storage)
                 NO_APP_VERSION
             }
+
             oldVersionCode < appVersionCode -> {
-                updateAppSettingsAndVersion(oldVersionCode, appVersionCode, context)
+                updateAppSettingsAndVersion(oldVersionCode, appVersionCode, storage)
                 APP_UPDATED
             }
+
             else -> APP_NOT_UPDATED
         }
 
     }
 
-    private fun updateAppSettingsAndVersion(oldVersion: Long, newVersion: Long, context: Context) {
-        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private fun updateAppSettingsAndVersion(oldVersion: Long, newVersion: Long, storage: Storage) {
         scope.launch {
-            val storage = Preferences.getPreferences(context).storage
             val editor = storage.edit()
             updateAppSettings(oldVersion, newVersion, storage, editor)
             K9.setAppVersionCode(newVersion) // version code updated every time
@@ -102,7 +112,7 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
     }
 
     private fun needsUpdate(target: Long, oldVersion: Long, newVersion: Long): Boolean {
-        return target in oldVersion..newVersion
+        return target in oldVersion until newVersion
     }
 
     companion object {

@@ -840,7 +840,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     private void performOperationsOnUpdate() {
-        AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
+        AppUpdater appUpdater = new AppUpdater(this, new File(getCacheDir().getAbsolutePath()));
         appUpdater.performOperationsOnUpdate();
     }
 
