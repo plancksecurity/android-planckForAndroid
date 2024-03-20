@@ -35,6 +35,8 @@
     <string name="account_remote_search_num_results_description">Number of remote search results displayed by default</string>
     <string name="allow_pep_sync_new_devices_title">Allow to add new devices to sync group</string>
     <string name="allow_pep_sync_new_devices_description">Allow to use planck sync to add new devices to sync group.</string>
+    <string name="use_passphrase_for_new_keys_title">Passphrase for new keys</string>
+    <string name="use_passphrase_for_new_keys_description">Use a passphrase for new keys</string>
 
     <string-array name="mail_settings_security_type_entries">
         <item>@string/account_setup_incoming_security_none_label</item>

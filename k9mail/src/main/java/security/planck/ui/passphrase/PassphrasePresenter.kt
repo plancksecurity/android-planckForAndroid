@@ -13,6 +13,9 @@ import security.planck.ui.PassphraseProvider
 import timber.log.Timber
 import javax.inject.Inject
 
+private const val ACCEPTED_SYMBOLS = """@\$!%*+\-_#?&\[\]\{\}\(\)\.:;,<>~"'\\/"""
+private const val PASSPHRASE_REGEX = """^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$ACCEPTED_SYMBOLS])[A-Za-z\d$ACCEPTED_SYMBOLS]{12,}$"""
+
 class PassphrasePresenter @Inject constructor(
     private val planck: PlanckProvider,
     private val controller: MessagingController,
@@ -82,7 +85,17 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun validateInput(passphrase: String) {
-        view.enableActionConfirmation(passphrase.isNotEmpty())
+        val isValidPassPhrase = passphrase.isValidPassphrase()
+        view.enableActionConfirmation(isValidPassPhrase)
+        if (isValidPassPhrase) {
+            view.hidePassphraseError()
+        } else {
+            view.showPassphraseError()
+        }
+    }
+
+    private fun String.isValidPassphrase(): Boolean {
+        return matches(PASSPHRASE_REGEX.toRegex())
     }
 
     fun cancelSync() {

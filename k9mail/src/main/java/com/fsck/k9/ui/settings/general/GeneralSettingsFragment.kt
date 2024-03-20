@@ -145,11 +145,17 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeNewKeysPassphrase() {
         findPreference<SwitchPreferenceCompat>(PEP_USE_PASSPHRASE_FOR_NEW_KEYS)?.apply {
-            if (BuildConfig.DEBUG) {
-                isVisible = true
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
-                    processNewKeysSwitchClick(preference, newValue)
-                }
+            this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                processNewKeysSwitchClick(preference, newValue)
+            }
+        }
+
+        initializeManagedSwitchLockedFeedback(
+            K9.getPlanckUsePassphraseForNewKeys(),
+            PEP_USE_PASSPHRASE_FOR_NEW_KEYS,
+        ) {
+            this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                processNewKeysSwitchClick(preference, newValue)
             }
         }
     }
@@ -258,17 +264,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeGlobalPlanckSync() {
         if (!BuildConfig.IS_ENTERPRISE) {
-            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as? SwitchPreferenceCompat)?.apply {
-                if (K9.getPlanckSyncEnabled().locked) {
-                    isEnabled = false
-                    summaryOff = getString(R.string.preference_summary_locked_by_it_manager, summaryOff)
-                    summaryOn = getString(R.string.preference_summary_locked_by_it_manager, summaryOn)
-                } else {
-                    onPreferenceChangeListener =
-                        Preference.OnPreferenceChangeListener { preference, newValue ->
-                            processKeySyncSwitchClick(preference, newValue)
-                        }
-                }
+            initializeManagedSwitchLockedFeedback(
+                K9.getPlanckSyncEnabled(),
+                PREFERENCE_PEP_ENABLE_SYNC
+            ) {
+                onPreferenceChangeListener =
+                    Preference.OnPreferenceChangeListener { preference, newValue ->
+                        processKeySyncSwitchClick(preference, newValue)
+                    }
             }
         }
     }
@@ -381,6 +384,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             (findPreference(prefKey) as? Preference)?.apply {
                 isEnabled = false
                 summary = getString(R.string.preference_summary_locked_by_it_manager, summary)
+            }
+        }
+    }
+
+    private fun <T> initializeManagedSwitchLockedFeedback(
+        setting: ManageableSetting<T>,
+        prefKey: String,
+        ifUnlocked: SwitchPreferenceCompat.() -> Unit = {}
+    ) {
+        (findPreference<SwitchPreferenceCompat>(prefKey))?.apply {
+            if (setting.locked) {
+                isEnabled = false
+                summaryOff = getString(R.string.preference_summary_locked_by_it_manager, summaryOff)
+                summaryOn = getString(R.string.preference_summary_locked_by_it_manager, summaryOn)
+            } else {
+                ifUnlocked()
             }
         }
     }
