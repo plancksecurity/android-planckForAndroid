@@ -367,7 +367,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static ManageableSetting<Boolean> planckSyncEnabled = new ManageableSetting<>(true);
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
-    private static boolean planckUsePassphraseForNewKeys = BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS;
+    private static ManageableSetting<Boolean> planckUsePassphraseForNewKeys = new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS);
     private static long appVersionCode = -1;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -664,7 +664,10 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
-        editor.putBoolean("pEpUsePassphraseForNewKeys", planckUsePassphraseForNewKeys);
+        editor.putString(
+                "pEpUsePassphraseForNewKeys",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckUsePassphraseForNewKeys)
+        );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -689,6 +692,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         //Debug.waitForDebugger();
         app = this;
         Globals.setContext(this);
+        performOperationsOnUpdate();
 
         provisioningManager.startProvisioning();
     }
@@ -722,7 +726,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
          * doesn't work in Android and MimeMessage does not have access to a Context.
          */
         BinaryTempFileBody.setTempDirectory(getCacheDir());
-        clearBodyCacheIfAppUpgrade();
 
         LocalKeyStore.setKeyStoreLocation(
                 planckSystemFileLocator.getKeyStoreFolder().toString()
@@ -836,9 +839,9 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
-    private void clearBodyCacheIfAppUpgrade() {
-        AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
-        appUpdater.clearBodyCacheIfAppUpgrade();
+    private void performOperationsOnUpdate() {
+        AppUpdater appUpdater = new AppUpdater(this, new File(getCacheDir().getAbsolutePath()));
+        appUpdater.performOperationsOnUpdate();
     }
 
     private void refreshFoldersForAllAccounts() {
@@ -1061,7 +1064,14 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
-        planckUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS);
+        planckUsePassphraseForNewKeys = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        "pEpUsePassphraseForNewKeys",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
+                        )
+                )
+        );
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1686,10 +1696,18 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static boolean isPlanckUsePassphraseForNewKeys() {
-        return planckUsePassphraseForNewKeys;
+        return planckUsePassphraseForNewKeys.getValue();
     }
 
     public static void setPlanckUsePassphraseForNewKeys(boolean pEpUsePassphraseForNewKeys) {
+        K9.planckUsePassphraseForNewKeys.setValue(pEpUsePassphraseForNewKeys);
+    }
+
+    public static ManageableSetting<Boolean> getPlanckUsePassphraseForNewKeys() {
+        return planckUsePassphraseForNewKeys;
+    }
+
+    public static void setPlanckUsePassphraseForNewKeys(ManageableSetting<Boolean> pEpUsePassphraseForNewKeys) {
         K9.planckUsePassphraseForNewKeys = pEpUsePassphraseForNewKeys;
     }
 

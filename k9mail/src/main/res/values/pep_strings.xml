@@ -313,6 +313,7 @@
     <string name="passhphrase_action_disable_sync">Shutdown Sync</string>
     <string name="passhphrase_body_new_keys_passphrase">We recommend using device encryption instead of a passphrase. This way you are securing all data and not only keys. If you still wish to proceed with a passphrase, please enter it below and enable it.</string>
     <string name="passhphrase_new_keys_settings_title">Use a passphrase for new keys</string>
+    <string name="passhphrase_new_keys_settings_description">New created keys will be protected by a passphrase</string>
 
     <string name="pgp_key_import_confirmation_fingerprint_label">The fingerprint of the selected key is:</string>
     <string name="pgp_key_import_confirmation_dialog_fingerprint_format">%1$s\n%2$s</string>

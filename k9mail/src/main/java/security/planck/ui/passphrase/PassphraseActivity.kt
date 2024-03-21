@@ -6,10 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
+import com.fsck.k9.databinding.ActivityPassphraseBinding
 import com.fsck.k9.planck.manualsync.WizardActivity
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_passphrase.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -29,39 +29,41 @@ fun PreferenceFragmentCompat.requestPassphraseForNewKeys() {
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
     @Inject
     lateinit var presenter: PassphrasePresenter
+    private lateinit var binding: ActivityPassphraseBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_passphrase)
+        binding = ActivityPassphraseBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val type = intent?.extras?.getSerializable(REQUEST_TYPE_EXTRA)
         presenter.init(this, type as PassphraseRequirementType)
     }
 
     override fun init() {
-        setUpFloatingWindow(R.dimen.floating_height)
-        afirmativeActionButton.isEnabled = false
+        setUpFloatingWindowWrapHeight()
+        binding.afirmativeActionButton.isEnabled = false
     }
 
     override fun initAffirmativeListeners() {
-        passphrase.doAfterTextChanged { inputText ->
+        binding.passphrase.doAfterTextChanged { inputText ->
             presenter.validateInput(inputText.toString())
         }
 
-        afirmativeActionButton.setOnClickListener {
-            presenter.deliverPassphrase(passphrase.text.toString())
+        binding.afirmativeActionButton.setOnClickListener {
+            presenter.deliverPassphrase(binding.passphrase.text.toString())
         }
     }
 
     override fun enableSyncDismiss() {
-        dismissActionButton.setText(R.string.passhphrase_action_disable_sync)
-        dismissActionButton.setOnClickListener {
+        binding.dismissActionButton.setText(R.string.passhphrase_action_disable_sync)
+        binding.dismissActionButton.setOnClickListener {
             presenter.cancelSync()
         }
     }
 
     override fun enableNonSyncDismiss() {
-        dismissActionButton.setText(R.string.cancel_action)
-        dismissActionButton.setOnClickListener {
+        binding.dismissActionButton.setText(R.string.cancel_action)
+        binding.dismissActionButton.setOnClickListener {
             presenter.cancel()
         }
     }
@@ -74,23 +76,31 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
     }
 
     override fun enableActionConfirmation(enabled: Boolean) {
-        afirmativeActionButton.isEnabled = enabled
+        binding.afirmativeActionButton.isEnabled = enabled
+    }
+
+    override fun showPassphraseError() {
+        binding.passphraseContainer.error = "Passphrase needs to contain at least 12 characters, including uppercase and lowercase letters, numbers and symbols."
+    }
+
+    override fun hidePassphraseError() {
+        binding.passphraseContainer.error = null
     }
 
     override fun showRetryPasswordRequest() {
-        description.setText(R.string.passhphrase_body_wrong_passphrase)
+        binding.description.setText(R.string.passhphrase_body_wrong_passphrase)
     }
 
     override fun showPasswordRequest() {
-        description.setText(R.string.passhphrase_body_insert_passphrase)
+        binding.description.setText(R.string.passhphrase_body_insert_passphrase)
     }
 
     override fun showSyncPasswordRequest() {
-        description.setText(R.string.passhphrase_body_sync_passphrase)
+        binding.description.setText(R.string.passhphrase_body_sync_passphrase)
     }
 
     override fun showNewKeysPassphrase() {
-        description.setText(R.string.passhphrase_body_new_keys_passphrase)
+        binding.description.setText(R.string.passhphrase_body_new_keys_passphrase)
     }
 
     companion object {
