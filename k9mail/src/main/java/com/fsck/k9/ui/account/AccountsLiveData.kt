@@ -20,7 +20,7 @@ class AccountsLiveData @Inject constructor(val preferences: Preferences) : LiveD
                 loadAccounts()
             }
 
-            value = accounts.await()
+            value = accounts.await()!!
         }
     }
 
