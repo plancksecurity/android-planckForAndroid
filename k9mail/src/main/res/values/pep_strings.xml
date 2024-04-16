@@ -466,6 +466,6 @@
     <string name="compose_banner_remove_unsecure_recipients_action">Remove them</string>
     <string name="compose_banner_invite_unsecure_recipients_action">Invite them to Planck</string>
     <string name="planck_invite_title">Invitation to Planck</string>
-    <string name="planck_invite_text">You have been invited to use Planck. Reply to this message from Planck mail client to accept invitation and start secure communication with this partner.</string>
+    <string name="planck_invite_text">You have been invited to use Planck. You can reply to this message from the Planck mail client to accept the invitation and start your secure communication.</string>
 
 </resources>
