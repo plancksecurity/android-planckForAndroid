@@ -100,6 +100,10 @@ public abstract class MessageBuilder {
         this.boundaryGenerator = boundaryGenerator;
     }
 
+    public MimeMessage buildSync() throws MessagingException {
+        return build();
+    }
+
     /**
      * Build the message to be sent (or saved). If there is another message quoted in this one, it will be baked
      * into the message here.
@@ -177,7 +181,7 @@ public abstract class MessageBuilder {
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
 
-        final boolean hasAttachments = !attachments.isEmpty() || (blobAttachments != null && !blobAttachments.isEmpty());
+        final boolean hasAttachments = (attachments != null && !attachments.isEmpty()) || (blobAttachments != null && !blobAttachments.isEmpty());
 
         if (messageFormat == SimpleMessageFormat.HTML) {
             // HTML message (with alternative text part)

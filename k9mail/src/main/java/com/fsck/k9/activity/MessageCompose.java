@@ -829,6 +829,19 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         setTitle(action.getTitleResource());
     }
 
+    private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
+        MessageBuilder builder = SimpleMessageBuilder.newInstance();
+        return builder.setSubject(getString(R.string.planck_invite_title))
+                .setSentDate(new Date())
+                .setHideTimeZone(K9.hideTimeZone())
+                .setTo(recipients)
+                .setIdentity(identity)
+                .setMessageFormat(currentMessageFormat)
+                .setText(getString(R.string.planck_invite_text))
+                .setSignature(signatureView.getCharacters())
+                .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText());
+    }
+
     @Nullable
     private MessageBuilder createMessageBuilder(boolean isDraft) {
         MessageBuilder builder;
@@ -2085,7 +2098,22 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
-        composeBanner.showUnsecureDeliveryWarning(unsecureRecipientsCount, (v) -> recipientPresenter.clearUnsecureRecipients());
+        composeBanner.showUnsecureDeliveryWarning(
+                unsecureRecipientsCount,
+                (v) -> recipientPresenter.clearUnsecureRecipients(),
+                (v) -> {
+                    sendPlanckInvitesToUnsecureRecipients();
+                }
+        );
+    }
+
+    private void sendPlanckInvitesToUnsecureRecipients() {
+        MessageBuilder messageBuilder = createMessageBuilderToSendPlanckInvites(
+                recipientPresenter.getHaveNoKeyAddresses()
+        );
+        MessagingController.getInstance(getApplicationContext())
+                .buildAndSendMessage(messageBuilder, account);
+        checkToSaveDraftAndSave();
     }
 
     public void hideUnsecureDeliveryWarning() {

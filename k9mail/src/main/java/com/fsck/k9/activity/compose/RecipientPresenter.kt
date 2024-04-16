@@ -151,6 +151,9 @@ class RecipientPresenter(
             return result
         }
 
+    val haveNoKeyAddresses: List<Address>
+        get() = (toPresenter.haveNoKeyAddresses + ccPresenter.haveNoKeyAddresses).toList()
+
     fun checkRecipientsOkForSending(): Boolean {
         toPresenter.tryPerformCompletion()
         ccPresenter.tryPerformCompletion()

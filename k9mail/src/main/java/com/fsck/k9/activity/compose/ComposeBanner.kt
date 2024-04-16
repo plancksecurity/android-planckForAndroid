@@ -35,7 +35,8 @@ class ComposeBanner(context: Context, attrs: AttributeSet?) : ConstraintLayout(c
 
     fun showUnsecureDeliveryWarning(
         unsecureRecipientsCount: Int,
-        onClickListener: OnClickListener
+        onRemoveClickListener: OnClickListener,
+        onInviteClickListener: OnClickListener,
     ) {
         if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
             binding.removeRecipients.isVisible = true
@@ -50,7 +51,8 @@ class ComposeBanner(context: Context, attrs: AttributeSet?) : ConstraintLayout(c
                 unsecureRecipientsCount,
                 unsecureRecipientsCount
             )
-            bannerText.setOnClickListener(onClickListener)
+            binding.removeRecipients.setOnClickListener(onRemoveClickListener)
+            binding.inviteRecipients.setOnClickListener(onInviteClickListener)
             showUserActionBanner()
         }
     }

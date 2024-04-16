@@ -21,6 +21,8 @@ class RecipientSelectPresenter @Inject constructor(
 
     val unsecureAddressChannelCount: Int
         get() = unsecureAddresses.size
+    val haveNoKeyAddresses: Set<Address>
+        get() = unsecureAddresses
 
     val addresses: List<Address>
         get() = recipients.map { it.address }
@@ -150,7 +152,7 @@ class RecipientSelectPresenter @Inject constructor(
                     } else {
                         rating
                     }
-                if (isPEpPrivacyProtected && PlanckUtils.isRatingUnsecure(viewRating)
+                if (isPEpPrivacyProtected && viewRating.value == Rating.pEpRatingHaveNoKey.value
                     && view.hasRecipient(recipient)
                 ) {
                     addUnsecureAddressChannel(address)
