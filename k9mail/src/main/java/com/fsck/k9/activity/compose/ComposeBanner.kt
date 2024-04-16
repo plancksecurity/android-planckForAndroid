@@ -41,6 +41,10 @@ class ComposeBanner(context: Context, attrs: AttributeSet?) : ConstraintLayout(c
         if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
             binding.removeRecipients.isVisible = true
             binding.inviteRecipients.isVisible = true
+            binding.removeRecipients.text = resources.getQuantityString(
+                R.plurals.compose_banner_remove_unsecure_recipients_action,
+                unsecureRecipientsCount
+            )
             bannerText.setTextColor(
                 ContextCompat.getColor(
                     context, R.color.compose_unsecure_delivery_warning
@@ -78,6 +82,8 @@ class ComposeBanner(context: Context, attrs: AttributeSet?) : ConstraintLayout(c
 
     fun showSingleRecipientHandshakeBanner(onClickListener: OnClickListener) {
         if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
+            binding.removeRecipients.isVisible = false
+            binding.inviteRecipients.isVisible = false
             bannerText.setTextColor(ContextCompat.getColor(context, R.color.planck_green))
             bannerText.setText(R.string.compose_single_recipient_handshake_banner)
             bannerText.setOnClickListener(onClickListener)
@@ -90,6 +96,8 @@ class ComposeBanner(context: Context, attrs: AttributeSet?) : ConstraintLayout(c
     }
 
     fun setAndShowError(throwable: Throwable) {
+        binding.removeRecipients.isVisible = false
+        binding.inviteRecipients.isVisible = false
         bannerText.setTextColor(
             ContextCompat.getColor(
                 context,
