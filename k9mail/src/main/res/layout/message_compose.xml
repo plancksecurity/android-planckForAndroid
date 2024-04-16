@@ -7,17 +7,10 @@
     android:orientation="vertical">
 
     <include layout="@layout/toolbar_layout" />
-    <TextView
-        android:id="@+id/user_action_banner"
-        style="@style/UnsecureRecipientsWarning"
-        tools:visibility="visible"
-        tools:text="1 unsecure recipient. Tap here to remove it."/>
-
-    <View
-        android:id="@+id/user_action_banner_separator"
+    <com.fsck.k9.activity.compose.ComposeBanner
+        android:id="@+id/compose_banner"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
+        android:layout_height="wrap_content" />
 
     <ScrollView
         android:layout_width="match_parent"

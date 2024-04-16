@@ -463,5 +463,7 @@
     <string name="device_cannot_create_pinned_shortcut_feedback">The device does not support this kind of shortcut.</string>
     <string name="shortcut_feedback_account_removed">This account was removed from the app.</string>
     <string name="passphrase_wrong_input_feedback">Passphrase needs to contain at least 12 characters, including uppercase and lowercase letters, numbers and symbols.</string>
+    <string name="compose_banner_remove_unsecure_recipients_action">Remove them</string>
+    <string name="compose_banner_invite_unsecure_recipients_action">Invite them</string>
 
 </resources>

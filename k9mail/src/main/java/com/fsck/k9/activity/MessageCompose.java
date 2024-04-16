@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
@@ -54,6 +53,7 @@ import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.compose.AttachmentPresenter;
 import com.fsck.k9.activity.compose.AttachmentPresenter.AttachmentMvpView;
 import com.fsck.k9.activity.compose.AttachmentPresenter.WaitingAction;
+import com.fsck.k9.activity.compose.ComposeBanner;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
 import com.fsck.k9.activity.compose.CryptoSettingsDialog.OnCryptoModeChangedListener;
@@ -99,8 +99,6 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.ComposeView;
-import com.fsck.k9.planck.infrastructure.ConstantsKt;
-import com.fsck.k9.planck.infrastructure.extensions.ThrowableKt;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -173,7 +171,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
     private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
-    private static final String STATE_LAST_ERROR = "lastError";
 
     private static final String FRAGMENT_WAITING_FOR_ATTACHMENT = "waitingForAttachment";
 
@@ -266,7 +263,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private SimpleMessageFormat currentMessageFormat;
 
     private boolean isInSubActivity = false;
-    private BannerType currentBanner = BannerType.NONE;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -284,9 +280,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     PlanckProvider planck;
 
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
-    private TextView userActionBanner;
-    private View userActionBannerSeparator;
-    private StringBuilder lastError;
+    private ComposeBanner composeBanner;
     private RestrictionsViewModel restrictionsViewModel;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
@@ -368,6 +362,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         accountRecipient = findViewById(R.id.identity);
         accountRecipient.setOnClickListener(this);
+        composeBanner = findViewById(R.id.compose_banner);
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
@@ -383,9 +378,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
-
-        userActionBanner = findViewById(R.id.user_action_banner);
-        userActionBannerSeparator = findViewById(R.id.user_action_banner_separator);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -763,7 +755,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         outState.putString(STATE_REFERENCES, referencedMessageIds);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-        outState.putString(STATE_LAST_ERROR, lastError == null ? null : lastError.toString());
         // TODO: trigger pep?
 
     }
@@ -832,11 +823,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         updateMessageFormat();
         restoreMessageComposeConfigurationInstance();
-        String errorText = savedInstanceState.getString(STATE_LAST_ERROR);
-        if (errorText != null) {
-            lastError = new StringBuilder(errorText);
-            showError(errorText);
-        }
     }
 
     private void setTitle() {
@@ -2099,97 +2085,31 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
-        if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
-            userActionBanner.setTextColor(ContextCompat.getColor(
-                    this, R.color.compose_unsecure_delivery_warning));
-            userActionBanner.setText(getResources().getQuantityString(
-                    R.plurals.compose_unsecure_delivery_warning,
-                    unsecureRecipientsCount,
-                    unsecureRecipientsCount
-            ));
-            userActionBanner.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
-            showUserActionBanner();
-        }
-    }
-
-    private void showUserActionBanner() {
-        userActionBanner.setVisibility(View.VISIBLE);
-        userActionBannerSeparator.setVisibility(View.VISIBLE);
+        composeBanner.showUnsecureDeliveryWarning(unsecureRecipientsCount, (v) -> recipientPresenter.clearUnsecureRecipients());
     }
 
     public void hideUnsecureDeliveryWarning() {
-        hideUserActionBanner(BannerType.UNSECURE_DELIVERY);
+        composeBanner.hideUnsecureDeliveryWarning();
     }
 
     private void hideUserActionBanner() {
-        hideUserActionBanner(BannerType.ERROR);
-    }
-
-    private void hideUserActionBanner(BannerType bannerType) {
-        if (currentBanner == bannerType) {
-            currentBanner = null;
-            userActionBanner.setVisibility(View.GONE);
-            userActionBannerSeparator.setVisibility(View.GONE);
-        }
+        composeBanner.hideUserActionBanner();
     }
 
     public void showSingleRecipientHandshakeBanner() {
-        if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
-            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.planck_green));
-            userActionBanner.setText(R.string.compose_single_recipient_handshake_banner);
-            userActionBanner.setOnClickListener(
-                    v -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference)
-            );
-            showUserActionBanner();
-        }
+        composeBanner.showSingleRecipientHandshakeBanner((v) -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference));
     }
 
     public void hideSingleRecipientHandshakeBanner() {
-        hideUserActionBanner(BannerType.HANDSHAKE);
+        composeBanner.hideSingleRecipientHandshakeBanner();
     }
 
     public void setAndShowError(@NotNull Throwable throwable) {
-        userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.compose_unsecure_delivery_warning));
-        String errorText = getErrorText(throwable);
-        if (shouldInitializeError()) {
-            lastError = new StringBuilder(errorText);
-        } else {
-            addNewDebugErrorText(errorText);
-        }
-        showError(lastError.toString());
+        composeBanner.setAndShowError(throwable);
     }
 
     public void launchVerifyPartnerIdentity(String myself, MessageReference messageReference) {
         VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, myself, myself, messageReference, false);
-    }
-
-    private boolean shouldInitializeError() {
-        return !BuildConfig.DEBUG || lastError == null;
-    }
-
-    private void addNewDebugErrorText(String newErrorText) {
-        lastError.append(ConstantsKt.NEW_LINE);
-        lastError.append(newErrorText);
-    }
-
-    private String getErrorText(@NotNull Throwable throwable) {
-        return BuildConfig.DEBUG
-                ? ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH)
-                : getString(R.string.error_happened_restart_app);
-    }
-
-    private void showError(@NotNull String error) {
-        currentBanner = BannerType.ERROR;
-        userActionBanner.setText(error);
-        userActionBanner.setOnClickListener(null);
-        showUserActionBanner();
-    }
-
-    private boolean wasAbleToChangeBanner(BannerType bannerType) {
-        if (currentBanner == null || currentBanner.priority <= bannerType.priority) {
-            currentBanner = bannerType;
-            return true;
-        } else return false;
     }
 
     private Handler internalMessageHandler = new Handler() {
