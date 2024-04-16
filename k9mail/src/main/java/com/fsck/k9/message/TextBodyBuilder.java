@@ -181,7 +181,7 @@ class TextBodyBuilder {
     private String getSignature() {
         String signature = "";
         if (!TextUtils.isEmpty(mSignature)) {
-            signature = "\r\n" + mSignature;
+            signature = "\r\n\r\n" + mSignature;
         }
 
         return signature;
@@ -190,7 +190,7 @@ class TextBodyBuilder {
     private String getSignatureHtml() {
         String signature = "";
         if (!TextUtils.isEmpty(mSignature)) {
-            signature = textToHtmlFragment("\r\n" + mSignature);
+            signature = textToHtmlFragment("\r\n\r\n" + mSignature);
         }
         return signature;
     }
