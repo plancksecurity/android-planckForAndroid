@@ -22,9 +22,16 @@ class TextBodyBuilder {
     private String mSignature;
     private String mQuotedText;
     private InsertableHtmlContent mQuotedTextHtml;
+    private final boolean allowHtmlTags;
 
     public TextBodyBuilder(String messageContent) {
         mMessageContent = messageContent;
+        allowHtmlTags = false;
+    }
+
+    public TextBodyBuilder(String messageContent, boolean allowHtmlTags) {
+        mMessageContent = messageContent;
+        this.allowHtmlTags = allowHtmlTags;
     }
 
     /**
@@ -211,7 +218,7 @@ class TextBodyBuilder {
      * protected for unit-test purposes
      */
     protected String textToHtmlFragment(String text) {
-        return HtmlConverter.textToHtmlFragment(text);
+        return HtmlConverter.textToHtmlFragment(text, allowHtmlTags);
     }
 
     public void setSignature(String signature) {

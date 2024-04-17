@@ -469,6 +469,6 @@
     </plurals>
     <string name="compose_banner_invite_unsecure_recipients_action">Invite to Planck</string>
     <string name="planck_invite_title">Invitation to Planck</string>
-    <string name="planck_invite_text">You have been invited to use Planck. You can reply to this message from the Planck mail client to accept the invitation and start your secure communication.</string>
+    <string name="planck_invite_text"><![CDATA[You have been invited to use <a href="https://www.planck.security/">Planck</a>. You can reply to this message from the <a href="https://www.planck.security/">Planck</a> mail client to accept the invitation and start your secure communication.]]></string>
 
 </resources>

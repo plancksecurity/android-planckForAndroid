@@ -2,7 +2,11 @@ package com.fsck.k9.message.html
 
 import java.util.ArrayDeque
 
-class TextToHtml private constructor(private val text: CharSequence, private val html: StringBuilder) {
+open class TextToHtml private constructor(
+    private val text: CharSequence,
+    private val html: StringBuilder,
+    private val htmlCharacterEncoder: HtmlCharacterEncoder = HtmlCharacterEncoder(html)
+) {
     fun appendAsHtmlFragment() {
         val modifications = HTML_MODIFIERS
             .flatMap { it.findModifications(text) }
@@ -61,14 +65,7 @@ class TextToHtml private constructor(private val text: CharSequence, private val
     }
 
     internal fun appendHtmlEncoded(ch: Char) {
-        when (ch) {
-            '&' -> html.append("&amp;")
-            '<' -> html.append("&lt;")
-            '>' -> html.append("&gt;")
-            '\r' -> Unit
-            '\n' -> html.append(HTML_NEWLINE)
-            else -> html.append(ch)
-        }
+        htmlCharacterEncoder.appendHtmlEncoded(ch)
     }
 
     internal fun appendHtmlAttributeEncoded(attributeValue: CharSequence) {
@@ -84,7 +81,6 @@ class TextToHtml private constructor(private val text: CharSequence, private val
 
     companion object {
         private val HTML_MODIFIERS = listOf(DividerReplacer, UriLinkifier, SignatureWrapper)
-        private const val HTML_NEWLINE = "<br>"
         private const val TEXT_TO_HTML_EXTRA_BUFFER_LENGTH = 512
 
         @JvmStatic
@@ -93,9 +89,11 @@ class TextToHtml private constructor(private val text: CharSequence, private val
         }
 
         @JvmStatic
-        fun toHtmlFragment(text: CharSequence): String {
+        fun toHtmlFragment(text: CharSequence, allowHtmlTags: Boolean): String {
             val html = StringBuilder(text.length + TEXT_TO_HTML_EXTRA_BUFFER_LENGTH)
-            TextToHtml(text, html).appendAsHtmlFragment()
+            val encoder = if (allowHtmlTags) HtmlTagAllowingCharacterEncoder(html)
+            else HtmlCharacterEncoder(html)
+            TextToHtml(text, html, encoder).appendAsHtmlFragment()
             return html.toString()
         }
     }
