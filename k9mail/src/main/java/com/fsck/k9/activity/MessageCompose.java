@@ -100,11 +100,13 @@ import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.ComposeView;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -120,6 +122,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
+import kotlin.jvm.functions.Function0;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
@@ -201,6 +204,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private PlanckUIArtefactCache uiCache;
     private boolean permissionAsked;
     private RecipientMvpView recipientMvpView;
+    private View overlay;
 
     public Account getAccount() {
         String accountUuid = (relatedMessageReference != null) ?
@@ -282,6 +286,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private ComposeBanner composeBanner;
     private RestrictionsViewModel restrictionsViewModel;
+    private boolean isInvite;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -359,6 +364,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         contacts = Contacts.getInstance(MessageCompose.this);
 
         rootView = findViewById(R.id.content);
+        overlay = findViewById(R.id.overlay);
 
         accountRecipient = findViewById(R.id.identity);
         accountRecipient.setOnClickListener(this);
@@ -912,6 +918,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void checkToSaveDraftAndSave() {
+        checkToSaveDraftAndSave(false);
+    }
+
+    private void checkToSaveDraftAndSave(boolean isInvite) {
         if (!account.hasDraftsFolder()) {
             FeedbackTools.showShortFeedback(getRootView(), getString(R.string.compose_error_no_draft_folder));
             return;
@@ -922,6 +932,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         finishAfterDraftSaved = true;
+        this.isInvite = isInvite;
         performSaveAfterChecks();
     }
 
@@ -963,7 +974,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         internalMessageHandler.sendEmptyMessage(MSG_DISCARDED_DRAFT);
         changesMadeSinceLastSave = false;
-        finish();
     }
 
     public void showContactPicker(int requestCode) {
@@ -1323,8 +1333,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                             @Override
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                                FeedbackTools.showLongFeedback(getRootView(),
-                                        getString(R.string.message_discarded_toast));
                                 onDiscard();
                             }
                         })
@@ -1756,11 +1764,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             boolean saveRemotely = !recipientPresenter.getCurrentCryptoStatus().shouldUsePgpMessageBuilder();
             new SaveMessageTask(getApplicationContext(), account, contacts, internalMessageHandler,
                     message, draftId, saveRemotely).execute();
-            if (finishAfterDraftSaved) {
-                finish();
-            } else {
-                setProgressBarIndeterminateVisibility(false);
-            }
+            setProgressBarIndeterminateVisibility(false);
         } else {
             currentMessageBuilder = null;
             new SendMessageTask(getApplicationContext(), account, contacts, message,
@@ -2114,7 +2118,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         );
         MessagingController.getInstance(getApplicationContext())
                 .buildAndSendMessage(messageBuilder, account);
-        checkToSaveDraftAndSave();
+        checkToSaveDraftAndSave(true);
     }
 
     public void hideUnsecureDeliveryWarning() {
@@ -2141,6 +2145,37 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, myself, myself, messageReference, false);
     }
 
+    private void showOverlay() {
+        overlay.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOverlay() {
+        overlay.setVisibility(View.GONE);
+    }
+
+    private void finishWithSnackBar(Function0<Snackbar> showSnackbar, boolean finish) {
+        if (finish) {
+            KeyboardUtils.hideKeyboard(this);
+            showOverlay();
+        }
+        Snackbar snackbar = showSnackbar.invoke();
+        if (!finish) {
+            return;
+        }
+        if (snackbar == null) {
+            hideOverlay();
+            finish();
+            return;
+        }
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                hideOverlay();
+                finish();
+            }
+        });
+    }
+
     private Handler internalMessageHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -2153,12 +2188,17 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     break;
                 case MSG_SAVED_DRAFT:
                     draftId = (Long) msg.obj;
-                    FeedbackTools.showLongFeedback(getRootView(),
-                            getString(R.string.message_saved_toast));
+                    finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
+                            getString(
+                                    isInvite
+                                    ? R.string.invitation_sent_and_draft_saved
+                                    : R.string.message_saved_toast
+                            ), 2000, 2), finishAfterDraftSaved);
+
                     break;
                 case MSG_DISCARDED_DRAFT:
-                    FeedbackTools.showLongFeedback(getRootView(),
-                            getString(R.string.message_discarded_toast));
+                    finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
+                            getString(R.string.message_discarded_toast), 2000, 2), true);
                     break;
                 default:
                     super.handleMessage(msg);
