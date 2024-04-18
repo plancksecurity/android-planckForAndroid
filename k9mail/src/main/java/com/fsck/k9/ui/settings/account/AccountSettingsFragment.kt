@@ -53,6 +53,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     lateinit var storageManager: StorageManager
     @Inject
     lateinit var openPgpApiManager: OpenPgpApiManager
+    @Inject
+    lateinit var k9: K9
 
     private var rootkey:String? = null
     private lateinit var account:Account
@@ -113,9 +115,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeSignaturePreferences() {
         findPreference<Preference>(PREFERENCE_USE_SIGNATURE)?.apply {
-            setOnPreferenceChangeListener { _, newValue ->
-                findPreference<Preference>(PREFERENCE_SIGNATURE)?.isVisible = newValue as Boolean
-                true
+            if (k9.isRunningOnWorkProfile) {
+                remove()
+            } else {
+                setOnPreferenceChangeListener { _, newValue ->
+                    findPreference<Preference>(PREFERENCE_SIGNATURE)?.isVisible = newValue as Boolean
+                    true
+                }
             }
         }
     }
