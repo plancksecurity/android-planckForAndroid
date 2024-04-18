@@ -256,6 +256,13 @@ android {
             applicationIdSuffix ".enterprise"
         }
 
+        play {
+            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            versionNameSuffix ".play"
+            dimension "type"
+            applicationIdSuffix ".play"
+        }
+
         if (isEndUserFlavorEnabled()) {
             endUser {
                 buildConfigField "boolean", "IS_ENTERPRISE", "false"
@@ -285,7 +292,7 @@ android {
 
     variantFilter { variant ->
         def names = variant.getFlavors()*.name
-        if (names.contains('enterprise') && names.contains('fDroid')) {
+        if ((names.contains('enterprise') || names.contains('play')) && names.contains('fDroid')) {
             variant.setIgnore(true)
         }
         if (hasDemoProperties()) {
@@ -302,6 +309,7 @@ android {
                 if (isEndUserFlavorEnabled()) {
                     productFlavors.endUser.signingConfig signingConfigs.endUserRelease
                 }
+                productFlavors.play.signingConfig signingConfigs.endUserRelease
             }
             if (project.hasProperty("enterpriseStoreFile")) {
                 productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
@@ -400,7 +408,7 @@ android {
 
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
-    def oauthAppId = ""
+    def oauthAppId = variant.applicationId
     if (variant.applicationId.contains("security.planck") && variant.applicationId.contains("enterprise.debug")) {
         oauthAppId = "security.planck.enterprise.debug"
     } else if (variant.applicationId.contains("security.planck") && variant.applicationId.contains("enterprise")) {
@@ -422,15 +430,15 @@ private static void defineOAuthConfigs(variant) {
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"dedb9d38-8697-44a4-9bcc-8b8b35c5b3af\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.enterprise.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
             break
-        case "endUserPlayStoreRelease":
+        case "playPlayStoreRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-298svmr5klnl9dpdi655vjsn3d13miob.apps.googleusercontent.com\""
-            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"411baad4-1682-4b51-bf3d-5d219b2cfb97\""
-            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/NNpRUrCyM0zbAKQkbt3aKegrREA%3D\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"59a25209-d35b-48c9-8a76-fc71a37da409\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.play/Y8FGuyTMrOpTVHbC%2B%2BoQ8JbY09g%3D\""
             break
-        case "endUserPlayStoreDebug":
+        case "playPlayStoreDebug":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-ckb8btb852h78k08jqsvlho1t8dmhv3o.apps.googleusercontent.com\""
-            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"b02baebf-9635-41fc-8cf0-023f4fa0b33e\""
-            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.debug/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"fb1f8b8e-aba1-4395-9675-d796631eb80e\""
+            variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.play.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
             break
         default:
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"\""
