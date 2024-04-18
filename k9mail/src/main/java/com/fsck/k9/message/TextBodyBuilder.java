@@ -4,7 +4,9 @@ package com.fsck.k9.message;
 import android.text.TextUtils;
 import timber.log.Timber;
 
+import com.fsck.k9.Globals;
 import com.fsck.k9.K9;
+import com.fsck.k9.R;
 import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.internet.TextBody;
@@ -12,6 +14,8 @@ import com.fsck.k9.message.quote.InsertableHtmlContent;
 
 
 class TextBodyBuilder {
+    private static final String PLANCK = "Planck";
+    private static final String PLANCK_LINK = "<a href=\"https://www.planck.security/get-started?utm_source=android&utm_medium=plg&utm_campaign=sign\">Planck</a>";
     private boolean mIncludeQuotedText = true;
     private boolean mReplyAfterQuote = false;
     private boolean mSignatureBeforeQuotedText = false;
@@ -50,6 +54,8 @@ class TextBodyBuilder {
         // Get the user-supplied text
         String text = mMessageContent;
 
+        String signature = "";
+
         // Do we have to modify an existing message to include our reply?
         if (mIncludeQuotedText) {
             InsertableHtmlContent quotedHtmlContent = getQuotedTextHtml();
@@ -61,12 +67,12 @@ class TextBodyBuilder {
             if (mAppendSignature) {
                 // Append signature to the reply
                 if (mReplyAfterQuote || mSignatureBeforeQuotedText) {
-                    text += getSignature();
+                    signature = getSignatureHtml();
                 }
             }
 
             // Convert the text to HTML
-            text = textToHtmlFragment(text);
+            text = textToHtmlFragment(text) + signature;
 
             /*
              * Set the insertion location based upon our reply after quote
@@ -107,11 +113,11 @@ class TextBodyBuilder {
         } else {
             // There is no text to quote so simply append the signature if available
             if (mAppendSignature) {
-                text += getSignature();
+                signature = getSignatureHtml();
             }
 
             // Convert the text to HTML
-            text = textToHtmlFragment(text);
+            text = textToHtmlFragment(text) + signature;
 
             //TODO: Wrap this in proper HTML tags
 
@@ -197,7 +203,12 @@ class TextBodyBuilder {
     private String getSignatureHtml() {
         String signature = "";
         if (!TextUtils.isEmpty(mSignature)) {
-            signature = textToHtmlFragment("\r\n\r\n" + mSignature);
+            if (mSignature.equals(Globals.getContext().getString(R.string.default_signature))) {
+                signature = mSignature.replace(PLANCK, PLANCK_LINK);
+                signature = textToHtmlFragment("\r\n\r\n" + signature, true);
+            } else {
+                signature = textToHtmlFragment("\r\n\r\n" + mSignature, false);
+            }
         }
         return signature;
     }
@@ -218,6 +229,10 @@ class TextBodyBuilder {
      * protected for unit-test purposes
      */
     protected String textToHtmlFragment(String text) {
+        return HtmlConverter.textToHtmlFragment(text, allowHtmlTags);
+    }
+
+    protected String textToHtmlFragment(String text, boolean allowHtmlTags) {
         return HtmlConverter.textToHtmlFragment(text, allowHtmlTags);
     }
 
