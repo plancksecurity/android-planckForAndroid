@@ -1090,7 +1090,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_settings_notification_open_system_notifications_label">Benachrichtigungseinstellungen</string>
 
     <string name="account_delete_dlg_instructions_fmt">Das Konto \"<xliff:g id="account">%s</xliff:g>\" wird aus planck entfernt.</string>
-    <string name="default_signature">"-- Gesendet mit planck für Android. "</string>
+    <string name="default_signature">"-- Gesendet mit Planck für Android. "</string>
     <string name="welcome_message_title">Willkommen bei planck</string>
     <string name="remote_control_desc">Erlaube dieser App planck fernzusteuern und zu konfigurieren.</string>
     <string name="remote_control_label">planck Fernsteuerung</string>

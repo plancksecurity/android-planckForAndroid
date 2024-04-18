@@ -44,7 +44,7 @@
     <!--</p>-->
     <!--]]></string>-->
     <!-- Default signature -->
-    <string name="default_signature">"--  Sent from planck for Android. "</string>
+    <string name="default_signature">"--  Sent from Planck for Android. "</string>
     <!-- General strings that include the app name -->
     <string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from planck.</string>
     <string name="account_recreate_dlg_instructions_fmt">All local data for \\\"<xliff:g id="account">%s</xliff:g>\\\" will be removed. Account settings will be retained.</string>
