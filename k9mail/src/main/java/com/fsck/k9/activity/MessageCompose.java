@@ -2198,7 +2198,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     break;
                 case MSG_DISCARDED_DRAFT:
                     finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
-                            getString(R.string.message_discarded_toast), 2000, 2), true);
+                            getString(R.string.message_discarded_toast), 600, 2), true);
                     break;
                 default:
                     super.handleMessage(msg);
