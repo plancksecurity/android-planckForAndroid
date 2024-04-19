@@ -353,8 +353,8 @@
     <string name="compose_message_too_many_attachments">Cannot add more than %1$d attachments.</string>
 
     <plurals name="compose_unsecure_delivery_warning">
-        <item quantity="one">%1$d unsecure recipient. Tap here to remove it.</item>
-        <item quantity="other">%1$d unsecure recipients. Tap here to remove them.</item>
+        <item quantity="one">%1$d unknown recipient.</item>
+        <item quantity="other">%1$d unknown recipients.</item>
     </plurals>
 
     <string name="waiting_for_provisioning">Waiting for provisioning</string>
@@ -463,5 +463,14 @@
     <string name="device_cannot_create_pinned_shortcut_feedback">The device does not support this kind of shortcut.</string>
     <string name="shortcut_feedback_account_removed">This account was removed from the app.</string>
     <string name="passphrase_wrong_input_feedback">Passphrase needs to contain at least 12 characters, including uppercase and lowercase letters, numbers and symbols.</string>
+    <plurals name="compose_banner_remove_unsecure_recipients_action">
+        <item quantity="one">Remove recipient</item>
+        <item quantity="other">Remove recipients</item>
+    </plurals>
+    <string name="compose_banner_invite_unsecure_recipients_action">Invite to Planck</string>
+    <string name="planck_invite_title">Invitation to Planck</string>
+    <string name="planck_invite_text"><![CDATA[You have been invited to use <a href="https://planck.security/get-android">Planck</a>. You can reply to this message from the <a href="https://planck.security/get-android">Planck</a> mail client to accept the invitation and start your secure communication.]]></string>
+    <string name="invitation_sent_and_draft_saved">Invite sent and message saved as draft.</string>
+    <string name="account_settings_signature_summary">Use a signature for new mails.</string>
 
 </resources>

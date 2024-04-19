@@ -53,6 +53,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     lateinit var storageManager: StorageManager
     @Inject
     lateinit var openPgpApiManager: OpenPgpApiManager
+    @Inject
+    lateinit var k9: K9
 
     private var rootkey:String? = null
     private lateinit var account:Account
@@ -108,6 +110,20 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeDefaultQuotedTextShown()
         initializeRemoteSearchEnabled()
         initializeRemoteSearchLimit()
+        initializeSignaturePreferences()
+    }
+
+    private fun initializeSignaturePreferences() {
+        findPreference<Preference>(PREFERENCE_USE_SIGNATURE)?.apply {
+            if (k9.isRunningOnWorkProfile) {
+                remove()
+            } else {
+                setOnPreferenceChangeListener { _, newValue ->
+                    findPreference<Preference>(PREFERENCE_SIGNATURE)?.isVisible = newValue as Boolean
+                    true
+                }
+            }
+        }
     }
 
     fun refreshPreferences() {
@@ -469,6 +485,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_DEFAULT_QUOTED_TEXT_SHOWN = "default_quoted_text_shown"
         private const val PREFERENCE_REMOTE_SEARCH_ENABLED = "remote_search_enabled"
         private const val PREFERENCE_REMOTE_SEARCH_LIMIT = "account_remote_search_num_results"
+        private const val PREFERENCE_USE_SIGNATURE = "composition_use_signature"
+        private const val PREFERENCE_SIGNATURE = "composition_signature"
 
         private val FOLDER_LIST_PREFERENCES = listOf(
                 PREFERENCE_AUTO_EXPAND_FOLDER,

@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -72,6 +71,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
+import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.planck.PlanckProvider;
@@ -5163,6 +5163,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     planckProvider.myself(myIdentity),
                     groupMailSignal.getSenderIdentity()
             );
+        });
+    }
+
+    public void buildAndSendMessage(MessageBuilder messageBuilder, Account account) {
+        put("bla", null, () -> {
+            MimeMessage mimeMessage = null;
+            try {
+                mimeMessage = messageBuilder.buildSync();
+            } catch (Exception e) {
+                Timber.e(e, "Error building message in background");
+            }
+            sendMessage(account, mimeMessage, null);
         });
     }
 
