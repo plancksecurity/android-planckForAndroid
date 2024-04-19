@@ -2,18 +2,24 @@ package security.planck.ui.message_compose
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.widget.LinearLayout
-import kotlinx.android.synthetic.main.compose_account_item.view.*
+import com.fsck.k9.databinding.ComposeAccountItemBinding
 
 
 class ComposeAccountRecipient(context: Context?, attrs: AttributeSet?) : LinearLayout(context, attrs) {
+    private val binding: ComposeAccountItemBinding
 
+    init {
+        val inflater = LayoutInflater.from(context)
+        binding = ComposeAccountItemBinding.inflate(inflater, this, true)
+    }
     fun bindView(name: String) {
-        accountName.text = name
+        binding.accountName.text = name
     }
 
     fun getText(): String {
-        return accountName.text.toString()
+        return binding.accountName.text.toString()
     }
 
 }

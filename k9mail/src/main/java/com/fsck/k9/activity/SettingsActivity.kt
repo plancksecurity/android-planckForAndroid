@@ -27,6 +27,7 @@ import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.databinding.AccountsBinding
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.planck.PlanckImporterActivity
@@ -52,7 +53,6 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
@@ -71,6 +71,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
+    private lateinit var binding: AccountsBinding
     private var controller: MessagingController? = null
 
     /*
@@ -104,9 +105,9 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
      * @see .onRetainCustomNonConfigurationInstance
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
-    private var accountsList: NestedListView? = null
+    private lateinit var accountsList: NestedListView
     private lateinit var termsAndConditionsTextView: TextView
-    private var addAccountButton: View? = null
+    private lateinit var addAccountButton: View
 
     @Inject
     lateinit var permissionRequester: PermissionRequester
@@ -210,10 +211,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
         controller = MessagingController.getInstance(applicationContext)
 
-        bindViews(R.layout.accounts)
-        accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
-        termsAndConditionsTextView = findViewById<TextView>(R.id.terms_and_conditions)
-        addAccountButton = findViewById(R.id.add_account_container)
+        binding = AccountsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        accountsList = binding.accountsList
+        termsAndConditionsTextView = binding.termsAndConditions
+        addAccountButton = binding.addAccountContainer
 
         termsAndConditionsTextView.text = HtmlCompat.fromHtml(
             "<a href=\"#\">Terms and Conditions</a>",
@@ -308,11 +310,11 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun setupAddAccountButton() {
-        addAccountButton?.setOnClickListener { onAddNewAccount() }
+        addAccountButton.setOnClickListener { onAddNewAccount() }
     }
 
     private fun displayAddAccountButton(displayButton: Boolean) {
-        addAccountButton?.isVisible = displayButton
+        addAccountButton.isVisible = displayButton
     }
 
     private fun initializeActionBar() {
@@ -449,7 +451,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
                     onEditAccount(account as Account)
                 }
         )
-        accountsList?.adapter = adapter
+        accountsList.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
 
@@ -656,7 +658,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
         if (menuInfo != null) {
-            selectedContextAccount = accountsList!!.getItemAtPosition(menuInfo.position) as BaseAccount
+            selectedContextAccount = accountsList.getItemAtPosition(menuInfo.position) as BaseAccount
         }
         if (selectedContextAccount is Account) {
             val realAccount = selectedContextAccount as Account?
@@ -709,15 +711,15 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
 
         uiScope.launch {
             // Show loading
-            loading?.visibility = View.VISIBLE
-            accounts_list?.alpha = 0.2f
+            binding.loading.visibility = View.VISIBLE
+            accountsList.alpha = 0.2f
             //Move account
             moveAccount(account, up)
             refresh()
 
             //Hide loading
-            loading?.visibility = View.GONE
-            accounts_list?.alpha = 1f
+            binding.loading.visibility = View.GONE
+            accountsList.alpha = 1f
 
         }
     }

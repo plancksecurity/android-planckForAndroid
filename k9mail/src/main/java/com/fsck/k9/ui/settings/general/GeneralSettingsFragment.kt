@@ -28,7 +28,6 @@ import com.fsck.k9.ui.withArguments
 import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.preference_loading_widget.loading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,6 +42,7 @@ import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
+import security.planck.ui.preference.LoadingPreference
 import security.planck.ui.support.export.ExportPlanckSupportDataActivity
 import javax.inject.Inject
 
@@ -246,7 +246,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeGlobalpEpKeyReset() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
-            widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context,
                     ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
@@ -329,7 +328,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun doPlanckKeyReset() {
         disableKeyResetClickListener()
-        loading?.visibility = View.VISIBLE
+        val preference = findPreference<LoadingPreference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)
+        preference?.loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -342,7 +342,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             }
             initializeGlobalpEpKeyReset()
             updateLeaveDeviceGroupPreferenceVisibility()
-            loading?.visibility = View.GONE
+            preference?.loading?.visibility = View.GONE
         }
     }
 

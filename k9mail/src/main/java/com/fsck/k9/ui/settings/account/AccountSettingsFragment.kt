@@ -29,7 +29,6 @@ import com.takisoft.preferencex.AutoSummaryEditTextPreference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.exceptions.pEpException
-import kotlinx.android.synthetic.main.preference_loading_widget.loading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,6 +39,7 @@ import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.mdm.ManageableSetting
 import security.planck.mdm.RestrictionsViewModel
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import security.planck.ui.preference.LoadingPreference
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -218,7 +218,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeAccountpEpKeyReset(account: Account) {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
-            widgetLayoutResource = R.layout.preference_loading_widget
+            //widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context)
                         .setTitle(getString(R.string.pep_key_reset_own_id_warning_title, account.email))
@@ -342,7 +342,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset(account: Account) {
         disableKeyResetClickListener()
-        loading?.visibility = View.VISIBLE
+        val preference = findPreference<LoadingPreference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)
+        preference?.loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -360,7 +361,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 }
             }
             initializeAccountpEpKeyReset(account)
-            loading?.visibility = View.GONE
+            preference?.loading?.visibility = View.GONE
         }
     }
 

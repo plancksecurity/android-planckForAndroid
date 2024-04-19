@@ -1,14 +1,14 @@
 buildscript {
     ext {
         buildConfig = [
-                'compileSdk'           : 33,
-                'targetSdk'            : 33,
+                'compileSdk'           : 34,
+                'targetSdk'            : 34,
                 'minSdk'               : 30,
                 'versionCode'          : 530,
         ]
 
         versions = [
-                'kotlin'             : '1.6.21',
+                'kotlin'             : '1.8.0',
 
                 'rootbeer'           : '0.1.0',
                 'supportLibrary'     : '28.0.0',
@@ -46,7 +46,7 @@ buildscript {
                 'appIntro'           : '5.1.0',
                 'swipeLayout'        : '1.2.0',
                 'dexter'             : '6.0.1',
-                'workRuntime'        : '2.7.1',
+                'workRuntime'        : '2.9.0',
                 'crypto'             : '1.1.0-alpha03',
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',

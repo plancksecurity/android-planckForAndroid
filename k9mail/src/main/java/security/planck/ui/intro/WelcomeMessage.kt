@@ -15,17 +15,14 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.databinding.FragmentIntroFirstBinding
+import com.fsck.k9.databinding.FragmentIntroFourthBinding
 import com.fsck.k9.mail.Address
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.Rating
-import kotlinx.android.synthetic.main.fragment_intro_first.contactBadge
-import kotlinx.android.synthetic.main.fragment_intro_first.headerText
-import kotlinx.android.synthetic.main.fragment_intro_first.secondText
-import kotlinx.android.synthetic.main.fragment_intro_fourth.secureBadge
-import kotlinx.android.synthetic.main.fragment_intro_fourth.secureTrustedBadge
 import security.planck.ui.PlanckUIUtils
 import security.planck.ui.permissions.PermissionsActivity
 import javax.inject.Inject
@@ -112,12 +109,16 @@ class WelcomeMessage : AppIntro() {
 
 @AndroidEntryPoint
 class IntroFirstFragment : Fragment() {
+    private var _binding: FragmentIntroFirstBinding? = null
+    private val binding get() = _binding!!
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro_first, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentIntroFirstBinding.inflate(inflater, container, false)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -128,14 +129,19 @@ class IntroFirstFragment : Fragment() {
 
     private fun startTexts() {
         val primaryColorARGB = PlanckUIUtils.getColorAsString(requireContext(), R.color.colorPrimary)
-        headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     private fun startImage() {
         val address = Address("A")
-        contactBadge.setPlanckRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(contactBadge, address)
+        binding.contactBadge.setPlanckRating(Rating.pEpRatingReliable, true)
+        contactsPictureLoader.setContactPicture(binding.contactBadge, address)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }
 
@@ -157,12 +163,16 @@ class IntroThirdFragment : Fragment() {
 
 @AndroidEntryPoint
 class IntroFourthFragment : Fragment() {
+    private var _binding: FragmentIntroFourthBinding? = null
+    private val binding get() = _binding!!
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentIntroFourthBinding.inflate(inflater, container, false)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -172,11 +182,16 @@ class IntroFourthFragment : Fragment() {
 
     private fun startImage() {
         var address = Address("A")
-        secureBadge.setPlanckRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(secureBadge, address)
+        binding.secureBadge.setPlanckRating(Rating.pEpRatingReliable, true)
+        contactsPictureLoader.setContactPicture(binding.secureBadge, address)
         address = Address("B")
-        secureTrustedBadge.setPlanckRating(Rating.pEpRatingTrusted, true)
-        contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
+        binding.secureTrustedBadge.setPlanckRating(Rating.pEpRatingTrusted, true)
+        contactsPictureLoader.setContactPicture(binding.secureTrustedBadge, address)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
 }

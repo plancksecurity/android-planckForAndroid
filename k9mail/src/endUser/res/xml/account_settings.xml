@@ -452,9 +452,9 @@
                     android:title="@string/pep_sync_enable_account"
                     android:defaultValue="true" />
 
-                <Preference
+                <security.planck.ui.preference.LoadingPreference
                     android:key="pep_key_reset_account"
-                    android:title="@string/reset" />
+                    android:title="@string/reset"/>
 
             </PreferenceCategory>
         </PreferenceCategory>

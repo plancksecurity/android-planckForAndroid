@@ -19,7 +19,7 @@ buildscript {
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.google.dagger.hilt.android'
 
@@ -447,16 +447,6 @@ private static void defineOAuthConfigs(variant) {
             break
     }
 }
-
-androidExtensions {
-    experimental = true
-}
-
-/*kotlin {
-    experimental {
-        coroutines "enable"
-    }
-}*/
 
 afterEvaluate {
     if (hasDemoProperties()) {
