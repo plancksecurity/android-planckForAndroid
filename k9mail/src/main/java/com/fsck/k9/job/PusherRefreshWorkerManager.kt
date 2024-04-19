@@ -41,7 +41,7 @@ class PusherRefreshWorkerManager(
             val uniqueWorkName = createUniqueWorkName(account.uuid)
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 pusherRefreshRequest
             )
         }
