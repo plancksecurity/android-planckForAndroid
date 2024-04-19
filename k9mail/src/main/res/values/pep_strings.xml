@@ -471,5 +471,6 @@
     <string name="planck_invite_title">Invitation to Planck</string>
     <string name="planck_invite_text"><![CDATA[You have been invited to use <a href="https://planck.security/get-android">Planck</a>. You can reply to this message from the <a href="https://planck.security/get-android">Planck</a> mail client to accept the invitation and start your secure communication.]]></string>
     <string name="invitation_sent_and_draft_saved">Invite sent and message saved as draft.</string>
+    <string name="account_settings_signature_summary">Use a signature for new mails.</string>
 
 </resources>

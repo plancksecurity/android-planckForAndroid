@@ -37,6 +37,7 @@ class AccountSettingsDataStore(
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
             "pep_disable_privacy_protection" -> account.isPlanckPrivacyProtected()
             "pep_enable_sync_account" -> account.isPlanckSyncEnabled
+            "composition_use_signature" -> account.signatureUse
             else -> defValue
         }
     }
@@ -67,6 +68,7 @@ class AccountSettingsDataStore(
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
             "pep_disable_privacy_protection" -> account.setPlanckPrivacyProtection(value)
             "pep_enable_sync_account" -> setSyncEnabled(value)
+            "composition_use_signature" -> account.signatureUse = value
             else -> return
         }
 
@@ -139,6 +141,7 @@ class AccountSettingsDataStore(
             "account_remote_search_num_results" -> account.remoteSearchNumResults.toString()
             "local_storage_provider" -> account.localStorageProviderId
             "account_ringtone" -> account.notificationSetting.ringtone
+            "composition_signature" -> account.signature
             else -> defValue
         }
     }
@@ -198,6 +201,7 @@ class AccountSettingsDataStore(
                 isRingEnabled = true
                 ringtone = value
             }
+            "composition_signature" -> account.signature = value
             else -> return
         }
 
