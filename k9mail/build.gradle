@@ -285,7 +285,8 @@ android {
     variantFilter { variant ->
         def names = variant.getFlavors()*.name
         def type = variant.getBuildType().name
-        if ((names.contains('dev') && type == 'release') || (names.contains('demo') && type != 'release')) {
+        // disallow debug builds for play flavor, as it is same as enterprise flavor. Just to avoid duplication.
+        if ((names.contains('dev') && type == 'release') || ((names.contains('play') || names.contains('demo')) && type != 'release')) {
             variant.setIgnore(true)
         }
     }
