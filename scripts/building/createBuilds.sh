@@ -113,7 +113,6 @@ enableDev
 ./gradlew assemble
 ./gradlew bundle
 
-rm -rf k9mail/build/outputs/apk/dev/release
 rm k9mail/build/outputs/apk/dev/debug/*v7a*
 rm k9mail/build/outputs/apk/dev/debug/*x86*
 mv k9mail/build/outputs/apk/dev k9mail/build/"$VERSION"/prod/only\ dev/
@@ -121,6 +120,7 @@ rm k9mail/build/outputs/apk/enterprise/debug/*v7a*
 rm k9mail/build/outputs/apk/enterprise/debug/*x86*
 rm k9mail/build/outputs/apk/enterprise/release/*v7a*
 rm k9mail/build/outputs/apk/enterprise/release/*x86*
+rm -rf k9mail/build/outputs/apk/play
 mv k9mail/build/outputs/apk k9mail/build/"$VERSION"/prod/
 rm -rf k9mail/build/outputs/bundle/dev*
 mv k9mail/build/outputs/bundle k9mail/build/"$VERSION"/prod/
