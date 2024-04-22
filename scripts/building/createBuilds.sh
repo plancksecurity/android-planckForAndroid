@@ -123,6 +123,7 @@ rm k9mail/build/outputs/apk/enterprise/release/*x86*
 rm -rf k9mail/build/outputs/apk/play
 mv k9mail/build/outputs/apk k9mail/build/"$VERSION"/prod/
 rm -rf k9mail/build/outputs/bundle/dev*
+rm -rf k9mail/build/outputs/bundle/enterprise*
 mv k9mail/build/outputs/bundle k9mail/build/"$VERSION"/prod/
 
 # SECUVERA
