@@ -298,11 +298,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun startOnBoarding() {
-        if (BuildConfig.IS_ENTERPRISE) {
-            startOnBoarding(this)
-        } else {
-            startWelcomeMessage()
-        }
+        startOnBoarding(this)
     }
 
     override fun search(query: String) {

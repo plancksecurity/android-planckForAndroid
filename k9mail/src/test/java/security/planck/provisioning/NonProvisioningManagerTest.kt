@@ -61,7 +61,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `startProvisioning() does not provision app in endUser variant`() {
+    fun `startProvisioning() does not provision app in dev variant`() {
         manager.startProvisioning()
 
 

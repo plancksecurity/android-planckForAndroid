@@ -7,6 +7,6 @@ task cucumberTest() {
     }
 }
 
-task connectedCheckAll(dependsOn: 'connectedEnterprisePlayStoreDebugAndroidTest')
+task connectedCheckAll(dependsOn: 'connectedEnterpriseDebugAndroidTest')
 connectedCheckAll.finalizedBy cucumberTest
 cucumberTest.dependsOn(installTestDebugApp)

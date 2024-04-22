@@ -8,9 +8,9 @@ tasks.register('generateScreenshots') {
     }
 }
 
-task installDebugApp(dependsOn: 'installEnterprisePlayStoreDebug')
-task installTestDebugApp(dependsOn: 'installEnterprisePlayStoreDebugAndroidTest')
-task uninstallTestDebugApp(dependsOn: 'uninstallEnterprisePlayStoreDebugAndroidTest')
+task installDebugApp(dependsOn: 'installEnterpriseDebug')
+task installTestDebugApp(dependsOn: 'installEnterpriseDebugAndroidTest')
+task uninstallTestDebugApp(dependsOn: 'uninstallEnterpriseDebugAndroidTest')
 generateScreenshots.dependsOn(installTestDebugApp)
 installTestDebugApp.dependsOn(installDebugApp)
 installDebugApp.dependsOn(uninstallTestDebugApp)

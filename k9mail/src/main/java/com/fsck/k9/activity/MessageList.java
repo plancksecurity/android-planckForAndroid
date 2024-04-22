@@ -1263,9 +1263,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         flaggedCheckbox = menu.findItem(R.id.flag);
         initializeResetPartnerKeysItem(menu);
 
-        menu.findItem(R.id.tutorial).setVisible(
-                !BuildConfig.IS_ENTERPRISE
-        );
+        menu.findItem(R.id.tutorial).setVisible(false);
         menu.findItem(R.id.group_test).setVisible(BuildConfig.DEBUG);
         return true;
     }

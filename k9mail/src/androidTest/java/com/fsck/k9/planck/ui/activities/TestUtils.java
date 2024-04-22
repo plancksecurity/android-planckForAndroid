@@ -2293,7 +2293,6 @@ public class TestUtils {
             if (R.drawable.planck_status_green != statusColor
                     && R.drawable.planck_status_red != statusColor
                     && R.drawable.pep_status_yellow != statusColor
-                    && BuildConfig.IS_ENTERPRISE
                     && R.drawable.enterprise_status_unsecure != statusColor
             ) {
                 fail("Wrong Status color");
@@ -2348,9 +2347,7 @@ public class TestUtils {
         if (rating == null) {
             color = -10;
         } else if (PlanckUtils.isRatingUnsecure(rating)) {
-            color = BuildConfig.IS_ENTERPRISE
-                    ? R.drawable.enterprise_status_unsecure
-                    : -10;
+            color = R.drawable.enterprise_status_unsecure;
         } else if (rating.value == Rating.pEpRatingMistrust.value) {
             color = R.drawable.planck_status_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {

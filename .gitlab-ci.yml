@@ -111,7 +111,7 @@ build:
       echo -e """ext {\n
         demoAppIdSuffix = '${DEMO_APP_ID_SUFFIX}'\n
         demoAppVersionNameSuffix = '${DEMO_APP_VERSION_NAME_SUFFIX}'\n
-        enableEndUser = ${ENABLE_END_USER}\n
+        enableDev = ${ENABLE_DEV}\n
         appId = '${APP_ID}'\n
         demoKeyAlias = 'demo'\n
         demoKeyPassword = '${DEMO_KEY_PASSWORD}'\n
@@ -127,18 +127,18 @@ build:
     - > 
       if [[ "$BUILD_FORMAT" == "apk" ]]; then
         if [[ "$DEBUG_BUILD" == "true" ]]; then
-          ./gradlew --build-cache assembleEnterprisePlayStoreDebug
+          ./gradlew --build-cache assembleEnterpriseDebug
         else
-          ./gradlew --build-cache assembleDemoPlayStoreRelease
+          ./gradlew --build-cache assembleDemoRelease
         fi
       else
         if [[ "$DEBUG_BUILD" == "true" ]]; then
-          ./gradlew --build-cache bundleEnterprisePlayStoreDebug
+          ./gradlew --build-cache bundleEnterpriseDebug
         else
-          ./gradlew --build-cache bundleDemoPlayStoreRelease
+          ./gradlew --build-cache bundleDemoRelease
         fi
       fi
-    - ./gradlew --build-cache assembleDemoPlayStoreRelease
+    - ./gradlew --build-cache assembleDemoRelease
     - mkdir -p packages
     - mv k9mail/build/outputs/apk/* packages/
     - du -h packages

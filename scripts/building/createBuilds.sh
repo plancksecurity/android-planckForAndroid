@@ -45,30 +45,30 @@ function disableGeneseAppId() {
     $SED -r -i "s@(//)*appId = 'security.planck.genese'@//appId = 'security.planck.genese'@" gradle/plugins/customConfig.gradle
 }
 
-function disableEndUser() {
-    $SED -i "s@enableEndUser = true@enableEndUser = false@" gradle/plugins/customConfig.gradle
+function disableDev() {
+    $SED -i "s@enableDev = true@enableDev = false@" gradle/plugins/customConfig.gradle
 }
 
 function enableSecuveraAppId() {
     disableGeneseAppId
-    disableEndUser
+    disableDev
     $SED -r -i "s@(//)+appId = 'security.planck.secuvera'@appId = 'security.planck.secuvera'@" gradle/plugins/customConfig.gradle
 }
 
 function enableGeneseAppId() {
     disableSecuveraAppId
-    disableEndUser
+    disableDev
     $SED -r -i "s@(//)+appId = 'security.planck.genese'@appId = 'security.planck.genese'@" gradle/plugins/customConfig.gradle
 }
 
-function enableEndUser() {
-    $SED -i "s@enableEndUser = false@enableEndUser = true@" gradle/plugins/customConfig.gradle
+function enableDev() {
+    $SED -i "s@enableDev = false@enableDev = true@" gradle/plugins/customConfig.gradle
 }
 
 function addCustomConfig() {
     echo """
 ext {
-    enableEndUser = false
+    enableDev = false
 // secuvera SETTINGS
     //appId = 'security.planck.secuvera'
 // genese SETTINGS
@@ -109,34 +109,34 @@ mkdir k9mail/build/"$VERSION"/Customer/genese
 
 # GENERAL RELEASE
 rm -rf k9mail/build/outputs
-enableEndUser
-./gradlew assemblePlayStore
-./gradlew bundlePlayStore
+enableDev
+./gradlew assemble
+./gradlew bundle
 
-rm -rf k9mail/build/outputs/apk/endUserPlayStore/release
-rm k9mail/build/outputs/apk/endUserPlayStore/debug/*v7a*
-rm k9mail/build/outputs/apk/endUserPlayStore/debug/*x86*
-mv k9mail/build/outputs/apk/endUserPlayStore k9mail/build/"$VERSION"/prod/only\ dev/
-rm k9mail/build/outputs/apk/enterprisePlayStore/debug/*v7a*
-rm k9mail/build/outputs/apk/enterprisePlayStore/debug/*x86*
-rm k9mail/build/outputs/apk/enterprisePlayStore/release/*v7a*
-rm k9mail/build/outputs/apk/enterprisePlayStore/release/*x86*
+rm -rf k9mail/build/outputs/apk/dev/release
+rm k9mail/build/outputs/apk/dev/debug/*v7a*
+rm k9mail/build/outputs/apk/dev/debug/*x86*
+mv k9mail/build/outputs/apk/dev k9mail/build/"$VERSION"/prod/only\ dev/
+rm k9mail/build/outputs/apk/enterprise/debug/*v7a*
+rm k9mail/build/outputs/apk/enterprise/debug/*x86*
+rm k9mail/build/outputs/apk/enterprise/release/*v7a*
+rm k9mail/build/outputs/apk/enterprise/release/*x86*
 mv k9mail/build/outputs/apk k9mail/build/"$VERSION"/prod/
-rm -rf k9mail/build/outputs/bundle/endUserPlayStore*
+rm -rf k9mail/build/outputs/bundle/dev*
 mv k9mail/build/outputs/bundle k9mail/build/"$VERSION"/prod/
 
 # SECUVERA
 rm -rf k9mail/build/outputs
 enableSecuveraAppId
-./gradlew assembleEnterprisePlayStoreRelease
-rm k9mail/build/outputs/apk/enterprisePlayStore/release/*v7a*
-rm k9mail/build/outputs/apk/enterprisePlayStore/release/*x86*
-mv k9mail/build/outputs/apk/enterprisePlayStore/release/* k9mail/build/"$VERSION"/Customer/secuvera
+./gradlew assembleEnterpriseRelease
+rm k9mail/build/outputs/apk/enterprise/release/*v7a*
+rm k9mail/build/outputs/apk/enterprise/release/*x86*
+mv k9mail/build/outputs/apk/enterprise/release/* k9mail/build/"$VERSION"/Customer/secuvera
 #GENESE
 rm -rf k9mail/build/outputs
 enableGeneseAppId
-./gradlew assembleEnterprisePlayStoreRelease
-rm k9mail/build/outputs/apk/enterprisePlayStore/release/*v7a*
-rm k9mail/build/outputs/apk/enterprisePlayStore/release/*x86*
-mv k9mail/build/outputs/apk/enterprisePlayStore/release/* k9mail/build/"$VERSION"/Customer/genese
+./gradlew assembleEnterpriseRelease
+rm k9mail/build/outputs/apk/enterprise/release/*v7a*
+rm k9mail/build/outputs/apk/enterprise/release/*x86*
+mv k9mail/build/outputs/apk/enterprise/release/* k9mail/build/"$VERSION"/Customer/genese
 disableGeneseAppId
