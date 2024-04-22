@@ -139,7 +139,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public boolean isRunningOnWorkProfile() {
-        if (!BuildConfig.IS_ENTERPRISE) return false;
+        if (!BuildConfig.IS_OFFICIAL) return false;
         if (runningOnWorkProfile == null) {
             runningOnWorkProfile = new UserProfile().isRunningOnWorkProfile(this);
         }

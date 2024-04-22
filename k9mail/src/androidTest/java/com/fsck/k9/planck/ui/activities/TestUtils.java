@@ -642,7 +642,7 @@ public class TestUtils {
                 default:
                     break;
             }
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 totalAccounts = 1;
             }
         }
@@ -1087,7 +1087,7 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
                 }
-                if (BuildConfig.IS_ENTERPRISE) {
+                if (BuildConfig.IS_OFFICIAL) {
                     automaticAccount();
                 } else {
                     if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
@@ -2537,7 +2537,7 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
                     fail("Status is not shown");
                 }
@@ -2561,7 +2561,7 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
                     fail("Status is not shown");
                 }

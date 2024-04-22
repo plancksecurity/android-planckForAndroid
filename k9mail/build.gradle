@@ -250,14 +250,14 @@ android {
     productFlavors {
 
         enterprise {
-            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "boolean", "IS_OFFICIAL", "true"
             versionNameSuffix ".enterprise"
             dimension "type"
             applicationIdSuffix ".enterprise"
         }
 
         play {
-            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "boolean", "IS_OFFICIAL", "true"
             versionNameSuffix ".play"
             dimension "type"
             applicationIdSuffix ".play"
@@ -265,14 +265,14 @@ android {
 
         if (isDevFlavorEnabled()) {
             dev {
-                buildConfigField "boolean", "IS_ENTERPRISE", "false"
+                buildConfigField "boolean", "IS_OFFICIAL", "false"
                 dimension "type"
             }
         }
 
         if (hasDemoProperties()) {
             demo {
-                buildConfigField "boolean", "IS_ENTERPRISE", "true"
+                buildConfigField "boolean", "IS_OFFICIAL", "true"
                 versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
                 dimension "type"
                 applicationIdSuffix ".enterprise" + demoAppIdSuffix

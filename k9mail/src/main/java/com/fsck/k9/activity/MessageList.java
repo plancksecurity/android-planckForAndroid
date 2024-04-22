@@ -1420,7 +1420,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
 
             menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
-            menu.findItem(R.id.show_folder_list).setVisible(!BuildConfig.IS_ENTERPRISE);
+            menu.findItem(R.id.show_folder_list).setVisible(!BuildConfig.IS_OFFICIAL);
 
             drawerLayoutView.setDrawerEnabled(!isThreadDisplayed);
 

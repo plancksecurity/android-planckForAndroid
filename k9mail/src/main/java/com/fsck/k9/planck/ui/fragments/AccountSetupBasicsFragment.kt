@@ -77,7 +77,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         if (k9.isRunningOnWorkProfile) {
             updateUiFromProvisioningSettings()
         }
-        setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE)
+        setHasOptionsMenu(!BuildConfig.IS_OFFICIAL)
         return binding.root
     }
 
@@ -169,7 +169,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     private fun updateViewVisibility(usingCertificates: Boolean) {
         clientCertificateSpinner.isVisible = usingCertificates
         if (usingCertificates) {
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 passwordLayout.visibility = View.GONE
             }
         }

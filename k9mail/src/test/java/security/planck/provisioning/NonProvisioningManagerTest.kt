@@ -47,7 +47,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
 
     @Before
     fun setUp() {
-        assumeFalse(BuildConfig.IS_ENTERPRISE)
+        assumeFalse(BuildConfig.IS_OFFICIAL)
         mockkObject(PlanckProviderImplKotlin)
 
         manager.addListener(listener)

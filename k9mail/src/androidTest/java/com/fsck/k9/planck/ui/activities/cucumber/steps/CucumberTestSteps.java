@@ -194,7 +194,7 @@ public class CucumberTestSteps {
                         waitForIdle();
                         onView(withText(R.string.discard_action)).perform(click());
                     }
-                    if (BuildConfig.IS_ENTERPRISE) { // FIXME: 22/4/24 @juan please remove condition, make general
+                    if (BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan please remove condition, make general
                         testUtils.pressBack();
                     }
                     waitForIdle();
@@ -212,7 +212,7 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        /*if (BuildConfig.IS_ENTERPRISE) { // FIXME: 22/4/24 @juan please remove condition, make general
+        /*if (BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan please remove condition, make general
             String account = testUtils.getAccountAddress(0);
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
                 account = testUtils.getSyncAccount(0);
@@ -1662,7 +1662,7 @@ public class CucumberTestSteps {
         if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
             return;
         }
-        if (BuildConfig.IS_ENTERPRISE) { // FIXME: 22/4/24 @juan please remove condition, make general
+        if (BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan please remove condition, make general
             switch (status) {
                 case "pEpRatingUnencrypted":
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
@@ -2523,7 +2523,7 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        if (!BuildConfig.IS_ENTERPRISE) { // FIXME: 22/4/24 @juan always enterprise, please remove
+        if (!BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan always enterprise, please remove
             testUtils.selectAccount(folder, accountToStart);
         }
     }
@@ -2928,7 +2928,7 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_OFFICIAL) {
             while (!exists(onView(withId(R.id.available_accounts_title)))) {
                 testUtils.pressBack();
                 waitForIdle();
