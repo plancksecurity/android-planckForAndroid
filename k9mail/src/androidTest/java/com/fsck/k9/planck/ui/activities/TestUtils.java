@@ -85,8 +85,10 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -865,6 +867,29 @@ public class TestUtils {
                 break;
         }
         compareMessageBodyLongText(cucumberBody);
+    }
+
+    public void compareMessageSubjectWithText(String cucumberSubject) {
+        waitForIdle();
+        switch (cucumberSubject) {
+            case "empty":
+                cucumberSubject = "";
+                break;
+            case "longText":
+            case "longSubject":
+                cucumberSubject = longText();
+                break;
+            case "longWord":
+                cucumberSubject = longWord();
+                break;
+            case "specialCharacters":
+                cucumberSubject = specialCharacters();
+                break;
+        }
+        String subject = device.findObject(By.res(APP_ID, "subject")).getText();
+        if (!cucumberSubject.equals(subject)) {
+            fail("Expected: " + cucumberSubject + "/ found: " + subject);
+        }
     }
 
     public void clearAllRecentApps () {
@@ -2933,10 +2958,9 @@ public class TestUtils {
         while (true) {
             try {
                 waitForIdle();
-                onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-                waitForIdle();
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
                 waitForIdle();
+                return;
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
                 return;
@@ -3578,7 +3602,9 @@ public class TestUtils {
         File newFile = null;
         while (true) {
             try {
-                downloadJSon();
+                if (!downloadJSon()) {
+                    return;
+                }
                 File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
                 File[] listOfFiles = directory.listFiles();
                 assert listOfFiles != null;
@@ -3592,23 +3618,28 @@ public class TestUtils {
         }
     }
 
-    private void downloadJSon() {
-        waitForIdle();
-        waitUntilIdle();
-        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        for (int i=0; i<8; i++){
+    private boolean downloadJSon() {
+        int n = 0;
+        for (int i=0; i<15; i++){
             waitForIdle();
             onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
             swipeUpScreen();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         json = null;
-        waitForIdle();
-        waitUntilIdle();
-        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
+                if (n == 10) {
+                    return false;
+                } else {
+                    n++;
+                }
                 try {
                     if (object.getText().contains("results.json")) {
                         waitForIdle();
@@ -3618,24 +3649,11 @@ public class TestUtils {
                                 downloadAttachedFile("results.json");
                                 waitForIdle();
                                 json = getJSON();
+                                return true;
                             } catch (Exception ex) {
-                                swipeUpScreen();
-                                boolean jsonExists = false;
-                                try {
-                                    waitForIdle();
-                                    if (object.getText().contains("results.json")) {
-                                        jsonExists = true;
-                                    }
-                                } catch (Exception json) {
-                                    Timber.i("Cannot find json file on the screen: " + json);
-                                }
-                                if (!jsonExists) {
-                                    waitForIdle();
-                                    return;
-                                }
+                                Timber.i("Cannot find json");
                             }
                         }
-                        return;
                     } else {
                         swipeUpScreen();
                     }
@@ -3654,12 +3672,15 @@ public class TestUtils {
         try {
             File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
             String js = null;
-            waitForIdle();
-            File[] listOfFiles = directory.listFiles();
-            assert listOfFiles != null;
-            if (listOfFiles.length > 0) {
-               js  = readJsonFile(listOfFiles[0].getName());
+            while (js == null) {
+                waitForIdle();
+                File[] listOfFiles = directory.listFiles();
+                assert listOfFiles != null;
+                if (listOfFiles.length > 0) {
+                    js = readJsonFile(listOfFiles[0].getName());
+                }
             }
+            Timber.i("Estoy en fin While");
             JSONObject jsonObject = new JSONObject(js);
             return jsonObject;
         } catch (JSONException e) {
@@ -3673,11 +3694,8 @@ public class TestUtils {
             try {
                 if (object.getText().contains(fileName)) {
                     waitForIdle();
-                    onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-                    waitForIdle();
                     object.getParent().getChildren().get(0).click();
-                    waitForIdle();
-                    onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+                    Thread.sleep(2000);
                     return;
                 }
             } catch (Exception ex){
@@ -5104,8 +5122,11 @@ public class TestUtils {
             case "rating":
             case "rating_string":
                 try {
+                    Timber.i("Estoy en  rating 1");
                     if (json == null) {
+                        Timber.i("Estoy en rating 2");
                         json = getJSON();
+                        Timber.i("Estoy en rating 3");
                     }
                     rating = json.getJSONObject("decryption_results").get(object).toString();
                 } catch (JSONException e) {
@@ -5115,8 +5136,10 @@ public class TestUtils {
             case "messageSubject":
             case "messageBody":
                 try {
+                    Timber.i("Estoy en 1: " + json);
                     while (json == null) {
                         String js = readJsonFile("results.json");
+                        Timber.i("Estoy en 2");
                         if (js.equals("no json file")) {
                             return;
                         }
@@ -5173,10 +5196,23 @@ public class TestUtils {
 
     private static String readJsonFile(String fileName) {
         File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
-        swipeUpScreen();
-        downloadAttachedFile(fileName);
-        waitForIdle();
-        File[] listOfFiles = directory.listFiles();
+        File[] listOfFiles = null;
+        while (listOfFiles == null || Objects.requireNonNull(directory.listFiles()).length == 0) {
+            swipeUpScreen();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            downloadAttachedFile(fileName);
+            Timber.i("Estoy en read1: " + directory.listFiles().length);
+            waitForIdle();
+            listOfFiles = directory.listFiles();
+        }
+        if (listOfFiles != null) {
+            Timber.i("Estoy en read Pass");
+        }
+        Timber.i("Estoy en read2");
         File newFile = new File(directory, listOfFiles[0].getName());
         if(!newFile.exists())
         {
@@ -5188,13 +5224,16 @@ public class TestUtils {
             InputStreamReader inputStreamReader = new InputStreamReader(fin);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String receiveString;
+            Timber.i("Estoy en 3");
             while ((receiveString = bufferedReader.readLine()) != null) {
                 jsonText.append(receiveString);
             }
+            Timber.i("Estoy en 4");
             fin.close();
         } catch (Exception e) {
             Timber.i("Error reading config file, trying again");
         }
+        Timber.i("Estoy en 5");
         return jsonText.toString();
     }
 
