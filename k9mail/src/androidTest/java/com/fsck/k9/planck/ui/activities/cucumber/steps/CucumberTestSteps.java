@@ -634,6 +634,11 @@ public class CucumberTestSteps {
                     }
                 }
                 if (json == null || json.equals("")) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     BySelector selector = By.clazz("android.widget.MessageWebView");
                     for (UiObject2 object : device.findObjects(selector)) {
                         if (!object.getText().contains(stringToCompare)) {
@@ -653,6 +658,11 @@ public class CucumberTestSteps {
     public void I_compare_body(String cucumberBody) {
         timeRequiredForThisMethod(10);
         testUtils.compareMessageBodyWithText(cucumberBody);
+    }
+
+    @When("^I compare messageSubject with (\\S+)")
+    public void I_compare_subject(String cucumberSubject) {
+        testUtils.compareMessageSubjectWithText(cucumberSubject);
     }
 
     @When("^I check that the Calendar is correct and body text is (\\S+)")
@@ -1966,14 +1976,15 @@ public class CucumberTestSteps {
         }
         waitForIdle();
         testUtils.selectFromMenu(testUtils.stringToID(action));
-        while (!testUtils.textExistsOnScreen(resources.getString(testUtils.stringToID(folder)))) {
+        /*while (!testUtils.textExistsOnScreen(resources.getString(testUtils.stringToID(folder)))) {
             waitForIdle();
             swipeDownList();
             waitForIdle();
-        }
+        }*/
         waitForIdle();
         testUtils.selectFromScreen(testUtils.stringToID(folder));
         waitForIdle();
+        Timber.i("Estoy en FIN de copy");
     }
 
     @And("^I disable protection from privacy status menu$")
