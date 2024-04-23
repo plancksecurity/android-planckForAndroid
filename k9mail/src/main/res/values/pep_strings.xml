@@ -367,10 +367,10 @@
     <string name="account_setup_oauth_description">To use this email account with planck, you need to sign in and grant the app access to your emails.</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
     <string name="account_setup_oauth_sign_in">Sign in</string>
-    <string name="account_setup_choose_auth_sign_in_with_microsoft">Sign in with Microsoft</string>
-    <string name="account_setup_choose_auth_sign_in_with_password">Sign in with password</string>
+    <string name="account_setup_choose_auth_sign_in_with_microsoft">Continue with Microsoft</string>
+    <string name="account_setup_choose_auth_sign_in_with_password">Continue with Other</string>
+    <string name="account_setup_oauth_sign_in_with_google">Continue with Google</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
-    <string name="account_setup_oauth_sign_in_with_google">Sign in with Google</string>
     <string name="account_setup_failed_dlg_oauth_flow_canceled">Authorization canceled</string>
     <string name="account_setup_failed_dlg_oauth_flow_failed">Authorization failed with the following error: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
@@ -383,7 +383,7 @@
     <string name="mdm_settings_feedback_share_action" translatable="false">Share</string>
     <string name="account_setup_failed_dlg_could_not_discover_mail_settings">Could not discover mail settings. Please contact your IT support to get the custom mail settings needed for this account.</string>
     <string name="account_select_auth_welcome_to">Welcome to</string>
-    <string name="account_select_auth_please_select_the_option_to_sign_in">Please select the option to sign in</string>
+    <string name="account_select_auth_please_select_the_option_to_sign_in">Select your email account</string>
     <string name="error_happened_restart_app">An error happened, please restart app.</string>
     <string name="needs_your_permission_to_work">NEEDS YOUR PERMISSION TO WORK</string>
     <string name="account_setup_failed_dlg_oauth_wrong_email_address">The email address %1$s used for login is not allowed by your IT admin. Please use the provided %2$s instead to use the app.</string>
