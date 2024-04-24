@@ -18,14 +18,14 @@
 * Command: `./gradlew customTest`. 
 * Applicable project properties:
   * `-PtestBuildType` (build type for tests, "release" or "debug". Default `debug`)
-  * `-Pflavor` (build variant or flavor. Default `enterprisePlayStore`)
+  * `-Pflavor` (build variant or flavor. Default `enterprise`)
   * `-Pwork` (whether to run tests on work profile. Default `false`)
   * `-PuseFakeManager` (whether to use FakeRestrictionsManager for the tests. Default `false`)
   * `-Pdevice` (which device to run tests on, when we have several devices connected, result of `adb devices`. Default `null`)
   * `-PtestType` (whether to run Cucumber, Screenshots or "plain Espresso" tests. Options are `normal`, `cucumber`, `screenshot`. Default `normal`)
   * `-Pverbose` (more verbose output. Default `false`)
 
-* Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" -PtestType="cucumber" -Pverbose=true`
+* Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprise" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" -PtestType="cucumber" -Pverbose=true`
 
 
 ## generate app screenshots 

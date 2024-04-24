@@ -7,12 +7,12 @@ task accountRemoveIgnore(type: Exec) {
 }
 
 task installApkAddAccount(type: Exec, dependsOn: 'uninstallAll') {
-    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
+    def command = ['../gradlew', 'installEnterpriseDebug']
     commandLine command
 }
 
 task installTestAddAccount(type: Exec, dependsOn: 'installApkAddAccount') {
-    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
+    def command = ['../gradlew', 'installEnterpriseDebugAndroidTest']
     commandLine command
 }
 

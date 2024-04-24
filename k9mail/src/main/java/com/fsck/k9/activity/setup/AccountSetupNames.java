@@ -92,7 +92,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
         pepSyncAccount = findViewById(R.id.pep_enable_sync_account);
-        pepSyncAccount.setVisibility(BuildConfig.IS_ENTERPRISE ? View.GONE : View.VISIBLE);
+        pepSyncAccount.setVisibility(BuildConfig.IS_OFFICIAL ? View.GONE : View.VISIBLE);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 

@@ -7,10 +7,10 @@ import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.children
 import com.fsck.k9.R
 import com.fsck.k9.planck.ui.tools.ThemeManager
-import kotlinx.android.synthetic.main.toolbar.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 class ToolBarCustomizer(private val activity: Activity) {
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
+
+    private val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
 
     fun setDefaultStatusBarColor() {
         setStatusBarColor(getColor(R.attr.statusbarDefaultColor))
@@ -37,7 +39,7 @@ class ToolBarCustomizer(private val activity: Activity) {
 
     private fun setToolbarColor(@ColorInt colorReference: Int) {
         uiScope.launch {
-            activity.toolbar?.setBackgroundColor(colorReference)
+            toolbar?.setBackgroundColor(colorReference)
         }
     }
 
@@ -46,11 +48,11 @@ class ToolBarCustomizer(private val activity: Activity) {
 
             val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
 
-            activity.toolbar?.children?.forEach { v ->
+            toolbar?.children?.forEach { v ->
                 if(v is ImageButton)
                     v.drawable.mutate().colorFilter = colorFilter
             }
-            activity.toolbar?.overflowIcon?.colorFilter = colorFilter
+            toolbar?.overflowIcon?.colorFilter = colorFilter
         }
     }
 

@@ -77,7 +77,7 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     }
 
     private fun setSecurityStatusColors(rating: Rating?) {
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_OFFICIAL) {
             setTextColor(rating)
         }
     }

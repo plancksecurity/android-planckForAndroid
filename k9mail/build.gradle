@@ -19,7 +19,7 @@ buildscript {
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.google.dagger.hilt.android'
 
@@ -225,7 +225,7 @@ android {
     }
 
     signingConfigs {
-        endUserRelease {
+        playRelease {
             if (project.hasProperty("keyAlias")) { keyAlias = project.keyAlias }
             if (project.hasProperty("keyPassword")) { keyPassword = project.keyPassword }
             if (project.hasProperty("storeFile")) { storeFile = file(project.storeFile) }
@@ -245,34 +245,34 @@ android {
         }
     }
 
-    flavorDimensions "type", "store"
+    flavorDimensions = ["type"]
 
     productFlavors {
 
         enterprise {
-            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "boolean", "IS_OFFICIAL", "true"
             versionNameSuffix ".enterprise"
             dimension "type"
             applicationIdSuffix ".enterprise"
         }
 
         play {
-            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "boolean", "IS_OFFICIAL", "true"
             versionNameSuffix ".play"
             dimension "type"
             applicationIdSuffix ".play"
         }
 
-        if (isEndUserFlavorEnabled()) {
-            endUser {
-                buildConfigField "boolean", "IS_ENTERPRISE", "false"
+        if (isDevFlavorEnabled()) {
+            dev {
+                buildConfigField "boolean", "IS_OFFICIAL", "false"
                 dimension "type"
             }
         }
 
         if (hasDemoProperties()) {
             demo {
-                buildConfigField "boolean", "IS_ENTERPRISE", "true"
+                buildConfigField "boolean", "IS_OFFICIAL", "true"
                 versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
                 dimension "type"
                 applicationIdSuffix ".enterprise" + demoAppIdSuffix
@@ -280,38 +280,23 @@ android {
             }
         }
 
-        playStore {
-            dimension "store"
-        }
-
-        fDroid {
-            dimension "store"
-        }
-
     }
 
     variantFilter { variant ->
         def names = variant.getFlavors()*.name
-        if ((names.contains('enterprise') || names.contains('play')) && names.contains('fDroid')) {
+        def type = variant.getBuildType().name
+        // disallow debug builds for play flavor, as it is same as enterprise flavor. Just to avoid duplication.
+        if ((names.contains('dev') && type == 'release') || ((names.contains('play') || names.contains('demo')) && type != 'release')) {
             variant.setIgnore(true)
-        }
-        if (hasDemoProperties()) {
-            def type = variant.getBuildType().name
-            if (names.contains('demo') && (names.contains('fDroid') || type != 'release')) {
-                variant.setIgnore(true)
-            }
         }
     }
 
     buildTypes {
         release {
-            if (project.hasProperty("storeFile")) {
-                if (isEndUserFlavorEnabled()) {
-                    productFlavors.endUser.signingConfig signingConfigs.endUserRelease
-                }
-                productFlavors.play.signingConfig signingConfigs.endUserRelease
+            if (project.hasProperty("storeFile")) { // play signing
+                productFlavors.play.signingConfig signingConfigs.playRelease
             }
-            if (project.hasProperty("enterpriseStoreFile")) {
+            if (project.hasProperty("enterpriseStoreFile")) { // enterprise signing
                 productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
             }
             if (hasDemoProperties()) {
@@ -419,23 +404,24 @@ private static void defineOAuthConfigs(variant) {
     mergedFlavor.manifestPlaceholders["oAuthAppId"] = oauthAppId
     //noinspection GroovyFallthrough
     switch (variant.name) {
-        case "enterprisePlayStoreRelease":
-        case "demoPlayStoreRelease":
+        case "enterpriseRelease":
+        case "demoRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-oojhqep2loqb8022s1kged0rf29uudhk.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"d84fd8f6-feea-460e-aef6-f9162a6d670d\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.enterprise/%2B3NsYzN%2Fk%2Fj11m2ClpTTuvKL2eY%3D\""
             break
-        case "enterprisePlayStoreDebug":
+        case "enterpriseDebug":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-qs9e78n1bkd9n872h8k2i506278grmpd.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"dedb9d38-8697-44a4-9bcc-8b8b35c5b3af\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.enterprise.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
             break
-        case "playPlayStoreRelease":
+        case "playRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-298svmr5klnl9dpdi655vjsn3d13miob.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"59a25209-d35b-48c9-8a76-fc71a37da409\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.play/Y8FGuyTMrOpTVHbC%2B%2BoQ8JbY09g%3D\""
             break
-        case "playPlayStoreDebug":
+        case "playDebug":
+        case "devDebug":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"509355171185-ckb8btb852h78k08jqsvlho1t8dmhv3o.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"fb1f8b8e-aba1-4395-9675-d796631eb80e\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.planck.play.debug/qpdLrCNt8%2F00V8s47FRpWhDdF9A%3D\""
@@ -447,16 +433,6 @@ private static void defineOAuthConfigs(variant) {
             break
     }
 }
-
-androidExtensions {
-    experimental = true
-}
-
-/*kotlin {
-    experimental {
-        coroutines "enable"
-    }
-}*/
 
 afterEvaluate {
     if (hasDemoProperties()) {
@@ -491,6 +467,6 @@ private boolean hasDemoProperties() {
             project.hasProperty("demoAppIdSuffix")
 }
 
-private boolean isEndUserFlavorEnabled() {
-    return project.findProperty("enableEndUser") ?: false
+private boolean isDevFlavorEnabled() {
+    return project.findProperty("enableDev") ?: false
 }

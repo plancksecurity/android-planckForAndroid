@@ -70,7 +70,7 @@
             android:summary="@string/pep_forward_warning_description"
             android:title="@string/pep_forward_warning" />
 
-        <Preference
+        <security.planck.ui.preference.LoadingPreference
             android:key="pep_key_reset"
             android:summary="@string/pep_key_reset_all_own_ids_summary"
             android:title="@string/reset" />

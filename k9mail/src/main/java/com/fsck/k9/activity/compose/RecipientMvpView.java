@@ -19,7 +19,6 @@ import com.fsck.k9.FontSizes;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
@@ -285,11 +284,6 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
                 break;
             }
         }
-    }
-
-    public void showCryptoDialog(CryptoMode currentCryptoMode) {
-        CryptoSettingsDialog dialog = CryptoSettingsDialog.newInstance(currentCryptoMode);
-        dialog.show(activity.getFragmentManager(), "crypto_settings");
     }
 
     public void launchUserInteractionPendingIntent(PendingIntent pendingIntent, int requestCode) {

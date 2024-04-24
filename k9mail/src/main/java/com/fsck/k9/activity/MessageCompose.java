@@ -56,7 +56,6 @@ import com.fsck.k9.activity.compose.AttachmentPresenter.WaitingAction;
 import com.fsck.k9.activity.compose.ComposeBanner;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
-import com.fsck.k9.activity.compose.CryptoSettingsDialog.OnCryptoModeChangedListener;
 import com.fsck.k9.activity.compose.IdentityAdapter;
 import com.fsck.k9.activity.compose.IdentityAdapter.IdentityContainer;
 import com.fsck.k9.activity.compose.PgpInlineDialog.OnOpenPgpInlineChangeListener;
@@ -139,7 +138,7 @@ import timber.log.Timber;
 @AndroidEntryPoint
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
 public class MessageCompose extends K9Activity implements OnClickListener,
-        CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
+        CancelListener, OnFocusChangeListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
         AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
@@ -595,14 +594,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (getToolbar() != null) {
             planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             planckSecurityStatusLayout.setOnClickListener(v -> onPlanckPrivacyStatus());
-            if (!BuildConfig.IS_ENTERPRISE) {
-                planckSecurityStatusLayout.setOnLongClickListener(view -> {
-                    PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
-                            view, recipientPresenter);
-                    statusMenu.show();
-                    return true;
-                });
-            }
         }
         toolBarCustomizer.setMessageToolbarColor();
         toolBarCustomizer.setMessageStatusBarColor();
@@ -1117,11 +1108,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onCryptoModeChanged(CryptoMode cryptoMode) {
-        recipientPresenter.onCryptoModeChanged(cryptoMode);
     }
 
     @Override
