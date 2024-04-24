@@ -538,7 +538,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
                 getActivity().finish();
             }
         } else {
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
             } else {
                 accountSetupNavigator.goForward(getParentFragmentManager(), mAccount);

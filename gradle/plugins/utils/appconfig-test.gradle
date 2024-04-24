@@ -9,12 +9,12 @@ task configRemoveIgnore(type: Exec) {
 }
 
 task installApkAppConfig(type: Exec, dependsOn: ['uninstallAll', 'configRemoveIgnore']) {
-    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
+    def command = ['../gradlew', 'installEnterpriseDebug']
     commandLine command
 }
 
 task installTestAppConfig(type: Exec, dependsOn: 'installApkAppConfig') {
-    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
+    def command = ['../gradlew', 'installEnterpriseDebugAndroidTest']
     commandLine command
 }
 

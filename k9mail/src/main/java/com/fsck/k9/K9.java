@@ -139,7 +139,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public boolean isRunningOnWorkProfile() {
-        if (!BuildConfig.IS_ENTERPRISE) return false;
+        if (!BuildConfig.IS_OFFICIAL) return false;
         if (runningOnWorkProfile == null) {
             runningOnWorkProfile = new UserProfile().isRunningOnWorkProfile(this);
         }
@@ -327,8 +327,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static int mMessageListPreviewLines = 2;
 
     private static boolean mShowCorrespondentNames = true;
-    private static boolean mMessageListSenderAboveSubject = BuildConfig.IS_ENTERPRISE;
-    private static boolean mShowContactName = BuildConfig.IS_ENTERPRISE;
+    private static boolean mMessageListSenderAboveSubject = true;
+    private static boolean mShowContactName = true;
     private static boolean mChangeContactNameColor = false;
     private static int mContactNameColor = DEFAULT_CONTACT_NAME_COLOR;
     private static boolean sShowContactPicture = true;
@@ -363,7 +363,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean planckPassiveMode = false;
     private static boolean planckSubjectProtection = true;
     private static ManageableSetting<Boolean> planckForwardWarningEnabled =
-            new ManageableSetting<>(BuildConfig.IS_ENTERPRISE);
+            new ManageableSetting<>(true);
     private static ManageableSetting<Boolean> planckSyncEnabled = new ManageableSetting<>(true);
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
@@ -398,7 +398,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
      * on each new folder and can be incremented with "Load more messages..." by the
      * VISIBLE_LIMIT_INCREMENT
      */
-    public static final int DEFAULT_VISIBLE_LIMIT = BuildConfig.IS_ENTERPRISE ? 250 : 100;
+    public static final int DEFAULT_VISIBLE_LIMIT = 250;
 
     /**
      * The maximum size of an attachment we're willing to download (either View or Save)
@@ -947,7 +947,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         mCountSearchMessages = storage.getBoolean("countSearchMessages", true);
         mMessageListSenderAboveSubject = storage.getBoolean(
                 "messageListSenderAboveSubject",
-                BuildConfig.IS_ENTERPRISE
+                true
         );
         mMessageListCheckboxes = storage.getBoolean("messageListCheckboxes", false);
         mMessageListStars = storage.getBoolean("messageListStars", true);
@@ -961,7 +961,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         mQuietTimeEnds = storage.getString("quietTimeEnds", "7:00");
 
         mShowCorrespondentNames = storage.getBoolean("showCorrespondentNames", true);
-        mShowContactName = storage.getBoolean("showContactName", BuildConfig.IS_ENTERPRISE);
+        mShowContactName = storage.getBoolean("showContactName", true);
         sShowContactPicture = storage.getBoolean("showContactPicture", true);
         mChangeContactNameColor = storage.getBoolean("changeRegisteredNameColor", false);
         mContactNameColor = storage.getInt("registeredNameColor", DEFAULT_CONTACT_NAME_COLOR);
@@ -1022,7 +1022,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
                 storage.getString(
                         "pEpForwardWarningEnabled",
                         ManageableSettingKt.serializeBooleanManageableSetting(
-                                new ManageableSetting<>(BuildConfig.IS_ENTERPRISE)
+                                new ManageableSetting<>(true)
                         )
                 )
         );

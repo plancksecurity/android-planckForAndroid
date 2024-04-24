@@ -276,7 +276,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             }
         }
 
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_OFFICIAL) {
             registerForContextMenu(accountsList)
         }
 
@@ -298,11 +298,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private fun startOnBoarding() {
-        if (BuildConfig.IS_ENTERPRISE) {
-            startOnBoarding(this)
-        } else {
-            startWelcomeMessage()
-        }
+        startOnBoarding(this)
     }
 
     override fun search(query: String) {
@@ -954,7 +950,7 @@ class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPr
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (BuildConfig.IS_ENTERPRISE || account is SearchAccount) {
+            if (BuildConfig.IS_OFFICIAL || account is SearchAccount) {
                 holder.folders?.visibility = View.GONE
             } else {
                 holder.folders?.let {

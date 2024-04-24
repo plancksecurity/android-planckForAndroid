@@ -1,6 +1,6 @@
 // COMMON SETTINGS
 ext {
-    enableEndUser = false
+    enableDev = false
     demoKeyAlias = 'demo'
     demoKeyPassword = 'replace your password'
     demoStoreFile = new File(rootDir, 'demoKeyStore.pfx')

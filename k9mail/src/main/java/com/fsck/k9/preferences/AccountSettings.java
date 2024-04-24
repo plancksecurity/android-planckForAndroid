@@ -236,7 +236,7 @@ public class AccountSettings {
                 new V(45, new BooleanSetting(true)),
                 new V(52, new StringSetting(
                         ManageableSettingKt.serializeBooleanManageableSetting(
-                                new ManageableSetting<>(true, BuildConfig.IS_ENTERPRISE)
+                                new ManageableSetting<>(true, true)
                         ))
                 )
         ));

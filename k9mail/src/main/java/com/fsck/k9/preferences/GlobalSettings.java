@@ -189,7 +189,7 @@ public class GlobalSettings {
                 new V(1, new ColorSetting(K9.DEFAULT_CONTACT_NAME_COLOR))
         ));
         s.put("showContactName", Settings.versions(
-                new V(1, new BooleanSetting(BuildConfig.IS_ENTERPRISE))
+                new V(1, new BooleanSetting(true))
         ));
         s.put("showCorrespondentNames", Settings.versions(
                 new V(1, new BooleanSetting(true))
@@ -279,7 +279,7 @@ public class GlobalSettings {
                 new V(38, new BooleanSetting(true))
         ));
         s.put("messageListSenderAboveSubject", Settings.versions(
-                new V(38, new BooleanSetting(BuildConfig.IS_ENTERPRISE))
+                new V(38, new BooleanSetting(true))
         ));
         s.put("notificationQuickDelete", Settings.versions(
                 new V(38, new EnumSetting<>(NotificationQuickDelete.class, NotificationQuickDelete.NEVER))
@@ -303,7 +303,7 @@ public class GlobalSettings {
                 new V(
                         47,
                         new BooleanSetting(
-                                BuildConfig.IS_ENTERPRISE
+                                true
                         )
                 )
         ));

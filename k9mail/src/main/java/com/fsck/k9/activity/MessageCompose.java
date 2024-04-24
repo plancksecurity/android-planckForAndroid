@@ -594,14 +594,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (getToolbar() != null) {
             planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             planckSecurityStatusLayout.setOnClickListener(v -> onPlanckPrivacyStatus());
-            if (!BuildConfig.IS_ENTERPRISE) {
-                planckSecurityStatusLayout.setOnLongClickListener(view -> {
-                    PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
-                            view, recipientPresenter);
-                    statusMenu.show();
-                    return true;
-                });
-            }
         }
         toolBarCustomizer.setMessageToolbarColor();
         toolBarCustomizer.setMessageStatusBarColor();

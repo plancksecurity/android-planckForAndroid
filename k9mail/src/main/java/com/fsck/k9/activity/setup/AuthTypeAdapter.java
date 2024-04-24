@@ -14,7 +14,7 @@ public class AuthTypeAdapter extends ArrayAdapter<AuthTypeHolder> {
 
     public static AuthTypeAdapter get(Context context) {
         AuthType[] authTypes =
-                BuildConfig.IS_ENTERPRISE
+                BuildConfig.IS_OFFICIAL
                         ? new AuthType[]{AuthType.PLAIN, AuthType.CRAM_MD5, AuthType.XOAUTH2,
                         AuthType.EXTERNAL}
                         : new AuthType[]{AuthType.PLAIN, AuthType.CRAM_MD5, AuthType.XOAUTH2,

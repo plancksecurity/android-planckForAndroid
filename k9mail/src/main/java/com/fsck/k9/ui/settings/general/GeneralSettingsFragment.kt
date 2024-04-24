@@ -262,7 +262,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalPlanckSync() {
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_OFFICIAL) {
             initializeManagedSwitchLockedFeedback(
                 K9.getPlanckSyncEnabled(),
                 PREFERENCE_PEP_ENABLE_SYNC
