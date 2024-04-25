@@ -257,6 +257,10 @@
         <item quantity="one">%1$d unsicherer Empfänger. Hier tippen, um ihn zu entfernen.</item>
         <item quantity="other">%1$d unsichere Empfänger. Hier tippen, um sie zu entfernen.</item>
     </plurals>
+    <plurals name="compose_unknown_recipients_warning">
+        <item quantity="one">%1$d unbekannter empfänger.</item>
+        <item quantity="other">%1$d unbekannte empfänger.</item>
+    </plurals>
     <string name="waiting_for_provisioning">Warten auf die Bereitstellung</string>
     <string name="provisioning_in_progress">Bereitstellung in Bearbeitung</string>
     <string name="initializing_application">Initialisieren der Anwendung</string>
