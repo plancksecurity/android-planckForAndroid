@@ -1,5 +1,6 @@
 package com.fsck.k9.activity.compose
 
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Message.RecipientType
@@ -152,8 +153,11 @@ class RecipientSelectPresenter @Inject constructor(
                     } else {
                         rating
                     }
-                if (isPEpPrivacyProtected && viewRating.value == Rating.pEpRatingHaveNoKey.value
+                if (isPEpPrivacyProtected
                     && view.hasRecipient(recipient)
+                    && ((BuildConfig.IS_ENTERPRISE && PlanckUtils.isRatingUnsecure(viewRating))
+                            || (!BuildConfig.IS_ENTERPRISE
+                            && viewRating.value == Rating.pEpRatingHaveNoKey.value))
                 ) {
                     addUnsecureAddressChannel(address)
                 }
