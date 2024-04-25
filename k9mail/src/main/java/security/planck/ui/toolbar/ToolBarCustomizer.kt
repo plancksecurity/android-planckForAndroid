@@ -19,7 +19,7 @@ class ToolBarCustomizer(private val activity: Activity) {
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
-    private val toolbar get() = activity.findViewById<Toolbar>(R.id.toolbar)
+    private val toolbar by lazy { activity.findViewById<Toolbar>(R.id.toolbar) }
 
     fun setDefaultStatusBarColor() {
         setStatusBarColor(getColor(R.attr.statusbarDefaultColor))
