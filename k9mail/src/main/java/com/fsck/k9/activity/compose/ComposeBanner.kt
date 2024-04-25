@@ -39,24 +39,36 @@ class ComposeBanner(context: Context, attrs: AttributeSet?) : ConstraintLayout(c
         onInviteClickListener: OnClickListener,
     ) {
         if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
-            binding.removeRecipients.isVisible = true
-            binding.inviteRecipients.isVisible = true
-            binding.removeRecipients.text = resources.getQuantityString(
-                R.plurals.compose_banner_remove_unsecure_recipients_action,
-                unsecureRecipientsCount
-            )
             bannerText.setTextColor(
                 ContextCompat.getColor(
                     context, R.color.compose_unsecure_delivery_warning
                 )
             )
-            bannerText.text = resources.getQuantityString(
-                R.plurals.compose_unsecure_delivery_warning,
-                unsecureRecipientsCount,
-                unsecureRecipientsCount
-            )
-            binding.removeRecipients.setOnClickListener(onRemoveClickListener)
-            binding.inviteRecipients.setOnClickListener(onInviteClickListener)
+            if (BuildConfig.IS_ENTERPRISE) {
+                binding.removeRecipients.isVisible = false
+                binding.inviteRecipients.isVisible = false
+                bannerText.text = resources.getQuantityString(
+                    R.plurals.compose_unsecure_delivery_warning,
+                    unsecureRecipientsCount,
+                    unsecureRecipientsCount
+                )
+                bannerText.setOnClickListener(onRemoveClickListener)
+            } else {
+                binding.removeRecipients.isVisible = true
+                binding.inviteRecipients.isVisible = true
+                binding.removeRecipients.text = resources.getQuantityString(
+                    R.plurals.compose_banner_remove_unsecure_recipients_action,
+                    unsecureRecipientsCount
+                )
+
+                bannerText.text = resources.getQuantityString(
+                    R.plurals.compose_unknown_recipients_warning,
+                    unsecureRecipientsCount,
+                    unsecureRecipientsCount
+                )
+                binding.removeRecipients.setOnClickListener(onRemoveClickListener)
+                binding.inviteRecipients.setOnClickListener(onInviteClickListener)
+            }
             showUserActionBanner()
         }
     }

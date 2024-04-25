@@ -251,6 +251,7 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_OFFICIAL", "true"
+            buildConfigField "boolean", "IS_ENTERPRISE", "true"
             versionNameSuffix ".enterprise"
             dimension "type"
             applicationIdSuffix ".enterprise"
@@ -258,6 +259,7 @@ android {
 
         play {
             buildConfigField "boolean", "IS_OFFICIAL", "true"
+            buildConfigField "boolean", "IS_ENTERPRISE", "false"
             versionNameSuffix ".play"
             dimension "type"
             applicationIdSuffix ".play"
@@ -273,6 +275,7 @@ android {
         if (hasDemoProperties()) {
             demo {
                 buildConfigField "boolean", "IS_OFFICIAL", "true"
+                buildConfigField "boolean", "IS_ENTERPRISE", "false"
                 versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
                 dimension "type"
                 applicationIdSuffix ".enterprise" + demoAppIdSuffix

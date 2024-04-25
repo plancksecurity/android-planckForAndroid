@@ -353,6 +353,11 @@
     <string name="compose_message_too_many_attachments">Cannot add more than %1$d attachments.</string>
 
     <plurals name="compose_unsecure_delivery_warning">
+        <item quantity="one">%1$d unsecure recipient. Tap here to remove it.</item>
+        <item quantity="other">%1$d unsecure recipients. Tap here to remove them.</item>
+    </plurals>
+
+    <plurals name="compose_unknown_recipients_warning">
         <item quantity="one">%1$d unknown recipient.</item>
         <item quantity="other">%1$d unknown recipients.</item>
     </plurals>
