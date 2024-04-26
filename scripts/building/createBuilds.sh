@@ -102,20 +102,21 @@ checkCurrentVersion
 rm -rf k9mail/build/v*
 mkdir k9mail/build/"$VERSION"
 mkdir k9mail/build/"$VERSION"/prod
-mkdir k9mail/build/"$VERSION"/prod/only\ dev/
+#mkdir k9mail/build/"$VERSION"/prod/only\ dev/
 mkdir k9mail/build/"$VERSION"/Customer
 mkdir k9mail/build/"$VERSION"/Customer/secuvera
 mkdir k9mail/build/"$VERSION"/Customer/genese
 
 # GENERAL RELEASE
 rm -rf k9mail/build/outputs
-enableDev
+#enableDev
+disableDev
 ./gradlew assemble
 ./gradlew bundle
 
-rm k9mail/build/outputs/apk/dev/debug/*v7a*
-rm k9mail/build/outputs/apk/dev/debug/*x86*
-mv k9mail/build/outputs/apk/dev k9mail/build/"$VERSION"/prod/only\ dev/
+#rm k9mail/build/outputs/apk/dev/debug/*v7a*
+#rm k9mail/build/outputs/apk/dev/debug/*x86*
+#mv k9mail/build/outputs/apk/dev k9mail/build/"$VERSION"/prod/only\ dev/
 rm k9mail/build/outputs/apk/enterprise/debug/*v7a*
 rm k9mail/build/outputs/apk/enterprise/debug/*x86*
 rm k9mail/build/outputs/apk/enterprise/release/*v7a*
