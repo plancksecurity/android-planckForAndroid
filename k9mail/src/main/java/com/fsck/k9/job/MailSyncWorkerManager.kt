@@ -28,7 +28,7 @@ class MailSyncWorkerManager(private val workManager: WorkManager) {
             val uniqueWorkName = createUniqueWorkName(account.uuid)
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 mailSyncRequest
             )
         }

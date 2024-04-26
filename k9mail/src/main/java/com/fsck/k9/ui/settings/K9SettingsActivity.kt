@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
+import com.fsck.k9.databinding.ActivitySettingsBinding
 import com.fsck.k9.ui.observeNotNull
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.xwray.groupie.GroupAdapter
@@ -15,10 +16,10 @@ import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import com.xwray.groupie.Section
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_settings.settings_list
 
 @AndroidEntryPoint
 class K9SettingsActivity : K9Activity() {
+    private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
 
     private lateinit var settingsAdapter: GroupAdapter<GroupieViewHolder>
@@ -26,7 +27,8 @@ class K9SettingsActivity : K9Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindViews(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initializeActionBar()
         initializeSettingsList()
@@ -44,7 +46,7 @@ class K9SettingsActivity : K9Activity() {
             handleItemClick(item)
         }
 
-        with(settings_list) {
+        with(binding.settingsList) {
             adapter = settingsAdapter
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@K9SettingsActivity)
         }

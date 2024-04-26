@@ -29,7 +29,6 @@ import com.takisoft.preferencex.AutoSummaryEditTextPreference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.exceptions.pEpException
-import kotlinx.android.synthetic.main.preference_loading_widget.loading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,6 +39,7 @@ import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.planck.mdm.ManageableSetting
 import security.planck.mdm.RestrictionsViewModel
 import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import security.planck.ui.preference.LoadingPreference
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -53,6 +53,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     lateinit var storageManager: StorageManager
     @Inject
     lateinit var openPgpApiManager: OpenPgpApiManager
+    @Inject
+    lateinit var k9: K9
 
     private var rootkey:String? = null
     private lateinit var account:Account
@@ -108,6 +110,20 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeDefaultQuotedTextShown()
         initializeRemoteSearchEnabled()
         initializeRemoteSearchLimit()
+        initializeSignaturePreferences()
+    }
+
+    private fun initializeSignaturePreferences() {
+        findPreference<Preference>(PREFERENCE_USE_SIGNATURE)?.apply {
+            if (k9.isRunningOnWorkProfile) {
+                remove()
+            } else {
+                setOnPreferenceChangeListener { _, newValue ->
+                    findPreference<Preference>(PREFERENCE_SIGNATURE)?.isVisible = newValue as Boolean
+                    true
+                }
+            }
+        }
     }
 
     fun refreshPreferences() {
@@ -202,7 +218,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeAccountpEpKeyReset(account: Account) {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
-            widgetLayoutResource = R.layout.preference_loading_widget
+            //widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context)
                         .setTitle(getString(R.string.pep_key_reset_own_id_warning_title, account.email))
@@ -326,7 +342,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset(account: Account) {
         disableKeyResetClickListener()
-        loading?.visibility = View.VISIBLE
+        val preference = findPreference<LoadingPreference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)
+        preference?.loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -344,7 +361,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 }
             }
             initializeAccountpEpKeyReset(account)
-            loading?.visibility = View.GONE
+            preference?.loading?.visibility = View.GONE
         }
     }
 
@@ -469,6 +486,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_DEFAULT_QUOTED_TEXT_SHOWN = "default_quoted_text_shown"
         private const val PREFERENCE_REMOTE_SEARCH_ENABLED = "remote_search_enabled"
         private const val PREFERENCE_REMOTE_SEARCH_LIMIT = "account_remote_search_num_results"
+        private const val PREFERENCE_USE_SIGNATURE = "composition_use_signature"
+        private const val PREFERENCE_SIGNATURE = "composition_signature"
 
         private val FOLDER_LIST_PREFERENCES = listOf(
                 PREFERENCE_AUTO_EXPAND_FOLDER,

@@ -5,7 +5,7 @@ task customTest() {
             "Requires for the app to be already installed."
 
     String device = project.findProperty("device")
-    String flavor = project.findProperty("flavor") ?: "enterprisePlayStore"
+    String flavor = project.findProperty("flavor") ?: "enterprise"
     boolean work = project.findProperty("work") ?: false
     boolean useFakeManager = project.findProperty("useFakeManager") ?: false
     boolean verbose = project.findProperty("verbose") ?: false

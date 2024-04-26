@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
@@ -54,9 +53,9 @@ import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.compose.AttachmentPresenter;
 import com.fsck.k9.activity.compose.AttachmentPresenter.AttachmentMvpView;
 import com.fsck.k9.activity.compose.AttachmentPresenter.WaitingAction;
+import com.fsck.k9.activity.compose.ComposeBanner;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
-import com.fsck.k9.activity.compose.CryptoSettingsDialog.OnCryptoModeChangedListener;
 import com.fsck.k9.activity.compose.IdentityAdapter;
 import com.fsck.k9.activity.compose.IdentityAdapter.IdentityContainer;
 import com.fsck.k9.activity.compose.PgpInlineDialog.OnOpenPgpInlineChangeListener;
@@ -99,14 +98,14 @@ import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.ComposeView;
-import com.fsck.k9.planck.infrastructure.ConstantsKt;
-import com.fsck.k9.planck.infrastructure.extensions.ThrowableKt;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -122,6 +121,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
+import kotlin.jvm.functions.Function0;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
@@ -138,7 +138,7 @@ import timber.log.Timber;
 @AndroidEntryPoint
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
 public class MessageCompose extends K9Activity implements OnClickListener,
-        CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
+        CancelListener, OnFocusChangeListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
         AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
@@ -173,7 +173,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
     private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
-    private static final String STATE_LAST_ERROR = "lastError";
 
     private static final String FRAGMENT_WAITING_FOR_ATTACHMENT = "waitingForAttachment";
 
@@ -204,6 +203,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private PlanckUIArtefactCache uiCache;
     private boolean permissionAsked;
     private RecipientMvpView recipientMvpView;
+    private View overlay;
 
     public Account getAccount() {
         String accountUuid = (relatedMessageReference != null) ?
@@ -266,7 +266,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private SimpleMessageFormat currentMessageFormat;
 
     private boolean isInSubActivity = false;
-    private BannerType currentBanner = BannerType.NONE;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -284,10 +283,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     PlanckProvider planck;
 
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
-    private TextView userActionBanner;
-    private View userActionBannerSeparator;
-    private StringBuilder lastError;
+    private ComposeBanner composeBanner;
     private RestrictionsViewModel restrictionsViewModel;
+    private boolean isInvite;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -365,9 +363,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         contacts = Contacts.getInstance(MessageCompose.this);
 
         rootView = findViewById(R.id.content);
+        overlay = findViewById(R.id.overlay);
 
         accountRecipient = findViewById(R.id.identity);
         accountRecipient.setOnClickListener(this);
+        composeBanner = findViewById(R.id.compose_banner);
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
@@ -383,9 +383,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
-
-        userActionBanner = findViewById(R.id.user_action_banner);
-        userActionBannerSeparator = findViewById(R.id.user_action_banner_separator);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -597,14 +594,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (getToolbar() != null) {
             planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             planckSecurityStatusLayout.setOnClickListener(v -> onPlanckPrivacyStatus());
-            if (!BuildConfig.IS_ENTERPRISE) {
-                planckSecurityStatusLayout.setOnLongClickListener(view -> {
-                    PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
-                            view, recipientPresenter);
-                    statusMenu.show();
-                    return true;
-                });
-            }
         }
         toolBarCustomizer.setMessageToolbarColor();
         toolBarCustomizer.setMessageStatusBarColor();
@@ -763,7 +752,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         outState.putString(STATE_REFERENCES, referencedMessageIds);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-        outState.putString(STATE_LAST_ERROR, lastError == null ? null : lastError.toString());
         // TODO: trigger pep?
 
     }
@@ -832,15 +820,24 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         updateMessageFormat();
         restoreMessageComposeConfigurationInstance();
-        String errorText = savedInstanceState.getString(STATE_LAST_ERROR);
-        if (errorText != null) {
-            lastError = new StringBuilder(errorText);
-            showError(errorText);
-        }
     }
 
     private void setTitle() {
         setTitle(action.getTitleResource());
+    }
+
+    private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
+        MessageBuilder builder = SimpleMessageBuilder.newInstance();
+        return builder.setSubject(getString(R.string.planck_invite_title))
+                .setSentDate(new Date())
+                .setHideTimeZone(K9.hideTimeZone())
+                .setTo(recipients)
+                .setIdentity(identity)
+                .setMessageFormat(currentMessageFormat)
+                .setText(getString(R.string.planck_invite_text))
+                .setSignature(signatureView.getCharacters())
+                .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
+                .allowHtmlTags();
     }
 
     @Nullable
@@ -912,6 +909,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void checkToSaveDraftAndSave() {
+        checkToSaveDraftAndSave(false);
+    }
+
+    private void checkToSaveDraftAndSave(boolean isInvite) {
         if (!account.hasDraftsFolder()) {
             FeedbackTools.showShortFeedback(getRootView(), getString(R.string.compose_error_no_draft_folder));
             return;
@@ -922,6 +923,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         finishAfterDraftSaved = true;
+        this.isInvite = isInvite;
         performSaveAfterChecks();
     }
 
@@ -963,7 +965,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         internalMessageHandler.sendEmptyMessage(MSG_DISCARDED_DRAFT);
         changesMadeSinceLastSave = false;
-        finish();
     }
 
     public void showContactPicker(int requestCode) {
@@ -1107,11 +1108,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onCryptoModeChanged(CryptoMode cryptoMode) {
-        recipientPresenter.onCryptoModeChanged(cryptoMode);
     }
 
     @Override
@@ -1323,8 +1319,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                             @Override
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                                FeedbackTools.showLongFeedback(getRootView(),
-                                        getString(R.string.message_discarded_toast));
                                 onDiscard();
                             }
                         })
@@ -1756,11 +1750,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             boolean saveRemotely = !recipientPresenter.getCurrentCryptoStatus().shouldUsePgpMessageBuilder();
             new SaveMessageTask(getApplicationContext(), account, contacts, internalMessageHandler,
                     message, draftId, saveRemotely).execute();
-            if (finishAfterDraftSaved) {
-                finish();
-            } else {
-                setProgressBarIndeterminateVisibility(false);
-            }
+            setProgressBarIndeterminateVisibility(false);
         } else {
             currentMessageBuilder = null;
             new SendMessageTask(getApplicationContext(), account, contacts, message,
@@ -2099,97 +2089,77 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
-        if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
-            userActionBanner.setTextColor(ContextCompat.getColor(
-                    this, R.color.compose_unsecure_delivery_warning));
-            userActionBanner.setText(getResources().getQuantityString(
-                    R.plurals.compose_unsecure_delivery_warning,
-                    unsecureRecipientsCount,
-                    unsecureRecipientsCount
-            ));
-            userActionBanner.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
-            showUserActionBanner();
-        }
+        composeBanner.showUnsecureDeliveryWarning(
+                unsecureRecipientsCount,
+                (v) -> recipientPresenter.clearUnsecureRecipients(),
+                (v) -> {
+                    sendPlanckInvitesToUnsecureRecipients();
+                }
+        );
     }
 
-    private void showUserActionBanner() {
-        userActionBanner.setVisibility(View.VISIBLE);
-        userActionBannerSeparator.setVisibility(View.VISIBLE);
+    private void sendPlanckInvitesToUnsecureRecipients() {
+        MessageBuilder messageBuilder = createMessageBuilderToSendPlanckInvites(
+                recipientPresenter.getHaveNoKeyAddresses()
+        );
+        MessagingController.getInstance(getApplicationContext())
+                .buildAndSendMessage(messageBuilder, account);
+        checkToSaveDraftAndSave(true);
     }
 
     public void hideUnsecureDeliveryWarning() {
-        hideUserActionBanner(BannerType.UNSECURE_DELIVERY);
+        composeBanner.hideUnsecureDeliveryWarning();
     }
 
     private void hideUserActionBanner() {
-        hideUserActionBanner(BannerType.ERROR);
-    }
-
-    private void hideUserActionBanner(BannerType bannerType) {
-        if (currentBanner == bannerType) {
-            currentBanner = null;
-            userActionBanner.setVisibility(View.GONE);
-            userActionBannerSeparator.setVisibility(View.GONE);
-        }
+        composeBanner.hideUserActionBanner();
     }
 
     public void showSingleRecipientHandshakeBanner() {
-        if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
-            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.planck_green));
-            userActionBanner.setText(R.string.compose_single_recipient_handshake_banner);
-            userActionBanner.setOnClickListener(
-                    v -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference)
-            );
-            showUserActionBanner();
-        }
+        composeBanner.showSingleRecipientHandshakeBanner((v) -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference));
     }
 
     public void hideSingleRecipientHandshakeBanner() {
-        hideUserActionBanner(BannerType.HANDSHAKE);
+        composeBanner.hideSingleRecipientHandshakeBanner();
     }
 
     public void setAndShowError(@NotNull Throwable throwable) {
-        userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.compose_unsecure_delivery_warning));
-        String errorText = getErrorText(throwable);
-        if (shouldInitializeError()) {
-            lastError = new StringBuilder(errorText);
-        } else {
-            addNewDebugErrorText(errorText);
-        }
-        showError(lastError.toString());
+        composeBanner.setAndShowError(throwable);
     }
 
     public void launchVerifyPartnerIdentity(String myself, MessageReference messageReference) {
         VerifyPartnerFragmentKt.showVerifyPartnerDialog(this, myself, myself, messageReference, false);
     }
 
-    private boolean shouldInitializeError() {
-        return !BuildConfig.DEBUG || lastError == null;
+    private void showOverlay() {
+        overlay.setVisibility(View.VISIBLE);
     }
 
-    private void addNewDebugErrorText(String newErrorText) {
-        lastError.append(ConstantsKt.NEW_LINE);
-        lastError.append(newErrorText);
+    private void hideOverlay() {
+        overlay.setVisibility(View.GONE);
     }
 
-    private String getErrorText(@NotNull Throwable throwable) {
-        return BuildConfig.DEBUG
-                ? ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH)
-                : getString(R.string.error_happened_restart_app);
-    }
-
-    private void showError(@NotNull String error) {
-        currentBanner = BannerType.ERROR;
-        userActionBanner.setText(error);
-        userActionBanner.setOnClickListener(null);
-        showUserActionBanner();
-    }
-
-    private boolean wasAbleToChangeBanner(BannerType bannerType) {
-        if (currentBanner == null || currentBanner.priority <= bannerType.priority) {
-            currentBanner = bannerType;
-            return true;
-        } else return false;
+    private void finishWithSnackBar(Function0<Snackbar> showSnackbar, boolean finish) {
+        if (finish) {
+            KeyboardUtils.hideKeyboard(this);
+            showOverlay();
+        }
+        Snackbar snackbar = showSnackbar.invoke();
+        if (!finish) {
+            return;
+        }
+        if (snackbar == null) {
+            hideOverlay();
+            finish();
+            return;
+        }
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                hideOverlay();
+                finish();
+            }
+        });
     }
 
     private Handler internalMessageHandler = new Handler() {
@@ -2204,12 +2174,17 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     break;
                 case MSG_SAVED_DRAFT:
                     draftId = (Long) msg.obj;
-                    FeedbackTools.showLongFeedback(getRootView(),
-                            getString(R.string.message_saved_toast));
+                    finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
+                            getString(
+                                    isInvite
+                                    ? R.string.invitation_sent_and_draft_saved
+                                    : R.string.message_saved_toast
+                            ), 2000, 2), finishAfterDraftSaved);
+
                     break;
                 case MSG_DISCARDED_DRAFT:
-                    FeedbackTools.showLongFeedback(getRootView(),
-                            getString(R.string.message_discarded_toast));
+                    finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
+                            getString(R.string.message_discarded_toast), 600, 2), true);
                     break;
                 default:
                     super.handleMessage(msg);

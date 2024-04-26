@@ -642,7 +642,7 @@ public class TestUtils {
                 default:
                     break;
             }
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 totalAccounts = 1;
             }
         }
@@ -1087,7 +1087,7 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
                 }
-                if (BuildConfig.IS_ENTERPRISE) {
+                if (BuildConfig.IS_OFFICIAL) {
                     automaticAccount();
                 } else {
                     if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
@@ -2293,7 +2293,6 @@ public class TestUtils {
             if (R.drawable.planck_status_green != statusColor
                     && R.drawable.planck_status_red != statusColor
                     && R.drawable.pep_status_yellow != statusColor
-                    && BuildConfig.IS_ENTERPRISE
                     && R.drawable.enterprise_status_unsecure != statusColor
             ) {
                 fail("Wrong Status color");
@@ -2348,9 +2347,7 @@ public class TestUtils {
         if (rating == null) {
             color = -10;
         } else if (PlanckUtils.isRatingUnsecure(rating)) {
-            color = BuildConfig.IS_ENTERPRISE
-                    ? R.drawable.enterprise_status_unsecure
-                    : -10;
+            color = R.drawable.enterprise_status_unsecure;
         } else if (rating.value == Rating.pEpRatingMistrust.value) {
             color = R.drawable.planck_status_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
@@ -2540,7 +2537,7 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
                     fail("Status is not shown");
                 }
@@ -2564,7 +2561,7 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (BuildConfig.IS_OFFICIAL) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
                     fail("Status is not shown");
                 }

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import javax.inject.Inject
 
 const val OAUTH_TOKEN_REVOKED_ACTION = "OAUTH_TOKEN_REVOKED"
@@ -21,7 +22,11 @@ class OAuthTokenRevokedReceiver @Inject constructor(): BroadcastReceiver() {
     }
 
     fun register (activity: Activity) {
-        activity.registerReceiver(this, IntentFilter(OAUTH_TOKEN_REVOKED_ACTION))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity.registerReceiver(this, IntentFilter(OAUTH_TOKEN_REVOKED_ACTION), Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            activity.registerReceiver(this, IntentFilter(OAUTH_TOKEN_REVOKED_ACTION))
+        }
         this.listener = activity as OAuthTokenRevokedListener
     }
 

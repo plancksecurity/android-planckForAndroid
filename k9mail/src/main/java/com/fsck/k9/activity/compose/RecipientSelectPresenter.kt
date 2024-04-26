@@ -1,5 +1,6 @@
 package com.fsck.k9.activity.compose
 
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Message.RecipientType
@@ -21,6 +22,8 @@ class RecipientSelectPresenter @Inject constructor(
 
     val unsecureAddressChannelCount: Int
         get() = unsecureAddresses.size
+    val haveNoKeyAddresses: Set<Address>
+        get() = unsecureAddresses
 
     val addresses: List<Address>
         get() = recipients.map { it.address }
@@ -150,8 +153,11 @@ class RecipientSelectPresenter @Inject constructor(
                     } else {
                         rating
                     }
-                if (isPEpPrivacyProtected && PlanckUtils.isRatingUnsecure(viewRating)
+                if (isPEpPrivacyProtected
                     && view.hasRecipient(recipient)
+                    && ((BuildConfig.IS_ENTERPRISE && PlanckUtils.isRatingUnsecure(viewRating))
+                            || (!BuildConfig.IS_ENTERPRISE
+                            && viewRating.value == Rating.pEpRatingHaveNoKey.value))
                 ) {
                     addUnsecureAddressChannel(address)
                 }

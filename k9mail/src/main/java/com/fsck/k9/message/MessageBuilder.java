@@ -94,10 +94,16 @@ public abstract class MessageBuilder {
     private boolean isAlwaysSecure;
     private Rating planckRating;
 
+    private boolean allowHtmlTags;
+
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
         this.messageIdGenerator = messageIdGenerator;
         this.boundaryGenerator = boundaryGenerator;
+    }
+
+    public MimeMessage buildSync() throws MessagingException {
+        return build();
     }
 
     /**
@@ -177,7 +183,7 @@ public abstract class MessageBuilder {
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
 
-        final boolean hasAttachments = !attachments.isEmpty() || (blobAttachments != null && !blobAttachments.isEmpty());
+        final boolean hasAttachments = (attachments != null && !attachments.isEmpty()) || (blobAttachments != null && !blobAttachments.isEmpty());
 
         if (messageFormat == SimpleMessageFormat.HTML) {
             // HTML message (with alternative text part)
@@ -313,7 +319,7 @@ public abstract class MessageBuilder {
     private TextBody buildText(boolean isDraft, SimpleMessageFormat simpleMessageFormat) {
         String messageText = text;
 
-        TextBodyBuilder textBodyBuilder = new TextBodyBuilder(messageText);
+        TextBodyBuilder textBodyBuilder = new TextBodyBuilder(messageText, allowHtmlTags);
 
         /*
          * Find out if we need to include the original message as quoted text.
@@ -493,6 +499,11 @@ public abstract class MessageBuilder {
 
     public MessageBuilder setAlwaysSecure(boolean alwaysSecure) {
         isAlwaysSecure = alwaysSecure;
+        return this;
+    }
+
+    public MessageBuilder allowHtmlTags() {
+        allowHtmlTags = true;
         return this;
     }
 

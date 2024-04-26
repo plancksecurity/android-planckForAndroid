@@ -80,7 +80,7 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
     }
 
     override fun showPassphraseError() {
-        binding.passphraseContainer.error = "Passphrase needs to contain at least 12 characters, including uppercase and lowercase letters, numbers and symbols."
+        binding.passphraseContainer.error = getString(R.string.passphrase_wrong_input_feedback)
     }
 
     override fun hidePassphraseError() {

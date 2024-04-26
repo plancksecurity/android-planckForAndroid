@@ -13,16 +13,17 @@ import android.view.View
 import androidx.activity.viewModels
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
+import com.fsck.k9.databinding.CryptoKeyTransferBinding
 import com.fsck.k9.finishWithErrorToast
 import com.fsck.k9.view.StatusIndicator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.crypto_key_transfer.*
-//import kotlinx.coroutines.experimental.delay
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
+    private lateinit var binding: CryptoKeyTransferBinding
+
     override fun search(query: String?) {
     }
     private val viewModel: AutocryptKeyTransferViewModel by viewModels()
@@ -31,7 +32,8 @@ class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.crypto_key_transfer)
+        binding = CryptoKeyTransferBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         presenter.initialize(this, viewModel, this)
 
@@ -39,8 +41,8 @@ class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        transferSendButton.setOnClickListener { presenter.onClickTransferSend() }
-        transferButtonShowCode.setOnClickListener { presenter.onClickShowTransferCode() }
+        binding.transferSendButton.setOnClickListener { presenter.onClickTransferSend() }
+        binding.transferButtonShowCode.setOnClickListener { presenter.onClickShowTransferCode() }
 
         presenter.initFromIntent(accountUuid)
     }
@@ -55,42 +57,42 @@ class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
     }
 
     override fun setAddress(address: String) {
-        transferAddress1.text = address
-        transferAddress2.text = address
+        binding.transferAddress1.text = address
+        binding.transferAddress2.text = address
     }
 
     override fun sceneBegin() {
-        transferSendButton.visibility = View.VISIBLE
-        transferMsgInfo.visibility = View.VISIBLE
-        transferLayoutGenerating.visibility = View.GONE
-        transferLayoutSending.visibility = View.GONE
-        transferLayoutFinish.visibility = View.GONE
-        transferErrorSend.visibility = View.GONE
-        transferButtonShowCode.visibility = View.GONE
+        binding.transferSendButton.visibility = View.VISIBLE
+        binding.transferMsgInfo.visibility = View.VISIBLE
+        binding.transferLayoutGenerating.visibility = View.GONE
+        binding.transferLayoutSending.visibility = View.GONE
+        binding.transferLayoutFinish.visibility = View.GONE
+        binding.transferErrorSend.visibility = View.GONE
+        binding.transferButtonShowCode.visibility = View.GONE
     }
 
     override fun sceneGeneratingAndSending() {
         setupSceneTransition()
 
-        transferSendButton.visibility = View.GONE
-        transferMsgInfo.visibility = View.GONE
-        transferLayoutGenerating.visibility = View.VISIBLE
-        transferLayoutSending.visibility = View.VISIBLE
-        transferLayoutFinish.visibility = View.GONE
-        transferErrorSend.visibility = View.GONE
-        transferButtonShowCode.visibility = View.GONE
+        binding.transferSendButton.visibility = View.GONE
+        binding.transferMsgInfo.visibility = View.GONE
+        binding.transferLayoutGenerating.visibility = View.VISIBLE
+        binding.transferLayoutSending.visibility = View.VISIBLE
+        binding.transferLayoutFinish.visibility = View.GONE
+        binding.transferErrorSend.visibility = View.GONE
+        binding.transferButtonShowCode.visibility = View.GONE
     }
 
     override fun sceneSendError() {
         setupSceneTransition()
 
-        transferSendButton.visibility = View.GONE
-        transferMsgInfo.visibility = View.GONE
-        transferLayoutGenerating.visibility = View.VISIBLE
-        transferLayoutSending.visibility = View.VISIBLE
-        transferLayoutFinish.visibility = View.GONE
-        transferErrorSend.visibility = View.VISIBLE
-        transferButtonShowCode.visibility = View.GONE
+        binding.transferSendButton.visibility = View.GONE
+        binding.transferMsgInfo.visibility = View.GONE
+        binding.transferLayoutGenerating.visibility = View.VISIBLE
+        binding.transferLayoutSending.visibility = View.VISIBLE
+        binding.transferLayoutFinish.visibility = View.GONE
+        binding.transferErrorSend.visibility = View.VISIBLE
+        binding.transferButtonShowCode.visibility = View.GONE
     }
 
     override fun sceneFinished(transition: Boolean) {
@@ -98,33 +100,33 @@ class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
             setupSceneTransition()
         }
 
-        transferSendButton.visibility = View.GONE
-        transferMsgInfo.visibility = View.GONE
-        transferLayoutGenerating.visibility = View.VISIBLE
-        transferLayoutSending.visibility = View.VISIBLE
-        transferLayoutFinish.visibility = View.VISIBLE
-        transferErrorSend.visibility = View.GONE
-        transferButtonShowCode.visibility = View.VISIBLE
+        binding.transferSendButton.visibility = View.GONE
+        binding.transferMsgInfo.visibility = View.GONE
+        binding.transferLayoutGenerating.visibility = View.VISIBLE
+        binding.transferLayoutSending.visibility = View.VISIBLE
+        binding.transferLayoutFinish.visibility = View.VISIBLE
+        binding.transferErrorSend.visibility = View.GONE
+        binding.transferButtonShowCode.visibility = View.VISIBLE
     }
 
     override fun setLoadingStateGenerating() {
-        transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.PROGRESS)
-        transferProgressSending.setDisplayedChild(StatusIndicator.Status.IDLE)
+        binding.transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.PROGRESS)
+        binding.transferProgressSending.setDisplayedChild(StatusIndicator.Status.IDLE)
     }
 
     override fun setLoadingStateSending() {
-        transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.OK)
-        transferProgressSending.setDisplayedChild(StatusIndicator.Status.PROGRESS)
+        binding.transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.OK)
+        binding.transferProgressSending.setDisplayedChild(StatusIndicator.Status.PROGRESS)
     }
 
     override fun setLoadingStateSendingFailed() {
-        transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.OK)
-        transferProgressSending.setDisplayedChild(StatusIndicator.Status.ERROR)
+        binding.transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.OK)
+        binding.transferProgressSending.setDisplayedChild(StatusIndicator.Status.ERROR)
     }
 
     override fun setLoadingStateFinished() {
-        transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.OK)
-        transferProgressSending.setDisplayedChild(StatusIndicator.Status.OK)
+        binding.transferProgressGenerating.setDisplayedChild(StatusIndicator.Status.OK)
+        binding.transferProgressSending.setDisplayedChild(StatusIndicator.Status.OK)
     }
 
     override fun finishWithInvalidAccountError() {

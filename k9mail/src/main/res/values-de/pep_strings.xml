@@ -257,6 +257,10 @@
         <item quantity="one">%1$d unsicherer Empfänger. Hier tippen, um ihn zu entfernen.</item>
         <item quantity="other">%1$d unsichere Empfänger. Hier tippen, um sie zu entfernen.</item>
     </plurals>
+    <plurals name="compose_unknown_recipients_warning">
+        <item quantity="one">%1$d unbekannter empfänger.</item>
+        <item quantity="other">%1$d unbekannte empfänger.</item>
+    </plurals>
     <string name="waiting_for_provisioning">Warten auf die Bereitstellung</string>
     <string name="provisioning_in_progress">Bereitstellung in Bearbeitung</string>
     <string name="initializing_application">Initialisieren der Anwendung</string>
@@ -272,7 +276,7 @@
     <!--Displayed below the 'account_setup_oauth_description' text-->
     <string name="account_setup_oauth_sign_in">Anmelden</string>
     <!--Displayed below the 'account_setup_oauth_description' text-->
-    <string name="account_setup_oauth_sign_in_with_google">Mit Google anmelden</string>
+    <string name="account_setup_oauth_sign_in_with_google">Weiter mit Google</string>
 
     <string name="account_setup_failed_dlg_oauth_flow_canceled">Berechtigung aufgehoben</string>
     <string name="account_setup_failed_dlg_oauth_flow_failed">Die Autorisierung ist aufgrund des folgenden Fehlers fehlgeschlagen: <xliff:g id="error">%s</xliff:g></string>
@@ -307,13 +311,13 @@
     <string name="export_pep_support_data_dialog_success_msg">Datenbanken erfolgreich exportiert.</string>
     <string name="export_pep_support_data_dialog_image_success_content_desc">Erfolg</string>
     <string name="export_pep_support_data_dialog_image_failure_content_desc">Fehler</string>
-    <string name="account_setup_choose_auth_sign_in_with_microsoft">Mit Microsoft anmelden</string>
-    <string name="account_setup_choose_auth_sign_in_with_password">Mit Passwort anmelden</string>
+    <string name="account_setup_choose_auth_sign_in_with_microsoft">Weiter mit Microsoft</string>
+    <string name="account_setup_choose_auth_sign_in_with_password">Weiter mit anderen Optionen</string>
     <string name="account_setup_oauth_title_retry_login">Erneut anmelden</string>
     <string name="account_setup_oauth_description_retry_login">Anmeldung mit %s gescheitert. Bitte unten erneut versuchen.</string>
     <string name="account_setup_failed_dlg_could_not_discover_mail_settings">E-Mail Einstellungen konnten nicht gefunden werden. Bitte an IT Administration wenden.</string>
     <string name="account_select_auth_welcome_to">Willkommen zu</string>
-    <string name="account_select_auth_please_select_the_option_to_sign_in">Bitte eine Option zum Anmelden auswählen</string>
+    <string name="account_select_auth_please_select_the_option_to_sign_in">Bitte wählen Sie Ihr Mail-Konto</string>
     <string name="error_happened_restart_app">Ein Fehler ist aufgetreten, bitte die App neu starten.</string>
     <string name="needs_your_permission_to_work">ERLAUBNIS ERFORDERLICH</string>
     <string name="account_setup_failed_dlg_oauth_wrong_email_address">The Adresse %1$s ist vom IT Administrator zur Anmeldung nicht erlaubt. Bitte %2$s verwenden.</string>

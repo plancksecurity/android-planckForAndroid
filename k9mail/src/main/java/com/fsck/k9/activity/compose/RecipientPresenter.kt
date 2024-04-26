@@ -46,7 +46,6 @@ import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState
 import org.openintents.openpgp.util.OpenPgpServiceConnection
 import security.planck.echo.MessageReceivedListener
-import timber.log.Timber
 import java.util.Collections
 
 class RecipientPresenter(
@@ -150,6 +149,9 @@ class RecipientPresenter(
             result.addAll(bccPresenter.recipients)
             return result
         }
+
+    val haveNoKeyAddresses: List<Address>
+        get() = (toPresenter.haveNoKeyAddresses + ccPresenter.haveNoKeyAddresses).toList()
 
     fun checkRecipientsOkForSending(): Boolean {
         toPresenter.tryPerformCompletion()
@@ -486,34 +488,6 @@ class RecipientPresenter(
     fun onNonRecipientFieldFocused() {
         if (!account.isAlwaysShowCcBcc) {
             hideEmptyExtendedRecipientFields()
-        }
-    }
-
-    fun onClickCryptoStatus() {
-        when (openPgpApiManager.openPgpProviderState) {
-            OpenPgpProviderState.UNCONFIGURED -> {
-                Timber.e("click on crypto status while unconfigured - this should not really happen?!")
-                return
-            }
-
-            OpenPgpProviderState.OK -> {
-                if (cachedCryptoStatus?.isSignOnly == true) {
-                    recipientMvpView.showErrorIsSignOnly()
-                } else {
-                    recipientMvpView.showCryptoDialog(currentCryptoMode)
-                }
-                return
-            }
-
-            OpenPgpProviderState.UI_REQUIRED -> {
-                // TODO show openpgp settings
-                recipientMvpView.launchUserInteractionPendingIntent(
-                    openPgpApiManager.userInteractionPendingIntent,
-                    OPENPGP_USER_INTERACTION
-                )
-            }
-
-            OpenPgpProviderState.UNINITIALIZED, OpenPgpProviderState.ERROR -> openPgpApiManager.refreshConnection()
         }
     }
 

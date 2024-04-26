@@ -7,23 +7,24 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import com.fsck.k9.R
+import com.fsck.k9.databinding.ImportKeyDialogBinding
 import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.manualsync.WizardActivity
 import dagger.hilt.android.AndroidEntryPoint
 import foundation.pEp.jniadapter.Identity
-import kotlinx.android.synthetic.main.import_key_dialog.*
-import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class KeyImportActivity : WizardActivity(), KeyImportView {
+    private lateinit var binding: ImportKeyDialogBinding
 
     @Inject
     internal lateinit var presenter: KeyImportPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.import_key_dialog)
+        binding = ImportKeyDialogBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         if (isValidKeyImportIntent(intent)) {
             val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
             presenter.initialize(this, accountUuid)
@@ -34,10 +35,10 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     private fun setClickListeners() {
-        acceptButton.setOnClickListener {
+        binding.acceptButton.setOnClickListener {
             presenter.onKeyImportAccepted()
         }
-        cancelButton.setOnClickListener {
+        binding.cancelButton.setOnClickListener {
             presenter.onKeyImportRejected()
         }
     }
@@ -76,16 +77,16 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
-        addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
-        fingerprintTextView.text = PlanckUtils.formatFpr(firstIdentity.fpr)
+        binding.addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        binding.fingerprintTextView.text = PlanckUtils.formatFpr(firstIdentity.fpr)
     }
 
     override fun showLayout() {
-        layout.visibility = View.VISIBLE
+        binding.layout.visibility = View.VISIBLE
     }
 
     override fun hideLayout() {
-        layout.visibility = View.GONE
+        binding.layout.visibility = View.GONE
     }
 
     override fun showCorrectKeyImport() {
@@ -110,13 +111,13 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showLoading() {
-        confirmationLayout.visibility = View.INVISIBLE
-        keyImportLoadingLayout.visibility = View.VISIBLE
+        binding.confirmationLayout.visibility = View.INVISIBLE
+        binding.keyImportProgressDialog.keyImportLoadingLayout.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-        keyImportLoadingLayout.visibility = View.GONE
-        confirmationLayout.visibility = View.VISIBLE
+        binding.keyImportProgressDialog.keyImportLoadingLayout.visibility = View.GONE
+        binding.confirmationLayout.visibility = View.VISIBLE
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {

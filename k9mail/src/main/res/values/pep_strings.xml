@@ -357,6 +357,11 @@
         <item quantity="other">%1$d unsecure recipients. Tap here to remove them.</item>
     </plurals>
 
+    <plurals name="compose_unknown_recipients_warning">
+        <item quantity="one">%1$d unknown recipient.</item>
+        <item quantity="other">%1$d unknown recipients.</item>
+    </plurals>
+
     <string name="waiting_for_provisioning">Waiting for provisioning</string>
     <string name="provisioning_in_progress">Provisioning in progress</string>
     <string name="initializing_application">Initializing application</string>
@@ -367,10 +372,10 @@
     <string name="account_setup_oauth_description">To use this email account with planck, you need to sign in and grant the app access to your emails.</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
     <string name="account_setup_oauth_sign_in">Sign in</string>
-    <string name="account_setup_choose_auth_sign_in_with_microsoft">Sign in with Microsoft</string>
-    <string name="account_setup_choose_auth_sign_in_with_password">Sign in with password</string>
+    <string name="account_setup_choose_auth_sign_in_with_microsoft">Continue with Microsoft</string>
+    <string name="account_setup_choose_auth_sign_in_with_password">Continue with Other</string>
+    <string name="account_setup_oauth_sign_in_with_google">Continue with Google</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
-    <string name="account_setup_oauth_sign_in_with_google">Sign in with Google</string>
     <string name="account_setup_failed_dlg_oauth_flow_canceled">Authorization canceled</string>
     <string name="account_setup_failed_dlg_oauth_flow_failed">Authorization failed with the following error: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
@@ -383,7 +388,7 @@
     <string name="mdm_settings_feedback_share_action" translatable="false">Share</string>
     <string name="account_setup_failed_dlg_could_not_discover_mail_settings">Could not discover mail settings. Please contact your IT support to get the custom mail settings needed for this account.</string>
     <string name="account_select_auth_welcome_to">Welcome to</string>
-    <string name="account_select_auth_please_select_the_option_to_sign_in">Please select the option to sign in</string>
+    <string name="account_select_auth_please_select_the_option_to_sign_in">Select your email account</string>
     <string name="error_happened_restart_app">An error happened, please restart app.</string>
     <string name="needs_your_permission_to_work">NEEDS YOUR PERMISSION TO WORK</string>
     <string name="account_setup_failed_dlg_oauth_wrong_email_address">The email address %1$s used for login is not allowed by your IT admin. Please use the provided %2$s instead to use the app.</string>
@@ -462,5 +467,15 @@
     <string name="account_delete_dlg_success">Account %s was removed.</string>
     <string name="device_cannot_create_pinned_shortcut_feedback">The device does not support this kind of shortcut.</string>
     <string name="shortcut_feedback_account_removed">This account was removed from the app.</string>
+    <string name="passphrase_wrong_input_feedback">Passphrase needs to contain at least 12 characters, including uppercase and lowercase letters, numbers and symbols.</string>
+    <plurals name="compose_banner_remove_unsecure_recipients_action">
+        <item quantity="one">Remove recipient</item>
+        <item quantity="other">Remove recipients</item>
+    </plurals>
+    <string name="compose_banner_invite_unsecure_recipients_action">Invite to Planck</string>
+    <string name="planck_invite_title">Invitation to Planck</string>
+    <string name="planck_invite_text"><![CDATA[You have been invited to use <a href="https://www.planck.security/get-started">Planck</a>. You can reply to this message from the <a href="https://www.planck.security/get-started">Planck</a> mail client to accept the invitation and start your secure communication.]]></string>
+    <string name="invitation_sent_and_draft_saved">Invite sent and message saved as draft.</string>
+    <string name="account_settings_signature_summary">Use a signature for new mails.</string>
 
 </resources>

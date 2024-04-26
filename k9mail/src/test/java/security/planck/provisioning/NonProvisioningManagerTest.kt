@@ -47,7 +47,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
 
     @Before
     fun setUp() {
-        assumeFalse(BuildConfig.IS_ENTERPRISE)
+        assumeFalse(BuildConfig.IS_OFFICIAL)
         mockkObject(PlanckProviderImplKotlin)
 
         manager.addListener(listener)
@@ -61,7 +61,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `startProvisioning() does not provision app in endUser variant`() {
+    fun `startProvisioning() does not provision app in dev variant`() {
         manager.startProvisioning()
 
 

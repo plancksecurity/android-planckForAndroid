@@ -35,7 +35,7 @@ class AboutActivity : K9Activity() {
         binding = ActivityAboutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setUpToolbar(true)
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_OFFICIAL) {
             binding.icon.setOnClickListener {
                 if (++iconClickCount >= UNLOCK_SETTINGS_SCREEN_CLICK_COUNT) {
                     iconClickCount = 0

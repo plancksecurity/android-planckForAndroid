@@ -15,19 +15,22 @@ import timber.log.Timber;
 
 public class FeedbackTools {
 
-    public static void showShortFeedback(View rootView, String message) {
+    public static Snackbar showShortFeedback(View rootView, String message) {
         if (rootView != null) {
-            Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT).show();
+            Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT);
+            snackbar.show();
+            return snackbar;
         } else {
             Timber.e(message);
+            return null;
         }
     }
 
-    public static void showLongFeedback(View rootView, String message) {
-        showLongFeedback(rootView, message, Snackbar.LENGTH_LONG, 0);
+    public static Snackbar showLongFeedback(View rootView, String message) {
+        return showLongFeedback(rootView, message, Snackbar.LENGTH_LONG, 0);
     }
 
-    public static void showLongFeedback(View rootView, String message, int duration, int maxLines) {
+    public static Snackbar showLongFeedback(View rootView, String message, int duration, int maxLines) {
         if (rootView != null) {
             Snackbar snackbar = Snackbar.make(rootView, message, duration);
             View snackbarView = snackbar.getView();
@@ -36,8 +39,10 @@ public class FeedbackTools {
                 snackTextView.setMaxLines(maxLines);
             }
             snackbar.show();
+            return snackbar;
         } else {
             Timber.e(message);
+            return null;
         }
     }
 

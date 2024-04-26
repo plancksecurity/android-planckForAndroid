@@ -282,7 +282,7 @@ public class FolderList extends K9ListActivity {
                 onOpenFolder(((FolderInfoHolder)mAdapter.getItem(position)).name);
             }
         });
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_OFFICIAL) {
             registerForContextMenu(mListView);
         }
 
@@ -623,7 +623,7 @@ public class FolderList extends K9ListActivity {
             search.addAllowedFolder(folder);
             MessageList.actionDisplaySearch(this, search, false, false, true);
         }
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_OFFICIAL) {
             finish();
         }
     }

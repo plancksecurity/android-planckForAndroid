@@ -21,7 +21,7 @@ import io.cucumber.junit.CucumberOptions;
  * 3- Tag your scenarios in the feature files with new specific tags for each flavor and include them in the flavor's version of this file
  *      i.e. Add tag @flavor-one to a test scenario and modify the flavor's CucumberTestCase.java with tags={"~@manual", "@flavor-one"}
  */
-@CucumberOptions(features = {BuildConfig.IS_ENTERPRISE ? "features/cucumber_tests" : "features/AATest.feature"},
+@CucumberOptions(features = {BuildConfig.IS_OFFICIAL ? "features/cucumber_tests" : "features/AATest.feature"},
         glue = {"com.fsck.k9.planck.ui.activities.cucumber.steps"}
          ,tags={"~@ignore"}
 )
