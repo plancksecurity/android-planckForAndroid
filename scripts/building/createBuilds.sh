@@ -102,28 +102,32 @@ checkCurrentVersion
 rm -rf k9mail/build/v*
 mkdir k9mail/build/"$VERSION"
 mkdir k9mail/build/"$VERSION"/prod
-mkdir k9mail/build/"$VERSION"/prod/only\ dev/
+#mkdir k9mail/build/"$VERSION"/prod/only\ dev/
 mkdir k9mail/build/"$VERSION"/Customer
 mkdir k9mail/build/"$VERSION"/Customer/secuvera
 mkdir k9mail/build/"$VERSION"/Customer/genese
 
 # GENERAL RELEASE
 rm -rf k9mail/build/outputs
-enableDev
+#enableDev
+disableDev
 ./gradlew assemble
 ./gradlew bundle
 
-rm k9mail/build/outputs/apk/dev/debug/*v7a*
-rm k9mail/build/outputs/apk/dev/debug/*x86*
-mv k9mail/build/outputs/apk/dev k9mail/build/"$VERSION"/prod/only\ dev/
+#rm k9mail/build/outputs/apk/dev/debug/*v7a*
+#rm k9mail/build/outputs/apk/dev/debug/*x86*
+#mv k9mail/build/outputs/apk/dev k9mail/build/"$VERSION"/prod/only\ dev/
 rm k9mail/build/outputs/apk/enterprise/debug/*v7a*
 rm k9mail/build/outputs/apk/enterprise/debug/*x86*
 rm k9mail/build/outputs/apk/enterprise/release/*v7a*
 rm k9mail/build/outputs/apk/enterprise/release/*x86*
-rm -rf k9mail/build/outputs/apk/play
+rm -rf k9mail/build/outputs/apk/play/release
+rm -rf k9mail/build/outputs/apk/play/debug/*v7a* # keep play debug apk for testing, never release
+rm -rf k9mail/build/outputs/apk/play/debug/*x86*
 mv k9mail/build/outputs/apk k9mail/build/"$VERSION"/prod/
 rm -rf k9mail/build/outputs/bundle/dev*
 rm -rf k9mail/build/outputs/bundle/enterprise*
+rm -rf k9mail/build/outputs/bundle/playDebug  # only need play release bundle to publish, not debug
 mv k9mail/build/outputs/bundle k9mail/build/"$VERSION"/prod/
 
 # SECUVERA
