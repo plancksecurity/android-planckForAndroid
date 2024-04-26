@@ -289,7 +289,7 @@ android {
         def names = variant.getFlavors()*.name
         def type = variant.getBuildType().name
         // disallow debug builds for play flavor, as it is same as enterprise flavor. Just to avoid duplication.
-        if ((names.contains('dev') && type == 'release') || ((names.contains('play') || names.contains('demo')) && type != 'release')) {
+        if ((names.contains('dev') && type == 'release') || (names.contains('demo') && type != 'release')) {
             variant.setIgnore(true)
         }
     }
