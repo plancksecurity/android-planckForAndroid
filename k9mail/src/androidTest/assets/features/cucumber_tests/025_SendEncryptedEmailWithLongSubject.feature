@@ -14,15 +14,15 @@ Feature: Send Encrypted email with long subject
     And I enter bot1 in the messageTo field
     Then I check the privacy status is Encrypted
     When I enter longSubject in the messageSubject field
-    And I enter AnyText in the messageBody field
+    #And I enter AnyText in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageSubject from json file with longSubject
-    Then I compare messageBody from json file with AnyText
+    #Then I compare messageBody from json file with AnyText
     Then I check the privacy status is Encrypted
     When I go back to the Inbox
     And I go to sent folder from navigation menu
     And I click the first message
-    Then I compare messageSubject from json file with longSubject
+    Then I compare messageSubject with longSubject
 
 

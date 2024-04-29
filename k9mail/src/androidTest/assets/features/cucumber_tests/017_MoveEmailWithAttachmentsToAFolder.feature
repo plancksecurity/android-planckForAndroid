@@ -21,7 +21,7 @@ Feature: Move email with attachments to a folder
     And I go back to the Inbox
     And I go to spam folder from navigation menu
     And I click the first message
-    Then I compare messageBody from json file with ThisMessageWithAttachmentWillBeMovedToAnotherFolder
+    Then I compare messageBody with ThisMessageWithAttachmentWillBeMovedToAnotherFolder
     And I check the privacy status is Trusted
     And I open 3 attached files
     And I press back
