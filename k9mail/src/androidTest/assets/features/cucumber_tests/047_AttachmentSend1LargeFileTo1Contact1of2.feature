@@ -7,7 +7,7 @@ Feature: Attachment Send 1 Large File To 1 Contact Part1
 
   Scenario: Cucumber Attachment Send 1 Large File To 1 Contact Part1
 
-    And I remove all messages
+    #And I remove all messages
     And I click compose message
     And I send 1 message to bot5 with subject LargeAttachment and body LargeAttachment
     And I click compose message
