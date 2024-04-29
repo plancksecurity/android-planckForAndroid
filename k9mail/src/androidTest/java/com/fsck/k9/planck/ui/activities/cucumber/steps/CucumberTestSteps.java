@@ -196,9 +196,7 @@ public class CucumberTestSteps {
                         waitForIdle();
                         onView(withText(R.string.discard_action)).perform(click());
                     }
-                    if (BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan please remove condition, make general
-                        testUtils.pressBack();
-                    }
+                    testUtils.pressBack();
                     waitForIdle();
                 }
             }
@@ -214,7 +212,7 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        /*if (BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan please remove condition, make general
+        /*
             String account = testUtils.getAccountAddress(0);
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
                 account = testUtils.getSyncAccount(0);
@@ -227,7 +225,7 @@ public class CucumberTestSteps {
             I_set_string_setting("account_email_address", account);
             I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
             I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
-        }*/
+        */
         waitForIdle();
         try {
             if (!exists(onView(withId(R.id.message_list)))) {
@@ -705,7 +703,7 @@ public class CucumberTestSteps {
         testUtils.longClick("openCalendarImg");
         waitForIdle();
         if (viewIsDisplayed(calendarButton)) {
-            fail("Calendar Button is not openning the calendar");
+            fail("Calendar Button is not opening the calendar");
         }
         device.pressBack();
         waitForIdle();
@@ -1712,33 +1710,31 @@ public class CucumberTestSteps {
         if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
             return;
         }
-        if (BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan please remove condition, make general
-            switch (status) {
-                case "pEpRatingUnencrypted":
-                    if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        fail("Showing a rating that is not " + status);
-                    }
-                    if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")))) {
-                        fail("Showing a text that is not " + resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
-                    }
-                    //I_check_toolBar_color_is("planck_yellow");
-                    return;
-                case "pEpRatingUndefined":
-                    if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        fail("Showing a rating when there is no recipient");
-                    }
-                    return;
-                case "pEpRatingUnsecure":
-                    if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        fail("Not showing Unsecure status");
-                    }
-                    if (pep_enable_privacy_protection) {
-                        //I_check_toolBar_color_is("planck_red");
-                    } else {
-                        //I_check_toolBar_color_is("pep_gray");
-                    }
-                    return;
-            }
+        switch (status) {
+            case "pEpRatingUnencrypted":
+                if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                    fail("Showing a rating that is not " + status);
+                }
+                if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")))) {
+                    fail("Showing a text that is not " + resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
+                }
+                //I_check_toolBar_color_is("planck_yellow");
+                return;
+            case "pEpRatingUndefined":
+                if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                    fail("Showing a rating when there is no recipient");
+                }
+                return;
+            case "pEpRatingUnsecure":
+                if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                    fail("Not showing Unsecure status");
+                }
+                if (pep_enable_privacy_protection) {
+                    //I_check_toolBar_color_is("planck_red");
+                } else {
+                    //I_check_toolBar_color_is("pep_gray");
+                }
+                return;
         }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
@@ -2584,9 +2580,7 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        if (!BuildConfig.IS_OFFICIAL) { // FIXME: 22/4/24 @juan always enterprise, please remove
-            testUtils.selectAccount(folder, accountToStart);
-        }
+        testUtils.selectAccount(folder, accountToStart);
     }
 
     private void getBotsList(){
@@ -2988,12 +2982,6 @@ public class CucumberTestSteps {
                 Timber.i("There are no more messages to remove");
             }
             waitForIdle();
-        }
-        if (!BuildConfig.IS_OFFICIAL) {
-            while (!exists(onView(withId(R.id.available_accounts_title)))) {
-                testUtils.pressBack();
-                waitForIdle();
-            }
         }
         testUtils.getMessageListSize();
     }
