@@ -127,6 +127,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.appendTextInTextView;
+import static com.fsck.k9.planck.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.planck.ui.activities.UtilsPackage.hasValueEqualTo;
@@ -644,9 +645,7 @@ public class TestUtils {
                 default:
                     break;
             }
-            if (BuildConfig.IS_OFFICIAL) {
-                totalAccounts = 1;
-            }
+            totalAccounts = 1;
         }
     }
 
@@ -1138,21 +1137,18 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
                 }
-                if (BuildConfig.IS_OFFICIAL) {
-                    automaticAccount();
+                automaticAccount();
+                if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
+                    manualAccount();
                 } else {
-                    if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
-                        manualAccount();
-                    } else {
-                        automaticAccount();
-                    }
+                    automaticAccount();
                 }
-                try {
-                    waitForIdle();
-                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account), true);
-                } catch (Exception e) {
-                    Timber.i("Can not fill account description");
-                }
+            }
+            try {
+                waitForIdle();
+                accountDescription(testConfig.getUsername(account), testConfig.getUsername(account), true);
+            } catch (Exception e) {
+                Timber.i("Can not fill account description");
             }
         } catch (Exception ex) {
             Timber.i("Ignored", "Exists account");
@@ -2606,10 +2602,8 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_OFFICIAL) {
-                if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
-                    fail("Status is not shown");
-                }
+            if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
+                fail("Status is not shown");
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
@@ -2630,10 +2624,8 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_OFFICIAL) {
-                if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
-                    fail("Status is not shown");
-                }
+            if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
+                fail("Status is not shown");
             }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
@@ -3680,7 +3672,6 @@ public class TestUtils {
                     js = readJsonFile(listOfFiles[0].getName());
                 }
             }
-            Timber.i("Estoy en fin While");
             JSONObject jsonObject = new JSONObject(js);
             return jsonObject;
         } catch (JSONException e) {
@@ -4070,6 +4061,15 @@ public class TestUtils {
                         webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
                     }
                     bodyRead = true;
+                }
+                Timber.i("Estoy en Compare 0: " + webViewText[0].equals(""));
+                if (webViewText[0].equals("")) {
+                    BySelector selector = By.clazz("android.widget.TextView");
+                    for (UiObject2 object : device.findObjects(selector)) {
+                        if (object.getText().contains(textToCompare)) {
+                            webViewText[0] = object.getText();
+                        }
+                    }
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
@@ -5122,11 +5122,8 @@ public class TestUtils {
             case "rating":
             case "rating_string":
                 try {
-                    Timber.i("Estoy en  rating 1");
                     if (json == null) {
-                        Timber.i("Estoy en rating 2");
                         json = getJSON();
-                        Timber.i("Estoy en rating 3");
                     }
                     rating = json.getJSONObject("decryption_results").get(object).toString();
                 } catch (JSONException e) {
@@ -5136,10 +5133,8 @@ public class TestUtils {
             case "messageSubject":
             case "messageBody":
                 try {
-                    Timber.i("Estoy en 1: " + json);
                     while (json == null) {
                         String js = readJsonFile("results.json");
-                        Timber.i("Estoy en 2");
                         if (js.equals("no json file")) {
                             return;
                         }
@@ -5205,14 +5200,11 @@ public class TestUtils {
                 throw new RuntimeException(e);
             }
             downloadAttachedFile(fileName);
-            Timber.i("Estoy en read1: " + directory.listFiles().length);
             waitForIdle();
             listOfFiles = directory.listFiles();
         }
         if (listOfFiles != null) {
-            Timber.i("Estoy en read Pass");
         }
-        Timber.i("Estoy en read2");
         File newFile = new File(directory, listOfFiles[0].getName());
         if(!newFile.exists())
         {
@@ -5224,16 +5216,13 @@ public class TestUtils {
             InputStreamReader inputStreamReader = new InputStreamReader(fin);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String receiveString;
-            Timber.i("Estoy en 3");
             while ((receiveString = bufferedReader.readLine()) != null) {
                 jsonText.append(receiveString);
             }
-            Timber.i("Estoy en 4");
             fin.close();
         } catch (Exception e) {
             Timber.i("Error reading config file, trying again");
         }
-        Timber.i("Estoy en 5");
         return jsonText.toString();
     }
 
