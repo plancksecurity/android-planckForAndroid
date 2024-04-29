@@ -18,12 +18,12 @@ Feature: Copy email with attachment to a folder
     And I wait for the message and click it
     And I copy the message to the folder spam
     Then I check the privacy status is Trusted
-    And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
+    And I compare messageBody with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
     And I open 3 attached files
     When I go back to the Inbox
     And I go to spam folder from navigation menu
     And I click the first message
-    And I compare messageBody from json file with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
+    And I compare messageBody with ThisMessageWithAttachmentWillBeCopiedToAnotherFolder
     Then I check the privacy status is Trusted
     And I open 3 attached files
     And I press back
