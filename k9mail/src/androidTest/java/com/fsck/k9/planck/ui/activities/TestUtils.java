@@ -863,8 +863,6 @@ public class TestUtils {
                 cucumberBody = specialCharacters();
                 break;
             default:
-                compareMessageBody(cucumberBody);
-                break;
         }
         compareMessageBodyLongText(cucumberBody);
     }
@@ -3683,7 +3681,6 @@ public class TestUtils {
                     js = readJsonFile(listOfFiles[0].getName());
                 }
             }
-            Timber.i("Estoy en fin While");
             JSONObject jsonObject = new JSONObject(js);
             return jsonObject;
         } catch (JSONException e) {
@@ -4066,7 +4063,6 @@ public class TestUtils {
                 swipeUpScreen();
                 while (webViewText[0] == null) {
                     waitForIdle();
-                    Timber.i("Trying to find webView text");
                     if (wb.getChildren().get(0).getText() != null) {
                         webViewText = wb.getChildren().get(0).getText().split("\n");
                     } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
@@ -5125,11 +5121,8 @@ public class TestUtils {
             case "rating":
             case "rating_string":
                 try {
-                    Timber.i("Estoy en  rating 1");
                     if (json == null) {
-                        Timber.i("Estoy en rating 2");
                         json = getJSON();
-                        Timber.i("Estoy en rating 3");
                     }
                     rating = json.getJSONObject("decryption_results").get(object).toString();
                 } catch (JSONException e) {
@@ -5208,14 +5201,11 @@ public class TestUtils {
                 throw new RuntimeException(e);
             }
             downloadAttachedFile(fileName);
-            Timber.i("Estoy en read1: " + directory.listFiles().length);
             waitForIdle();
             listOfFiles = directory.listFiles();
         }
         if (listOfFiles != null) {
-            Timber.i("Estoy en read Pass");
         }
-        Timber.i("Estoy en read2");
         File newFile = new File(directory, listOfFiles[0].getName());
         if(!newFile.exists())
         {
@@ -5227,16 +5217,13 @@ public class TestUtils {
             InputStreamReader inputStreamReader = new InputStreamReader(fin);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String receiveString;
-            Timber.i("Estoy en 3");
             while ((receiveString = bufferedReader.readLine()) != null) {
                 jsonText.append(receiveString);
             }
-            Timber.i("Estoy en 4");
             fin.close();
         } catch (Exception e) {
             Timber.i("Error reading config file, trying again");
         }
-        Timber.i("Estoy en 5");
         return jsonText.toString();
     }
 

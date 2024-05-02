@@ -678,14 +678,7 @@ public class CucumberTestSteps {
                         "Organizer Name (organizer@mail.es) [Organizer]")) {
             fail("Wrong Calendar Text");
         }
-        BySelector selector = By.clazz("android.webkit.WebView");
-        for (UiObject2 webv : device.findObjects(selector)) {
-            if (webv.getParent().getResourceName() != null &&
-                    webv.getParent().getResourceName().equals(BuildConfig.APPLICATION_ID+":id/calendarInviteLayout") &&
-                    !webv.getChildren().get(0).getChildren().get(0).getText().contains(bodyText)) {
-                fail("Wrong message body");
-            }
-        }
+        I_compare_body(bodyText);
         waitForIdle();
         ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
         onView(withId(R.id.eventLocation)).perform(openLinkWithText("https://www.planck.security"));
