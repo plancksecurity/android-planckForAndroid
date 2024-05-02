@@ -862,8 +862,6 @@ public class TestUtils {
                 cucumberBody = specialCharacters();
                 break;
             default:
-                compareMessageBody(cucumberBody);
-                break;
         }
         compareMessageBodyLongText(cucumberBody);
     }
@@ -4064,7 +4062,6 @@ public class TestUtils {
                 swipeUpScreen();
                 while (webViewText[0] == null) {
                     waitForIdle();
-                    Timber.i("Trying to find webView text");
                     if (wb.getChildren().get(0).getText() != null) {
                         webViewText = wb.getChildren().get(0).getText().split("\n");
                     } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
