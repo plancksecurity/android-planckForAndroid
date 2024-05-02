@@ -535,12 +535,12 @@ public class CucumberTestSteps {
     @When("^I check unsecure warnings are there")
     public void I_check_unsecure_warnings_are_there() {
         // This method requires 2 or more Unsecure recipients to check the red color in the recipients and in the "+X"
-        if (!viewIsDisplayed(onView(withId(R.id.user_action_banner)))) {
+        if (!viewIsDisplayed(onView(withId(R.id.banner_text)))) {
             fail("Is not showing the Alert message");
         }
         String unsecureText = resources.getQuantityString(testUtils.pluralsStringToID("compose_unsecure_delivery_warning"), 2);
         unsecureText = unsecureText.substring(4);
-        if (!getTextFromView(onView(withId(R.id.user_action_banner))).contains(unsecureText)) {
+        if (!getTextFromView(onView(withId(R.id.banner_text))).contains(unsecureText)) {
             fail("The text in the Alert message is not correct");
         }
         if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
