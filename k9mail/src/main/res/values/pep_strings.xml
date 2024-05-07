@@ -474,7 +474,147 @@
     </plurals>
     <string name="compose_banner_invite_unsecure_recipients_action">Invite to Planck</string>
     <string name="planck_invite_title">Invitation to Planck</string>
-    <string name="planck_invite_text"><![CDATA[You have been invited to use <a href="https://www.planck.security/get-started">Planck</a>. You can reply to this message from the <a href="https://www.planck.security/get-started">Planck</a> mail client to accept the invitation and start your secure communication.]]></string>
+    <string name="planck_invite_text"><![CDATA[
+    <!DOCTYPE html>
+
+<html lang="en" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<title></title>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]--><!--[if !mso]><!--><!--<![endif]-->
+<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		a[x-apple-data-detectors] {
+			color: inherit !important;
+			text-decoration: inherit !important;
+		}
+
+		#MessageViewBody a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		p {
+			line-height: inherit
+		}
+
+		.desktop_hide,
+		.desktop_hide table {
+			mso-hide: all;
+			display: none;
+			max-height: 0px;
+			overflow: hidden;
+		}
+
+		.image_block img+div {
+			display: none;
+		}
+
+		@media (max-width:620px) {
+			.mobile_hide {
+				display: none;
+			}
+
+			.row-content {
+				width: 100% !important;
+			}
+
+			.stack .column {
+				width: 100%;
+				display: block;
+			}
+
+			.mobile_hide {
+				min-height: 0;
+				max-height: 0;
+				max-width: 0;
+				overflow: hidden;
+				font-size: 0px;
+			}
+
+			.desktop_hide,
+			.desktop_hide table {
+				display: table !important;
+				max-height: none !important;
+			}
+		}
+	</style>
+</head>
+<body style="background-color: #ffffff; margin: 0; padding: 0; -webkit-text-size-adjust: none; text-size-adjust: none;">
+<table border="0" cellpadding="0" cellspacing="0" class="nl-container" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff;" width="100%">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+<tbody>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 600px; margin: 0 auto;" width="600">
+<tbody>
+<tr>
+<td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
+<table border="0" cellpadding="0" cellspacing="0" class="image_block block-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+<tr>
+<td class="pad" style="width:100%;">
+<div align="center" class="alignment" style="line-height:10px">
+<div style="max-width: 600px;"><img height="auto" src="cid:email_gradient" style="display: block; height: auto; border: 0; width: 100%;" width="600"/></div>
+</div>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="10" cellspacing="0" class="paragraph_block block-2" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;" width="100%">
+<tr>
+<td class="pad">
+<div style="color:#999999;direction:ltr;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:left;mso-line-height-alt:19.2px;">
+<p style="margin: 0;">Hi, <br/>SENDER_EMAIl_ADDRESS wants to communicate securely with Planck, using full end-to-end encryption and sender verification for email.</p>
+</div>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="10" cellspacing="0" class="button_block block-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+<tr>
+<td class="pad">
+<div align="center" class="alignment"><!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.planck.security/get-started" style="height:42px;width:207px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#7747FF">
+<w:anchorlock/>
+<v:textbox inset="0px,0px,0px,0px">
+<center style="color:#ffffff; font-family:Arial, sans-serif; font-size:16px">
+<![endif]--><a href="https://www.planck.security/get-started" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#7747FF;border-radius:4px;width:auto;border-top:0px solid transparent;font-weight:400;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:Arial, Helvetica, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Get from the Play Store</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="10" cellspacing="0" class="paragraph_block block-4" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;" width="100%">
+<tr>
+<td class="pad">
+<div style="color:#999999;direction:ltr;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:left;mso-line-height-alt:19.2px;">
+<p style="margin: 0;">It is super simple to setup a private channel between you and SENDER_EMAIl_ADDRESS: <br/><br/>1) Download your copy of Planck and start the app <br/>2) Connect to your inbox <br/>3) Open this message in the Planck app and reply to SENDER_EMAIl_ADDRESS. This performs a secure handshake.</p>
+</div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><!-- End -->
+</body>
+</html>
+]]></string>
     <string name="invitation_sent_and_draft_saved">Invite sent and message saved as draft.</string>
     <string name="account_settings_signature_summary">Use a signature for new mails.</string>
 

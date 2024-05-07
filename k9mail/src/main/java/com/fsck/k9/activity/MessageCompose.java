@@ -834,7 +834,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setTo(recipients)
                 .setIdentity(identity)
                 .setMessageFormat(currentMessageFormat)
-                .setText(getString(R.string.planck_invite_text))
+                .setText(getString(R.string.planck_invite_text, identity.getEmail()))
                 .setSignature(signatureView.getCharacters())
                 .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
                 .allowHtmlTags();
