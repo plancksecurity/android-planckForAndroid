@@ -34,17 +34,16 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -62,7 +61,6 @@ import com.fsck.k9.activity.compose.PgpInlineDialog.OnOpenPgpInlineChangeListene
 import com.fsck.k9.activity.compose.PgpSignOnlyDialog;
 import com.fsck.k9.activity.compose.RecipientMvpView;
 import com.fsck.k9.activity.compose.RecipientPresenter;
-import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
@@ -123,6 +121,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import kotlin.jvm.functions.Function0;
 import security.planck.mdm.RestrictionsViewModel;
+import security.planck.resources.RawResourceAttachmentCreator;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
@@ -130,7 +129,6 @@ import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
-import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
 import security.planck.ui.verifypartner.VerifyPartnerFragment;
 import security.planck.ui.verifypartner.VerifyPartnerFragmentKt;
 import timber.log.Timber;
@@ -185,7 +183,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
-    private static final int DEBUG_STACK_TRACE_DEPTH = 1;
+    private static final String INVITATION_ATTACHMENT_NAME = "email_gradient";
+    private static final String INVITATION_ATTACHMENT_MIME_TYPE = "image/png";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -281,6 +280,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     DisplayHtml displayHtml;
     @Inject
     PlanckProvider planck;
+    @Inject
+    RawResourceAttachmentCreator invitationAttachmentCreator;
 
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private ComposeBanner composeBanner;
@@ -828,16 +829,32 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
         MessageBuilder builder = SimpleMessageBuilder.newInstance();
+        String invitationTemplate = getString(R.string.planck_invite_text);
+        String invitationText = invitationTemplate.replace("SENDER_EMAIl_ADDRESS", identity.getEmail());
+        Map<String, Attachment> invitationAttachments = createInvitationAttachment();
+
         return builder.setSubject(getString(R.string.planck_invite_title))
                 .setSentDate(new Date())
                 .setHideTimeZone(K9.hideTimeZone())
                 .setTo(recipients)
                 .setIdentity(identity)
                 .setMessageFormat(currentMessageFormat)
-                .setText(getString(R.string.planck_invite_text, identity.getEmail()))
+                .setText(invitationText)
+                .setInlineAttachments(invitationAttachments)
                 .setSignature(signatureView.getCharacters())
                 .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
                 .allowHtmlTags();
+    }
+
+    @NonNull
+    private Map<String, Attachment> createInvitationAttachment() {
+        Attachment invitationAttachment = invitationAttachmentCreator.createAttachment(
+                R.raw.email_gradient,
+                INVITATION_ATTACHMENT_NAME,
+                INVITATION_ATTACHMENT_MIME_TYPE);
+        Map<String, Attachment> inlineAttachments = new HashMap<>(1);
+        inlineAttachments.put(invitationAttachment.name, invitationAttachment);
+        return inlineAttachments;
     }
 
     @Nullable
