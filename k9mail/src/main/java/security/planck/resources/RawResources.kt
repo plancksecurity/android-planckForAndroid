@@ -8,7 +8,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import javax.inject.Inject
 
-class RawResourceToFile @Inject constructor(
+class RawResources @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     fun copyRawResourceToFile(@RawRes resourceId: Int, outputFileName: String): File {

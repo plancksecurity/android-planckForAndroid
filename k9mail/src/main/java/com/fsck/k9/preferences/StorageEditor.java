@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 
 import android.os.SystemClock;
 
+import javax.annotation.Nullable;
+
 import timber.log.Timber;
 
 
@@ -126,12 +128,16 @@ public class StorageEditor {
         ongoingDecryptMessagesStorage.removeMessageId(messageId);
     }
 
-    public void addCouldNotDecryptMessageId(String messageId) {
-        couldNotDecryptMessagesStorage.addMessageId(messageId);
+    public void addCouldNotDecryptMessageId(@Nullable String messageId) {
+        if (messageId != null) {
+            couldNotDecryptMessagesStorage.addMessageId(messageId);
+        }
     }
 
-    public void removeCouldNotDecryptMessageId(String messageId) {
-        couldNotDecryptMessagesStorage.removeMessageId(messageId);
+    public void removeCouldNotDecryptMessageId(@Nullable String messageId) {
+        if (messageId != null) {
+            couldNotDecryptMessagesStorage.removeMessageId(messageId);
+        }
     }
 
     public void addOngoingDecryptMessageTempFilePaths(Collection<String> filePaths) {

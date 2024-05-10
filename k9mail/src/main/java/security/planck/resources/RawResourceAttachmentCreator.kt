@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class RawResourceAttachmentCreator @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val resourceToFile: RawResourceToFile
+    private val resourceToFile: RawResources
 ) {
     fun createAttachment(
         @RawRes resourceId: Int,

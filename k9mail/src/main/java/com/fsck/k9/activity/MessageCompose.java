@@ -830,7 +830,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
         MessageBuilder builder = SimpleMessageBuilder.newInstance();
         String invitationTemplate = getString(R.string.planck_invite_text);
-        String invitationText = invitationTemplate.replace("SENDER_EMAIl_ADDRESS", identity.getEmail());
+        String invitationText = invitationTemplate.replace("SENDER_EMAIL_ADDRESS", identity.getEmail());
         Map<String, Attachment> invitationAttachments = createInvitationAttachment();
 
         return builder.setSubject(getString(R.string.planck_invite_title))
