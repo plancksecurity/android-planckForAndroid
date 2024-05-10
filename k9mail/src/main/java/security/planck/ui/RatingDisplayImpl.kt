@@ -42,9 +42,10 @@ class RatingDisplayImpl : RatingDisplay() {
         ),
         RatingDisplayHolder(
             ratingValue = Rating.pEpRatingHaveNoKey.value,
-            textRes = R.string.pep_rating_none,
-            colorRes = R.color.planck_no_color,
-            visible = false
+            textRes = R.string.pep_rating_found_no_key,
+            colorRes = R.color.planck_red,
+            iconRes = R.drawable.ico_dangerous_under_attack,
+            visible = true
         ),
         RatingDisplayHolder(
             ratingValue = Rating.pEpRatingUnencrypted.value,

@@ -119,7 +119,7 @@
     <string-array name="pep_title">
         <item><!--pEpRatingUndefined--></item>
         <item>@string/pep_rating_cannot_decrypt<!--pEpRatingCannotDecrypt--></item>
-        <item>@string/pep_rating_cannot_decrypt<!--pEpRatingHaveNoKey--></item>
+        <item>@string/pep_rating_found_no_key<!--pEpRatingHaveNoKey--></item>
         <item>@string/pep_rating_not_encrypted<!--pEpRatingUnencrypted--></item>
         <item>@string/pep_rating_weakly_encrypted<!--pEpRatingUnreliable--></item>
         <item>@string/pep_rating_encrypted<!--pEpRatingMediaKeyProtected--></item>
@@ -252,6 +252,7 @@
     <string name="pep_rating_not_encrypted">Not encrypted</string>
     <string name="pep_rating_weakly_encrypted">Weakly Encrypted</string>
     <string name="pep_rating_cannot_decrypt">Cannot decrypt</string>
+    <string name="pep_rating_found_no_key">Found No Key</string>
     <string name="pep_rating_none" translatable="false"/>
     <string name="planck_inactive">planck inactive</string>
     <string name="action_tutorial">Tutorial</string>
