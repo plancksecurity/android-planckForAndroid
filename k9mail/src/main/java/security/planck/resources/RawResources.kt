@@ -3,9 +3,14 @@ package security.planck.resources
 import android.content.Context
 import androidx.annotation.RawRes
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.InputStreamReader
 import javax.inject.Inject
 
 class RawResources @Inject constructor(
@@ -20,5 +25,12 @@ class RawResources @Inject constructor(
             }
         }
         return outputFile
+    }
+
+    fun readTextFileFromRaw(@RawRes resourceId: Int): String = runBlocking {
+        withContext(Dispatchers.IO) {
+            val inputStream = context.resources.openRawResource(resourceId)
+            inputStream.bufferedReader().use { it.readText() }
+        }
     }
 }

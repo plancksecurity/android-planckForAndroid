@@ -544,26 +544,17 @@
             <td align="left">
                 <br/>
                 <br/>
-                <p>
-                    Hi, <br/>
-                    SENDER_EMAIL_ADDRESS wants to communicate securely with you, using Planck - the only solution that provides full end-to-end encryption and sender verification for email.
-		        </p>
+                <p>PARAGRAPH_1</p>
 		        <br/>
-		        <p>You can get your own copy of Planck on the official Google PlayStore.</p>
+		        <p>PARAGRAPH_2</p>
 		        <br/>
                 <br/>
                 <div style="text-align:center; align:center; margin: 20px;">
-                    <a href="https://www.planck.security/get-started" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#7747FF;border-radius:8px;font-weight:400;padding:15px 50px;font-family:Arial, Helvetica, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;line-height:1.5em;margin:auto;" target="_blank">Get from the Play Store</a>
+                    <a href="https://www.planck.security/get-started" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#7747FF;border-radius:8px;font-weight:400;padding:15px 50px;font-family:Arial, Helvetica, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;line-height:1.5em;margin:auto;" target="_blank">BUTTON_TEXT</a>
                 </div>
                 <br/>
                 <br/>
-                <p>
-                    It is super simple to setup a private channel between you and SENDER_EMAIL_ADDRESS:<br/>
-                    <br/>
-                    1) Download your copy of Planck and start the app <br/>
-                    2) Connect to your inbox (where you received this mail) <br/>
-                    3) Open this message in the Planck app and reply to SENDER_EMAIL_ADDRESS. This performs a secure handshake.
-                </p>
+                <p>PARAGRAPH_3</p>
             </td>
         </tr>
     </table>
@@ -572,5 +563,18 @@
 ]]></string>
     <string name="invitation_sent_and_draft_saved">Invite sent and message saved as draft.</string>
     <string name="account_settings_signature_summary">Use a signature for new mails.</string>
+    <string name="planck_invite_paragraph_1"><![CDATA[
+    Hi, <br/>
+    %s wants to communicate securely with you, using Planck - the only solution that provides full end-to-end encryption and sender verification for email.
+]]></string>
+    <string name="planck_invite_paragraph_2">You can get your own copy of Planck on the official Google PlayStore.</string>
+    <string name="planck_invite_button_text">Get from the Play Store</string>
+    <string name="planck_invite_paragraph_3"><![CDATA[
+    It is super simple to setup a private channel between you and %1$s:<br/>
+    <br/>
+    1) Download your copy of Planck and start the app <br/>
+    2) Connect to your inbox (where you received this mail) <br/>
+    3) Open this message in the Planck app and reply to %1$s. This performs a secure handshake.
+]]></string>
 
 </resources>

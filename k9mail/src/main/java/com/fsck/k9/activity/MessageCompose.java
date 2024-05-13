@@ -124,6 +124,7 @@ import security.planck.mdm.RestrictionsViewModel;
 import security.planck.resources.RawResourceAttachmentCreator;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
+import security.planck.resources.RawResources;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
 import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.ui.resources.ResourcesProvider;
@@ -185,6 +186,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
     private static final String INVITATION_ATTACHMENT_NAME = "email_gradient";
     private static final String INVITATION_ATTACHMENT_MIME_TYPE = "image/png";
+    private static final String INVITATION_PARAGRAPH_1_PLACE_HOLDER = "PARAGRAPH_1";
+    private static final String INVITATION_PARAGRAPH_2_PLACE_HOLDER = "PARAGRAPH_2";
+    private static final String INVITATION_BUTTON_TEXT_PLACE_HOLDER = "BUTTON_TEXT";
+    private static final String INVITATION_PARAGRAPH_3_PLACE_HOLDER = "PARAGRAPH_3";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -282,6 +287,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     PlanckProvider planck;
     @Inject
     RawResourceAttachmentCreator invitationAttachmentCreator;
+    @Inject
+    RawResources rawResources;
 
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private ComposeBanner composeBanner;
@@ -829,8 +836,20 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
         MessageBuilder builder = SimpleMessageBuilder.newInstance();
-        String invitationTemplate = getString(R.string.planck_invite_text);
-        String invitationText = invitationTemplate.replace("SENDER_EMAIL_ADDRESS", identity.getEmail());
+        String invitationTemplate = rawResources.readTextFileFromRaw(R.raw.planck_invite);
+        String invitationText = invitationTemplate.replace(
+                INVITATION_PARAGRAPH_1_PLACE_HOLDER,
+                getString(R.string.planck_invite_paragraph_1, identity.getEmail())
+        ).replace(
+                INVITATION_PARAGRAPH_2_PLACE_HOLDER,
+                getString(R.string.planck_invite_paragraph_2)
+        ).replace(
+                INVITATION_BUTTON_TEXT_PLACE_HOLDER,
+                getString(R.string.planck_invite_button_text)
+        ).replace(
+                INVITATION_PARAGRAPH_3_PLACE_HOLDER,
+                getString(R.string.planck_invite_paragraph_3, identity.getEmail())
+        );
         Map<String, Attachment> invitationAttachments = createInvitationAttachment();
 
         return builder.setSubject(getString(R.string.planck_invite_title))
