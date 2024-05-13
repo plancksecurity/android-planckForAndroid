@@ -98,6 +98,7 @@ public class ImapStoreTest {
     public void autoconfigureFolders_withSpecialUseCapability_shouldSetSpecialFolders() throws Exception {
         ImapConnection imapConnection = mock(ImapConnection.class);
         when(imapConnection.hasCapability(Capabilities.SPECIAL_USE)).thenReturn(true);
+        when(imapConnection.hasCapability(Capabilities.LIST_EXTENDED)).thenReturn(true);
         List<ImapResponse> imapResponses = Arrays.asList(
                 createImapResponse("* LIST (\\HasNoChildren) \"/\" \"INBOX\""),
                 createImapResponse("* LIST (\\Noselect \\HasChildren) \"/\" \"[Gmail]\""),
@@ -110,7 +111,7 @@ public class ImapStoreTest {
                 createImapResponse("* LIST (\\HasNoChildren \\Trash) \"/\" \"[Gmail]/Trash\""),
                 createImapResponse("5 OK Success")
         );
-        when(imapConnection.executeSimpleCommand("LIST (SPECIAL-USE) \"\" \"*\"")).thenReturn(imapResponses);
+        when(imapConnection.executeSimpleCommand("LIST \"\" \"*\" RETURN (SPECIAL-USE)")).thenReturn(imapResponses);
 
         imapStore.autoconfigureFolders(imapConnection);
 
