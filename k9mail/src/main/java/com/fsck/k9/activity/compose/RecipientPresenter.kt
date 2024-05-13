@@ -40,6 +40,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
@@ -843,6 +845,17 @@ class RecipientPresenter(
         }
     }
 
+    fun shouldDisplayInvitationFeedback(): Boolean =
+        preferences.storage.getBoolean(SHOULD_SHOW_PLANCK_INVITE_SENT_FEEDBACK, true)
+
+    fun saveShouldDisplayInvitationFeedback(should: Boolean) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                preferences.storage.edit().putBoolean(SHOULD_SHOW_PLANCK_INVITE_SENT_FEEDBACK, should).commit()
+            }
+        }
+    }
+
     companion object {
         private const val STATE_KEY_CC_SHOWN = "state:ccShown"
         private const val STATE_KEY_BCC_SHOWN = "state:bccShown"
@@ -860,6 +873,7 @@ class RecipientPresenter(
         private const val PGP_DIALOG_DISPLAY_THRESHOLD = 2
         private const val ZERO_RECIPIENTS = 0
         private const val ONE_ADDRESS = 1
+        private const val SHOULD_SHOW_PLANCK_INVITE_SENT_FEEDBACK = "shouldShowPlanckInviteSentFeedback"
 
         private fun addressFromStringArray(addresses: Array<String>): Array<Address> {
             val result = ArrayList<Address>(addresses.size)
