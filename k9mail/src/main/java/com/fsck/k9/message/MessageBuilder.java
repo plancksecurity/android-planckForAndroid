@@ -54,6 +54,7 @@ import foundation.pEp.jniadapter.Message;
 
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 
@@ -75,6 +76,7 @@ public abstract class MessageBuilder {
     private SimpleMessageFormat messageFormat;
     private String text;
     private List<Attachment> attachments;
+    private Map<String, Attachment> inlineAttachments;
     private String signature;
     private QuoteStyle quoteStyle;
     private QuotedTextMode quotedTextMode;
@@ -194,7 +196,17 @@ public abstract class MessageBuilder {
             // Let the receiver select either the text or the HTML part.
             bodyPlain = buildText(isDraft, SimpleMessageFormat.TEXT);
             composedMimeMessage.addBodyPart(new MimeBodyPart(bodyPlain, "text/plain"));
-            composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
+
+            MimeBodyPart htmlPart = new MimeBodyPart(body, "text/html");
+            if (inlineAttachments != null && inlineAttachments.size() > 0) {
+                MimeMultipart htmlPartWithInlineImages = new MimeMultipart("multipart/related",
+                        boundaryGenerator.generateBoundary());
+                htmlPartWithInlineImages.addBodyPart(htmlPart);
+                addInlineAttachmentsToMessage(htmlPartWithInlineImages);
+                composedMimeMessage.addBodyPart(new MimeBodyPart(htmlPartWithInlineImages));
+            } else {
+                composedMimeMessage.addBodyPart(htmlPart);
+            }
 
             if (hasAttachments) {
                 // If we're HTML and have attachments, we have a MimeMultipart container to hold the
@@ -268,14 +280,32 @@ public abstract class MessageBuilder {
             MimeBodyPart bp = new MimeBodyPart(body);
 
             addContentType(bp, attachment.contentType, attachment.name);
-            addContentDisposition(bp, attachment.name, attachment.size);
+            addContentDisposition(bp, attachment.name,  "attachment", attachment.size);
 
             mp.addBodyPart(bp);
         }
         addBlobAttachmentsToMessage(mp);
     }
 
-    private void addContentType(MimeBodyPart bodyPart, String contentType, String name) throws MessagingException {
+    private void addInlineAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
+        for (String cid : inlineAttachments.keySet()) {
+            Attachment attachment = inlineAttachments.get(cid);
+            if (attachment.state != Attachment.LoadingState.COMPLETE) {
+                continue;
+            }
+
+            Body body = new TempFileBody(attachment.filename);
+            MimeBodyPart bp = new MimeBodyPart(body);
+
+            addContentType(bp, attachment.contentType, attachment.name);
+            addContentDisposition(bp, "inline", attachment.name, attachment.size);
+            bp.addHeader(MimeHeader.HEADER_CONTENT_ID, cid);
+
+            mp.addBodyPart(bp);
+        }
+    }
+
+    protected void addContentType(MimeBodyPart bodyPart, String contentType, String name) throws MessagingException {
         String value = Headers.contentType(contentType, name);
         bodyPart.addHeader(MimeHeader.HEADER_CONTENT_TYPE, value);
 
@@ -284,8 +314,8 @@ public abstract class MessageBuilder {
         }
     }
 
-    private void addContentDisposition(MimeBodyPart bodyPart, String fileName, Long size) {
-        String value = Headers.contentDisposition("attachment", fileName, size);
+    private void addContentDisposition(MimeBodyPart bodyPart, String disposition, String fileName, Long size) {
+        String value = Headers.contentDisposition(disposition, fileName, size);
         bodyPart.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, value);
     }
 
@@ -424,6 +454,11 @@ public abstract class MessageBuilder {
 
     public MessageBuilder setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+        return this;
+    }
+
+    public MessageBuilder setInlineAttachments(Map<String, Attachment> attachments) {
+        this.inlineAttachments = attachments;
         return this;
     }
 
