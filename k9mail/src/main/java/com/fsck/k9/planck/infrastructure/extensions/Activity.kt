@@ -12,21 +12,22 @@ val formattedVersionForUserManual: String =
 
 
 fun Activity.showUserManual() {
-    showDocsForCurrentVersion(R.string.planck_documentation_url)
+    showDocsForCurrentVersion(R.string.planck_documentation_url, useVersion = true)
 }
 
 fun Activity.showTermsAndConditions() {
     showDocsForCurrentVersion(R.string.planck_terms_and_conditions_url)
 }
 
-private fun Activity.showDocsForCurrentVersion(@StringRes urlResource: Int) {
+private fun Activity.showDocsForCurrentVersion(@StringRes urlResource: Int, useVersion: Boolean = false) {
     val browserIntent = Intent(
         Intent.ACTION_VIEW,
         Uri.parse(
-            getString(
-                urlResource,
-                formattedVersionForUserManual
-            )
+            if (useVersion) {
+                getString(urlResource, formattedVersionForUserManual)
+            } else {
+                getString(urlResource)
+            }
         )
     )
     startActivity(browserIntent)
