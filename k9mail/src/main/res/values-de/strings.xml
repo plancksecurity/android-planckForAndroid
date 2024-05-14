@@ -1082,7 +1082,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="status_no_network">Synchronisierung deaktiviert - Kein Netzwerk</string>
     <string name="account_clear_dlg_instructions_fmt">Lokale Kopien von Nachrichten in <xliff:g id="account">%s</xliff:g> werden entfernt. Kontoeinstellungen bleiben erhalten.</string>
     <string name="account_recreate_dlg_instructions_fmt">Alle lokalen Daten für \\\"<xliff:g id="account">%s</xliff:g>\\\" werden entfernt. Das Konto wird beibehalten.</string>
-    <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$d</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%1$d</xliff:g> the Android Open Source Project.</string>
     <string name="shortcuts_title">planck Konten</string>
     <string name="port_is_out_of_range">Der Port ist ausserhalb des erlaubten Bereichs</string>
     <string name="port_is_empty">Tipp darf nicht leer sein</string>

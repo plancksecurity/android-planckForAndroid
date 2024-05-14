@@ -10,7 +10,7 @@
     <string name="remote_control_desc">Allows this application to control planck activities and settings.</string>
     <!-- Used in the about dialog -->
     <string name="app_authors" translatable="false">The K-9 Dog Walkers, planck Security S.A.</string>
-    <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$d</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%1$d</xliff:g> the Android Open Source Project.</string>
     <!-- Welcome message -->
     <string name="welcome_message_title">Welcome to planck</string>
     <!--<string name="accounts_welcome"><![CDATA[-->
