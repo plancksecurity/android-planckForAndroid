@@ -56,7 +56,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Autoren: <xliff:g id="app_authors">%s</xliff:g></string>
     <string name="app_revision_fmt">Revisionsinformationen: <xliff:g id="app_revision_url">%s</xliff:g></string>
-    <string name="app_libraries">Wir verwenden die folgenden Bibliotheken von Drittanbietern:</string>
+    <string name="app_libraries">Planck baut auf den folgenden Projekten auf:</string>
     <string name="app_emoji_icons">Emoji icons: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_messages_label">E-Mails lesen</string>
     <string name="read_messages_desc">Der Anwendung erlauben, Ihre E-Mails zu lesen.</string>
