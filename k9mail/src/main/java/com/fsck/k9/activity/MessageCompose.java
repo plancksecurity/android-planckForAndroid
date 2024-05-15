@@ -120,10 +120,12 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import kotlin.jvm.functions.Function0;
+import security.planck.dialog.PermanentlyDismissibleDialog;
+import security.planck.dialog.PermanentlyDismissibleDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
-import security.planck.resources.RawResourceAttachmentCreator;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
+import security.planck.resources.RawResourceAttachmentCreator;
 import security.planck.resources.RawResources;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
 import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
@@ -190,6 +192,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final String INVITATION_PARAGRAPH_2_PLACE_HOLDER = "PARAGRAPH_2";
     private static final String INVITATION_BUTTON_TEXT_PLACE_HOLDER = "BUTTON_TEXT";
     private static final String INVITATION_PARAGRAPH_3_PLACE_HOLDER = "PARAGRAPH_3";
+    private static final String INVITE_SENT_FEEDBACK_DIALOG_TAG = "planckInviteSentDialog";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -309,6 +312,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         super.onCreate(savedInstanceState);
         initializeVerifyPartnerResultListener();
         initializeResetPartnerKeyResultListener();
+        initializePlanckInviteSentDialogResultListener();
         uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -573,6 +577,24 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                         String ratingString = result.getString(VerifyPartnerFragment.RESULT_KEY_RATING);
                         if (ratingString != null) {
                             recipientPresenter.handleVerifyPartnerIdentityResult();
+                        }
+                    }
+                }
+        );
+    }
+
+    private void initializePlanckInviteSentDialogResultListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                INVITE_SENT_FEEDBACK_DIALOG_TAG,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(INVITE_SENT_FEEDBACK_DIALOG_TAG)) {
+                        int button = result.getInt(PermanentlyDismissibleDialog.RESULT_KEY);
+                        if (button == DialogInterface.BUTTON_POSITIVE) {
+                            boolean showAgain = !result.getBoolean(
+                                    PermanentlyDismissibleDialog.DISMISS_RESULT_KEY, false);
+                            recipientPresenter.saveShouldDisplayInvitationFeedback(showAgain);
+                            finish();
                         }
                     }
                 }
@@ -2129,6 +2151,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 unsecureRecipientsCount,
                 (v) -> recipientPresenter.clearUnsecureRecipients(),
                 (v) -> {
+                    KeyboardUtils.hideKeyboard(this);
                     sendPlanckInvitesToUnsecureRecipients();
                 }
         );
@@ -2210,12 +2233,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     break;
                 case MSG_SAVED_DRAFT:
                     draftId = (Long) msg.obj;
-                    finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
-                            getString(
-                                    isInvite
-                                    ? R.string.invitation_sent_and_draft_saved
-                                    : R.string.message_saved_toast
-                            ), 2000, 2), finishAfterDraftSaved);
+                    if (isInvite) {
+                        if (recipientPresenter.shouldDisplayInvitationFeedback()) {
+                            showPlanckInviteSentFeedback();
+                        } else {
+                            finish();
+                        }
+                    } else {
+                        finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
+                                getString(R.string.message_saved_toast), 600, 2), finishAfterDraftSaved);
+                    }
 
                     break;
                 case MSG_DISCARDED_DRAFT:
@@ -2228,6 +2255,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             }
         }
     };
+
+    private void showPlanckInviteSentFeedback() {
+        PermanentlyDismissibleDialogKt.showPermanentlyDismissibleDialog(
+                this,
+                INVITE_SENT_FEEDBACK_DIALOG_TAG,
+                getString(R.string.planck_invite_title),
+                getString(R.string.invitation_sent_and_draft_saved),
+                getString(R.string.close)
+        );
+    }
 
     public enum Action {
         COMPOSE(R.string.compose_title_compose),
