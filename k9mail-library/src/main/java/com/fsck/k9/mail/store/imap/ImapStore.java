@@ -163,11 +163,19 @@ public class ImapStore extends RemoteStore {
 
     private Set<String> listFolders(ImapConnection connection, boolean subscribedOnly) throws IOException,
             MessagingException {
-        String commandResponse = subscribedOnly ? "LSUB" : "LIST";
+
+        String commandFormat;
+        if (subscribedOnly) {
+            commandFormat = "LSUB \"\" %s";
+        } else if (supportsListExtended(connection)) {
+            commandFormat =  "LIST \"\" %s RETURN (SPECIAL-USE)";
+        } else {
+            commandFormat =  "LIST \"\" %s";
+        }
+
         String encodedListPrefix = ImapUtility.encodeString(getCombinedPrefix() + "*");
 
-        List<ImapResponse> responses = connection.
-                executeSimpleCommand(String.format("%s \"\" %s", commandResponse, encodedListPrefix));
+        List<ImapResponse> responses = connection.executeSimpleCommand(String.format(commandFormat, encodedListPrefix));
 
         List<ListResponse> listResponses = (subscribedOnly) ?
                 ListResponse.parseLsub(responses) : ListResponse.parseList(responses);
@@ -210,9 +218,38 @@ public class ImapStore extends RemoteStore {
                 continue;
             }
 
-            folder = removePrefixFromFolderName(folder);
-            if (folder != null) {
-                folderNames.add(folder);
+            decodedFolderName = removePrefixFromFolderName(decodedFolderName);
+            if (decodedFolderName == null) {
+                continue;
+            }
+            folderNames.add(folder);
+
+
+            if (listResponse.hasAttribute("\\Archive") || listResponse.hasAttribute("\\All")) {
+                mStoreConfig.setArchiveFolderName(decodedFolderName);
+                if (K9MailLib.isDebug()) {
+                    Timber.d("Folder auto-configuration detected Archive folder: %s", decodedFolderName);
+                }
+            } else if (listResponse.hasAttribute("\\Drafts")) {
+                mStoreConfig.setDraftsFolderName(decodedFolderName);
+                if (K9MailLib.isDebug()) {
+                    Timber.d("Folder auto-configuration detected Drafts folder: %s", decodedFolderName);
+                }
+            } else if (listResponse.hasAttribute("\\Sent")) {
+                mStoreConfig.setSentFolderName(decodedFolderName);
+                if (K9MailLib.isDebug()) {
+                    Timber.d("Folder auto-configuration detected Sent folder: %s", decodedFolderName);
+                }
+            } else if (listResponse.hasAttribute("\\Junk")) {
+                mStoreConfig.setSpamFolderName(decodedFolderName);
+                if (K9MailLib.isDebug()) {
+                    Timber.d("Folder auto-configuration detected Spam folder: %s", decodedFolderName);
+                }
+            } else if (listResponse.hasAttribute("\\Trash")) {
+                mStoreConfig.setTrashFolderName(decodedFolderName);
+                if (K9MailLib.isDebug()) {
+                    Timber.d("Folder auto-configuration detected Trash folder: %s", decodedFolderName);
+                }
             }
         }
 
@@ -233,8 +270,16 @@ public class ImapStore extends RemoteStore {
             Timber.d("Folder auto-configuration: Using RFC6154/SPECIAL-USE.");
         }
 
-        String command = String.format("LIST (SPECIAL-USE) \"\" %s", ImapUtility.encodeString(getCombinedPrefix() + "*"));
-        List<ImapResponse> responses = connection.executeSimpleCommand(command);
+        String commandFormat;
+        if (supportsListExtended(connection)) {
+            commandFormat =  "LIST \"\" %s RETURN (SPECIAL-USE)";
+        } else {
+            commandFormat =  "LIST \"\" %s";
+        }
+
+        String encodedListPrefix = ImapUtility.encodeString(getCombinedPrefix() + "*");
+
+        List<ImapResponse> responses = connection.executeSimpleCommand(String.format(commandFormat, encodedListPrefix));
 
         List<ListResponse> listResponses = ListResponse.parseList(responses);
 
@@ -316,7 +361,7 @@ public class ImapStore extends RemoteStore {
             ImapConnection connection = createImapConnection();
 
             connection.open();
-            autoconfigureFolders(connection);
+            //autoconfigureFolders(connection);
             connection.close();
         } catch (IOException ioe) {
             throw new MessagingException("Unable to connect", ioe);
@@ -487,5 +532,10 @@ public class ImapStore extends RemoteStore {
         public void setCombinedPrefix(String prefix) {
             combinedPrefix = prefix;
         }
+    }
+
+    private boolean supportsListExtended(ImapConnection connection) {
+        return connection.hasCapability(Capabilities.SPECIAL_USE)
+                && connection.hasCapability(Capabilities.LIST_EXTENDED);
     }
 }
