@@ -329,4 +329,6 @@
     </plurals>
     <string name="compose_message_too_many_attachments">Nicht mehr als %1$d Anhänge möglich.</string>
     <string name="action_user_manual">Anleitung</string>
+    <string name="about_libraries_table_header_name">Projekt-Name</string>
+    <string name="about_libraries_table_header_license">Lizenz</string>
 </resources>

@@ -578,4 +578,7 @@
     3) Open this message in the Planck app and reply to %1$s. This performs a secure handshake.
 ]]></string>
 
+    <string name="about_libraries_table_header_name">Library Name</string>
+    <string name="about_libraries_table_header_license">License</string>
+
 </resources>
