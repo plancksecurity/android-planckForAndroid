@@ -34,17 +34,16 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -62,7 +61,6 @@ import com.fsck.k9.activity.compose.PgpInlineDialog.OnOpenPgpInlineChangeListene
 import com.fsck.k9.activity.compose.PgpSignOnlyDialog;
 import com.fsck.k9.activity.compose.RecipientMvpView;
 import com.fsck.k9.activity.compose.RecipientPresenter;
-import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
@@ -122,15 +120,18 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import foundation.pEp.jniadapter.Rating;
 import kotlin.jvm.functions.Function0;
+import security.planck.dialog.PermanentlyDismissibleDialog;
+import security.planck.dialog.PermanentlyDismissibleDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
+import security.planck.resources.RawResourceAttachmentCreator;
+import security.planck.resources.RawResources;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
 import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
-import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
 import security.planck.ui.verifypartner.VerifyPartnerFragment;
 import security.planck.ui.verifypartner.VerifyPartnerFragmentKt;
 import timber.log.Timber;
@@ -185,7 +186,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
-    private static final int DEBUG_STACK_TRACE_DEPTH = 1;
+    private static final String INVITATION_ATTACHMENT_NAME = "email_gradient";
+    private static final String INVITATION_ATTACHMENT_MIME_TYPE = "image/png";
+    private static final String INVITATION_PARAGRAPH_1_PLACE_HOLDER = "PARAGRAPH_1";
+    private static final String INVITATION_PARAGRAPH_2_PLACE_HOLDER = "PARAGRAPH_2";
+    private static final String INVITATION_BUTTON_TEXT_PLACE_HOLDER = "BUTTON_TEXT";
+    private static final String INVITATION_PARAGRAPH_3_PLACE_HOLDER = "PARAGRAPH_3";
+    private static final String INVITE_SENT_FEEDBACK_DIALOG_TAG = "planckInviteSentDialog";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -281,6 +288,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     DisplayHtml displayHtml;
     @Inject
     PlanckProvider planck;
+    @Inject
+    RawResourceAttachmentCreator invitationAttachmentCreator;
+    @Inject
+    RawResources rawResources;
 
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private ComposeBanner composeBanner;
@@ -301,6 +312,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         super.onCreate(savedInstanceState);
         initializeVerifyPartnerResultListener();
         initializeResetPartnerKeyResultListener();
+        initializePlanckInviteSentDialogResultListener();
         uiCache = PlanckUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -571,6 +583,24 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         );
     }
 
+    private void initializePlanckInviteSentDialogResultListener() {
+        getSupportFragmentManager().setFragmentResultListener(
+                INVITE_SENT_FEEDBACK_DIALOG_TAG,
+                this,
+                (requestKey, result) -> {
+                    if (requestKey.equals(INVITE_SENT_FEEDBACK_DIALOG_TAG)) {
+                        int button = result.getInt(PermanentlyDismissibleDialog.RESULT_KEY);
+                        if (button == DialogInterface.BUTTON_POSITIVE) {
+                            boolean showAgain = !result.getBoolean(
+                                    PermanentlyDismissibleDialog.DISMISS_RESULT_KEY, false);
+                            recipientPresenter.saveShouldDisplayInvitationFeedback(showAgain);
+                            finish();
+                        }
+                    }
+                }
+        );
+    }
+
     private void restoreMessageComposeConfigurationInstance() {
         MessageComposeNonConfigInstance messageComposeNonConfigInstance =
                 (MessageComposeNonConfigInstance) getLastCustomNonConfigurationInstance();
@@ -828,16 +858,44 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
         MessageBuilder builder = SimpleMessageBuilder.newInstance();
+        String invitationTemplate = rawResources.readTextFileFromRaw(R.raw.planck_invite);
+        String invitationText = invitationTemplate.replace(
+                INVITATION_PARAGRAPH_1_PLACE_HOLDER,
+                getString(R.string.planck_invite_paragraph_1, identity.getEmail())
+        ).replace(
+                INVITATION_PARAGRAPH_2_PLACE_HOLDER,
+                getString(R.string.planck_invite_paragraph_2)
+        ).replace(
+                INVITATION_BUTTON_TEXT_PLACE_HOLDER,
+                getString(R.string.planck_invite_button_text)
+        ).replace(
+                INVITATION_PARAGRAPH_3_PLACE_HOLDER,
+                getString(R.string.planck_invite_paragraph_3, identity.getEmail())
+        );
+        Map<String, Attachment> invitationAttachments = createInvitationAttachment();
+
         return builder.setSubject(getString(R.string.planck_invite_title))
                 .setSentDate(new Date())
                 .setHideTimeZone(K9.hideTimeZone())
                 .setTo(recipients)
                 .setIdentity(identity)
                 .setMessageFormat(currentMessageFormat)
-                .setText(getString(R.string.planck_invite_text))
+                .setText(invitationText)
+                .setInlineAttachments(invitationAttachments)
                 .setSignature(signatureView.getCharacters())
                 .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
                 .allowHtmlTags();
+    }
+
+    @NonNull
+    private Map<String, Attachment> createInvitationAttachment() {
+        Attachment invitationAttachment = invitationAttachmentCreator.createAttachment(
+                R.raw.email_gradient,
+                INVITATION_ATTACHMENT_NAME,
+                INVITATION_ATTACHMENT_MIME_TYPE);
+        Map<String, Attachment> inlineAttachments = new HashMap<>(1);
+        inlineAttachments.put(invitationAttachment.name, invitationAttachment);
+        return inlineAttachments;
     }
 
     @Nullable
@@ -2093,6 +2151,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 unsecureRecipientsCount,
                 (v) -> recipientPresenter.clearUnsecureRecipients(),
                 (v) -> {
+                    KeyboardUtils.hideKeyboard(this);
                     sendPlanckInvitesToUnsecureRecipients();
                 }
         );
@@ -2174,12 +2233,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     break;
                 case MSG_SAVED_DRAFT:
                     draftId = (Long) msg.obj;
-                    finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
-                            getString(
-                                    isInvite
-                                    ? R.string.invitation_sent_and_draft_saved
-                                    : R.string.message_saved_toast
-                            ), 2000, 2), finishAfterDraftSaved);
+                    if (isInvite) {
+                        if (recipientPresenter.shouldDisplayInvitationFeedback()) {
+                            showPlanckInviteSentFeedback();
+                        } else {
+                            finish();
+                        }
+                    } else {
+                        finishWithSnackBar(() -> FeedbackTools.showLongFeedback(getRootView(),
+                                getString(R.string.message_saved_toast), 600, 2), finishAfterDraftSaved);
+                    }
 
                     break;
                 case MSG_DISCARDED_DRAFT:
@@ -2192,6 +2255,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             }
         }
     };
+
+    private void showPlanckInviteSentFeedback() {
+        PermanentlyDismissibleDialogKt.showPermanentlyDismissibleDialog(
+                this,
+                INVITE_SENT_FEEDBACK_DIALOG_TAG,
+                getString(R.string.planck_invite_title),
+                getString(R.string.invitation_sent_and_draft_saved),
+                getString(R.string.close)
+        );
+    }
 
     public enum Action {
         COMPOSE(R.string.compose_title_compose),

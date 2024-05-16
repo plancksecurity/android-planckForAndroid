@@ -1,11 +1,16 @@
 package security.planck.ui.about
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
@@ -57,9 +62,7 @@ class AboutActivity : K9Activity() {
         }
         binding.documentationButton.paintFlags = binding.documentationButton.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
-        val librariesString = buildLibrariesHtml()
-        binding.librariesText.movementMethod = LinkMovementMethod.getInstance()
-        binding.librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        buildLibrariesTable()
 
         binding.termsAndConditions.text = HtmlCompat.fromHtml(
             "<a href=\"#\">Terms and Conditions</a>",
@@ -82,22 +85,29 @@ class AboutActivity : K9Activity() {
         val html = StringBuilder()
                 .append("<p>$appName ${String.format(getString(R.string.debug_version_fmt), versionNumber)}</p>")
                 .append("<p>${String.format(getString(R.string.app_authors_fmt), getString(R.string.app_authors))}</p>")
-                .append(String.format(getString(R.string.app_copyright_fmt), year, year))
+                .append(String.format(getString(R.string.app_copyright_fmt), year))
 
         return html.toString()
     }
 
-    private fun buildLibrariesHtml(): String {
-        val libs = StringBuilder()
+    private fun buildLibrariesTable() {
+        binding.librariesTable.addView(getLibsHeader())
         USED_LIBRARIES
-                .forEach { entry ->
-                    libs.append("<p>&emsp;<a href=\"${entry.value}\"><b>${entry.key}</b></a></p>")
-                }
+            .forEach { entry ->
+                binding.librariesTable.addView(entry.toTableRow(this))
+            }
+    }
 
-        val html = StringBuilder()
-                .append("<p>${getString(R.string.app_libraries)}</p>")
-                .append(libs)
-        return html.toString()
+    private fun getLibsHeader(): TableRow {
+        val tableRow = layoutInflater.inflate(R.layout.about_library_row, null) as TableRow
+        val nameTextView = tableRow.getChildAt(0) as TextView
+        val licenseTextView = tableRow.getChildAt(1) as TextView
+        nameTextView.text = "Library name"
+        licenseTextView.text = "License"
+        nameTextView.setTypeface(null, Typeface.BOLD)
+        licenseTextView.setTypeface(null, Typeface.BOLD)
+
+        return tableRow
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -117,62 +127,99 @@ class AboutActivity : K9Activity() {
             context.startActivity(Intent(context, AboutActivity::class.java))
         }
 
-        val USED_LIBRARIES = mapOf(
-            "planckCoreSequoiaBackend" to "https://git.planck.security/foundation/planckCoreSequoiaBackend",
-            "Sequoia PGP" to "https://gitlab.com/sequoia-pgp/sequoia",
-            "planck core Version 3" to "https://git.planck.security/foundation/planckCoreV3",
-            "planck JNI Wrapper" to "https://git.planck.security/foundation/planckJNIWrapper",
-            "libetpan" to "https://git.planck.security/foundation/libetpan",
-            "libpEpCxx11" to "https://git.planck.security/foundation/libpEpCxx11",
-            "libPlanckWrapper" to "https://git.planck.security/foundation/libPlanckWrapper",
-            "libPlanckTransport" to "https://git.planck.security/foundation/libPlanckTransport",
-            "yml2" to "https://git.planck.security/foundation/yml2",
+        private val USED_LIBRARIES = listOf(
+            Library("planckCoreSequoiaBackend", LicenseType.GPLv3, "https://github.com/plancksecurity/foundation-planckCoreSequoiaBackend"),
+            Library("Sequoia PGP", LicenseType.GPLv3, "https://gitlab.com/sequoia-pgp/sequoia"),
+            Library("planck core Version 3", LicenseType.GPLv3, "https://github.com/plancksecurity/foundation-planckCoreV3"),
+            Library("planck JNI Wrapper", LicenseType.AGPL, "https://github.com/plancksecurity/foundation-planckJNIWrapper"),
+            Library("libetpan", LicenseType.MISSING, "https://github.com/plancksecurity/foundation-libetpan"),
+            Library("libPlanckCxx11", LicenseType.GPLv3, "https://github.com/plancksecurity/foundation-libPlanckCxx11"),
+            Library("libPlanckWrapper", LicenseType.GPLv3, "https://github.com/plancksecurity/foundation-libPlanckWrapper"),
+            Library("libPlanckTransport", LicenseType.GPLv3, "https://github.com/plancksecurity/foundation-libPlanckTransport"),
+            Library("yml2", LicenseType.GPLv2, "https://git.planck.security/foundation/yml2"),
 
-            "Kotlin" to "https://github.com/JetBrains/kotlin.git",
-            "Coroutines" to "https://github.com/Kotlin/kotlinx.coroutines",
-            "Serialization" to "https://www.bouncycastle.org/java.html",
-            "Bouncy Castle" to "https://github.com/Kotlin/kotlinx.serialization",
-            "Androidx libraries" to "https://github.com/androidx/androidx",
-
-            "AppAuth" to "https://github.com/openid/AppAuth-Android.git",
-            "JWTDecode" to "https://github.com/auth0/JWTDecode.Android.git",
-            "Okio" to "https://github.com/square/okio.git",
-            "Commons IO" to "https://github.com/apache/commons-io.git",
-            "Ant" to "https://github.com/apache/ant",
-            "James" to "https://github.com/apache/james-mime4j/tree/master",
-            "Java Concurrency In Practice" to "https://jcip.net/",
-            "Moshi" to "https://github.com/square/moshi.git",
-            "TokenAutocomplete" to "https://github.com/splitwise/TokenAutoComplete.git",
-            "ShowCaseView" to "https://github.com/amlcurran/ShowcaseView.git",
-            "Timber" to "https://github.com/JakeWharton/timber.git",
-            "Butterknife" to "https://github.com/JakeWharton/butterknife.git",
-            "Renderers" to "https://github.com/pedrovgs/Renderers.git",
-            "Glide" to "https://github.com/bumptech/glide.git",
-            "AppIntro" to "https://github.com/AppIntro/AppIntro.git",
-            "SwipeLayout" to "https://github.com/daimajia/AndroidSwipeLayout.git",
-            "Dexter" to "https://github.com/Karumi/Dexter.git",
-            "SafeContentResolver" to "https://github.com/cketti/SafeContentResolver.git",
-            "CircleImageView" to "https://github.com/hdodenhof/CircleImageView.git",
-            "Jsoup" to "https://github.com/jhy/jsoup.git",
-            "Preferencex" to "https://github.com/takisoft/preferencex-android.git",
-            "Groupie" to "https://github.com/lisawray/groupie.git",
-            "Biweekly" to "https://github.com/mangstadt/biweekly.git",
-
-            "MiniDNS" to "https://github.com/MiniDNS/minidns.git",
-            "jdom" to "https://github.com/hunterhacker/jdom.git",
-            "Dagger Hilt" to "https://github.com/google/dagger/tree/master/java/dagger/hilt",
-            "Bouncy Castle" to "https://www.bouncycastle.org/java.html",
-
-            "Truth" to "https://github.com/google/truth.git",
-            "Spoon" to "https://github.com/square/spoon",
-            "Mockito" to "https://github.com/mockito/mockito.git",
-            "Mockito Kotlin" to "https://github.com/mockito/mockito-kotlin.git",
-            "Mockk" to "https://github.com/mockk/mockk.git",
-            "Cucumber Android" to "https://github.com/cucumber/cucumber-android.git",
-            "Cucumber Picocontainer" to "https://github.com/cucumber/cucumber-jvm/tree/main/cucumber-picocontainer",
-            "Robolectric" to "https://robolectric.org/",
-            "JUnit" to "https://junit.org/junit4/",
-            "Barista" to "https://github.com/AdevintaSpain/Barista.git",
+            Library("Kotlin", LicenseType.APACHE2_0, "https://github.com/JetBrains/kotlin"),
+            Library("Coroutines", LicenseType.APACHE2_0, "https://github.com/Kotlin/kotlinx.coroutines"),
+            Library("Serialization", LicenseType.APACHE2_0, "https://github.com/Kotlin/kotlinx.serialization"),
+            Library("Bouncy Castle", LicenseType.MIT, "https://github.com/bcgit/bc-java"),
+            Library("Androidx libraries", LicenseType.APACHE2_0, "https://github.com/androidx/androidx"),
+            Library("AppAuth", LicenseType.APACHE2_0, "https://github.com/openid/AppAuth-Android"),
+            Library("JWTDecode", LicenseType.MIT, "https://github.com/auth0/JWTDecode.Android"),
+            Library("Okio", LicenseType.APACHE2_0, "https://github.com/square/okio"),
+            Library("Commons IO", LicenseType.APACHE2_0, "https://github.com/apache/commons-io"),
+            Library("Ant", LicenseType.APACHE2_0, "https://github.com/apache/ant"),
+            Library("James", LicenseType.APACHE2_0, "https://github.com/apache/james-mime4j/tree/master"),
+            Library("Moshi", LicenseType.APACHE2_0, "https://github.com/square/moshi"),
+            Library("TokenAutocomplete", LicenseType.APACHE2_0, "https://github.com/splitwise/TokenAutoComplete"),
+            Library("ShowCaseView", LicenseType.APACHE2_0, "https://github.com/amlcurran/ShowcaseView"),
+            Library("Timber", LicenseType.APACHE2_0, "https://github.com/JakeWharton/timber"),
+            Library("Butterknife", LicenseType.APACHE2_0, "https://github.com/JakeWharton/butterknife"),
+            Library("Renderers", LicenseType.APACHE2_0, "https://github.com/pedrovgs/Renderers"),
+            Library("Glide", LicenseType.APACHE2_0, "https://github.com/bumptech/glide"),
+            Library("AppIntro", LicenseType.APACHE2_0, "https://github.com/AppIntro/AppIntro"),
+            Library("SwipeLayout", LicenseType.MIT, "https://github.com/daimajia/AndroidSwipeLayout"),
+            Library("Dexter", LicenseType.APACHE2_0, "https://github.com/Karumi/Dexter"),
+            Library("SafeContentResolver", LicenseType.APACHE2_0, "https://github.com/cketti/SafeContentResolver"),
+            Library("CircleImageView", LicenseType.APACHE2_0, "https://github.com/hdodenhof/CircleImageView"),
+            Library("Jsoup", LicenseType.MIT, "https://github.com/jhy/jsoup"),
+            Library("Preferencex", LicenseType.APACHE2_0, "https://github.com/takisoft/preferencex-android"),
+            Library("Groupie", LicenseType.MIT, "https://github.com/lisawray/groupie"),
+            Library("Biweekly", LicenseType.BSD2_CLAUSE_SIMPLIFIED, "https://github.com/mangstadt/biweekly"),
+            Library("MiniDNS", LicenseType.APACHE2_0, "https://github.com/MiniDNS/minidns"),
+            Library("jdom", LicenseType.JDOM, "https://github.com/hunterhacker/jdom"),
+            Library("Dagger Hilt", LicenseType.APACHE2_0, "https://github.com/google/dagger/tree/master/java/dagger/hilt"),
+            Library("Truth", LicenseType.APACHE2_0, "https://github.com/google/truth"),
+            Library("Spoon", LicenseType.APACHE2_0, "https://github.com/square/spoon"),
+            Library("Mockito", LicenseType.MIT, "https://github.com/mockito/mockito"),
+            Library("Mockito Kotlin", LicenseType.MIT, "https://github.com/mockito/mockito-kotlin"),
+            Library("Mockk", LicenseType.APACHE2_0, "https://github.com/mockk/mockk"),
+            Library("Cucumber Android", LicenseType.MIT, "https://github.com/cucumber/cucumber-android"),
+            Library("Cucumber Picocontainer", LicenseType.MIT, "https://github.com/cucumber/cucumber-jvm/tree/main/cucumber-picocontainer"),
+            Library("Robolectric", LicenseType.MIT, "https://github.com/robolectric/robolectric"),
+            Library("JUnit", LicenseType.ECLIPSE_PUBLIC, "https://github.com/junit-team/junit4"),
+            Library("Barista", LicenseType.APACHE2_0, "https://github.com/AdevintaSpain/Barista"),
         )
+    }
+
+    private data class Library(
+        val name: String,
+        val licenseType: LicenseType,
+        val url: String,
+    ) {
+
+        fun toTableRow(context: Activity): TableRow {
+            val tableRow = context.layoutInflater.inflate(R.layout.about_library_row, null) as TableRow
+            val nameTextView = tableRow.getChildAt(0) as TextView
+            nameTextView.text = HtmlCompat.fromHtml("<a href=\"$url\">$name</a>", HtmlCompat.FROM_HTML_MODE_LEGACY)
+            nameTextView.setOnClickListener {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            (tableRow.getChildAt(1) as TextView).text = licenseType.toText()
+            return tableRow
+        }
+    }
+
+    private enum class LicenseType {
+        APACHE2_0,
+        MIT,
+        GPLv3,
+        GPLv2,
+        AGPL,
+        BSD2_CLAUSE_SIMPLIFIED,
+        ECLIPSE_PUBLIC,
+        JDOM,
+        MISSING;
+
+        fun toText(): String = when(this) {
+            APACHE2_0 -> "Apache 2.0"
+            MIT -> "MIT"
+            GPLv2 -> "GPL v2"
+            GPLv3 -> "GPL v3"
+            AGPL -> "AGPL v3.0"
+            BSD2_CLAUSE_SIMPLIFIED -> "BSD"
+            ECLIPSE_PUBLIC -> "Eclipse 1.0"
+            JDOM -> "Custom license"
+            MISSING -> "libetpan license"
+        }
     }
 }

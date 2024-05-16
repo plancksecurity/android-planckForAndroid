@@ -4,7 +4,7 @@ buildscript {
                 'compileSdk'           : 34,
                 'targetSdk'            : 34,
                 'minSdk'               : 30,
-                'versionCode'          : 533,
+                'versionCode'          : 534,
         ]
 
         versions = [
@@ -48,11 +48,9 @@ buildscript {
                 'dexter'             : '6.0.1',
                 'workRuntime'        : '2.9.0',
                 'crypto'             : '1.1.0-alpha03',
-                'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',
                 'hilt'               : '2.45',
                 'groupie'            : '2.8.1',
-                'ankoCoroutines'     : '0.10.4',
                 'kotlinCoroutines'   : '1.6.4',
                 'kotlinSerialization': '1.0.0',
                 'multidex'           : '2.0.1',

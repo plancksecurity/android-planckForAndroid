@@ -17,7 +17,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <ImageView
@@ -66,7 +66,7 @@
 
 
             <TextView
-                android:id="@+id/librariesText"
+                android:id="@+id/librariesIntroductionText"
                 style="@style/GrayScaleColorText1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,7 +74,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/documentation_button"
-                tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
+                android:text="@string/app_libraries" />
+
+            <TableLayout
+                android:id="@+id/librariesTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="*"
+                app:layout_constraintBottom_toTopOf="@id/terms_and_conditions"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/librariesIntroductionText" />
+
 
             <TextView
                 android:id="@+id/terms_and_conditions"
@@ -85,8 +96,7 @@
                 android:layout_marginStart="16dp"
                 tools:text="Terms and Conditions"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/librariesText" />
+                app:layout_constraintStart_toStartOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

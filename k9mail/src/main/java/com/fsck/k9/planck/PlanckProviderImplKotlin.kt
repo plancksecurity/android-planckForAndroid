@@ -596,9 +596,11 @@ class PlanckProviderImplKotlin(
             val decryptReturn = decReturn!!
             Timber.d("%s %s", TAG, "decryptMessage() after decrypt")
 
-            when (decReturn!!.rating) {
-                Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
+            when (val rating = decReturn!!.rating) {
+                Rating.pEpRatingHaveNoKey ->
                     throw KeyMissingException()
+                Rating.pEpRatingCannotDecrypt ->
+                    throw AppCannotDecryptException(rating.toString())
 
                 else -> {
                     val message = decryptReturn.dst
@@ -622,7 +624,7 @@ class PlanckProviderImplKotlin(
         }.mapError { throwable ->
             Timber.e(throwable, "%s %s", TAG, "while decrypting message:")
             when (throwable) {
-                is KeyMissingException -> throwable
+                is AppCannotDecryptException -> throwable
                 else -> AppCannotDecryptException("Could not decrypt", throwable)
             }
         }.also {
@@ -649,7 +651,7 @@ class PlanckProviderImplKotlin(
             Timber.d("%s %s", TAG, "decryptMessage() after decrypt")
 
             when (decReturn.rating) {
-                Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
+                Rating.pEpRatingHaveNoKey ->
                     notifyError(AppCannotDecryptException(KEY_MISSING_ERROR_MESSAGE), callback)
                 else -> {
                     val message = decReturn.dst

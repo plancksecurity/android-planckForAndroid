@@ -8,7 +8,7 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="planck_documentation_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/user-guide-for-android</string>
-    <string name="planck_terms_and_conditions_url" translatable="false">https://help.planck.security/articles/#!user-guide-for-android-%s/terms-conditions</string>
+    <string name="planck_terms_and_conditions_url" translatable="false">https://www.planck.security/policies/terms-and-conditions</string>
     <string name="pEp_trustwords">planck Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
@@ -119,7 +119,7 @@
     <string-array name="pep_title">
         <item><!--pEpRatingUndefined--></item>
         <item>@string/pep_rating_cannot_decrypt<!--pEpRatingCannotDecrypt--></item>
-        <item>@string/pep_rating_cannot_decrypt<!--pEpRatingHaveNoKey--></item>
+        <item>@string/pep_rating_found_no_key<!--pEpRatingHaveNoKey--></item>
         <item>@string/pep_rating_not_encrypted<!--pEpRatingUnencrypted--></item>
         <item>@string/pep_rating_weakly_encrypted<!--pEpRatingUnreliable--></item>
         <item>@string/pep_rating_encrypted<!--pEpRatingMediaKeyProtected--></item>
@@ -252,6 +252,7 @@
     <string name="pep_rating_not_encrypted">Not encrypted</string>
     <string name="pep_rating_weakly_encrypted">Weakly Encrypted</string>
     <string name="pep_rating_cannot_decrypt">Cannot decrypt</string>
+    <string name="pep_rating_found_no_key">Found No Key</string>
     <string name="pep_rating_none" translatable="false"/>
     <string name="planck_inactive">planck inactive</string>
     <string name="action_tutorial">Tutorial</string>
@@ -474,8 +475,24 @@
     </plurals>
     <string name="compose_banner_invite_unsecure_recipients_action">Invite to Planck</string>
     <string name="planck_invite_title">Invitation to Planck</string>
-    <string name="planck_invite_text"><![CDATA[You have been invited to use <a href="https://www.planck.security/get-started">Planck</a>. You can reply to this message from the <a href="https://www.planck.security/get-started">Planck</a> mail client to accept the invitation and start your secure communication.]]></string>
-    <string name="invitation_sent_and_draft_saved">Invite sent and message saved as draft.</string>
+    <string name="invitation_sent_and_draft_saved">We\'ve sent invitations to all unknown recipients and saved your message as a draft.</string>
     <string name="account_settings_signature_summary">Use a signature for new mails.</string>
+    <string name="planck_invite_paragraph_1"><![CDATA[
+    Hi, <br/>
+    %s wants to communicate securely with you, using Planck - the only solution that provides full end-to-end encryption and sender verification for email.
+]]></string>
+    <string name="planck_invite_paragraph_2">You can get your own copy of Planck on the official Google PlayStore.</string>
+    <string name="planck_invite_button_text">Get from the Play Store</string>
+    <string name="planck_invite_paragraph_3"><![CDATA[
+    It is super simple to setup a private channel between you and %1$s:<br/>
+    <br/>
+    1) Download your copy of Planck and start the app <br/>
+    2) Connect to your inbox (where you received this mail) <br/>
+    3) Open this message in the Planck app and reply to %1$s. This performs a secure handshake.
+]]></string>
+    <string name="dialog_do_not_show_next_time">Don\'t show next time</string>
+
+    <string name="about_libraries_table_header_name">Library Name</string>
+    <string name="about_libraries_table_header_license">License</string>
 
 </resources>
