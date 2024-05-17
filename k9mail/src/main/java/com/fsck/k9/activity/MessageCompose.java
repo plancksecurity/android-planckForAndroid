@@ -879,7 +879,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setHideTimeZone(K9.hideTimeZone())
                 .setTo(recipients)
                 .setIdentity(identity)
-                .setMessageFormat(currentMessageFormat)
+                .setMessageFormat(SimpleMessageFormat.HTML)
                 .setText(invitationText)
                 .setInlineAttachments(invitationAttachments)
                 .setSignature(signatureView.getCharacters())
