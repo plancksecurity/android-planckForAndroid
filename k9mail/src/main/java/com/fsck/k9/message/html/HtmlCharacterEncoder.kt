@@ -1,7 +1,7 @@
 package com.fsck.k9.message.html
 
-open class HtmlCharacterEncoder(protected val html: StringBuilder) {
-    open fun appendHtmlEncoded(ch: Char) {
+class HtmlCharacterEncoder(private val html: StringBuilder) {
+    fun appendHtmlEncoded(ch: Char) {
         when (ch) {
             '&' -> html.append("&amp;")
             '<' -> html.append("&lt;")

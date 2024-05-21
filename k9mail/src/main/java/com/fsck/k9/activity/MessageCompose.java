@@ -884,7 +884,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setInlineAttachments(invitationAttachments)
                 .setSignature(signatureView.getCharacters())
                 .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
-                .allowHtmlTags();
+                .html();
     }
 
     @NonNull

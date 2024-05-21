@@ -96,7 +96,7 @@ public abstract class MessageBuilder {
     private boolean isAlwaysSecure;
     private Rating planckRating;
 
-    private boolean allowHtmlTags;
+    private boolean isHtml;
 
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
@@ -349,7 +349,7 @@ public abstract class MessageBuilder {
     private TextBody buildText(boolean isDraft, SimpleMessageFormat simpleMessageFormat) {
         String messageText = text;
 
-        TextBodyBuilder textBodyBuilder = new TextBodyBuilder(messageText, allowHtmlTags);
+        TextBodyBuilder textBodyBuilder = new TextBodyBuilder(messageText, isHtml);
 
         /*
          * Find out if we need to include the original message as quoted text.
@@ -537,8 +537,8 @@ public abstract class MessageBuilder {
         return this;
     }
 
-    public MessageBuilder allowHtmlTags() {
-        allowHtmlTags = true;
+    public MessageBuilder html() {
+        isHtml = true;
         return this;
     }
 

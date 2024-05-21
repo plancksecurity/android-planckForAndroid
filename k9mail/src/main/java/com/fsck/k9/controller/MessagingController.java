@@ -5167,7 +5167,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void buildAndSendMessage(MessageBuilder messageBuilder, Account account) {
-        put("bla", null, () -> {
+        put("build and send message", null, () -> {
             MimeMessage mimeMessage = null;
             try {
                 mimeMessage = messageBuilder.buildSync();

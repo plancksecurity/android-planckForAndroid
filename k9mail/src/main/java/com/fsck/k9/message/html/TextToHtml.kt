@@ -64,7 +64,7 @@ open class TextToHtml private constructor(
         html.append(text)
     }
 
-    internal fun appendHtmlEncoded(ch: Char) {
+    private fun appendHtmlEncoded(ch: Char) {
         htmlCharacterEncoder.appendHtmlEncoded(ch)
     }
 
@@ -89,11 +89,9 @@ open class TextToHtml private constructor(
         }
 
         @JvmStatic
-        fun toHtmlFragment(text: CharSequence, allowHtmlTags: Boolean): String {
+        fun toHtmlFragment(text: CharSequence): String {
             val html = StringBuilder(text.length + TEXT_TO_HTML_EXTRA_BUFFER_LENGTH)
-            val encoder = if (allowHtmlTags) HtmlTagAllowingCharacterEncoder(html)
-            else HtmlCharacterEncoder(html)
-            TextToHtml(text, html, encoder).appendAsHtmlFragment()
+            TextToHtml(text, html).appendAsHtmlFragment()
             return html.toString()
         }
     }
