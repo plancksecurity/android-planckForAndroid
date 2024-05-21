@@ -5166,18 +5166,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         });
     }
 
-    public void buildAndSendMessage(MessageBuilder messageBuilder, Account account) {
-        put("build and send message", null, () -> {
-            MimeMessage mimeMessage = null;
-            try {
-                mimeMessage = messageBuilder.buildSync();
-            } catch (Exception e) {
-                Timber.e(e, "Error building message in background");
-            }
-            sendMessage(account, mimeMessage, null);
-        });
-    }
-
     private interface MessageActor {
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
     }
