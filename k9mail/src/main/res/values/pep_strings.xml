@@ -494,5 +494,6 @@
 
     <string name="about_libraries_table_header_name">Library Name</string>
     <string name="about_libraries_table_header_license">License</string>
+    <string name="google_button_beta_feature">Beta Feature</string>
 
 </resources>
