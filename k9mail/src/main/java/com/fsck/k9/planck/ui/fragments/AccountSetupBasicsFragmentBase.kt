@@ -7,8 +7,12 @@ import androidx.fragment.app.Fragment
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.R
+import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
+import com.fsck.k9.activity.setup.OAuthFlowActivity
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
@@ -61,6 +65,23 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         restoreDataState(savedInstanceState)
     }
 
+    protected fun setupToolbar(showBackArrow: Boolean = true) {
+        (requireActivity() as AccountSetupBasics).initializeToolbar(
+            !requireActivity().isTaskRoot
+                    || parentFragmentManager.backStackEntryCount > 1,
+            R.string.account_setup_basics_title
+        )
+    }
+
+    private fun handleSignInResult(resultCode: Int) {
+        if (resultCode == Activity.RESULT_CANCELED) {
+            deleteAccount()
+            return
+        }
+        checkNotNull(account) { "Account instance missing" }
+        checkSettings()
+    }
+
     private fun handleCheckSettingsResult(resultCode: Int) {
         if (resultCode == AccountSetupCheckSettings.RESULT_CODE_MANUAL_SETUP_NEEDED) {
             onManualSetup(false)
@@ -85,7 +106,24 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         AccountSetupCheckSettings.actionCheckSettings(requireActivity(), account!!, direction, true)
     }
 
-    abstract fun onManualSetup(fromUser: Boolean)
+    open fun onManualSetup(fromUser: Boolean) {
+        (requireActivity() as AccountSetupBasics).setManualSetupRequired(true)
+        val account = retrieveAccount() ?: error("Account is null!!")
+        if (account.storeUri == null || account.transportUri == null) {
+            setDefaultSettingsForManualSetup(account)
+        }
+        goForward()
+    }
+
+    private fun setDefaultSettingsForManualSetup(account: Account) {
+        val email = account.email ?: let {
+            account.email = DEFAULT_EMAIL
+            account.email
+        }
+        val connectionSettings =
+            defaultConnectionSettings(email, null, null, AuthType.PLAIN)
+        account.setMailSettings(requireContext(), connectionSettings, false)
+    }
 
     protected fun defaultConnectionSettings(
         email: String,
@@ -210,9 +248,31 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
         }
     }
 
+    protected fun startGoogleFlow() {
+        startOAuthFlow(OAuthProviderType.GOOGLE)
+    }
+
+    protected fun startMicrosoftFlow() {
+        startOAuthFlow(OAuthProviderType.MICROSOFT)
+    }
+
+    private fun startOAuthFlow(oAuthProviderType: OAuthProviderType) {
+        val email = if (k9.isRunningOnWorkProfile) accountProvisioningSettings?.email else null
+        val account = initAccount(email).also { it.mandatoryOAuthProviderType = oAuthProviderType }
+        val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid)
+        requireActivity().startActivityForResult(intent,
+            REQUEST_CODE_OAUTH
+        )
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (!isAdded) {
+            return
+        }
         if (requestCode == REQUEST_CODE_CHECK_SETTINGS) {
             handleCheckSettingsResult(resultCode)
+        } else if (requestCode == REQUEST_CODE_OAUTH) {
+            handleSignInResult(resultCode)
         }
     }
 
@@ -222,5 +282,7 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
             "com.fsck.k9.AccountSetupBasics.checkedIncoming"
         private const val REQUEST_CODE_CHECK_SETTINGS =
             AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
+        private const val REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1
+        private const val DEFAULT_EMAIL = "mail@example.com"
     }
 }

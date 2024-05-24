@@ -13,6 +13,8 @@ import com.fsck.k9.planck.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.planck.ui.fragments.GoogleAuthGuideStep1Fragment;
+import com.fsck.k9.planck.ui.fragments.GoogleAuthGuideStep2Fragment;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,7 +29,8 @@ public class AccountSetupNavigator {
         BASICS,
         INCOMING,
         OUTGOING,
-        OPTIONS
+        OPTIONS,
+        GOOGLE_GUIDE_STEP_1
     }
 
     private Step currentStep;
@@ -55,6 +58,24 @@ public class AccountSetupNavigator {
         fragmentManager.beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
                 .replace(R.id.account_setup_container, fragment, "accountSetupBasicFragment")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void goToGoogleAuthGuideStep1(FragmentManager fragmentManager) {
+        GoogleAuthGuideStep1Fragment fragment = new GoogleAuthGuideStep1Fragment();
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, fragment, "googleSetupGuideStep1")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void goToGoogleAuthGuideStep2(FragmentManager fragmentManager) {
+        GoogleAuthGuideStep2Fragment fragment = new GoogleAuthGuideStep2Fragment();
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, fragment, "googleSetupGuideStep2")
                 .addToBackStack(null)
                 .commit();
     }
