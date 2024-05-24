@@ -46,13 +46,19 @@
             android:id="@+id/google_sign_in_button_card"
             style="@style/SelectAuthScreenCardViews"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/other_method_sign_in_button_card"
+            app:layout_constraintTop_toBottomOf="@id/microsoft_sign_in_button_card">
 
             <Button
                 android:id="@+id/google_sign_in_button"
                 style="@style/SelectAuthScreenButtons"
                 android:drawableStart="@drawable/ico_google"
                 android:text="@string/account_setup_oauth_sign_in_with_google" />
+
+            <TextView
+                android:id="@+id/google_sign_in_button_beta_feature"
+                style="@style/SelectAuthScreenGoogleBetaFeature"/>
 
         </androidx.cardview.widget.CardView>
 
