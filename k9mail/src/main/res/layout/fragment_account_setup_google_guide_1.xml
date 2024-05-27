@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.fsck.k9.planck.ui.fragments.GoogleAuthGuideStep1Fragment">
 
@@ -12,10 +12,10 @@
         android:layout_weight="1"
         android:clipToPadding="false"
         android:fadingEdge="none"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
         android:fillViewport="true"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
         android:scrollbarStyle="outsideInset">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,30 +27,52 @@
                 android:id="@+id/text1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableStart="@android:drawable/ic_menu_info_details"
+                android:drawableStart="@drawable/ico_info"
+                android:drawablePadding="16dp"
                 android:text="@string/google_guide_screen_1_text1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:drawablePadding="16dp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text2"
-                android:layout_width="match_parent"
+                android:id="@+id/text2Line1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/google_guide_screen_1_text2"
-                app:layout_constraintTop_toBottomOf="@id/text1"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:text="@string/google_guide_screen_1_text2_line_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text1" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text2Line2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/google_guide_screen_1_text2_line_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text2Line1" />
+
+            <ImageView
+                android:id="@+id/step1Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/google_guide_screen_1_text2_line_1"
+                android:src="@drawable/ico_one"
+                app:layout_constraintBottom_toBottomOf="@+id/text2Line2"
+                app:layout_constraintStart_toEndOf="@id/text2Line2"
+                app:layout_constraintTop_toTopOf="@+id/text2Line2" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:contentDescription="@string/google_guide_screen_1_screenshot_content_desc"
-                app:layout_constraintTop_toBottomOf="@id/text2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/google_guide_screen_1_text2_line_2"
+                android:src="@drawable/image_step_one"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginTop="16dp" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text2Line2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
