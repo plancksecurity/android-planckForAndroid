@@ -18,6 +18,7 @@ class GoogleAuthGuideStep2Fragment : AccountSetupBasicsFragmentBase() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        toolbarCustomizer.setDefaultStatusBarColor()
         _binding = FragmentAccountSetupGoogleGuide2Binding.inflate(inflater, container, false)
         setupViews()
         return binding.root
