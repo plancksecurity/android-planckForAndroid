@@ -310,11 +310,11 @@ interface PlanckProvider {
             get() = address.address
     }
 
-    suspend fun hasPassphrase(email: String): Boolean
+    suspend fun hasPassphrase(email: String): Result<Boolean>
 
-    suspend fun managePassphrase(accountsWitOldPassphrases: ArrayList<Pair<String, String>>, newPassphrase: String): Vector<String>
+    suspend fun managePassphrase(accountsWitOldPassphrases: ArrayList<Pair<String, String>>, newPassphrase: String): Result<Vector<String>>
 
-    suspend fun unlockKeysWithPassphrase(accountsWithPassphrases: ArrayList<Pair<String, String>>): Vector<String>
+    suspend fun unlockKeysWithPassphrase(accountsWithPassphrases: ArrayList<Pair<String, String>>): Result<Vector<String>>
 
     class DecryptResult {
         @JvmField

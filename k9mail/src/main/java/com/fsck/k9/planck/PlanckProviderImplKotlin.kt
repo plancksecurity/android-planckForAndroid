@@ -1342,21 +1342,21 @@ class PlanckProviderImplKotlin(
             }
         }
 
-    override suspend fun hasPassphrase(email: String): Boolean = withContext(PlanckDispatcher) {
-        engine.get().has_passphrase(email)
+    override suspend fun hasPassphrase(email: String): Result<Boolean> = withContext(PlanckDispatcher) {
+        kotlin.runCatching { engine.get().has_passphrase(email) }
     }
 
     override suspend fun managePassphrase(
         accountsWitOldPassphrases: ArrayList<Pair<String, String>>,
         newPassphrase: String
-    ): Vector<String> = withContext(PlanckDispatcher) {
-        engine.get().manage_passphrase(accountsWitOldPassphrases, newPassphrase)
+    ): Result<Vector<String>> = withContext(PlanckDispatcher) {
+        kotlin.runCatching { engine.get().manage_passphrase(accountsWitOldPassphrases, newPassphrase) }
     }
 
     override suspend fun unlockKeysWithPassphrase(
         accountsWithPassphrases: ArrayList<Pair<String, String>>
-    ): Vector<String> = withContext(PlanckDispatcher) {
-        engine.get().unlock_keys_with_passphrase(accountsWithPassphrases)
+    ): Result<Vector<String>> = withContext(PlanckDispatcher) {
+        kotlin.runCatching { engine.get().unlock_keys_with_passphrase(accountsWithPassphrases) }
     }
 
     companion object {
