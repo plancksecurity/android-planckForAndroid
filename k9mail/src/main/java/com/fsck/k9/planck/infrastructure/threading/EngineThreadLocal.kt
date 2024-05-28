@@ -52,7 +52,6 @@ class EngineThreadLocal private constructor(
         engine.config_unencrypted_subject(!K9.isPlanckSubjectProtection())
         engine.setMessageToSendCallback(MessagingController.getInstance(k9))
         engine.setNotifyHandshakeCallback(k9.notifyHandshakeCallback)
-        engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(k9))
 
         if (k9.isRunningOnWorkProfile) {
             engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
