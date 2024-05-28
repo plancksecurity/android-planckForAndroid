@@ -101,13 +101,12 @@ import timber.log.Timber.DebugTree;
 public class K9 extends MultiDexApplication implements DefaultLifecycleObserver {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
-    private Account currentAccount;
-    private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
+    private final ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
 
-    private AtomicBoolean deviceJustLeftGroup = new AtomicBoolean(false);
+    private final AtomicBoolean deviceJustLeftGroup = new AtomicBoolean(false);
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static ManageableSetting<Long> auditLogDataTimeRetention =
             new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
