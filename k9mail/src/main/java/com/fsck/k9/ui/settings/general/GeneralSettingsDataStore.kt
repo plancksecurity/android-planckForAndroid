@@ -53,7 +53,6 @@ class GeneralSettingsDataStore @Inject constructor(
             "pep_forward_warning" -> K9.isPlanckForwardWarningEnabled()
             "pep_enable_sync" -> K9.isPlanckSyncEnabled()
             "pep_sync_folder" -> K9.isUsingpEpSyncFolder()
-            "pep_use_passphrase_for_new_keys" -> K9.isPlanckUsePassphraseForNewKeys()
             else -> defValue
         }
     }
@@ -93,7 +92,6 @@ class GeneralSettingsDataStore @Inject constructor(
             "pep_forward_warning" -> app.setPlanckForwardWarningEnabled(value)
             "pep_enable_sync" -> CoroutineScope(dispatcherProvider.planckDispatcher()).launch { app.setPlanckSyncEnabled(value) }
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
-            "pep_use_passphrase_for_new_keys" -> K9.setPlanckUsePassphraseForNewKeys(value)
             else -> return
         }
 

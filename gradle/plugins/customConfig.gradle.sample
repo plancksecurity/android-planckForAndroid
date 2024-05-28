@@ -12,7 +12,6 @@ ext {
     ENABLE_CORE_LOGS = false // change to true and recompile to have core logs
     // enables passphrase from the first account setup in the app, only on debug build.
     // after first account setup, the setting "use passphrase for new keys" can be disabled (setting only available on debug build).
-    DEBUG_USE_PASSPHRASE_FOR_NEW_KEYS = false // if true, user will be requested a passphrase for new keys during first account setup.
 }
 
 // Sample settings for a demo application (for example, to upload to an MDM)

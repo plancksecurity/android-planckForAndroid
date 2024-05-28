@@ -94,7 +94,8 @@ constructor(
         // setting became lockable so storage changed from Boolean to String
         val previousValue = storage.getBoolean(
             "pEpUsePassphraseForNewKeys",
-            BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS
+            false
+            //BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS
         )
         editor.remove("pEpUsePassphraseForNewKeys")
         val newSetting = ManageableSetting(previousValue)

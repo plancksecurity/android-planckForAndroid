@@ -125,7 +125,7 @@ class AppUpdaterTest {
     }
 
     private fun verifyV3111Update() {
-        storage.getBoolean("pEpUsePassphraseForNewKeys", BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
+        //storage.getBoolean("pEpUsePassphraseForNewKeys", BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
         storageEditor.remove("pEpUsePassphraseForNewKeys")
         K9.setPlanckUsePassphraseForNewKeys(ManageableSetting(false))
         storageEditor.putString("pEpUsePassphraseForNewKeys", serializeBooleanManageableSetting(ManageableSetting(false)))
