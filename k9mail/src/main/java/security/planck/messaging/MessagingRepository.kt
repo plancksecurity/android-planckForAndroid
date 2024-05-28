@@ -13,6 +13,7 @@ import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.mailstore.MessageViewInfoExtractor
+import com.fsck.k9.message.MessageBuilder
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.PlanckUtils
@@ -39,6 +40,18 @@ class MessagingRepository @Inject constructor(
     private val appIoScope: CoroutineScope,
     private val dispatcherProvider: DispatcherProvider,
 ) {
+
+    suspend fun buildAndSendMessage(
+        messageBuilder: MessageBuilder,
+        account: Account
+    ) = withContext(dispatcherProvider.io()) {
+        try {
+            val mimeMessage = messageBuilder.buildSync()
+            controller.sendMessage(account, mimeMessage, null)
+        } catch (e: Exception) {
+            Timber.e(e, "Error building message in background")
+        }
+    }
 
     suspend fun loadMessage(
         messageViewUpdate: MessageViewUpdate,
