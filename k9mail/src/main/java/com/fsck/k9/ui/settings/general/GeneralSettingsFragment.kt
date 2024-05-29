@@ -34,7 +34,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
 import security.planck.mdm.RestrictionsViewModel
+import security.planck.passphrase.PassphraseDialogMode
 import security.planck.passphrase.PassphraseManagementDialog
+import security.planck.passphrase.showPassphraseManagementDialog
 import security.planck.sync.SyncRepository
 import security.planck.ui.audit.AuditLogDisplayActivity
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
@@ -124,12 +126,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializePassphraseManagementPreference() {
         findPreference<Preference>(PREFERENCE_MANAGE_PASSPHRASES)?.onClick {
-            PassphraseManagementDialog().also {
-                parentFragmentManager
-                    .beginTransaction()
-                    .add(it, "hello")
-                    .commitAllowingStateLoss()
-            }
+            showPassphraseManagementDialog(mode = PassphraseDialogMode.MANAGE)
         }
     }
 
