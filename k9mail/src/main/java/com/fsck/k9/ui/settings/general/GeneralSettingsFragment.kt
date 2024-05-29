@@ -1,6 +1,5 @@
 package com.fsck.k9.ui.settings.general
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -35,12 +34,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.mdm.ManageableSetting
 import security.planck.mdm.RestrictionsViewModel
+import security.planck.passphrase.PassphraseManagementDialog
 import security.planck.sync.SyncRepository
 import security.planck.ui.audit.AuditLogDisplayActivity
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
-import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
-import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.preference.LoadingPreference
 import security.planck.ui.support.export.ExportPlanckSupportDataActivity
@@ -121,6 +119,18 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeAuditLogDataTimeRetention()
         initializeLeaveDeviceGroup()
         initializeDisplayAuditLogPreference()
+        initializePassphraseManagementPreference()
+    }
+
+    private fun initializePassphraseManagementPreference() {
+        findPreference<Preference>(PREFERENCE_MANAGE_PASSPHRASES)?.onClick {
+            PassphraseManagementDialog().also {
+                parentFragmentManager
+                    .beginTransaction()
+                    .add(it, "hello")
+                    .commitAllowingStateLoss()
+            }
+        }
     }
 
     private fun updateLeaveDeviceGroupPreferenceVisibility() {
@@ -406,6 +416,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_AUDIT_LOG_TIME_RETENTION = "audit_log_data_time_retention"
         private const val PREFERENCE_LEAVE_DEVICE_GROUP = "leave_device_group"
         private const val PREFERENCE_DISPLAY_AUDIT_LOG = "display_audit_log"
+        private const val PREFERENCE_MANAGE_PASSPHRASES = "manage_passphrases"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

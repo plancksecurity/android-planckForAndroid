@@ -85,6 +85,10 @@
             app:isPreferenceVisible="false"
             android:title="@string/pep_sync_leave_device_group" />
 
+        <Preference
+            android:key="manage_passphrases"
+            android:title="@string/passphrase_management_preference_title" />
+
     </PreferenceScreen>
 
 </PreferenceScreen>
