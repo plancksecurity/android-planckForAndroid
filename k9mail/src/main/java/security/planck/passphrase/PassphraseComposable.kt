@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
@@ -155,13 +156,14 @@ fun PassphraseManagementDialogContent(
                         enabled = passwordStates.none { it.errorState }
                     ) {
                         viewModel.unlockKeysWithPassphrase(state.accountsUsingPassphrase.map { it.email }, passwordStates.map { it.textState })
-                        onConfirm()
                     }
                 }
             }
 
             PassphraseMgmtState.Finish -> {
-                dismiss()
+                SideEffect {
+                    dismiss()
+                }
             }
 
             null -> {
