@@ -23,7 +23,7 @@ import kotlin.math.pow
 private const val ACCEPTED_SYMBOLS = """@\$!%*+\-_#?&\[\]\{\}\(\)\.:;,<>~"'\\/"""
 private const val PASSPHRASE_REGEX =
     """^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$ACCEPTED_SYMBOLS])[A-Za-z\d$ACCEPTED_SYMBOLS]{12,}$"""
-private const val RETRY_DELAY = 1000 // 10 seconds
+private const val RETRY_DELAY = 10000 // 10 seconds
 private const val RETRY_WITH_DELAY_AFTER = 3
 private const val MAX_ATTEMPTS_STOP_APP = 5
 
@@ -151,8 +151,7 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     private fun String.isValidPassphrase(): Boolean {
-        return length > 3
-        //return matches(PASSPHRASE_REGEX.toRegex())
+        return matches(PASSPHRASE_REGEX.toRegex())
     }
 
     private suspend fun handleFailedUnlockAttempt(accountsWithError: List<String>) {
@@ -161,7 +160,7 @@ class PassphraseManagementViewModel @Inject constructor(
             stateLiveData.value = PassphraseMgmtState.TooManyFailedAttempts
         } else {
             if (failedUnlockAttempts >= RETRY_WITH_DELAY_AFTER) {
-                val timeToWait = RETRY_DELAY * 1.0.pow(delayStep).toLong()
+                val timeToWait = RETRY_DELAY * 2.0.pow(delayStep).toLong()
                 updateWithUnlockLoading(PassphraseUnlockLoading.WaitAfterFailedAttempt(timeToWait/1000))
                 delay(timeToWait)
             }

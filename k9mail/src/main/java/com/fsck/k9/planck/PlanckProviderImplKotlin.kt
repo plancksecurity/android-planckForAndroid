@@ -1345,7 +1345,6 @@ class PlanckProviderImplKotlin(
     override suspend fun hasPassphrase(email: String): Result<Boolean> = withContext(PlanckDispatcher) {
         kotlin.runCatching {
             engine.get().has_passphrase(email)
-            true
         }
     }
 
@@ -1360,7 +1359,6 @@ class PlanckProviderImplKotlin(
         accountsWithPassphrases: ArrayList<Pair<String, String>>
     ): Result<Vector<String>?> = withContext(PlanckDispatcher) {
         kotlin.runCatching { engine.get().unlock_keys_with_passphrase(accountsWithPassphrases) }
-        Result.success(Vector(listOf(Preferences.getPreferences(context).accounts.first().email)))
     }
 
     companion object {
