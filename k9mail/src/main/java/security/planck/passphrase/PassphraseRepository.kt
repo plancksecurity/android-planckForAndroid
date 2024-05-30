@@ -96,6 +96,7 @@ class PassphraseRepository @Inject constructor(
         emails: List<String>,
         passphrases: List<String>
     ): Result<List<String>?> = withContext(dispatcherProvider.planckDispatcher()) {
+        timeToStartOrRetryMF.value = PassphraseUnlockRetryNotification.noError // immediately reset notification
         val keysWithPassphrase =
             emails.mapIndexed { index, email -> Pair(email, passphrases[index]) }
         val result = planckProvider.get().unlockKeysWithPassphrase(ArrayList(keysWithPassphrase))
