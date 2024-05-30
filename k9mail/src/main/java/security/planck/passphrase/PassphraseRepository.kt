@@ -37,6 +37,8 @@ class PassphraseRepository @Inject constructor(
 
     private val attemptWithDelay get() = unlockErrors.failedAttempts - RETRY_WITH_DELAY_AFTER
 
+    val shouldRetryImmediately: Boolean get() =  unlockErrors.failedAttempts < RETRY_WITH_DELAY_AFTER
+
     private val timeToStartOrRetryMF: MutableStateFlow<PassphraseUnlockRetryNotification> =
         MutableStateFlow(
             PassphraseUnlockRetryNotification.noError
@@ -117,20 +119,22 @@ class PassphraseRepository @Inject constructor(
                 processError()
             }
         }
+        return@withContext result
     }
 
-    private fun CoroutineScope.processError() {
+    private fun processError() {
         if (unlockErrors.failedAttempts >= RETRY_WITH_DELAY_AFTER) {
+            val previousValue = unlockErrors
             // notify app to ask again after the delay
-            launch {
+            CoroutineScope(dispatcherProvider.io()).launch {
                 delay(RETRY_DELAY * 2.0.pow(attemptWithDelay).toLong())
-                timeToStartOrRetryMF.value = unlockErrors
+                timeToStartOrRetryMF.value = previousValue
             }
         }
     }
 
     companion object {
-        const val RETRY_DELAY = 10 // seconds
+        const val RETRY_DELAY = 10000 // seconds
         const val RETRY_WITH_DELAY_AFTER = 3
         const val MAX_ATTEMPTS_STOP_APP = 10
 

@@ -92,14 +92,18 @@ class PassphraseManagementViewModel @Inject constructor(
         viewModelScope.launch {
             passphraseRepository.unlockKeysWithPassphrase(emails, passphrases).onFailure {
                 Timber.e("EFA-601 RESULT ERROR: ${it.stackTraceToString()}")
-                if (passphraseRepository.unlockErrors.failedAttempts < PassphraseRepository.RETRY_WITH_DELAY_AFTER) {
+                if (passphraseRepository.shouldRetryImmediately) {
                     loadAccountsForUnlocking() // we should notify of an error...? // should we really retry here...?
+                } else {
+                    stateLiveData.value = PassphraseMgmtState.Finish
                 }
             }.onSuccess { list ->
                 Timber.e("EFA-601 RESULT: $list")
                 // if not too many errors, we can retry directly showing the error to the user. No delay in place yet.
-                if (!list.isNullOrEmpty() && passphraseRepository.unlockErrors.failedAttempts < PassphraseRepository.RETRY_WITH_DELAY_AFTER) {
+                if (!list.isNullOrEmpty() && passphraseRepository.shouldRetryImmediately) {
                     loadAccountsForUnlocking(accountsWithErrors = list)
+                } else {
+                    stateLiveData.value = PassphraseMgmtState.Finish
                 }
             }
         }
