@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "security.planck.passphrase.PassphraseManagementDialog"
 private const val ARG_MODE = "security.planck.passphrase.PassphraseManagementDialog.Mode"
+private const val ARG_ACCOUNTS_WITH_ERROR = "security.planck.passphrase.PassphraseManagementDialog.AccountsWithError"
 
 @AndroidEntryPoint
 class PassphraseManagementDialog : DialogFragment() {
@@ -25,7 +26,10 @@ class PassphraseManagementDialog : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            viewModel.start(requireArguments().getEnum<PassphraseDialogMode>(ARG_MODE))
+            val args = requireArguments()
+            val mode = args.getEnum<PassphraseDialogMode>(ARG_MODE)
+            val accountsWithError = args.getStringArrayList(ARG_ACCOUNTS_WITH_ERROR)?.toList()
+            viewModel.start(mode, accountsWithError)
         }
     }
 
@@ -46,20 +50,31 @@ class PassphraseManagementDialog : DialogFragment() {
         }
         return composeView
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        isCancelable = false
+    }
 }
 
 private fun newInstance(
-    mode: PassphraseDialogMode
+    mode: PassphraseDialogMode,
+    accountsWithError: List<String>,
 ): PassphraseManagementDialog = PassphraseManagementDialog().apply {
-    arguments = Bundle().apply { putEnum(ARG_MODE, mode) }
+    arguments = Bundle().apply {
+        putEnum(ARG_MODE, mode)
+        putStringArrayList(ARG_ACCOUNTS_WITH_ERROR, ArrayList(accountsWithError))
+    }
 }
 
 private fun createAndShowPassphraseManagementDialog(
     fragmentManager: FragmentManager,
-    mode: PassphraseDialogMode
+    mode: PassphraseDialogMode,
+    accountsWithError: List<String>
 ) {
     val fragment = newInstance(
-        mode
+        mode,
+        accountsWithError
     )
     fragmentManager
         .beginTransaction()
@@ -68,19 +83,24 @@ private fun createAndShowPassphraseManagementDialog(
 }
 
 fun Fragment.showPassphraseManagementDialog(
-    mode: PassphraseDialogMode
+    mode: PassphraseDialogMode,
+    accountsWithError: List<String> = emptyList(),
 ) {
     createAndShowPassphraseManagementDialog(
         parentFragmentManager,
-        mode
+        mode,
+        accountsWithError,
     )
 }
 
-fun AppCompatActivity.showVerifyPartnerDialog(
-    mode: PassphraseDialogMode
+@JvmOverloads
+fun AppCompatActivity.showPassphraseManagementDialog(
+    mode: PassphraseDialogMode,
+    accountsWithError: List<String> = emptyList(),
 ) {
     createAndShowPassphraseManagementDialog(
         supportFragmentManager,
-        mode
+        mode,
+        accountsWithError,
     )
 }

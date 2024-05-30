@@ -80,7 +80,12 @@ fun PassphraseManagementDialogContent(
             .padding(horizontal = paddingHorizontal, vertical = 0.dp)
             .padding(top = paddingTop, bottom = paddingBottom)
     ) {
-        WizardToolbar(title = stringResource(id = R.string.passphrase_management_dialog_title))
+        WizardToolbar(title = stringResource(id =
+        if (viewModel.mode == PassphraseDialogMode.MANAGE)
+            R.string.passphrase_management_dialog_title
+            else
+            R.string.passphrase_management_dialog_title_unlock
+        ))
 
         when (val state = viewModelState.value) {
             PassphraseMgmtState.Idle -> {}
@@ -118,15 +123,15 @@ fun PassphraseManagementDialogContent(
             }
 
             is PassphraseMgmtState.UnlockingPassphrases -> {
-                //val passwordStates = remember { mutableStateListOf(*Array(state.accountsUsingPassphrase.size) { TextFieldState() }) }
                 val passwordStates = remember {
-                    state.accountsUsingPassphrase.map { TextFieldState() }
+                    state.accountsUsingPassphrase.map { account ->
+                        TextFieldState( isError = state.accountUnlockErrors.contains(account.email)) // initial errors for retries
+                    }
                 }
 
                 PassphraseUnlockingList(
                     accountsUsingPassphrase = state.accountsUsingPassphrase,
                     passwordStates = passwordStates,
-                    accountsWithErrors = state.accountUnlockErrors,
                 )
 
                 // buttons at the bottom
@@ -233,14 +238,13 @@ fun PassphraseManagementList(accountUsesPassphraseList: List<AccountUsesPassphra
 fun PassphraseUnlockingList(
     accountsUsingPassphrase: List<Account>,
     passwordStates: List<TextFieldState>,
-    accountsWithErrors: List<String>,
 ) {
 
     LazyColumn {
         itemsIndexed(accountsUsingPassphrase) { index, account ->
             Column {
                 Text(text = account.email, color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground))
-                PasswordInputField(passwordStates[index], initialError = accountsWithErrors.contains(account.email))
+                PasswordInputField(passwordStates[index])
             }
         }
     }
@@ -249,7 +253,6 @@ fun PassphraseUnlockingList(
 @Composable
 fun PasswordInputField(
     passwordState: TextFieldState,
-    initialError: Boolean
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
     val color = getColorFromAttr(

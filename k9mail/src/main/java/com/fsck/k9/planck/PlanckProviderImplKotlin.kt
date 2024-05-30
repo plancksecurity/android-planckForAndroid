@@ -1343,7 +1343,10 @@ class PlanckProviderImplKotlin(
         }
 
     override suspend fun hasPassphrase(email: String): Result<Boolean> = withContext(PlanckDispatcher) {
-        kotlin.runCatching { engine.get().has_passphrase(email) }
+        kotlin.runCatching {
+            engine.get().has_passphrase(email)
+            true
+        }
     }
 
     override suspend fun managePassphrase(

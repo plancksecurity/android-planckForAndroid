@@ -1,5 +1,6 @@
 package security.planck.passphrase
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ class PassphraseUnlockViewModel @Inject constructor(
     private val passphraseRepository: PassphraseRepository,
 ): ViewModel() {
     private val passphraseUnlockRetryLiveData: MutableLiveData<Event<PassphraseUnlockRetryState>> = MutableLiveData(Event(PassphraseUnlockRetryState.Idle))
+    val passphraseUnlockRetry: LiveData<Event<PassphraseUnlockRetryState>> = passphraseUnlockRetryLiveData
 
     init {
         passphraseRepository.timeToStartOrRetry.onEach { notification ->

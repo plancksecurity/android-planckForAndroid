@@ -24,11 +24,16 @@ class PassphraseManagementViewModel @Inject constructor(
     private val stateLiveData: MutableLiveData<PassphraseMgmtState> =
         MutableLiveData(PassphraseMgmtState.Idle)
     val state: LiveData<PassphraseMgmtState> = stateLiveData
+    lateinit var mode: PassphraseDialogMode
 
-    fun start(mode: PassphraseDialogMode) {
+    fun start(
+        mode: PassphraseDialogMode,
+        accountsWithErrors: List<String>?,
+    ) {
+        this.mode = mode
         when (mode) {
             PassphraseDialogMode.MANAGE -> loadAccountsForManagement()
-            PassphraseDialogMode.UNLOCK -> loadAccountsForUnlocking()
+            PassphraseDialogMode.UNLOCK -> loadAccountsForUnlocking(accountsWithErrors = accountsWithErrors.orEmpty())
         }
     }
 
