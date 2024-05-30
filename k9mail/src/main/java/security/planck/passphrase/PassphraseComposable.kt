@@ -101,6 +101,7 @@ fun PassphraseManagementDialogContent(
                 Text(
                     text = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
                     fontFamily = FontFamily.SansSerif,
+                    color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
                     modifier = Modifier.padding(vertical = 32.dp)
                 )
                 // buttons at the bottom
@@ -135,7 +136,8 @@ fun PassphraseManagementDialogContent(
                         Text(
                             text = stringResource(id = string),
                             fontFamily = FontFamily.Default,
-                            color = MaterialTheme.colors.error,
+                            color = colorResource(id = R.color.error_text_color),
+                            style = MaterialTheme.typography.caption,
                         )
                     }
 
@@ -279,6 +281,7 @@ fun PasswordInputField(
     val color = getColorFromAttr(
         colorRes = R.attr.defaultColorOnBackground
     )
+    val errorColor = colorResource(id = R.color.error_text_color)
 
     TextField(
         value = passwordState.textState,
@@ -307,6 +310,9 @@ fun PasswordInputField(
         ),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = color,
+            errorBorderColor = errorColor,
+            errorLabelColor = errorColor,
+            errorCursorColor = errorColor,
             unfocusedBorderColor = color,
             textColor = color,
             cursorColor = color
@@ -375,6 +381,7 @@ fun CenteredCircularProgressIndicatorWithText(text: String) {
         Text(
             text = text,
             fontFamily = FontFamily.SansSerif,
+            color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground)
         )
         Spacer(modifier = Modifier.height(32.dp))
     }
