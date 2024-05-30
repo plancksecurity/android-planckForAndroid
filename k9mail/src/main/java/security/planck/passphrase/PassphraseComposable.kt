@@ -22,10 +22,12 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -103,6 +105,14 @@ fun PassphraseManagementDialogContent(
                     accountsUsingPassphrase = state.accountsUsingPassphrase,
                     passwordStates = viewModel.passwordStates
                 )
+                if (viewModel.passwordStates.any { it.errorState }) {
+                    Text(
+                        text = stringResource(id = R.string.passphrase_wrong_input_feedback),
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
 
                 // buttons at the bottom
                 Row(
@@ -232,7 +242,7 @@ fun PasswordInputField(
         colorRes = R.attr.defaultColorOnBackground
     )
 
-    OutlinedTextField(
+    TextField(
         value = passwordState.textState,
         onValueChange = {
             passwordState.textState = it
