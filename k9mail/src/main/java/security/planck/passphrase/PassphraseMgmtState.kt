@@ -8,7 +8,7 @@ sealed interface PassphraseMgmtState {
     object Finish: PassphraseMgmtState
     data class CoreError(val error: Throwable?): PassphraseMgmtState
     data class ManagingAccounts(val accountsUsingPassphrase: List<AccountUsesPassphrase>): PassphraseMgmtState
-    data class UnlockingPassphrases(val accountsUsingPassphrase: List<Account>, val accountUnlockErrors: List<String> = emptyList()): PassphraseMgmtState
+    data class UnlockingPassphrases(val accountsUsingPassphrase: List<String>): PassphraseMgmtState
 }
 
 data class AccountUsesPassphrase(

@@ -96,66 +96,34 @@ fun PassphraseManagementDialogContent(
                 CenteredCircularProgressIndicator()
             }
 
-            is PassphraseMgmtState.ManagingAccounts -> {
-                PassphraseManagementList(
-                    accountUsesPassphraseList = state.accountsUsingPassphrase
-                )
-
-                // buttons at the bottom
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    TextActionButton(
-                        text = stringResource(id = R.string.cancel_action),
-                        textColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
-                        onClick = onCancel
-                    )
-                    TextActionButton(
-                        text = stringResource(id = R.string.pep_confirm_trustwords),
-                        textColor = colorResource(
-                            id = R.color.colorAccent
-                        ),
-                    ) {
-                        onConfirm()
-                    }
-                }
-            }
-
             is PassphraseMgmtState.UnlockingPassphrases -> {
-                val passwordStates = rememberSaveable {
-                    state.accountsUsingPassphrase.map { account ->
-                        TextFieldState( isError = state.accountUnlockErrors.contains(account.email)) // initial errors for retries
-                    }
-                }
 
                 PassphraseUnlockingList(
+                    viewModel = viewModel,
                     accountsUsingPassphrase = state.accountsUsingPassphrase,
-                    passwordStates = passwordStates,
+                    passwordStates = viewModel.passwordStates
                 )
 
                 // buttons at the bottom
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    TextActionButton(
-                        text = stringResource(id = R.string.cancel_action),
-                        textColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
-                        onClick = onCancel
-                    )
+                    //TextActionButton(
+                    //    text = stringResource(id = R.string.cancel_action),
+                    //    textColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
+                    //    onClick = onCancel
+                    //)
                     TextActionButton(
                         text = stringResource(id = R.string.pep_confirm_trustwords),
                         textColor = colorResource(
                             id = R.color.colorAccent
                         ),
-                        enabled = passwordStates.none { it.errorState }
+                        enabled = viewModel.passwordStates.none { it.errorState }
                     ) {
-                        viewModel.unlockKeysWithPassphrase(state.accountsUsingPassphrase.map { it.email }, passwordStates.map { it.textState })
+                        viewModel.unlockKeysWithPassphrase(state.accountsUsingPassphrase, viewModel.passwordStates.map { it.textState })
                     }
                 }
             }
@@ -166,7 +134,7 @@ fun PassphraseManagementDialogContent(
                 }
             }
 
-            null -> {
+            else -> {
 
             }
         }
@@ -239,15 +207,16 @@ fun PassphraseManagementList(accountUsesPassphraseList: List<AccountUsesPassphra
 
 @Composable
 fun PassphraseUnlockingList(
-    accountsUsingPassphrase: List<Account>,
+    viewModel: PassphraseManagementViewModel,
+    accountsUsingPassphrase: List<String>,
     passwordStates: List<TextFieldState>,
 ) {
 
     LazyColumn {
         itemsIndexed(accountsUsingPassphrase) { index, account ->
             Column {
-                Text(text = account.email, color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground))
-                PasswordInputField(passwordStates[index])
+                Text(text = account, color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground))
+                PasswordInputField(passwordStates[index]) { viewModel.validateInput(it) }
             }
         }
     }
@@ -256,6 +225,7 @@ fun PassphraseUnlockingList(
 @Composable
 fun PasswordInputField(
     passwordState: TextFieldState,
+    evaluateError: (TextFieldState) -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
     val color = getColorFromAttr(
@@ -266,7 +236,7 @@ fun PasswordInputField(
         value = passwordState.textState,
         onValueChange = {
             passwordState.textState = it
-            passwordState.errorState = it.length < 6
+            evaluateError(passwordState)
         },
         label = { Text("Password", color = color) },
         isError = passwordState.errorState,
@@ -356,12 +326,4 @@ fun getColorFromAttr(@AttrRes colorRes: Int): Color {
         // Attribute is a direct color value
         Color(typedValue.data)
     }
-}
-
-data class TextFieldState(
-    private val text: String = "",
-    private val isError: Boolean = false,
-) {
-    var textState by mutableStateOf(text)
-    var errorState by mutableStateOf(isError)
 }
