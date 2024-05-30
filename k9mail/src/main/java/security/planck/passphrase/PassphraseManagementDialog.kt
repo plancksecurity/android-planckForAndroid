@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -38,11 +39,13 @@ class PassphraseManagementDialog : DialogFragment() {
     ): View {
         val composeView = ComposeView(requireContext()).apply {
             setContent {
-                PassphraseManagementDialogContent(
-                    viewModel = viewModel,
-                    dismiss = ::dismissAllowingStateLoss,
-                    finishApp = ::finishApp,
-                )
+                MaterialTheme {
+                    PassphraseManagementDialogContent(
+                        viewModel = viewModel,
+                        dismiss = ::dismissAllowingStateLoss,
+                        finishApp = ::finishApp,
+                    )
+                }
             }
         }
         return composeView

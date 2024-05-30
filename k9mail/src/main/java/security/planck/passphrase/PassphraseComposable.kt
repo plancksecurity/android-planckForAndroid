@@ -64,7 +64,7 @@ fun PassphraseManagementDialogContent(
 ) {
     val minWidth = dimensionResource(id = R.dimen.key_import_floating_width)
     val paddingHorizontal = 24.dp
-    val paddingTop = 16.dp
+    val paddingTop = 24.dp
     val paddingBottom = 8.dp
     val viewModelState = viewModel.state.observeAsState()
 
@@ -102,7 +102,7 @@ fun PassphraseManagementDialogContent(
                     text = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
                     style = MaterialTheme.typography.caption,
                     fontFamily = FontFamily.SansSerif,
-                    modifier = Modifier.padding(vertical = 64.dp)
+                    modifier = Modifier.padding(vertical = 32.dp)
                 )
                 // buttons at the bottom
                 Row(

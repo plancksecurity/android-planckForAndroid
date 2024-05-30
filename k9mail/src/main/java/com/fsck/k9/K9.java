@@ -735,9 +735,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         planckProvider = messagingController.getPlanckProvider();
         provisioningManager.performInitializedEngineProvisioning();
         initializeAuditLog();
-        passphraseRepository.initializeBlocking();
-
         initJobManager(preferences, messagingController);
+        passphraseRepository.initializeBlocking();
 
         /*
          * Enable background sync of messages

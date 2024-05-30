@@ -128,6 +128,7 @@ class PassphraseManagementViewModel @Inject constructor(
                 Timber.e("EFA-601 RESULT: $list")
                 if (list.isNullOrEmpty()) {
                     passphraseRepository.unlockPassphrase()
+                    stateLiveData.value = PassphraseMgmtState.Dismiss
                 } else {
                     handleFailedUnlockAttempt(list)
                     //stateLiveData.value = PassphraseMgmtState.UnlockingPassphrases()
