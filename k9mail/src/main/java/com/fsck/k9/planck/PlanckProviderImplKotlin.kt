@@ -1360,6 +1360,7 @@ class PlanckProviderImplKotlin(
         accountsWithPassphrases: ArrayList<Pair<String, String>>
     ): Result<Vector<String>?> = withContext(PlanckDispatcher) {
         kotlin.runCatching { engine.get().unlock_keys_with_passphrase(accountsWithPassphrases) }
+        Result.success(Vector(listOf(Preferences.getPreferences(context).accounts.first().email)))
     }
 
     companion object {
