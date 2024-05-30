@@ -126,7 +126,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializePassphraseManagementPreference() {
         findPreference<Preference>(PREFERENCE_MANAGE_PASSPHRASES)?.onClick {
-            showPassphraseManagementDialog(mode = PassphraseDialogMode.MANAGE)
+            showPassphraseManagementDialog(mode = PassphraseDialogMode.UNLOCK)
         }
     }
 

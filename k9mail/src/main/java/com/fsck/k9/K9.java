@@ -44,6 +44,7 @@ import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
 import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckProviderFactory;
 import com.fsck.k9.planck.ui.tools.AppTheme;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -89,6 +90,7 @@ import security.planck.mdm.MediaKey;
 import security.planck.mdm.RestrictionsReceiver;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
+import security.planck.passphrase.PassphraseRepository;
 import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.sync.SyncRepository;
@@ -126,6 +128,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
     @Inject
     Provider<SyncRepository> syncRepository;
+    @Inject
+    PassphraseRepository passphraseRepository;
 
     public static K9JobManager jobManager;
 
@@ -459,6 +463,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
      * whether any accounts are configured.
      */
     public static void setServicesEnabled(Context context) {
+        if (!PassphraseRepository.getPassphraseUnlocked()) return;
         Context appContext = context.getApplicationContext();
         int acctLength = Preferences.getPreferences(appContext).getAvailableAccounts().size();
         boolean enable = acctLength > 0;
@@ -730,6 +735,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         planckProvider = messagingController.getPlanckProvider();
         provisioningManager.performInitializedEngineProvisioning();
         initializeAuditLog();
+        passphraseRepository.initializeBlocking();
 
         initJobManager(preferences, messagingController);
 
@@ -822,15 +828,27 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         });
 
-        refreshFoldersForAllAccounts();
-        syncRepository.get().planckInitSyncEnvironment();
-        syncRepository.get().setupFastPoller();
+        if (PassphraseRepository.getPassphraseUnlocked()) {
+            refreshFoldersForAllAccounts();
+            startupSync();
+        }
 
         notifyObservers();
 
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         String packageName = getPackageName();
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
+    }
+
+    private void startupSync() {
+        syncRepository.get().planckInitSyncEnvironment();
+        syncRepository.get().setupFastPoller();
+    }
+
+    public void startAllServices() {
+        setServicesEnabled(this);
+        refreshFoldersForAllAccounts();
+        startupSync();
     }
 
     private void performOperationsOnUpdate() {

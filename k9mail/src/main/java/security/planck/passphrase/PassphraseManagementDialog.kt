@@ -37,9 +37,10 @@ class PassphraseManagementDialog : DialogFragment() {
         val composeView = ComposeView(requireContext()).apply {
             setContent {
                 PassphraseManagementDialogContent(
+                    viewModel = viewModel,
                     onCancel = ::dismissAllowingStateLoss,
                     onConfirm = ::dismissAllowingStateLoss,
-                    viewModel = viewModel,
+                    dismiss = ::dismissAllowingStateLoss,
                 )
             }
         }

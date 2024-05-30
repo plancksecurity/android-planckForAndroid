@@ -1355,7 +1355,7 @@ class PlanckProviderImplKotlin(
 
     override suspend fun unlockKeysWithPassphrase(
         accountsWithPassphrases: ArrayList<Pair<String, String>>
-    ): Result<Vector<String>> = withContext(PlanckDispatcher) {
+    ): Result<Vector<String>?> = withContext(PlanckDispatcher) {
         kotlin.runCatching { engine.get().unlock_keys_with_passphrase(accountsWithPassphrases) }
     }
 
