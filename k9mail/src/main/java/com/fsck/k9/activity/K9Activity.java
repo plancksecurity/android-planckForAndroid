@@ -52,7 +52,6 @@ import security.planck.dialog.ConfirmationDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.passphrase.PassphraseDialogMode;
 import security.planck.passphrase.PassphraseManagementDialogKt;
-import security.planck.passphrase.PassphraseUnlockRetryState;
 import security.planck.passphrase.PassphraseUnlockViewModel;
 import security.planck.ui.audit.AuditLogViewModel;
 import timber.log.Timber;
@@ -382,17 +381,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     private void observePassphraseUnlockViewModel() {
-        passphraseUnlockViewModel.getPassphraseUnlockRetry().observe(this, event -> {
-            PassphraseUnlockRetryState value = event.getContentIfNotHandled();
-            if (value != null) {
-                if (value.equals(PassphraseUnlockRetryState.TimeToStart.INSTANCE)) {
-                    PassphraseManagementDialogKt.showPassphraseManagementDialog(this, PassphraseDialogMode.UNLOCK);
-                } else if (value.equals(PassphraseUnlockRetryState.FinishApp.INSTANCE)) {
-                    finishAndRemoveTask();
-                    System.exit(0);
-                } else if (value instanceof PassphraseUnlockRetryState.TimeToRetry) {
-                    PassphraseManagementDialogKt.showPassphraseManagementDialog(this, PassphraseDialogMode.UNLOCK, ((PassphraseUnlockRetryState.TimeToRetry) value).getAccountsWithError());
-                }
+        passphraseUnlockViewModel.getNeedsPassphraseUnlock().observe(this, event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                PassphraseManagementDialogKt.showPassphraseManagementDialog(this, PassphraseDialogMode.UNLOCK);
             }
         });
     }
@@ -449,7 +441,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         auditLogViewModel.getTamperAlert().removeObservers(this);
         restrictionsViewModel.getAccountRemoved().removeObservers(this);
         restrictionsViewModel.getWrongAccountSettings().removeObservers(this);
-        passphraseUnlockViewModel.getPassphraseUnlockRetry().removeObservers(this);
+        passphraseUnlockViewModel.getNeedsPassphraseUnlock().removeObservers(this);
     }
 
     @Override

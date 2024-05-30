@@ -2,11 +2,11 @@ package security.planck.passphrase
 
 import android.util.TypedValue
 import androidx.annotation.AttrRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +23,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -37,12 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,18 +54,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.fsck.k9.Account
 import com.fsck.k9.R
 
 @Composable
 fun PassphraseManagementDialogContent(
     viewModel: PassphraseManagementViewModel,
-    onCancel: () -> Unit,
-    onConfirm: () -> Unit,
     dismiss: () -> Unit,
+    finishApp: () -> Unit,
 ) {
     val minWidth = dimensionResource(id = R.dimen.key_import_floating_width)
-    val paddingHorizontal = 16.dp
+    val paddingHorizontal = 24.dp
     val paddingTop = 16.dp
     val paddingBottom = 8.dp
     val viewModelState = viewModel.state.observeAsState()
@@ -84,61 +78,104 @@ fun PassphraseManagementDialogContent(
             .padding(horizontal = paddingHorizontal, vertical = 0.dp)
             .padding(top = paddingTop, bottom = paddingBottom)
     ) {
-        WizardToolbar(title = stringResource(id =
-        if (viewModel.mode == PassphraseDialogMode.MANAGE)
-            R.string.passphrase_management_dialog_title
-            else
-            R.string.passphrase_management_dialog_title_unlock
-        ))
+        WizardToolbar(
+            title = stringResource(
+                id =
+                if (viewModel.mode == PassphraseDialogMode.MANAGE)
+                    R.string.passphrase_management_dialog_title
+                else
+                    R.string.passphrase_unlock_dialog_title
+            )
+        )
 
         when (val state = viewModelState.value) {
-            PassphraseMgmtState.Idle -> {}
+            PassphraseMgmtState.Idle -> {
+                CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
+            }
             is PassphraseMgmtState.CoreError -> {}
             PassphraseMgmtState.Loading -> {
-                CenteredCircularProgressIndicator()
+                CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
             }
 
-            is PassphraseMgmtState.UnlockingPassphrases -> {
-
-                PassphraseUnlockingList(
-                    viewModel = viewModel,
-                    accountsUsingPassphrase = state.accountsUsingPassphrase,
-                    passwordStates = viewModel.passwordStates
+            PassphraseMgmtState.TooManyFailedAttempts -> {
+                Text(
+                    text = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
+                    style = MaterialTheme.typography.caption,
+                    fontFamily = FontFamily.SansSerif,
+                    modifier = Modifier.padding(vertical = 64.dp)
                 )
-                if (viewModel.passwordStates.any { it.errorState }) {
-                    Text(
-                        text = stringResource(id = R.string.passphrase_wrong_input_feedback),
-                        color = MaterialTheme.colors.error,
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-
                 // buttons at the bottom
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    //TextActionButton(
-                    //    text = stringResource(id = R.string.cancel_action),
-                    //    textColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
-                    //    onClick = onCancel
-                    //)
                     TextActionButton(
-                        text = stringResource(id = R.string.pep_confirm_trustwords),
+                        text = stringResource(id = R.string.close),
                         textColor = colorResource(
                             id = R.color.colorAccent
                         ),
-                        enabled = viewModel.passwordStates.none { it.errorState }
-                    ) {
-                        viewModel.unlockKeysWithPassphrase(state.accountsUsingPassphrase, viewModel.passwordStates.map { it.textState })
-                    }
+                        enabled = true,
+                        onClick = finishApp,
+                    )
                 }
             }
 
-            PassphraseMgmtState.Finish -> {
+            is PassphraseMgmtState.UnlockingPassphrases -> {
+                if (state.loading.value == null) {
+                    PassphraseUnlockingList(
+                        viewModel = viewModel,
+                        passwordStates = state.passwordStates
+                    )
+                    state.errorType.value?.let { errorType ->
+                        val string = when (errorType) {
+                            PassphraseUnlockErrorType.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
+                            PassphraseUnlockErrorType.WRONG_PASSPHRASE -> R.string.passhphrase_body_wrong_passphrase
+                            PassphraseUnlockErrorType.CORE_ERROR -> R.string.error_happened_restart_app
+                        }
+                        Text(
+                            text = stringResource(id = string),
+                            fontFamily = FontFamily.Default,
+                            color = MaterialTheme.colors.error,
+                            style = MaterialTheme.typography.caption,
+                        )
+                    }
+
+                    // buttons at the bottom
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        //TextActionButton(
+                        //    text = stringResource(id = R.string.cancel_action),
+                        //    textColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
+                        //    onClick = onCancel
+                        //)
+                        TextActionButton(
+                            text = stringResource(id = R.string.pep_confirm_trustwords),
+                            textColor = colorResource(
+                                id = R.color.colorAccent
+                            ),
+                            enabled = state.errorType.value == null
+                        ) {
+                            viewModel.unlockKeysWithPassphrase(state.passwordStates.toList())
+                        }
+                    }
+                } else {
+                    val string = when (val loadingState = state.loading.value!!) {
+                        PassphraseUnlockLoading.Processing -> stringResource(id = R.string.message_list_loading)
+                        is PassphraseUnlockLoading.WaitAfterFailedAttempt -> stringResource(
+                            id = R.string.passphrase_unlock_dialog_wait_after_failed_attempt,
+                            loadingState.seconds
+                        )
+                    }
+                    CenteredCircularProgressIndicatorWithText(text = string)
+                }
+            }
+
+            PassphraseMgmtState.Dismiss -> {
                 SideEffect {
                     dismiss()
                 }
@@ -218,15 +255,18 @@ fun PassphraseManagementList(accountUsesPassphraseList: List<AccountUsesPassphra
 @Composable
 fun PassphraseUnlockingList(
     viewModel: PassphraseManagementViewModel,
-    accountsUsingPassphrase: List<String>,
     passwordStates: List<TextFieldState>,
 ) {
 
     LazyColumn {
-        itemsIndexed(accountsUsingPassphrase) { index, account ->
+        itemsIndexed(passwordStates) { index, state ->
             Column {
-                Text(text = account, color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground))
+                Text(
+                    text = state.email,
+                    color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground)
+                )
                 PasswordInputField(passwordStates[index]) { viewModel.validateInput(it) }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -260,7 +300,7 @@ fun PasswordInputField(
             val description = if (passwordVisible) "Hide password" else "Show password"
 
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(imageVector = image, description, tint = color,)
+                Icon(imageVector = image, description, tint = color)
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -275,7 +315,7 @@ fun PasswordInputField(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(vertical = 8.dp),
     )
 }
 
@@ -318,6 +358,28 @@ fun CenteredCircularProgressIndicator() {
             strokeWidth = 4.dp,
             modifier = Modifier.size(50.dp)
         )
+    }
+}
+
+@Composable
+fun CenteredCircularProgressIndicatorWithText(text: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        CircularProgressIndicator(
+            color = colorResource(id = R.color.colorAccent),
+            strokeWidth = 4.dp,
+            modifier = Modifier.size(50.dp)
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.caption,
+            fontFamily = FontFamily.SansSerif,
+        )
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

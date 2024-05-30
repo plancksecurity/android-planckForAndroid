@@ -501,8 +501,11 @@
     <string name="google_guide_screen_2_text1_line_1">Step 2:\n</string>
     <string name="google_guide_screen_2_text1_line_2">Press on “Advanced”</string>
 
+    <string name="passphrase_unlock_dialog_title">Unlock Passphrases</string>
+    <string name="passphrase_unlock_dialog_wait_after_failed_attempt">Waiting %d seconds to retry…</string>
+    <string name="passphrase_unlock_dialog_too_many_failed_attempts">Too many failed attempts. App will close.</string>
+
     <string name="passphrase_management_dialog_title">Manage Passphrases</string>
-    <string name="passphrase_management_dialog_title_unlock">Unlock Passphrases</string>
     <string name="passphrase_management_preference_title">Manage Passphrases on Private Keys</string>
 
 </resources>
