@@ -100,7 +100,6 @@ fun PassphraseManagementDialogContent(
             PassphraseMgmtState.TooManyFailedAttempts -> {
                 Text(
                     text = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
-                    style = MaterialTheme.typography.caption,
                     fontFamily = FontFamily.SansSerif,
                     modifier = Modifier.padding(vertical = 32.dp)
                 )
@@ -137,7 +136,6 @@ fun PassphraseManagementDialogContent(
                             text = stringResource(id = string),
                             fontFamily = FontFamily.Default,
                             color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption,
                         )
                     }
 
@@ -376,7 +374,6 @@ fun CenteredCircularProgressIndicatorWithText(text: String) {
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.caption,
             fontFamily = FontFamily.SansSerif,
         )
         Spacer(modifier = Modifier.height(32.dp))
