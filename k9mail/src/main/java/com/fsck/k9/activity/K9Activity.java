@@ -51,7 +51,7 @@ import security.planck.dialog.ConfirmationDialog;
 import security.planck.dialog.ConfirmationDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.ui.passphrase.PassphraseDialogMode;
-import security.planck.ui.passphrase.PassphraseUnlockViewModel;
+import security.planck.ui.passphrase.PassphraseUnlockNotificationViewModel;
 import security.planck.ui.audit.AuditLogViewModel;
 import security.planck.ui.passphrase.PassphraseManagementDialogKt;
 import timber.log.Timber;
@@ -87,7 +87,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public static final int NO_ANIMATION = 0;
     protected AuditLogViewModel auditLogViewModel;
     protected RestrictionsViewModel restrictionsViewModel;
-    protected PassphraseUnlockViewModel passphraseUnlockViewModel;
+    protected PassphraseUnlockNotificationViewModel passphraseUnlockNotificationViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,7 +106,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
         auditLogViewModel = new ViewModelProvider(this).get(AuditLogViewModel.class);
         restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
-        passphraseUnlockViewModel = new ViewModelProvider(this).get(PassphraseUnlockViewModel.class);
+        passphraseUnlockNotificationViewModel = new ViewModelProvider(this).get(PassphraseUnlockNotificationViewModel.class);
         initializeFragmentListeners();
     }
 
@@ -381,7 +381,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     private void observePassphraseUnlockViewModel() {
-        passphraseUnlockViewModel.getNeedsPassphraseUnlock().observe(this, event -> {
+        passphraseUnlockNotificationViewModel.getNeedsPassphraseUnlock().observe(this, event -> {
             Boolean value = event.getContentIfNotHandled();
             if (value != null && value) {
                 PassphraseManagementDialogKt.showPassphraseManagementDialog(this, PassphraseDialogMode.UNLOCK);
@@ -441,7 +441,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         auditLogViewModel.getTamperAlert().removeObservers(this);
         restrictionsViewModel.getAccountRemoved().removeObservers(this);
         restrictionsViewModel.getWrongAccountSettings().removeObservers(this);
-        passphraseUnlockViewModel.getNeedsPassphraseUnlock().removeObservers(this);
+        passphraseUnlockNotificationViewModel.getNeedsPassphraseUnlock().removeObservers(this);
     }
 
     @Override

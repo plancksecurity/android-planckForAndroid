@@ -9,7 +9,7 @@ import security.planck.passphrase.PassphraseRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class PassphraseUnlockViewModel @Inject constructor() : ViewModel() {
+class PassphraseUnlockNotificationViewModel @Inject constructor() : ViewModel() {
     private val needsPassphraseUnlockLiveData: MutableLiveData<Event<Boolean>> =
         MutableLiveData(Event(!PassphraseRepository.passphraseUnlocked))
     val needsPassphraseUnlock: LiveData<Event<Boolean>> = needsPassphraseUnlockLiveData
