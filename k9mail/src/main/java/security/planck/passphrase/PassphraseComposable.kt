@@ -30,6 +30,8 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
@@ -42,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -124,15 +127,25 @@ fun PassphraseManagementDialogContent(
 
             is PassphraseMgmtState.UnlockingPassphrases -> {
                 if (state.loading.value == null) {
+                    val defaultColor = getColorFromAttr(
+                        colorRes = R.attr.defaultColorOnBackground
+                    )
+                    val errorColor = colorResource(id = R.color.error_text_color)
+                    val successColor = getColorFromAttr(
+                        colorRes = R.attr.colorAccent
+                    )
                     PassphraseUnlockingList(
                         viewModel = viewModel,
-                        passwordStates = state.passwordStates
+                        passwordStates = state.passwordStates,
+                        defaultColor, successColor, errorColor
                     )
-                    state.errorType.value?.let { errorType ->
+                    val errorType = state.status.value
+                    if (errorType.isError) {
                         val string = when (errorType) {
-                            PassphraseUnlockErrorType.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
-                            PassphraseUnlockErrorType.WRONG_PASSPHRASE -> R.string.passhphrase_body_wrong_passphrase
-                            PassphraseUnlockErrorType.CORE_ERROR -> R.string.error_happened_restart_app
+                            PassphraseUnlockStatus.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
+                            PassphraseUnlockStatus.WRONG_PASSPHRASE -> R.string.passhphrase_body_wrong_passphrase
+                            PassphraseUnlockStatus.CORE_ERROR -> R.string.error_happened_restart_app
+                            else -> 0
                         }
                         Text(
                             text = stringResource(id = string),
@@ -159,7 +172,7 @@ fun PassphraseManagementDialogContent(
                             textColor = colorResource(
                                 id = R.color.colorAccent
                             ),
-                            enabled = state.errorType.value == null
+                            enabled = state.status.value == PassphraseUnlockStatus.SUCCESS
                         ) {
                             viewModel.unlockKeysWithPassphrase(state.passwordStates.toList())
                         }
@@ -257,6 +270,9 @@ fun PassphraseManagementList(accountUsesPassphraseList: List<AccountUsesPassphra
 fun PassphraseUnlockingList(
     viewModel: PassphraseManagementViewModel,
     passwordStates: List<TextFieldState>,
+    defaultColor: Color,
+    successColor: Color,
+    errorColor: Color,
 ) {
 
     LazyColumn {
@@ -266,31 +282,83 @@ fun PassphraseUnlockingList(
                     text = state.email,
                     color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground)
                 )
-                PasswordInputField(passwordStates[index]) { viewModel.validateInput(it) }
-                Spacer(modifier = Modifier.height(16.dp))
+
+                val passwordState = passwordStates[index]
+                val textColor = when (passwordState.errorState) {
+                    TextFieldState.ErrorStatus.NONE -> defaultColor
+                    TextFieldState.ErrorStatus.ERROR -> errorColor
+                    TextFieldState.ErrorStatus.SUCCESS -> successColor
+                }
+                val statusIcon = when (passwordState.errorState) {
+                    TextFieldState.ErrorStatus.NONE -> Icons.Filled.Close
+                    TextFieldState.ErrorStatus.ERROR -> Icons.Filled.Close
+                    TextFieldState.ErrorStatus.SUCCESS -> Icons.Filled.CheckBox
+                }
+                val statusIconDescription = when (passwordState.errorState) {
+                    TextFieldState.ErrorStatus.NONE -> 0
+                    TextFieldState.ErrorStatus.ERROR -> R.string.passphrase_unlock_dialog_wrong_passhprase_status_desc
+                    TextFieldState.ErrorStatus.SUCCESS -> R.string.passphrase_unlock_dialog_correct_passphrase_status_desc
+                }
+                PassphraseUnlockRow(
+                    passwordState = passwordState,
+                    textColor = textColor,
+                    errorColor = errorColor,
+                    defaultColor = defaultColor,
+                    statusIcon = statusIcon,
+                    statusIconDescription = statusIconDescription,
+                    validateInput = viewModel::validateInput
+                )
             }
         }
     }
 }
 
 @Composable
+private fun PassphraseUnlockRow(
+    passwordState: TextFieldState,
+    textColor: Color,
+    errorColor: Color,
+    defaultColor: Color,
+    validateInput: (TextFieldState) -> Unit,
+    statusIcon: ImageVector,
+    statusIconDescription: Int
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        PasswordInputField(
+            passwordState,
+            textColor,
+            errorColor,
+            defaultColor,
+            validateInput,
+            modifier = Modifier.weight(1f)
+        )
+        if (passwordState.errorState != TextFieldState.ErrorStatus.NONE) {
+            Icon(
+                imageVector = statusIcon,
+                stringResource(id = statusIconDescription),
+                tint = textColor,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
 fun PasswordInputField(
     passwordState: TextFieldState,
-    evaluateError: (TextFieldState) -> Unit
+    textColor: Color,
+    errorColor: Color,
+    defaultColor: Color,
+    evaluateError: (TextFieldState) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
-    val defaultColor = getColorFromAttr(
-        colorRes = R.attr.defaultColorOnBackground
-    )
-    val errorColor = colorResource(id = R.color.error_text_color)
-    val successColor = getColorFromAttr(
-        colorRes = R.attr.colorAccent
-    )
-    val textColor = when (passwordState.errorState) {
-        TextFieldState.ErrorStatus.NONE -> defaultColor
-        TextFieldState.ErrorStatus.ERROR -> errorColor
-        TextFieldState.ErrorStatus.SUCCESS -> successColor
-    }
 
     OutlinedTextField(
         value = passwordState.textState,
@@ -328,8 +396,7 @@ fun PasswordInputField(
             focusedLabelColor = textColor,
             unfocusedLabelColor = textColor,
         ),
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(vertical = 8.dp),
     )
 }

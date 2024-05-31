@@ -17,7 +17,7 @@ sealed interface PassphraseMgmtState {
 
     data class UnlockingPassphrases(
         val passwordStates: SnapshotStateList<TextFieldState> = mutableStateListOf(),
-        val errorType: MutableState<PassphraseUnlockErrorType?> = mutableStateOf(null),
+        val status: MutableState<PassphraseUnlockStatus> = mutableStateOf(PassphraseUnlockStatus.NONE),
         val loading: MutableState<PassphraseUnlockLoading?> = mutableStateOf(null)
     ) : PassphraseMgmtState {
         fun initializePasswordStatesIfNeeded(
@@ -28,12 +28,12 @@ sealed interface PassphraseMgmtState {
                 passwordStates.addAll(accountsUsingPassphrase.map {
                     TextFieldState(email = it.email, errorStatus = TextFieldState.ErrorStatus.NONE)
                 })
-                errorType.value = PassphraseUnlockErrorType.WRONG_FORMAT
+                status.value = PassphraseUnlockStatus.NONE
             }
         }
 
         fun updateWithUnlockErrors(
-            errorType: PassphraseUnlockErrorType,
+            errorType: PassphraseUnlockStatus,
             accountsWithErrors: List<String>? = null
         ) {
             accountsWithErrors?.let {
@@ -43,27 +43,37 @@ sealed interface PassphraseMgmtState {
                     }
                 }
             }
-            this.errorType.value = errorType
+            this.status.value = errorType
             loading.value = null
         }
 
         fun updateWithUnlockLoading(loading: PassphraseUnlockLoading) {
             this.loading.value = loading
-            errorType.value = null
+            status.value = PassphraseUnlockStatus.NONE
         }
 
-        fun updateNonFatalErrorIfNeeded(validPassphrase: Boolean) {
-            val errorType = errorType.value
-            if (validPassphrase) {
-                if (errorType == PassphraseUnlockErrorType.WRONG_PASSPHRASE
-                    || (errorType == PassphraseUnlockErrorType.WRONG_FORMAT
-                            && passwordStates.none { it.errorState == TextFieldState.ErrorStatus.ERROR })
-                ) {
-                    this.errorType.value = null
-                }
+        fun updateNonFatalErrorIfNeeded(wrongPassphraseFormat: Boolean) {
+            val errorType = status.value
+            if (wrongPassphraseFormat) {
+                this.status.value = PassphraseUnlockStatus.WRONG_FORMAT
             } else {
-                this.errorType.value = PassphraseUnlockErrorType.WRONG_FORMAT
+                if (errorType.isItemError) {
+                    clearItemErrorStatusIfPossible()
+                }
             }
+        }
+
+        private fun clearItemErrorStatusIfPossible() {
+            var success = 0
+            for (state in passwordStates) {
+                if (state.errorState == TextFieldState.ErrorStatus.ERROR) {
+                    return
+                } else if (state.errorState == TextFieldState.ErrorStatus.SUCCESS) {
+                    success++
+                }
+            }
+            this.status.value =
+                if (success == passwordStates.size) PassphraseUnlockStatus.SUCCESS else PassphraseUnlockStatus.NONE
         }
     }
 }

@@ -64,7 +64,7 @@ class PassphraseManagementViewModel @Inject constructor(
             stateLiveData.value = PassphraseMgmtState.UnlockingPassphrases()
                 .also { it.updateWithUnlockLoading(PassphraseUnlockLoading.Processing) }
             passphraseRepository.getAccountsWithPassPhrase().onFailure {
-                updateWithUnlockErrors(errorType = PassphraseUnlockErrorType.CORE_ERROR)
+                updateWithUnlockErrors(errorType = PassphraseUnlockStatus.CORE_ERROR)
             }.onSuccess { accountsWithPassphrase ->
                 initializePasswordStatesIfNeeded(accountsWithPassphrase)
             }
@@ -72,7 +72,7 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     private fun updateWithUnlockErrors(
-        errorType: PassphraseUnlockErrorType,
+        errorType: PassphraseUnlockStatus,
         accountsWithErrors: List<String>? = null
     ) {
         val state = stateLiveData.value
@@ -117,7 +117,7 @@ class PassphraseManagementViewModel @Inject constructor(
             val keysWithPassphrase =
                 states.map { state -> Pair(state.email, state.textState) }
             planckProvider.unlockKeysWithPassphrase(ArrayList(keysWithPassphrase)).onFailure {
-                updateWithUnlockErrors(errorType = PassphraseUnlockErrorType.CORE_ERROR) // we should notify of an error...? // should we really retry here...?
+                updateWithUnlockErrors(errorType = PassphraseUnlockStatus.CORE_ERROR) // we should notify of an error...? // should we really retry here...?
             }.onSuccess { list ->
                 if (list.isNullOrEmpty()) {
                     passphraseRepository.unlockPassphrase()
@@ -131,16 +131,18 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun validateInput(textFieldState: TextFieldState) {
-        val validPassphrase = textFieldState.textState.isValidPassphrase()
+        val validPassphraseFormat = textFieldState.textState.isValidPassphrase()
         textFieldState.errorState =
-            if (validPassphrase) TextFieldState.ErrorStatus.SUCCESS else TextFieldState.ErrorStatus.ERROR
-        updatePassphraseUnlockNonFatalErrorIfNeeded(validPassphrase)
+            if (validPassphraseFormat) TextFieldState.ErrorStatus.SUCCESS
+            else if (textFieldState.textState.isEmpty()) TextFieldState.ErrorStatus.NONE
+            else TextFieldState.ErrorStatus.ERROR
+        updatePassphraseUnlockNonFatalErrorIfNeeded(textFieldState.errorState == TextFieldState.ErrorStatus.ERROR)
     }
 
-    private fun updatePassphraseUnlockNonFatalErrorIfNeeded(validPassphrase: Boolean) {
+    private fun updatePassphraseUnlockNonFatalErrorIfNeeded(wrongPassphraseFormat: Boolean) {
         val state = stateLiveData.value
         if (state is PassphraseMgmtState.UnlockingPassphrases) {
-            state.updateNonFatalErrorIfNeeded(validPassphrase)
+            state.updateNonFatalErrorIfNeeded(wrongPassphraseFormat)
         }
     }
 
@@ -159,7 +161,7 @@ class PassphraseManagementViewModel @Inject constructor(
                 delay(timeToWait)
             }
             updateWithUnlockErrors(
-                errorType = PassphraseUnlockErrorType.WRONG_PASSPHRASE,
+                errorType = PassphraseUnlockStatus.WRONG_PASSPHRASE,
                 accountsWithErrors = accountsWithError
             )
         }
@@ -179,8 +181,11 @@ data class TextFieldState(
     }
 }
 
-enum class PassphraseUnlockErrorType {
-    WRONG_FORMAT, WRONG_PASSPHRASE, CORE_ERROR,
+enum class PassphraseUnlockStatus {
+    WRONG_FORMAT, WRONG_PASSPHRASE, CORE_ERROR, NONE, SUCCESS;
+
+    val isError: Boolean get() = this != NONE && this != SUCCESS
+    val isItemError: Boolean get() = this == WRONG_FORMAT || this == WRONG_PASSPHRASE
 }
 
 sealed interface PassphraseUnlockLoading {
