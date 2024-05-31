@@ -1,4 +1,4 @@
-package security.planck.passphrase
+package security.planck.ui.passphrase
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

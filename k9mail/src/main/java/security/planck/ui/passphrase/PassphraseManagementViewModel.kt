@@ -1,4 +1,4 @@
-package security.planck.passphrase
+package security.planck.ui.passphrase
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Pair
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import security.planck.passphrase.PassphraseRepository
 import javax.inject.Inject
 import kotlin.math.pow
 

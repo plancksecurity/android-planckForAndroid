@@ -1,4 +1,4 @@
-package security.planck.passphrase
+package security.planck.ui.passphrase
 
 import android.os.Bundle
 import android.view.LayoutInflater

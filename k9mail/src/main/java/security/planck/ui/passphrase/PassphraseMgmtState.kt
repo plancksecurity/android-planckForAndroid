@@ -1,4 +1,4 @@
-package security.planck.passphrase
+package security.planck.ui.passphrase
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf

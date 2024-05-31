@@ -50,10 +50,10 @@ import security.planck.auth.OAuthTokenRevokedListener;
 import security.planck.dialog.ConfirmationDialog;
 import security.planck.dialog.ConfirmationDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
-import security.planck.passphrase.PassphraseDialogMode;
-import security.planck.passphrase.PassphraseManagementDialogKt;
-import security.planck.passphrase.PassphraseUnlockViewModel;
+import security.planck.ui.passphrase.PassphraseDialogMode;
+import security.planck.ui.passphrase.PassphraseUnlockViewModel;
 import security.planck.ui.audit.AuditLogViewModel;
+import security.planck.ui.passphrase.PassphraseManagementDialogKt;
 import timber.log.Timber;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
