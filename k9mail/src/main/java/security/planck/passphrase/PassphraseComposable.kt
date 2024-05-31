@@ -279,10 +279,13 @@ fun PasswordInputField(
     evaluateError: (TextFieldState) -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
-    val color = getColorFromAttr(
+    val defaultColor = getColorFromAttr(
         colorRes = R.attr.defaultColorOnBackground
     )
     val errorColor = colorResource(id = R.color.error_text_color)
+    val successColor = getColorFromAttr(
+        colorRes = R.attr.colorAccent
+    )
 
     OutlinedTextField(
         value = passwordState.textState,
@@ -290,7 +293,7 @@ fun PasswordInputField(
             passwordState.textState = it
             evaluateError(passwordState)
         },
-        label = { Text("Password", color = color) },
+        label = { Text(stringResource(id = R.string.passhphrase_input_hint), color = defaultColor) },
         isError = passwordState.errorState,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
@@ -298,11 +301,10 @@ fun PasswordInputField(
                 Icons.Filled.Visibility
             else Icons.Filled.VisibilityOff
 
-            // Please provide localized description for accessibility services
-            val description = if (passwordVisible) "Hide password" else "Show password"
+            val description = if (passwordVisible) R.string.passphrase_unlock_dialog_hide_password else R.string.passphrase_unlock_dialog_show_password
 
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(imageVector = image, description, tint = color)
+                Icon(imageVector = image, stringResource(id = description), tint = defaultColor)
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -310,13 +312,13 @@ fun PasswordInputField(
             imeAction = ImeAction.Done
         ),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = color,
+            focusedBorderColor = defaultColor,
             errorBorderColor = errorColor,
             errorLabelColor = errorColor,
             errorCursorColor = errorColor,
-            unfocusedBorderColor = color,
-            textColor = color,
-            cursorColor = color
+            unfocusedBorderColor = defaultColor,
+            textColor = defaultColor,
+            cursorColor = defaultColor
         ),
         modifier = Modifier
             .fillMaxWidth()

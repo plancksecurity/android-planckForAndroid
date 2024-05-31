@@ -504,6 +504,8 @@
     <string name="passphrase_unlock_dialog_title">Unlock Passphrases</string>
     <string name="passphrase_unlock_dialog_wait_after_failed_attempt">Waiting %d seconds to retry…</string>
     <string name="passphrase_unlock_dialog_too_many_failed_attempts">Too many failed attempts. App will close.</string>
+    <string name="passphrase_unlock_dialog_show_password">Show passphrase</string>
+    <string name="passphrase_unlock_dialog_hide_password">Hide passphrase</string>
 
     <string name="passphrase_management_dialog_title">Manage Passphrases</string>
     <string name="passphrase_management_preference_title">Manage Passphrases on Private Keys</string>
