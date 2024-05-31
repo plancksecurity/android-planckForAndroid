@@ -23,10 +23,10 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -92,6 +92,7 @@ fun PassphraseManagementDialogContent(
             PassphraseMgmtState.Idle -> {
                 CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
             }
+
             is PassphraseMgmtState.CoreError -> {}
             PassphraseMgmtState.Loading -> {
                 CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
@@ -283,7 +284,7 @@ fun PasswordInputField(
     )
     val errorColor = colorResource(id = R.color.error_text_color)
 
-    TextField(
+    OutlinedTextField(
         value = passwordState.textState,
         onValueChange = {
             passwordState.textState = it
