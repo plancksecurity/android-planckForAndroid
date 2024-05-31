@@ -52,7 +52,6 @@ class PassphraseRepository @Inject constructor(
     }
 
     fun unlockPassphrase() {
-        Timber.e("EFA-601 STARTING MAIL SERVICES...")
         passphraseUnlocked = true
         // initialize all mail services etc etc
         k9.startAllServices()

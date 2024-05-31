@@ -16,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Pair
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -68,7 +67,8 @@ class PassphraseManagementViewModel @Inject constructor(
 
     private fun loadAccountsForUnlocking() {
         viewModelScope.launch {
-            stateLiveData.value = PassphraseMgmtState.UnlockingPassphrases().also { updateWithUnlockLoading(PassphraseUnlockLoading.Processing) }
+            stateLiveData.value = PassphraseMgmtState.UnlockingPassphrases()
+                .also { it.updateWithUnlockLoading(PassphraseUnlockLoading.Processing) }
             passphraseRepository.getAccountsWithPassPhrase().onFailure {
                 updateWithUnlockErrors(errorType = PassphraseUnlockErrorType.CORE_ERROR)
             }.onSuccess { accountsWithPassphrase ->
@@ -77,7 +77,10 @@ class PassphraseManagementViewModel @Inject constructor(
         }
     }
 
-    private fun updateWithUnlockErrors(errorType: PassphraseUnlockErrorType, accountsWithErrors: List<String>? = null) {
+    private fun updateWithUnlockErrors(
+        errorType: PassphraseUnlockErrorType,
+        accountsWithErrors: List<String>? = null
+    ) {
         val state = stateLiveData.value
         if (state is PassphraseMgmtState.UnlockingPassphrases) {
             state.updateWithUnlockErrors(errorType, accountsWithErrors)
@@ -115,17 +118,13 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun unlockKeysWithPassphrase(states: List<TextFieldState>) {
-        Timber.e("EFA-601 UNLOCKING KEYS WITH PASSPHRASE: ${states.map { "${it.email} : ${it.textState}" }}")
         viewModelScope.launch {
             //updateWithUnlockLoading(PassphraseUnlockLoading.Processing) // too short, flickering...
             val keysWithPassphrase =
                 states.map { state -> Pair(state.email, state.textState) }
             planckProvider.unlockKeysWithPassphrase(ArrayList(keysWithPassphrase)).onFailure {
-                Timber.e("EFA-601 RESULT ERROR: ${it.stackTraceToString()}")
-                //handleFailedUnlockAttempt()
                 updateWithUnlockErrors(errorType = PassphraseUnlockErrorType.CORE_ERROR) // we should notify of an error...? // should we really retry here...?
             }.onSuccess { list ->
-                Timber.e("EFA-601 RESULT: $list")
                 if (list.isNullOrEmpty()) {
                     passphraseRepository.unlockPassphrase()
                     stateLiveData.value = PassphraseMgmtState.Dismiss
@@ -155,16 +154,19 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     private suspend fun handleFailedUnlockAttempt(accountsWithError: List<String>) {
-        failedUnlockAttempts ++
+        failedUnlockAttempts++
         if (failedUnlockAttempts >= MAX_ATTEMPTS_STOP_APP) {
             stateLiveData.value = PassphraseMgmtState.TooManyFailedAttempts
         } else {
             if (failedUnlockAttempts >= RETRY_WITH_DELAY_AFTER) {
                 val timeToWait = RETRY_DELAY * 2.0.pow(delayStep).toLong()
-                updateWithUnlockLoading(PassphraseUnlockLoading.WaitAfterFailedAttempt(timeToWait/1000))
+                updateWithUnlockLoading(PassphraseUnlockLoading.WaitAfterFailedAttempt(timeToWait / 1000))
                 delay(timeToWait)
             }
-            updateWithUnlockErrors(errorType = PassphraseUnlockErrorType.WRONG_PASSPHRASE, accountsWithErrors = accountsWithError)
+            updateWithUnlockErrors(
+                errorType = PassphraseUnlockErrorType.WRONG_PASSPHRASE,
+                accountsWithErrors = accountsWithError
+            )
         }
     }
 }
@@ -183,6 +185,6 @@ enum class PassphraseUnlockErrorType {
 }
 
 sealed interface PassphraseUnlockLoading {
-    object Processing: PassphraseUnlockLoading
-    data class WaitAfterFailedAttempt(val seconds: Long): PassphraseUnlockLoading
+    object Processing : PassphraseUnlockLoading
+    data class WaitAfterFailedAttempt(val seconds: Long) : PassphraseUnlockLoading
 }
