@@ -114,18 +114,16 @@ class PassphraseManagementViewModel @Inject constructor(
 
     fun unlockKeysWithPassphrase(states: List<TextFieldState>) {
         viewModelScope.launch {
-            //updateWithUnlockLoading(PassphraseUnlockLoading.Processing) // too short, flickering...
             val keysWithPassphrase =
                 states.map { state -> Pair(state.email, state.textState) }
             planckProvider.unlockKeysWithPassphrase(ArrayList(keysWithPassphrase)).onFailure {
-                updateWithUnlockErrors(errorType = PassphraseUnlockStatus.CORE_ERROR) // we should notify of an error...? // should we really retry here...?
+                updateWithUnlockErrors(errorType = PassphraseUnlockStatus.CORE_ERROR)
             }.onSuccess { list ->
                 if (list.isNullOrEmpty()) {
                     passphraseRepository.unlockPassphrase()
                     stateLiveData.value = PassphraseMgmtState.Dismiss
                 } else {
                     handleFailedUnlockAttempt(list)
-                    //stateLiveData.value = PassphraseMgmtState.UnlockingPassphrases()
                 }
             }
         }
