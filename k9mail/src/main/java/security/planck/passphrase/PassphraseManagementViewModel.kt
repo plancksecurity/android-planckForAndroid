@@ -30,16 +30,12 @@ private const val MAX_ATTEMPTS_STOP_APP = 5
 class PassphraseManagementViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val preferences: Preferences,
-    private val k9: K9,
     private val passphraseRepository: PassphraseRepository,
-    private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
     private val stateLiveData: MutableLiveData<PassphraseMgmtState> =
         MutableLiveData(PassphraseMgmtState.Idle)
     val state: LiveData<PassphraseMgmtState> = stateLiveData
     lateinit var mode: PassphraseDialogMode
-
-    //val passwordStates = mutableStateListOf<TextFieldState>()
 
     private var failedUnlockAttempts = 0
     private val delayStep get() = failedUnlockAttempts - RETRY_WITH_DELAY_AFTER
@@ -139,13 +135,13 @@ class PassphraseManagementViewModel @Inject constructor(
     fun validateInput(textFieldState: TextFieldState) {
         val validPassphrase = textFieldState.textState.isValidPassphrase()
         textFieldState.errorState = !validPassphrase
-        resetPassphraseUnlockNonFatalErrorIfNeeded()
+        updatePassphraseUnlockNonFatalErrorIfNeeded(validPassphrase)
     }
 
-    private fun resetPassphraseUnlockNonFatalErrorIfNeeded() {
+    private fun updatePassphraseUnlockNonFatalErrorIfNeeded(validPassphrase: Boolean) {
         val state = stateLiveData.value
         if (state is PassphraseMgmtState.UnlockingPassphrases) {
-            state.resetNonFatalErrorIfNeeded()
+            state.updateNonFatalErrorIfNeeded(validPassphrase)
         }
     }
 

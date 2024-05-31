@@ -52,13 +52,17 @@ sealed interface PassphraseMgmtState {
             errorType.value = null
         }
 
-        fun resetNonFatalErrorIfNeeded() {
+        fun updateNonFatalErrorIfNeeded(validPassphrase: Boolean) {
             val errorType = errorType.value
-            if (errorType == PassphraseUnlockErrorType.WRONG_PASSPHRASE
-                || (errorType == PassphraseUnlockErrorType.WRONG_FORMAT
-                        && passwordStates.none { it.errorState })
-            ) {
-                this.errorType.value = null
+            if (validPassphrase) {
+                if (errorType == PassphraseUnlockErrorType.WRONG_PASSPHRASE
+                    || (errorType == PassphraseUnlockErrorType.WRONG_FORMAT
+                            && passwordStates.none { it.errorState })
+                ) {
+                    this.errorType.value = null
+                }
+            } else {
+                this.errorType.value = PassphraseUnlockErrorType.WRONG_FORMAT
             }
         }
     }
