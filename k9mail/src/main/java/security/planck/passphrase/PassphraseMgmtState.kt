@@ -26,7 +26,7 @@ sealed interface PassphraseMgmtState {
             loading.value = null
             if (passwordStates.isEmpty()) {
                 passwordStates.addAll(accountsUsingPassphrase.map {
-                    TextFieldState(email = it.email, isError = true)
+                    TextFieldState(email = it.email, errorStatus = TextFieldState.ErrorStatus.NONE)
                 })
                 errorType.value = PassphraseUnlockErrorType.WRONG_FORMAT
             }
@@ -39,7 +39,7 @@ sealed interface PassphraseMgmtState {
             accountsWithErrors?.let {
                 passwordStates.forEachIndexed { index, state ->
                     if (accountsWithErrors.contains(state.email)) {
-                        passwordStates[index].errorState = true
+                        passwordStates[index].errorState = TextFieldState.ErrorStatus.ERROR
                     }
                 }
             }
@@ -57,7 +57,7 @@ sealed interface PassphraseMgmtState {
             if (validPassphrase) {
                 if (errorType == PassphraseUnlockErrorType.WRONG_PASSPHRASE
                     || (errorType == PassphraseUnlockErrorType.WRONG_FORMAT
-                            && passwordStates.none { it.errorState })
+                            && passwordStates.none { it.errorState == TextFieldState.ErrorStatus.ERROR })
                 ) {
                     this.errorType.value = null
                 }

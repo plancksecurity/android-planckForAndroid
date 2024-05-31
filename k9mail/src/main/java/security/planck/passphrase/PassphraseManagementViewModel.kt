@@ -8,9 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
-import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.PlanckProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Pair
@@ -134,7 +132,8 @@ class PassphraseManagementViewModel @Inject constructor(
 
     fun validateInput(textFieldState: TextFieldState) {
         val validPassphrase = textFieldState.textState.isValidPassphrase()
-        textFieldState.errorState = !validPassphrase
+        textFieldState.errorState =
+            if (validPassphrase) TextFieldState.ErrorStatus.SUCCESS else TextFieldState.ErrorStatus.ERROR
         updatePassphraseUnlockNonFatalErrorIfNeeded(validPassphrase)
     }
 
@@ -170,10 +169,14 @@ class PassphraseManagementViewModel @Inject constructor(
 data class TextFieldState(
     val email: String,
     private val text: String = "",
-    private val isError: Boolean = false,
+    private val errorStatus: ErrorStatus = ErrorStatus.NONE,
 ) {
     var textState by mutableStateOf(text)
-    var errorState by mutableStateOf(isError)
+    var errorState by mutableStateOf(errorStatus)
+
+    enum class ErrorStatus {
+        NONE, ERROR, SUCCESS
+    }
 }
 
 enum class PassphraseUnlockErrorType {
