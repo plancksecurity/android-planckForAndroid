@@ -1,4 +1,4 @@
-package security.planck.ui.passphrase
+package security.planck.ui.passphrase.unlock
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

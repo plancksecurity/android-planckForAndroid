@@ -51,7 +51,7 @@ import security.planck.dialog.ConfirmationDialog;
 import security.planck.dialog.ConfirmationDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.ui.passphrase.PassphraseDialogMode;
-import security.planck.ui.passphrase.PassphraseUnlockNotificationViewModel;
+import security.planck.ui.passphrase.unlock.PassphraseUnlockNotificationViewModel;
 import security.planck.ui.audit.AuditLogViewModel;
 import security.planck.ui.passphrase.PassphraseManagementDialogKt;
 import timber.log.Timber;

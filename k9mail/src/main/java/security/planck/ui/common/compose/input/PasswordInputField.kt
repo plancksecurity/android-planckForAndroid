@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.fsck.k9.R
-import security.planck.ui.passphrase.TextFieldState
+import security.planck.ui.passphrase.unlock.TextFieldState
 
 @Composable
 fun PasswordInputField(

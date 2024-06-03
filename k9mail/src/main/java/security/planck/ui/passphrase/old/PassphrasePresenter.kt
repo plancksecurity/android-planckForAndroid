@@ -1,4 +1,4 @@
-package security.planck.ui.passphrase
+package security.planck.ui.passphrase.old
 
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController

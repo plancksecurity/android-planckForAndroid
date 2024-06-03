@@ -1,4 +1,4 @@
-package security.planck.ui.passphrase
+package security.planck.ui.passphrase.old
 
 interface PassphraseInputView {
     fun init()

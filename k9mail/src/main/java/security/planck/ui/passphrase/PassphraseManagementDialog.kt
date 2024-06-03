@@ -14,6 +14,9 @@ import androidx.fragment.app.viewModels
 import com.fsck.k9.ui.getEnum
 import com.fsck.k9.ui.putEnum
 import dagger.hilt.android.AndroidEntryPoint
+import security.planck.ui.passphrase.unlock.compose.PassphraseUnlockDialogContent
+import security.planck.ui.passphrase.manage.PassphraseManagementViewModel
+import security.planck.ui.passphrase.unlock.PassphraseUnlockViewModel
 import kotlin.system.exitProcess
 
 private const val TAG = "security.planck.passphrase.PassphraseManagementDialog"
@@ -21,14 +24,20 @@ private const val ARG_MODE = "security.planck.passphrase.PassphraseManagementDia
 
 @AndroidEntryPoint
 class PassphraseManagementDialog : DialogFragment() {
-    private val viewModel: PassphraseManagementViewModel by viewModels()
+    private val managementViewModel: PassphraseManagementViewModel by viewModels()
+    private val unlockViewModel: PassphraseUnlockViewModel by viewModels()
+    private val mode: PassphraseDialogMode
+        get() = requireArguments().getEnum<PassphraseDialogMode>(
+            ARG_MODE
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            val args = requireArguments()
-            val mode = args.getEnum<PassphraseDialogMode>(ARG_MODE)
-            viewModel.start(mode)
+            when (mode) {
+                PassphraseDialogMode.MANAGE -> managementViewModel.start()
+                PassphraseDialogMode.UNLOCK -> unlockViewModel.start()
+            }
         }
     }
 
@@ -40,8 +49,8 @@ class PassphraseManagementDialog : DialogFragment() {
         val composeView = ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
-                    PassphraseManagementDialogContent(
-                        viewModel = viewModel,
+                    PassphraseUnlockDialogContent(
+                        viewModel = unlockViewModel,
                         dismiss = ::dismissAllowingStateLoss,
                         finishApp = ::finishApp,
                     )

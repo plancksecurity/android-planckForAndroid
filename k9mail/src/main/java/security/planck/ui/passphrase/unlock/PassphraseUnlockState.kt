@@ -1,4 +1,4 @@
-package security.planck.ui.passphrase
+package security.planck.ui.passphrase.unlock
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
@@ -6,20 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.fsck.k9.Account
 
-sealed interface PassphraseMgmtState {
-    object Idle : PassphraseMgmtState
-    object Loading : PassphraseMgmtState
-    object Dismiss : PassphraseMgmtState
-    object TooManyFailedAttempts : PassphraseMgmtState
-    data class CoreError(val error: Throwable?) : PassphraseMgmtState
-    data class ManagingAccounts(val accountsUsingPassphrase: List<AccountUsesPassphrase>) :
-        PassphraseMgmtState
+sealed interface PassphraseUnlockState {
+    object Dismiss : PassphraseUnlockState
+    object TooManyFailedAttempts : PassphraseUnlockState
 
     data class UnlockingPassphrases(
         val passwordStates: SnapshotStateList<TextFieldState> = mutableStateListOf(),
         val status: MutableState<PassphraseUnlockStatus> = mutableStateOf(PassphraseUnlockStatus.NONE),
-        val loading: MutableState<PassphraseUnlockLoading?> = mutableStateOf(null)
-    ) : PassphraseMgmtState {
+        val loading: MutableState<PassphraseUnlockLoading?> = mutableStateOf(PassphraseUnlockLoading.Processing)
+    ) : PassphraseUnlockState {
         fun initializePasswordStatesIfNeeded(
             accountsUsingPassphrase: List<Account>,
         ) {
@@ -32,7 +27,10 @@ sealed interface PassphraseMgmtState {
             }
         }
 
-        fun updateWithUnlockErrors(
+        /**
+         * Show error status
+         */
+        fun error(
             errorType: PassphraseUnlockStatus,
             accountsWithErrors: List<String>? = null
         ) {
@@ -47,19 +45,17 @@ sealed interface PassphraseMgmtState {
             loading.value = null
         }
 
-        fun updateWithUnlockLoading(loading: PassphraseUnlockLoading) {
+        /**
+         * Show loading status
+         */
+        fun loading(loading: PassphraseUnlockLoading) {
             this.loading.value = loading
             status.value = PassphraseUnlockStatus.NONE
         }
 
-        fun updateNonFatalErrorIfNeeded(wrongPassphraseFormat: Boolean) {
-            val errorType = status.value
-            if (wrongPassphraseFormat) {
-                this.status.value = PassphraseUnlockStatus.WRONG_FORMAT
-            } else {
-                if (errorType.isItemError) {
-                    clearItemErrorStatusIfPossible()
-                }
+        fun clearErrorStatusIfNeeded() {
+            if (status.value.isItemError) {
+                clearItemErrorStatusIfPossible()
             }
         }
 
@@ -77,8 +73,3 @@ sealed interface PassphraseMgmtState {
         }
     }
 }
-
-data class AccountUsesPassphrase(
-    val account: Account,
-    val usesPassphrase: Boolean,
-)

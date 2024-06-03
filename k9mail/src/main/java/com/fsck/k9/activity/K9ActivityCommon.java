@@ -27,8 +27,8 @@ import javax.inject.Inject;
 
 import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.mdm.ConfigurationManager;
-import security.planck.ui.passphrase.PassphraseActivity;
-import security.planck.ui.passphrase.PassphraseActivityKt;
+import security.planck.ui.passphrase.old.PassphraseActivity;
+import security.planck.ui.passphrase.old.PassphraseActivityKt;
 import timber.log.Timber;
 
 

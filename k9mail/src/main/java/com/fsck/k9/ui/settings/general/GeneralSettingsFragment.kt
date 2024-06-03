@@ -40,7 +40,7 @@ import security.planck.sync.SyncRepository
 import security.planck.ui.audit.AuditLogDisplayActivity
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
-import security.planck.ui.passphrase.requestPassphraseForNewKeys
+import security.planck.ui.passphrase.old.requestPassphraseForNewKeys
 import security.planck.ui.preference.LoadingPreference
 import security.planck.ui.support.export.ExportPlanckSupportDataActivity
 import javax.inject.Inject

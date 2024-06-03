@@ -14,7 +14,7 @@
     android:paddingEnd="@dimen/key_import_floating_horizontal_margin"
     android:paddingRight="@dimen/key_import_floating_horizontal_margin"
     android:paddingBottom="@dimen/key_import_floating_vertical_margin"
-    tools:context="security.planck.ui.passphrase.PassphraseActivity"
+    tools:context="security.planck.ui.passphrase.old.PassphraseActivity"
     tools:layout_editor_absoluteX="16dp"
     tools:layout_editor_absoluteY="16dp"
     tools:layout_gravity="center">

@@ -44,7 +44,6 @@ import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.planck.LangUtils;
 import com.fsck.k9.planck.PlanckProvider;
-import com.fsck.k9.planck.PlanckProviderFactory;
 import com.fsck.k9.planck.ui.tools.AppTheme;
 import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -94,8 +93,8 @@ import security.planck.passphrase.PassphraseRepository;
 import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.sync.SyncRepository;
-import security.planck.ui.passphrase.PassphraseActivity;
-import security.planck.ui.passphrase.PassphraseRequirementType;
+import security.planck.ui.passphrase.old.PassphraseActivity;
+import security.planck.ui.passphrase.old.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
