@@ -151,6 +151,7 @@ fun PassphraseValidationRow(
 @Composable
 fun RenderCommonStates(
     state: PassphraseState,
+    successText: String,
     dismiss: () -> Unit,
     tooManyFailuresAction: () -> Unit,
     renderCustomStates: @Composable (state: PassphraseState) -> Unit,
@@ -162,7 +163,7 @@ fun RenderCommonStates(
 
         PassphraseState.Success -> {
             RenderSingleMessageAndCloseButton(
-                message = stringResource(id = R.string.close),
+                message = successText,
                 close = dismiss
             )
         }

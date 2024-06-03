@@ -1353,7 +1353,6 @@ class PlanckProviderImplKotlin(
         newPassphrase: String
     ): Result<Vector<String>?> = withContext(PlanckDispatcher) {
         kotlin.runCatching { engine.get().manage_passphrase(accountsWitOldPassphrases, newPassphrase) }
-        Result.success(Vector(Preferences.getPreferences(context).accounts.map { it.email }))
     }
 
     override suspend fun unlockKeysWithPassphrase(

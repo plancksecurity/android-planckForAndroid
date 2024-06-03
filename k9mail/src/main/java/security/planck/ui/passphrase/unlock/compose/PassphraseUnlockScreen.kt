@@ -50,6 +50,7 @@ private fun RenderState(
 ) {
     RenderCommonStates(
         state = state,
+        successText = stringResource(id = R.string.passphrase_unlock_dialog_success),
         dismiss = dismiss,
         tooManyFailuresAction = finishApp
     ) {

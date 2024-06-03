@@ -14,15 +14,14 @@ import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.models.TextFieldStateContract
 import javax.inject.Inject
 
 @HiltViewModel
 class PassphraseUnlockViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val passphraseRepository: PassphraseRepository,
-    private val passphraseFormatValidator: PassphraseFormatValidator,
-) : PassphraseViewModel() {
+    passphraseFormatValidator: PassphraseFormatValidator,
+) : PassphraseViewModel(passphraseFormatValidator) {
     fun start() {
         loadAccountsForUnlocking()
     }
@@ -85,17 +84,7 @@ class PassphraseUnlockViewModel @Inject constructor(
         }
     }
 
-    fun validateInput(textFieldState: TextFieldStateContract) {
-        val errorState = passphraseFormatValidator.validatePassphrase(textFieldState.textState)
-        textFieldState.errorState = errorState
-        if (errorState == TextFieldStateContract.ErrorStatus.ERROR) {
-            error(PassphraseVerificationStatus.WRONG_FORMAT)
-        } else {
-            clearErrorStatusIfNeeded()
-        }
-    }
-
-    private fun clearErrorStatusIfNeeded() {
+    override fun clearErrorStatusIfNeeded() {
         doWithUnlockingPassphrasesState {
             it.clearErrorStatusIfNeeded()
         }

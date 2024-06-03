@@ -8,11 +8,10 @@ import foundation.pEp.jniadapter.Pair
 import kotlinx.coroutines.launch
 import security.planck.passphrase.PassphraseFormatValidator
 import security.planck.ui.passphrase.PassphraseViewModel
-import security.planck.ui.passphrase.models.AccountTextFieldState
 import security.planck.ui.passphrase.models.AccountUsesPassphrase
+import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseMgmtState
 import security.planck.ui.passphrase.models.PassphraseState
-import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
 import security.planck.ui.passphrase.models.SelectableItem
 import security.planck.ui.passphrase.models.TextFieldStateContract
@@ -22,8 +21,8 @@ import javax.inject.Inject
 class PassphraseManagementViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val preferences: Preferences,
-    private val passphraseFormatValidator: PassphraseFormatValidator,
-) : PassphraseViewModel() {
+    passphraseFormatValidator: PassphraseFormatValidator,
+) : PassphraseViewModel(passphraseFormatValidator) {
 
     fun start() {
         loadAccountsForManagement()
@@ -49,16 +48,6 @@ class PassphraseManagementViewModel @Inject constructor(
 
     fun selectAccountsToManagePassphrase(accounts: List<AccountUsesPassphrase>) {
         stateLiveData.value = PassphraseMgmtState.ManagingAccounts(accounts = accounts)
-    }
-
-    fun validateInput(textFieldState: TextFieldStateContract) {
-        val errorState = passphraseFormatValidator.validatePassphrase(textFieldState.textState)
-        textFieldState.errorState = errorState
-        if (errorState == TextFieldStateContract.ErrorStatus.ERROR) {
-            error(PassphraseVerificationStatus.WRONG_FORMAT)
-        } else {
-            clearErrorStatusIfNeeded()
-        }
     }
 
     fun validateNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
@@ -97,7 +86,7 @@ class PassphraseManagementViewModel @Inject constructor(
         loadAccountsForManagement()
     }
 
-    private fun clearErrorStatusIfNeeded() {
+    override fun clearErrorStatusIfNeeded() {
         doWithManagingPassphrasesState {
             it.clearErrorStatusIfNeeded()
         }
@@ -106,12 +95,15 @@ class PassphraseManagementViewModel @Inject constructor(
     fun setNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
         val newPassphrase = state.newPasswordVerificationState
         val accountsToChange = state.accounts.map { account ->
-            Pair(account.account, state.oldPasswordStates.find { it.email == account.account }?.textState.orEmpty())
+            Pair(
+                account.account,
+                state.oldPasswordStates.find { it.email == account.account }?.textState.orEmpty()
+            )
         }.let { ArrayList(it) }
         viewModelScope.launch {
             planckProvider.managePassphrase(accountsToChange, newPassphrase.textState).onFailure {
                 error(PassphraseVerificationStatus.CORE_ERROR)
-            }.onSuccess {  list ->
+            }.onSuccess { list ->
                 if (list.isNullOrEmpty()) {
                     stateLiveData.value = PassphraseState.Success
                 } else {

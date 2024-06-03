@@ -508,6 +508,7 @@
     <string name="passphrase_unlock_dialog_hide_password">Hide passphrase</string>
     <string name="passphrase_unlock_dialog_wrong_passhprase_status_desc">Wrong Passphrase</string>
     <string name="passphrase_unlock_dialog_correct_passphrase_status_desc">Correct Passphrase</string>
+    <string name="passphrase_unlock_dialog_success">Passphrases were unlocked successfully.</string>
 
     <string name="passphrase_management_dialog_title">Manage Passphrase</string>
     <string name="passphrase_management_preference_title">Manage Passphrases on Private Keys</string>
@@ -518,5 +519,6 @@
     <string name="passphrase_management_dialog_confirm_new_passphrase">Confirm new passphrase:</string>
     <string name="passphrase_management_dialog_passphrase_no_match">Passphrase verification does not match.</string>
     <string name="passphrase_management_dialog_passphrase_no_passphrase">(No passphrase configured)</string>
+    <string name="passphrase_management_dialog_success">Passphrases were updated successfully.</string>
 
 </resources>
