@@ -5,14 +5,17 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.fsck.k9.Account
+import security.planck.ui.passphrase.models.AccountTextFieldState
+import security.planck.ui.passphrase.models.PassphraseVerificationStatus
+import security.planck.ui.passphrase.models.TextFieldStateContract
 
 sealed interface PassphraseUnlockState {
     object Dismiss : PassphraseUnlockState
     object TooManyFailedAttempts : PassphraseUnlockState
 
     data class UnlockingPassphrases(
-        val passwordStates: SnapshotStateList<TextFieldState> = mutableStateListOf(),
-        val status: MutableState<PassphraseUnlockStatus> = mutableStateOf(PassphraseUnlockStatus.NONE),
+        val passwordStates: SnapshotStateList<AccountTextFieldState> = mutableStateListOf(),
+        val status: MutableState<PassphraseVerificationStatus> = mutableStateOf(PassphraseVerificationStatus.NONE),
         val loading: MutableState<PassphraseUnlockLoading?> = mutableStateOf(PassphraseUnlockLoading.Processing)
     ) : PassphraseUnlockState {
         fun initializePasswordStatesIfNeeded(
@@ -21,9 +24,9 @@ sealed interface PassphraseUnlockState {
             loading.value = null
             if (passwordStates.isEmpty()) {
                 passwordStates.addAll(accountsUsingPassphrase.map {
-                    TextFieldState(email = it.email, errorStatus = TextFieldState.ErrorStatus.NONE)
+                    AccountTextFieldState(email = it.email, errorStatus = TextFieldStateContract.ErrorStatus.NONE)
                 })
-                status.value = PassphraseUnlockStatus.NONE
+                status.value = PassphraseVerificationStatus.NONE
             }
         }
 
@@ -31,13 +34,13 @@ sealed interface PassphraseUnlockState {
          * Show error status
          */
         fun error(
-            errorType: PassphraseUnlockStatus,
+            errorType: PassphraseVerificationStatus,
             accountsWithErrors: List<String>? = null
         ) {
             accountsWithErrors?.let {
                 passwordStates.forEachIndexed { index, state ->
                     if (accountsWithErrors.contains(state.email)) {
-                        passwordStates[index].errorState = TextFieldState.ErrorStatus.ERROR
+                        passwordStates[index].errorState = TextFieldStateContract.ErrorStatus.ERROR
                     }
                 }
             }
@@ -50,7 +53,7 @@ sealed interface PassphraseUnlockState {
          */
         fun loading(loading: PassphraseUnlockLoading) {
             this.loading.value = loading
-            status.value = PassphraseUnlockStatus.NONE
+            status.value = PassphraseVerificationStatus.NONE
         }
 
         fun clearErrorStatusIfNeeded() {
@@ -62,14 +65,14 @@ sealed interface PassphraseUnlockState {
         private fun clearItemErrorStatusIfPossible() {
             var success = 0
             for (state in passwordStates) {
-                if (state.errorState == TextFieldState.ErrorStatus.ERROR) {
+                if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {
                     return
-                } else if (state.errorState == TextFieldState.ErrorStatus.SUCCESS) {
+                } else if (state.errorState == TextFieldStateContract.ErrorStatus.SUCCESS) {
                     success++
                 }
             }
             this.status.value =
-                if (success == passwordStates.size) PassphraseUnlockStatus.SUCCESS else PassphraseUnlockStatus.NONE
+                if (success == passwordStates.size) PassphraseVerificationStatus.SUCCESS else PassphraseVerificationStatus.NONE
         }
     }
 }

@@ -1,87 +1,94 @@
 package security.planck.ui.passphrase.manage
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.fsck.k9.Account
-import security.planck.ui.passphrase.unlock.PassphraseUnlockLoading
-import security.planck.ui.passphrase.unlock.PassphraseUnlockStatus
-import security.planck.ui.passphrase.unlock.TextFieldState
+import security.planck.ui.passphrase.models.AccountTextFieldState
+import security.planck.ui.passphrase.models.PassphraseVerificationStatus
+import security.planck.ui.passphrase.models.TextFieldState
+import security.planck.ui.passphrase.models.TextFieldStateContract
 
 sealed interface PassphraseMgmtState {
-    object Idle : PassphraseMgmtState
     object Loading : PassphraseMgmtState
     object Dismiss : PassphraseMgmtState
-    object TooManyFailedAttempts : PassphraseMgmtState
     data class CoreError(val error: Throwable?) : PassphraseMgmtState
-    data class ManagingAccounts(val accountsUsingPassphrase: List<AccountUsesPassphrase>) :
-        PassphraseMgmtState
 
-    data class UnlockingPassphrases(
-        val passwordStates: SnapshotStateList<TextFieldState> = mutableStateListOf(),
-        val status: MutableState<PassphraseUnlockStatus> = mutableStateOf(PassphraseUnlockStatus.NONE),
-        val loading: MutableState<PassphraseUnlockLoading?> = mutableStateOf(null)
+    data class ChoosingAccountsToManage(
+        val accountsUsingPassphrase: MutableList<SelectableItem<AccountUsesPassphrase>> = mutableStateListOf(),
     ) : PassphraseMgmtState {
-        fun initializePasswordStatesIfNeeded(
-            accountsUsingPassphrase: List<Account>,
-        ) {
-            loading.value = null
-            if (passwordStates.isEmpty()) {
-                passwordStates.addAll(accountsUsingPassphrase.map {
-                    TextFieldState(email = it.email, errorStatus = TextFieldState.ErrorStatus.NONE)
-                })
-                status.value = PassphraseUnlockStatus.NONE
-            }
-        }
+        private val selectedCount: Int get() = accountsUsingPassphrase.count { it.selected }
+        val actionMode: Boolean get() = selectedCount > 0
+        val selectedAccounts: List<AccountUsesPassphrase>
+            get() = accountsUsingPassphrase.filter { it.selected }.map { sel -> sel.data }
+    }
 
-        fun updateWithUnlockErrors(
-            errorType: PassphraseUnlockStatus,
+    data class ManagingAccounts constructor(
+        val accounts: List<AccountUsesPassphrase>,
+        val newPasswordState: TextFieldState = TextFieldState(),
+        val newPasswordVerificationState: TextFieldState = TextFieldState(),
+        val status: MutableState<PassphraseVerificationStatus> = mutableStateOf(
+            PassphraseVerificationStatus.NONE
+        ),
+        val loading: MutableState<Boolean> = mutableStateOf(false)
+    ) : PassphraseMgmtState {
+        val oldPasswordStates: SnapshotStateList<AccountTextFieldState> =
+            mutableStateListOf<AccountTextFieldState>().also { list ->
+                list.addAll(accounts.filter { it.usesPassphrase }
+                    .map { acc -> AccountTextFieldState(acc.account) })
+            }
+
+        private val allTextFieldStates: List<TextFieldStateContract> get() = oldPasswordStates.toList() + newPasswordState + newPasswordVerificationState
+
+        /**
+         * Show error status
+         */
+        fun error(
+            errorType: PassphraseVerificationStatus,
             accountsWithErrors: List<String>? = null
         ) {
             accountsWithErrors?.let {
-                passwordStates.forEachIndexed { index, state ->
+                oldPasswordStates.forEach { state ->
                     if (accountsWithErrors.contains(state.email)) {
-                        passwordStates[index].errorState = TextFieldState.ErrorStatus.ERROR
+                        state.errorState = TextFieldStateContract.ErrorStatus.ERROR
                     }
                 }
             }
             this.status.value = errorType
-            loading.value = null
+            loading.value = false
         }
 
-        fun updateWithUnlockLoading(loading: PassphraseUnlockLoading) {
-            this.loading.value = loading
-            status.value = PassphraseUnlockStatus.NONE
-        }
-
-        fun updateNonFatalErrorIfNeeded(wrongPassphraseFormat: Boolean) {
-            val errorType = status.value
-            if (wrongPassphraseFormat) {
-                this.status.value = PassphraseUnlockStatus.WRONG_FORMAT
-            } else {
-                if (errorType.isItemError) {
-                    clearItemErrorStatusIfPossible()
-                }
+        fun clearErrorStatusIfNeeded() {
+            if (status.value.isItemError) {
+                clearItemErrorStatusIfPossible()
             }
         }
 
         private fun clearItemErrorStatusIfPossible() {
+            val allTextFieldStates = this.allTextFieldStates
             var success = 0
-            for (state in passwordStates) {
-                if (state.errorState == TextFieldState.ErrorStatus.ERROR) {
+            for (state in allTextFieldStates) {
+                if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {
                     return
-                } else if (state.errorState == TextFieldState.ErrorStatus.SUCCESS) {
+                } else if (state.errorState == TextFieldStateContract.ErrorStatus.SUCCESS) {
                     success++
                 }
             }
             this.status.value =
-                if (success == passwordStates.size) PassphraseUnlockStatus.SUCCESS else PassphraseUnlockStatus.NONE
+                if (success == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS else PassphraseVerificationStatus.NONE
         }
     }
 }
 
+data class SelectableItem<T>(
+    val data: T,
+) {
+    var selected: Boolean by mutableStateOf(false)
+}
+
 data class AccountUsesPassphrase(
-    val account: Account,
+    val account: String,
     val usesPassphrase: Boolean,
 )

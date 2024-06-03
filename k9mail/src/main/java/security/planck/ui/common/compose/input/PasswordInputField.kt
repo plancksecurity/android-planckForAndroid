@@ -24,15 +24,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.fsck.k9.R
-import security.planck.ui.passphrase.unlock.TextFieldState
+import security.planck.ui.passphrase.models.AccountTextFieldState
+import security.planck.ui.passphrase.models.TextFieldStateContract
 
 @Composable
 fun PasswordInputField(
-    passwordState: TextFieldState,
+    passwordState: TextFieldStateContract,
     textColor: Color,
     errorColor: Color,
     defaultColor: Color,
-    evaluateError: (TextFieldState) -> Unit,
+    evaluateError: (TextFieldStateContract) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
@@ -44,7 +45,7 @@ fun PasswordInputField(
             evaluateError(passwordState)
         },
         label = { Text(stringResource(id = R.string.passhphrase_input_hint)) },
-        isError = passwordState.errorState == TextFieldState.ErrorStatus.ERROR,
+        isError = passwordState.errorState == TextFieldStateContract.ErrorStatus.ERROR,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             val image = if (passwordVisible)

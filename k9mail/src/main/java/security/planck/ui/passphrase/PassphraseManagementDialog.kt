@@ -16,6 +16,7 @@ import com.fsck.k9.ui.putEnum
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.ui.passphrase.unlock.compose.PassphraseUnlockDialogContent
 import security.planck.ui.passphrase.manage.PassphraseManagementViewModel
+import security.planck.ui.passphrase.manage.compose.PassphraseManagementDialogContent
 import security.planck.ui.passphrase.unlock.PassphraseUnlockViewModel
 import kotlin.system.exitProcess
 
@@ -49,11 +50,17 @@ class PassphraseManagementDialog : DialogFragment() {
         val composeView = ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
-                    PassphraseUnlockDialogContent(
-                        viewModel = unlockViewModel,
-                        dismiss = ::dismissAllowingStateLoss,
-                        finishApp = ::finishApp,
-                    )
+                    when (mode) {
+                        PassphraseDialogMode.UNLOCK -> PassphraseUnlockDialogContent(
+                            viewModel = unlockViewModel,
+                            dismiss = ::dismissAllowingStateLoss,
+                            finishApp = ::finishApp,
+                        )
+                        PassphraseDialogMode.MANAGE -> PassphraseManagementDialogContent(
+                            viewModel = managementViewModel,
+                            dismiss = ::dismissAllowingStateLoss,
+                        )
+                    }
                 }
             }
         }
