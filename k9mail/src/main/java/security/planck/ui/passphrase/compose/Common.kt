@@ -30,6 +30,7 @@ import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
 import security.planck.ui.common.compose.input.PasswordInputField
+import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
 import security.planck.ui.common.compose.toolbar.WizardToolbar
 import security.planck.ui.passphrase.PassphraseViewModel
 import security.planck.ui.passphrase.models.AccountTextFieldState
@@ -148,9 +149,53 @@ fun PassphraseValidationRow(
 }
 
 @Composable
+fun RenderCommonStates(
+    state: PassphraseState,
+    dismiss: () -> Unit,
+    tooManyFailuresAction: () -> Unit,
+    renderCustomStates: @Composable (state: PassphraseState) -> Unit,
+) {
+    when (state) {
+        is PassphraseState.CoreError -> {
+            RenderCoreError(close = dismiss)
+        }
+
+        PassphraseState.Success -> {
+            RenderSingleMessageAndCloseButton(
+                message = stringResource(id = R.string.close),
+                close = dismiss
+            )
+        }
+
+        PassphraseState.Loading -> {
+            CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
+        }
+
+        PassphraseState.TooManyFailedAttempts -> {
+            RenderTooManyFailedAttempts(tooManyFailuresAction)
+        }
+
+        else -> renderCustomStates(state)
+    }
+}
+
+@Composable
 fun RenderTooManyFailedAttempts(close: () -> Unit) {
+    RenderSingleMessageAndCloseButton(message = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts), close = close)
+}
+
+@Composable
+fun RenderCoreError(close: () -> Unit) {
+    RenderSingleMessageAndCloseButton(message = stringResource(id = R.string.error_happened_restart_app), close = close)
+}
+
+@Composable
+fun RenderSingleMessageAndCloseButton(
+    message: String,
+    close: () -> Unit,
+) {
     Text(
-        text = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
+        text = message,
         fontFamily = FontFamily.SansSerif,
         color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
         modifier = Modifier.padding(vertical = 32.dp)

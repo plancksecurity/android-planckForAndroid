@@ -3,24 +3,21 @@ package security.planck.ui.passphrase.unlock.compose
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
 import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
 import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
 import security.planck.ui.passphrase.compose.PassphraseScreen
 import security.planck.ui.passphrase.compose.PassphraseValidationList
-import security.planck.ui.passphrase.compose.RenderTooManyFailedAttempts
+import security.planck.ui.passphrase.compose.RenderCommonStates
 import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
@@ -51,39 +48,22 @@ private fun RenderState(
     viewModel: PassphraseUnlockViewModel,
     dismiss: () -> Unit
 ) {
-    when (state) {
-        PassphraseState.TooManyFailedAttempts -> {
-            RenderTooManyFailedAttempts(finishApp)
-        }
-
-        is PassphraseUnlockState.UnlockingPassphrases -> {
-            RenderUnlockingPassphrases(
-                state,
-                validateInput = viewModel::validateInput,
-                onConfirm = { viewModel.unlockKeysWithPassphrase(state.passwordStates.toList()) }
-            )
-        }
-
-        PassphraseState.Dismiss -> {
-            SideEffect {
-                dismiss()
+    RenderCommonStates(
+        state = state,
+        dismiss = dismiss,
+        tooManyFailuresAction = finishApp
+    ) {
+        when (state) {
+            is PassphraseUnlockState.UnlockingPassphrases -> {
+                RenderUnlockingPassphrases(
+                    state,
+                    validateInput = viewModel::validateInput,
+                    onConfirm = { viewModel.unlockKeysWithPassphrase(state.passwordStates.toList()) }
+                )
             }
-        }
 
-        is PassphraseState.CoreError -> {
-            Text(
-                text = stringResource(id = R.string.error_happened_restart_app),
-                fontFamily = FontFamily.SansSerif,
-                color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
-                modifier = Modifier.padding(vertical = 32.dp)
-            )
+            else -> Unit
         }
-
-        PassphraseState.Loading -> {
-            CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
-        }
-
-        else -> Unit
     }
 }
 

@@ -95,7 +95,6 @@ class PassphraseManagementViewModel @Inject constructor(
 
     fun goBackToChoosingAccounts() {
         loadAccountsForManagement()
-        //stateLiveData.value = PassphraseMgmtState.ChoosingAccountsToManage()
     }
 
     private fun clearErrorStatusIfNeeded() {
@@ -114,7 +113,7 @@ class PassphraseManagementViewModel @Inject constructor(
                 error(PassphraseVerificationStatus.CORE_ERROR)
             }.onSuccess {  list ->
                 if (list.isNullOrEmpty()) {
-                    stateLiveData.value = PassphraseState.Dismiss
+                    stateLiveData.value = PassphraseState.Success
                 } else {
                     handleFailedVerificationAttempt(list)
                 }

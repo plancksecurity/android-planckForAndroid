@@ -77,7 +77,7 @@ class PassphraseUnlockViewModel @Inject constructor(
             }.onSuccess { list ->
                 if (list.isNullOrEmpty()) {
                     passphraseRepository.unlockPassphrase()
-                    stateLiveData.value = PassphraseState.Dismiss
+                    stateLiveData.value = PassphraseState.Success
                 } else {
                     handleFailedVerificationAttempt(list)
                 }
