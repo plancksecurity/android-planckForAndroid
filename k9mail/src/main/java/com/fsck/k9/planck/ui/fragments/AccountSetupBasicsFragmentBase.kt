@@ -282,7 +282,7 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
             "com.fsck.k9.AccountSetupBasics.checkedIncoming"
         private const val REQUEST_CODE_CHECK_SETTINGS =
             AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
-        private const val REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1
+        private const val REQUEST_CODE_OAUTH = 2
         private const val DEFAULT_EMAIL = "mail@example.com"
     }
 }
