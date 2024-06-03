@@ -105,16 +105,10 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun setNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
-        val accountsWithOldPassphrase = state.oldPasswordStates
         val newPassphrase = state.newPasswordVerificationState
-        val accountsToChange = accountsWithOldPassphrase
-            .filter { it.email != newPassphrase.textState }
-            .map { inputState -> Pair(inputState.email, inputState.textState) }
-            .let { ArrayList(it) }
-            .apply {
-                addAll(state.accounts.filter { !it.usesPassphrase }
-                    .map { acc -> Pair(acc.account, "") })
-            }
+        val accountsToChange = state.accounts.map { account ->
+            Pair(account.account, state.oldPasswordStates.find { it.email == account.account }?.textState.orEmpty())
+        }.let { ArrayList(it) }
         viewModelScope.launch {
             planckProvider.managePassphrase(accountsToChange, newPassphrase.textState).onFailure {
                 error(PassphraseVerificationStatus.CORE_ERROR)
@@ -150,7 +144,7 @@ class PassphraseManagementViewModel @Inject constructor(
                     return Result.failure(it)
                 },
                 onSuccess = {
-                    AccountUsesPassphrase(account.email, true)
+                    AccountUsesPassphrase(account.email, it)
                 }
             )
         }

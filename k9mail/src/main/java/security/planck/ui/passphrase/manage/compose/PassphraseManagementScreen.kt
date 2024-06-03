@@ -1,7 +1,5 @@
 package security.planck.ui.passphrase.manage.compose
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,77 +7,53 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
+import security.planck.ui.common.compose.list.RenderSelectableItem
 import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
-import security.planck.ui.common.compose.toolbar.WizardToolbar
+import security.planck.ui.passphrase.compose.PassphraseScreen
+import security.planck.ui.passphrase.compose.PassphraseValidationList
+import security.planck.ui.passphrase.compose.PassphraseValidationRow
+import security.planck.ui.passphrase.compose.RenderTooManyFailedAttempts
+import security.planck.ui.passphrase.compose.ShowErrorFeedbackIfNeeded
 import security.planck.ui.passphrase.manage.PassphraseManagementViewModel
 import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseMgmtState
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.models.SelectableItem
 import security.planck.ui.passphrase.models.TextFieldStateContract
-import security.planck.ui.passphrase.unlock.compose.PassphraseValidationList
-import security.planck.ui.passphrase.unlock.compose.PassphraseValidationRow
-import security.planck.ui.passphrase.unlock.compose.RenderTooManyFailedAttempts
 
 
 @Composable
 fun PassphraseManagementDialogContent(
     viewModel: PassphraseManagementViewModel,
     dismiss: () -> Unit,
-    finishApp: () -> Unit,
 ) {
-    val minWidth = dimensionResource(id = R.dimen.key_import_floating_width)
-    val paddingHorizontal = 24.dp
-    val paddingTop = 24.dp
-    val paddingBottom = 8.dp
-    val viewModelState = viewModel.state.observeAsState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .widthIn(min = minWidth)
-            .padding(horizontal = paddingHorizontal, vertical = 0.dp)
-            .padding(top = paddingTop, bottom = paddingBottom)
-    ) {
-        WizardToolbar(
-            title = stringResource(
-                id = R.string.passphrase_management_dialog_title
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        viewModelState.value?.let { state ->
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-            ) {
-                RenderState(state, viewModel, dismiss, finishApp)
-            }
+    PassphraseScreen(
+        viewModel = viewModel,
+        title = stringResource(id = R.string.passphrase_management_dialog_title)
+    ) { state ->
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+        ) {
+            RenderState(state, viewModel, dismiss)
         }
     }
 }
@@ -89,7 +63,6 @@ fun RenderState(
     state: PassphraseState,
     viewModel: PassphraseManagementViewModel,
     dismiss: () -> Unit,
-    finishApp: () -> Unit,
 ) {
     when (state) {
         is PassphraseMgmtState.ChoosingAccountsToManage -> {
@@ -191,6 +164,7 @@ fun RenderManagingAccounts(
         successColor = successColor,
         validateInput = validateInput,
     )
+    AccountsWithNoPassphrase(state, defaultColor)
     Spacer(modifier = Modifier.height(16.dp))
     NewPassphraseAndConfirmation(
         state = state,
@@ -200,28 +174,27 @@ fun RenderManagingAccounts(
         validateInput = validateNewPassphrase,
         verifyNewPassphrase = verifyNewPassphrase,
     )
-    val errorType = state.status.value
-    if (errorType.isError) {
-        val string = when (errorType) {
-            PassphraseVerificationStatus.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
-            PassphraseVerificationStatus.WRONG_PASSPHRASE -> R.string.passhphrase_body_wrong_passphrase
-            PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH -> R.string.passphrase_management_dialog_passphrase_no_match
-            PassphraseVerificationStatus.CORE_ERROR -> R.string.error_happened_restart_app
-            else -> 0
-        }
-        Text(
-            text = stringResource(id = string),
-            fontFamily = FontFamily.Default,
-            color = colorResource(id = R.color.error_text_color),
-            style = MaterialTheme.typography.caption,
-        )
-    }
+    ShowErrorFeedbackIfNeeded(state)
     ManageScreenButtonsRow(
         state = state,
         confirm = confirm,
         cancel = cancel,
         previous = previous
     )
+}
+
+@Composable
+fun AccountsWithNoPassphrase(state: PassphraseMgmtState.ManagingAccounts, color: Color) {
+    Column {
+        state.accountsWithNoPassphrase.forEach { email ->
+            Text(text = email, color = color, fontWeight = FontWeight.Bold)
+            Text(
+                text = stringResource(id = R.string.passphrase_management_dialog_passphrase_no_passphrase),
+                color = color
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
 }
 
 @Composable
@@ -372,33 +345,4 @@ fun RenderChoosingAccountsToManage(
             }
         }
     }
-}
-
-@Composable
-fun <Item> RenderSelectableItem(
-    item: SelectableItem<Item>,
-    normalColor: Color,
-    selectedColor: Color,
-    onItemClicked: (SelectableItem<Item>) -> Unit,
-    onItemLongClicked: (SelectableItem<Item>) -> Unit,
-    modifier: Modifier = Modifier,
-    renderItem: @Composable (item: SelectableItem<Item>, modifier: Modifier) -> Unit,
-) {
-    val backgroundColor = if (item.selected) selectedColor else normalColor
-    renderItem(
-        item,
-        modifier
-            .fillMaxWidth()
-            .background(backgroundColor)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        onItemClicked(item)
-                    },
-                    onLongPress = {
-                        onItemLongClicked(item)
-                    }
-                )
-            }
-    )
 }

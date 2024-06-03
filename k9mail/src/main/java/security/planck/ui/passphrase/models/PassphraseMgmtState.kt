@@ -1,17 +1,12 @@
 package security.planck.ui.passphrase.models
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import security.planck.ui.passphrase.models.AccountTextFieldState
-import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.models.TextFieldState
-import security.planck.ui.passphrase.models.TextFieldStateContract
 
-sealed interface PassphraseMgmtState: PassphraseState {
+sealed interface PassphraseMgmtState : PassphraseState {
     data class ChoosingAccountsToManage(
         val accountsUsingPassphrase: MutableList<SelectableItem<AccountUsesPassphrase>> = mutableStateListOf(),
     ) : PassphraseMgmtState {
@@ -25,16 +20,14 @@ sealed interface PassphraseMgmtState: PassphraseState {
         val accounts: List<AccountUsesPassphrase>,
         val newPasswordState: TextFieldState = TextFieldState(),
         val newPasswordVerificationState: TextFieldState = TextFieldState(),
-        val status: MutableState<PassphraseVerificationStatus> = mutableStateOf(
-            PassphraseVerificationStatus.NONE
-        ),
-        val loading: MutableState<PassphraseLoading?> = mutableStateOf(null)
-    ) : PassphraseMgmtState {
+    ) : PassphraseMgmtState, PassphraseStateWithStatus() {
         val oldPasswordStates: SnapshotStateList<AccountTextFieldState> =
             mutableStateListOf<AccountTextFieldState>().also { list ->
                 list.addAll(accounts.filter { it.usesPassphrase }
                     .map { acc -> AccountTextFieldState(acc.account) })
             }
+        val accountsWithNoPassphrase: List<String> =
+            accounts.filter { !it.usesPassphrase }.map { acc -> acc.account }
 
         private val allTextFieldStates: List<TextFieldStateContract> get() = oldPasswordStates.toList() + newPasswordState + newPasswordVerificationState
 

@@ -61,6 +61,10 @@ class PassphraseUnlockViewModel @Inject constructor(
         val state = stateLiveData.value
         if (state is PassphraseUnlockState.UnlockingPassphrases) {
             state.initializePasswordStatesIfNeeded(accountsUsingPassphrase)
+        } else {
+            stateLiveData.value = PassphraseUnlockState.UnlockingPassphrases().also {
+                it.initializePasswordStatesIfNeeded(accountsUsingPassphrase)
+            }
         }
     }
 

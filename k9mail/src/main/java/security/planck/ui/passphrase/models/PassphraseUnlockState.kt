@@ -9,9 +9,7 @@ import com.fsck.k9.Account
 sealed interface PassphraseUnlockState: PassphraseState {
     data class UnlockingPassphrases(
         val passwordStates: SnapshotStateList<AccountTextFieldState> = mutableStateListOf(),
-        val status: MutableState<PassphraseVerificationStatus> = mutableStateOf(PassphraseVerificationStatus.NONE),
-        val loading: MutableState<PassphraseLoading?> = mutableStateOf(PassphraseLoading.Processing)
-    ) : PassphraseUnlockState {
+    ) : PassphraseUnlockState, PassphraseStateWithStatus() {
         fun initializePasswordStatesIfNeeded(
             accountsUsingPassphrase: List<Account>,
         ) {

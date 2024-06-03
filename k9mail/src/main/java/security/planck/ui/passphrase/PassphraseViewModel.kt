@@ -9,9 +9,9 @@ import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
 import kotlin.math.pow
 
-private const val RETRY_DELAY = 1000 // 10 seconds
+private const val RETRY_DELAY = 10000 // 10 seconds
 private const val RETRY_WITH_DELAY_AFTER = 3
-private const val MAX_ATTEMPTS_STOP_APP = 5
+private const val MAX_ATTEMPTS_STOP_APP = 10
 
 abstract class PassphraseViewModel : ViewModel() {
     private var failedUnlockAttempts = 0
@@ -27,7 +27,7 @@ abstract class PassphraseViewModel : ViewModel() {
             stateLiveData.value = PassphraseState.TooManyFailedAttempts
         } else {
             if (failedUnlockAttempts >= RETRY_WITH_DELAY_AFTER) {
-                val timeToWait = RETRY_DELAY * 1.0.pow(delayStep).toLong()
+                val timeToWait = RETRY_DELAY * 2.0.pow(delayStep).toLong()
                 loading(PassphraseLoading.WaitAfterFailedAttempt(timeToWait / 1000))
                 delay(timeToWait)
             }
