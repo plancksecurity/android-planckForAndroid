@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,11 +33,12 @@ import security.planck.ui.common.compose.input.PasswordInputField
 import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
 import security.planck.ui.common.compose.toolbar.WizardToolbar
 import security.planck.ui.passphrase.models.AccountTextFieldState
+import security.planck.ui.passphrase.models.PassphraseLoading
+import security.planck.ui.passphrase.models.PassphraseState
+import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
 import security.planck.ui.passphrase.models.TextFieldStateContract
 import security.planck.ui.passphrase.models.TextFieldStateContract.ErrorStatus
-import security.planck.ui.passphrase.unlock.PassphraseUnlockLoading
-import security.planck.ui.passphrase.unlock.PassphraseUnlockState
 import security.planck.ui.passphrase.unlock.PassphraseUnlockViewModel
 
 @Composable
@@ -75,13 +74,13 @@ fun PassphraseUnlockDialogContent(
 
 @Composable
 private fun RenderState(
-    state: PassphraseUnlockState,
+    state: PassphraseState,
     finishApp: () -> Unit,
     viewModel: PassphraseUnlockViewModel,
     dismiss: () -> Unit
 ) {
     when (state) {
-        PassphraseUnlockState.TooManyFailedAttempts -> {
+        PassphraseState.TooManyFailedAttempts -> {
             RenderTooManyFailedAttempts(finishApp)
         }
 
@@ -93,11 +92,26 @@ private fun RenderState(
             )
         }
 
-        PassphraseUnlockState.Dismiss -> {
+        PassphraseState.Dismiss -> {
             SideEffect {
                 dismiss()
             }
         }
+
+        is PassphraseState.CoreError -> {
+            Text(
+                text = stringResource(id = R.string.error_happened_restart_app),
+                fontFamily = FontFamily.SansSerif,
+                color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
+                modifier = Modifier.padding(vertical = 32.dp)
+            )
+        }
+
+        PassphraseState.Loading -> {
+            CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
+        }
+
+        else -> Unit
     }
 }
 
@@ -119,10 +133,10 @@ private fun RenderUnlockingPassphrases(
 }
 
 @Composable
-private fun RenderLoadingScreen(state: PassphraseUnlockState.UnlockingPassphrases) {
+fun RenderLoadingScreen(state: PassphraseUnlockState.UnlockingPassphrases) {
     val string = when (val loadingState = state.loading.value!!) {
-        PassphraseUnlockLoading.Processing -> stringResource(id = R.string.message_list_loading)
-        is PassphraseUnlockLoading.WaitAfterFailedAttempt -> stringResource(
+        PassphraseLoading.Processing -> stringResource(id = R.string.message_list_loading)
+        is PassphraseLoading.WaitAfterFailedAttempt -> stringResource(
             id = R.string.passphrase_unlock_dialog_wait_after_failed_attempt,
             loadingState.seconds
         )
@@ -190,7 +204,7 @@ private fun ButtonsRow(
 }
 
 @Composable
-private fun RenderTooManyFailedAttempts(finishApp: () -> Unit) {
+fun RenderTooManyFailedAttempts(close: () -> Unit) {
     Text(
         text = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
         fontFamily = FontFamily.SansSerif,
@@ -209,7 +223,7 @@ private fun RenderTooManyFailedAttempts(finishApp: () -> Unit) {
                 id = R.color.colorAccent
             ),
             enabled = true,
-            onClick = finishApp,
+            onClick = close,
         )
     }
 }

@@ -1,4 +1,4 @@
-package security.planck.ui.passphrase.manage
+package security.planck.ui.passphrase.models
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -11,11 +11,7 @@ import security.planck.ui.passphrase.models.PassphraseVerificationStatus
 import security.planck.ui.passphrase.models.TextFieldState
 import security.planck.ui.passphrase.models.TextFieldStateContract
 
-sealed interface PassphraseMgmtState {
-    object Loading : PassphraseMgmtState
-    object Dismiss : PassphraseMgmtState
-    data class CoreError(val error: Throwable?) : PassphraseMgmtState
-
+sealed interface PassphraseMgmtState: PassphraseState {
     data class ChoosingAccountsToManage(
         val accountsUsingPassphrase: MutableList<SelectableItem<AccountUsesPassphrase>> = mutableStateListOf(),
     ) : PassphraseMgmtState {
@@ -25,14 +21,14 @@ sealed interface PassphraseMgmtState {
             get() = accountsUsingPassphrase.filter { it.selected }.map { sel -> sel.data }
     }
 
-    data class ManagingAccounts constructor(
+    data class ManagingAccounts(
         val accounts: List<AccountUsesPassphrase>,
         val newPasswordState: TextFieldState = TextFieldState(),
         val newPasswordVerificationState: TextFieldState = TextFieldState(),
         val status: MutableState<PassphraseVerificationStatus> = mutableStateOf(
             PassphraseVerificationStatus.NONE
         ),
-        val loading: MutableState<Boolean> = mutableStateOf(false)
+        val loading: MutableState<PassphraseLoading?> = mutableStateOf(null)
     ) : PassphraseMgmtState {
         val oldPasswordStates: SnapshotStateList<AccountTextFieldState> =
             mutableStateListOf<AccountTextFieldState>().also { list ->
@@ -57,7 +53,15 @@ sealed interface PassphraseMgmtState {
                 }
             }
             this.status.value = errorType
-            loading.value = false
+            loading.value = null
+        }
+
+        /**
+         * Show loading status
+         */
+        fun loading(loading: PassphraseLoading) {
+            this.loading.value = loading
+            status.value = PassphraseVerificationStatus.NONE
         }
 
         fun clearErrorStatusIfNeeded() {

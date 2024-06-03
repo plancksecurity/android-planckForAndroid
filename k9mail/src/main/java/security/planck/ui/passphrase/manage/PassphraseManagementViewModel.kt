@@ -1,8 +1,5 @@
 package security.planck.ui.passphrase.manage
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.PlanckProvider
@@ -10,8 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Pair
 import kotlinx.coroutines.launch
 import security.planck.passphrase.PassphraseFormatValidator
-import security.planck.ui.passphrase.PassphraseDialogMode
+import security.planck.ui.passphrase.PassphraseViewModel
+import security.planck.ui.passphrase.models.AccountTextFieldState
+import security.planck.ui.passphrase.models.AccountUsesPassphrase
+import security.planck.ui.passphrase.models.PassphraseMgmtState
+import security.planck.ui.passphrase.models.PassphraseState
+import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
+import security.planck.ui.passphrase.models.SelectableItem
 import security.planck.ui.passphrase.models.TextFieldStateContract
 import javax.inject.Inject
 
@@ -20,11 +23,7 @@ class PassphraseManagementViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val preferences: Preferences,
     private val passphraseFormatValidator: PassphraseFormatValidator,
-) : ViewModel() {
-    private val stateLiveData: MutableLiveData<PassphraseMgmtState> =
-        MutableLiveData(PassphraseMgmtState.Loading)
-    val state: LiveData<PassphraseMgmtState> = stateLiveData
-    lateinit var mode: PassphraseDialogMode
+) : PassphraseViewModel() {
 
     fun start() {
         loadAccountsForManagement()
@@ -63,21 +62,28 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun validateNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
-        val validationErrorState = passphraseFormatValidator.validatePassphrase(state.newPasswordState.textState)
-        state.newPasswordVerificationState.errorState = validationErrorState
-        val verificationErrorState = passphraseFormatValidator.verifyNewPassphrase(state.newPasswordState.textState, state.newPasswordVerificationState.textState)
+        val validationErrorState =
+            passphraseFormatValidator.validatePassphrase(state.newPasswordState.textState)
+        state.newPasswordState.errorState = validationErrorState
+        val verificationErrorState = passphraseFormatValidator.verifyNewPassphrase(
+            state.newPasswordState.textState,
+            state.newPasswordVerificationState.textState
+        )
         state.newPasswordVerificationState.errorState = verificationErrorState
-        if (verificationErrorState == TextFieldStateContract.ErrorStatus.ERROR) {
-            error(PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH)
-        } else if (validationErrorState == TextFieldStateContract.ErrorStatus.ERROR) {
+        if (validationErrorState == TextFieldStateContract.ErrorStatus.ERROR) {
             error(PassphraseVerificationStatus.WRONG_FORMAT)
+        } else if (verificationErrorState == TextFieldStateContract.ErrorStatus.ERROR) {
+            error(PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH)
         } else {
             clearErrorStatusIfNeeded()
         }
     }
 
     fun verifyNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
-        val errorState = passphraseFormatValidator.verifyNewPassphrase(state.newPasswordState.textState, state.newPasswordVerificationState.textState)
+        val errorState = passphraseFormatValidator.verifyNewPassphrase(
+            state.newPasswordState.textState,
+            state.newPasswordVerificationState.textState
+        )
         state.newPasswordVerificationState.errorState = errorState
         if (errorState == TextFieldStateContract.ErrorStatus.ERROR) {
             error(PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH)
@@ -85,7 +91,6 @@ class PassphraseManagementViewModel @Inject constructor(
             clearErrorStatusIfNeeded()
         }
     }
-
 
 
     fun goBackToChoosingAccounts() {
@@ -107,24 +112,33 @@ class PassphraseManagementViewModel @Inject constructor(
             .map { inputState -> Pair(inputState.email, inputState.textState) }
             .let { ArrayList(it) }
             .apply {
-                addAll(state.accounts.filter { !it.usesPassphrase }.map { acc -> Pair(acc.account, "") })
+                addAll(state.accounts.filter { !it.usesPassphrase }
+                    .map { acc -> Pair(acc.account, "") })
             }
         viewModelScope.launch {
             planckProvider.managePassphrase(accountsToChange, newPassphrase.textState).onFailure {
                 error(PassphraseVerificationStatus.CORE_ERROR)
-            }.onSuccess {
-                stateLiveData.value = PassphraseMgmtState.Dismiss
+            }.onSuccess {  list ->
+                if (list.isNullOrEmpty()) {
+                    stateLiveData.value = PassphraseState.Dismiss
+                } else {
+                    handleFailedVerificationAttempt(list)
+                }
             }
         }
     }
 
     private fun loadAccountsForManagement() {
         viewModelScope.launch {
-            stateLiveData.value = PassphraseMgmtState.Loading
+            stateLiveData.value = PassphraseState.Loading
             getAccountsUsingOrNotPassphrase().onFailure {
-                stateLiveData.value = PassphraseMgmtState.CoreError(it)
+                stateLiveData.value = PassphraseState.CoreError(it)
             }.onSuccess { accounts ->
-                stateLiveData.value = PassphraseMgmtState.ChoosingAccountsToManage().also { it.accountsUsingPassphrase.addAll(accounts.map { account -> SelectableItem(account) }) }
+                stateLiveData.value = PassphraseMgmtState.ChoosingAccountsToManage().also {
+                    it.accountsUsingPassphrase.addAll(accounts.map { account ->
+                        SelectableItem(account)
+                    })
+                }
             }
         }
     }
@@ -143,12 +157,17 @@ class PassphraseManagementViewModel @Inject constructor(
         return Result.success(accountsUsePassphrase)
     }
 
-    private fun error(
+    override fun error(
         errorType: PassphraseVerificationStatus,
-        accountsWithErrors: List<String>? = null
+        accountsWithErrors: List<String>?,
     ) {
         doWithManagingPassphrasesState { it.error(errorType, accountsWithErrors) }
     }
+
+    override fun loading(loading: PassphraseLoading) {
+        doWithManagingPassphrasesState { it.loading(loading) }
+    }
+
     private fun doWithManagingPassphrasesState(block: (PassphraseMgmtState.ManagingAccounts) -> Unit) {
         val state = stateLiveData.value
         if (state is PassphraseMgmtState.ManagingAccounts) {

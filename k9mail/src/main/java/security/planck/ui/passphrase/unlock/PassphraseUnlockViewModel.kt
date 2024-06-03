@@ -1,41 +1,28 @@
 package security.planck.ui.passphrase.unlock
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.planck.PlanckProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import foundation.pEp.jniadapter.Pair
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import security.planck.passphrase.PassphraseFormatValidator
 import security.planck.passphrase.PassphraseRepository
-import security.planck.passphrase.extensions.isValidPassphrase
+import security.planck.ui.passphrase.PassphraseViewModel
 import security.planck.ui.passphrase.models.AccountTextFieldState
+import security.planck.ui.passphrase.models.PassphraseLoading
+import security.planck.ui.passphrase.models.PassphraseState
+import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
 import security.planck.ui.passphrase.models.TextFieldStateContract
 import javax.inject.Inject
-import kotlin.math.pow
-
-private const val RETRY_DELAY = 10000 // 10 seconds
-private const val RETRY_WITH_DELAY_AFTER = 3
-private const val MAX_ATTEMPTS_STOP_APP = 10
 
 @HiltViewModel
 class PassphraseUnlockViewModel @Inject constructor(
     private val planckProvider: PlanckProvider,
     private val passphraseRepository: PassphraseRepository,
     private val passphraseFormatValidator: PassphraseFormatValidator,
-) : ViewModel() {
-    private val stateLiveData: MutableLiveData<PassphraseUnlockState> =
-        MutableLiveData(PassphraseUnlockState.UnlockingPassphrases())
-    val state: LiveData<PassphraseUnlockState> = stateLiveData
-
-    private var failedUnlockAttempts = 0
-    private val delayStep get() = failedUnlockAttempts - RETRY_WITH_DELAY_AFTER
-
+) : PassphraseViewModel() {
     fun start() {
         loadAccountsForUnlocking()
     }
@@ -50,14 +37,14 @@ class PassphraseUnlockViewModel @Inject constructor(
         }
     }
 
-    private fun error(
+    override fun error(
         errorType: PassphraseVerificationStatus,
-        accountsWithErrors: List<String>? = null
+        accountsWithErrors: List<String>?,
     ) {
         doWithUnlockingPassphrasesState { it.error(errorType, accountsWithErrors) }
     }
 
-    private fun loading(loading: PassphraseUnlockLoading) {
+    override fun loading(loading: PassphraseLoading) {
         doWithUnlockingPassphrasesState { it.loading(loading) }
     }
 
@@ -86,9 +73,9 @@ class PassphraseUnlockViewModel @Inject constructor(
             }.onSuccess { list ->
                 if (list.isNullOrEmpty()) {
                     passphraseRepository.unlockPassphrase()
-                    stateLiveData.value = PassphraseUnlockState.Dismiss
+                    stateLiveData.value = PassphraseState.Dismiss
                 } else {
-                    handleFailedUnlockAttempt(list)
+                    handleFailedVerificationAttempt(list)
                 }
             }
         }
@@ -109,26 +96,4 @@ class PassphraseUnlockViewModel @Inject constructor(
             it.clearErrorStatusIfNeeded()
         }
     }
-
-    private suspend fun handleFailedUnlockAttempt(accountsWithError: List<String>) {
-        failedUnlockAttempts++
-        if (failedUnlockAttempts >= MAX_ATTEMPTS_STOP_APP) {
-            stateLiveData.value = PassphraseUnlockState.TooManyFailedAttempts
-        } else {
-            if (failedUnlockAttempts >= RETRY_WITH_DELAY_AFTER) {
-                val timeToWait = RETRY_DELAY * 2.0.pow(delayStep).toLong()
-                loading(PassphraseUnlockLoading.WaitAfterFailedAttempt(timeToWait / 1000))
-                delay(timeToWait)
-            }
-            error(
-                errorType = PassphraseVerificationStatus.WRONG_PASSPHRASE,
-                accountsWithErrors = accountsWithError
-            )
-        }
-    }
-}
-
-sealed interface PassphraseUnlockLoading {
-    object Processing : PassphraseUnlockLoading
-    data class WaitAfterFailedAttempt(val seconds: Long) : PassphraseUnlockLoading
 }

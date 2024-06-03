@@ -59,6 +59,7 @@ class PassphraseManagementDialog : DialogFragment() {
                         PassphraseDialogMode.MANAGE -> PassphraseManagementDialogContent(
                             viewModel = managementViewModel,
                             dismiss = ::dismissAllowingStateLoss,
+                            finishApp = ::finishApp,
                         )
                     }
                 }

@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -23,7 +21,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -33,21 +30,25 @@ import androidx.compose.ui.unit.dp
 import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
-import security.planck.ui.common.compose.input.PasswordInputField
 import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
 import security.planck.ui.common.compose.toolbar.WizardToolbar
 import security.planck.ui.passphrase.manage.PassphraseManagementViewModel
-import security.planck.ui.passphrase.manage.PassphraseMgmtState
-import security.planck.ui.passphrase.manage.SelectableItem
+import security.planck.ui.passphrase.models.PassphraseLoading
+import security.planck.ui.passphrase.models.PassphraseMgmtState
+import security.planck.ui.passphrase.models.PassphraseState
+import security.planck.ui.passphrase.models.PassphraseVerificationStatus
+import security.planck.ui.passphrase.models.SelectableItem
 import security.planck.ui.passphrase.models.TextFieldStateContract
 import security.planck.ui.passphrase.unlock.compose.PassphraseValidationList
 import security.planck.ui.passphrase.unlock.compose.PassphraseValidationRow
+import security.planck.ui.passphrase.unlock.compose.RenderTooManyFailedAttempts
 
 
 @Composable
 fun PassphraseManagementDialogContent(
     viewModel: PassphraseManagementViewModel,
     dismiss: () -> Unit,
+    finishApp: () -> Unit,
 ) {
     val minWidth = dimensionResource(id = R.dimen.key_import_floating_width)
     val paddingHorizontal = 24.dp
@@ -77,7 +78,7 @@ fun PassphraseManagementDialogContent(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
             ) {
-                RenderState(state, viewModel, dismiss)
+                RenderState(state, viewModel, dismiss, finishApp)
             }
         }
     }
@@ -85,12 +86,18 @@ fun PassphraseManagementDialogContent(
 
 @Composable
 fun RenderState(
-    state: PassphraseMgmtState,
+    state: PassphraseState,
     viewModel: PassphraseManagementViewModel,
     dismiss: () -> Unit,
+    finishApp: () -> Unit,
 ) {
     when (state) {
         is PassphraseMgmtState.ChoosingAccountsToManage -> {
+            Text(
+                text = stringResource(id = R.string.passphrase_management_dialog_pick_accounts),
+                color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             RenderChoosingAccountsToManage(state, viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             ChooseScreenButtonsRow(
@@ -100,7 +107,7 @@ fun RenderState(
             )
         }
 
-        is PassphraseMgmtState.CoreError -> {
+        is PassphraseState.CoreError -> {
             Text(
                 text = stringResource(id = R.string.error_happened_restart_app),
                 fontFamily = FontFamily.SansSerif,
@@ -109,27 +116,50 @@ fun RenderState(
             )
         }
 
-        PassphraseMgmtState.Dismiss -> {
+        PassphraseState.Dismiss -> {
             SideEffect {
                 dismiss()
             }
         }
-        PassphraseMgmtState.Loading -> {
+
+        PassphraseState.Loading -> {
             CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
         }
 
         is PassphraseMgmtState.ManagingAccounts -> {
-            RenderManagingAccounts(
-                state,
-                validateInput = viewModel::validateInput,
-                validateNewPassphrase = { viewModel.validateNewPassphrase(state) },
-                verifyNewPassphrase = { viewModel.verifyNewPassphrase(state) },
-                confirm = { viewModel.setNewPassphrase(state) },
-                cancel = dismiss,
-                previous = viewModel::goBackToChoosingAccounts
-            )
+            if (state.loading.value == null) {
+                RenderManagingAccounts(
+                    state,
+                    validateInput = viewModel::validateInput,
+                    validateNewPassphrase = { viewModel.validateNewPassphrase(state) },
+                    verifyNewPassphrase = { viewModel.verifyNewPassphrase(state) },
+                    confirm = { viewModel.setNewPassphrase(state) },
+                    cancel = dismiss,
+                    previous = viewModel::goBackToChoosingAccounts
+                )
+            } else {
+                RenderLoadingScreen(state)
+            }
         }
+
+        PassphraseState.TooManyFailedAttempts -> {
+            RenderTooManyFailedAttempts(dismiss)
+        }
+
+        else -> Unit
     }
+}
+
+@Composable
+fun RenderLoadingScreen(state: PassphraseMgmtState.ManagingAccounts) {
+    val string = when (val loadingState = state.loading.value!!) {
+        PassphraseLoading.Processing -> stringResource(id = R.string.message_list_loading)
+        is PassphraseLoading.WaitAfterFailedAttempt -> stringResource(
+            id = R.string.passphrase_unlock_dialog_wait_after_failed_attempt,
+            loadingState.seconds
+        )
+    }
+    CenteredCircularProgressIndicatorWithText(text = string)
 }
 
 @Composable
@@ -149,7 +179,10 @@ fun RenderManagingAccounts(
     val successColor = getColorFromAttr(
         colorRes = R.attr.colorAccent
     )
-    Text(text = stringResource(id = R.string.passphrase_management_dialog_enter_old_passphrases), color = defaultColor)
+    Text(
+        text = stringResource(id = R.string.passphrase_management_dialog_enter_old_passphrases),
+        color = defaultColor
+    )
     Spacer(modifier = Modifier.height(16.dp))
     OldPassphrasesVerification(
         state = state,
@@ -167,7 +200,24 @@ fun RenderManagingAccounts(
         validateInput = validateNewPassphrase,
         verifyNewPassphrase = verifyNewPassphrase,
     )
+    val errorType = state.status.value
+    if (errorType.isError) {
+        val string = when (errorType) {
+            PassphraseVerificationStatus.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
+            PassphraseVerificationStatus.WRONG_PASSPHRASE -> R.string.passhphrase_body_wrong_passphrase
+            PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH -> R.string.passphrase_management_dialog_passphrase_no_match
+            PassphraseVerificationStatus.CORE_ERROR -> R.string.error_happened_restart_app
+            else -> 0
+        }
+        Text(
+            text = stringResource(id = string),
+            fontFamily = FontFamily.Default,
+            color = colorResource(id = R.color.error_text_color),
+            style = MaterialTheme.typography.caption,
+        )
+    }
     ManageScreenButtonsRow(
+        state = state,
         confirm = confirm,
         cancel = cancel,
         previous = previous
@@ -183,7 +233,10 @@ fun NewPassphraseAndConfirmation(
     validateInput: (TextFieldStateContract) -> Unit,
     verifyNewPassphrase: (TextFieldStateContract) -> Unit,
 ) {
-    Text(text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase), color = defaultColor)
+    Text(
+        text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase),
+        color = defaultColor
+    )
     PassphraseValidationRow(
         passwordState = state.newPasswordState,
         errorColor = errorColor,
@@ -191,7 +244,10 @@ fun NewPassphraseAndConfirmation(
         successColor = successColor,
         validateInput = validateInput
     )
-    Text(text = stringResource(id = R.string.passphrase_management_dialog_confirm_new_passphrase), color = defaultColor)
+    Text(
+        text = stringResource(id = R.string.passphrase_management_dialog_confirm_new_passphrase),
+        color = defaultColor
+    )
     PassphraseValidationRow(
         passwordState = state.newPasswordVerificationState,
         errorColor = errorColor,
@@ -217,61 +273,6 @@ fun OldPassphrasesVerification(
         errorColor = errorColor,
         validateInput = validateInput,
     )
-
-
-//    LazyColumn {
-//        itemsIndexed(state.oldPasswordStates) { index, account ->
-//            RenderSelectableItem(
-//                item = account,
-//                onItemClicked = { clickedItem ->
-//                    viewModel.accountClicked(clickedItem)
-//                },
-//                onItemLongClicked = {
-//                    viewModel.accountLongClicked(it)
-//                },
-//                normalColor = getColorFromAttr(colorRes = R.attr.defaultDialogBackground),
-//                selectedColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
-//            ) { acc, modifier ->
-//                Text(text = acc.data.account, color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground), modifier = modifier.padding(vertical = 8.dp))
-//            }
-//        }
-//    }
-}
-
-@Composable
-fun NewPassphraseVerificationRow(
-    passwordState: TextFieldStateContract,
-    textColor: Color,
-    errorColor: Color,
-    defaultColor: Color,
-    validateInput: (TextFieldStateContract) -> Unit,
-    statusIcon: ImageVector,
-    statusIconDescription: Int
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        PasswordInputField(
-            passwordState,
-            textColor,
-            errorColor,
-            defaultColor,
-            validateInput,
-            modifier = Modifier.weight(1f)
-        )
-        if (passwordState.errorState != TextFieldStateContract.ErrorStatus.NONE) {
-            Icon(
-                imageVector = statusIcon,
-                stringResource(id = statusIconDescription),
-                tint = textColor,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable
@@ -285,7 +286,7 @@ private fun ChooseScreenButtonsRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
 
-    ) {
+        ) {
         if (actionMode) {
             TextActionButton(
                 text = stringResource(id = R.string.cancel_action),
@@ -310,6 +311,7 @@ private fun ChooseScreenButtonsRow(
 
 @Composable
 private fun ManageScreenButtonsRow(
+    state: PassphraseMgmtState.ManagingAccounts,
     confirm: () -> Unit,
     cancel: () -> Unit,
     previous: () -> Unit,
@@ -338,6 +340,7 @@ private fun ManageScreenButtonsRow(
             textColor = colorResource(
                 id = R.color.colorAccent
             ),
+            enabled = state.status.value == PassphraseVerificationStatus.SUCCESS,
             onClick = confirm,
         )
     }
@@ -359,7 +362,7 @@ fun RenderChoosingAccountsToManage(
                     viewModel.accountLongClicked(it)
                 },
                 normalColor = getColorFromAttr(colorRes = R.attr.defaultDialogBackground),
-                selectedColor = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
+                selectedColor = getColorFromAttr(colorRes = R.attr.messageListSelectedBackgroundColor),
             ) { acc, modifier ->
                 Text(
                     text = acc.data.account,

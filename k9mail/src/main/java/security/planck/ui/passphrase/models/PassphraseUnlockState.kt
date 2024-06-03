@@ -1,22 +1,16 @@
-package security.planck.ui.passphrase.unlock
+package security.planck.ui.passphrase.models
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.fsck.k9.Account
-import security.planck.ui.passphrase.models.AccountTextFieldState
-import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.models.TextFieldStateContract
 
-sealed interface PassphraseUnlockState {
-    object Dismiss : PassphraseUnlockState
-    object TooManyFailedAttempts : PassphraseUnlockState
-
+sealed interface PassphraseUnlockState: PassphraseState {
     data class UnlockingPassphrases(
         val passwordStates: SnapshotStateList<AccountTextFieldState> = mutableStateListOf(),
         val status: MutableState<PassphraseVerificationStatus> = mutableStateOf(PassphraseVerificationStatus.NONE),
-        val loading: MutableState<PassphraseUnlockLoading?> = mutableStateOf(PassphraseUnlockLoading.Processing)
+        val loading: MutableState<PassphraseLoading?> = mutableStateOf(PassphraseLoading.Processing)
     ) : PassphraseUnlockState {
         fun initializePasswordStatesIfNeeded(
             accountsUsingPassphrase: List<Account>,
@@ -51,7 +45,7 @@ sealed interface PassphraseUnlockState {
         /**
          * Show loading status
          */
-        fun loading(loading: PassphraseUnlockLoading) {
+        fun loading(loading: PassphraseLoading) {
             this.loading.value = loading
             status.value = PassphraseVerificationStatus.NONE
         }

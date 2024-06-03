@@ -23,12 +23,12 @@ class PassphraseFormatValidator @Inject constructor() {
 
     fun verifyNewPassphrase(newPassphrase: String, newPassphraseVerification: String): TextFieldStateContract.ErrorStatus {
         return when {
-            newPassphraseVerification == newPassphrase -> {
-                TextFieldStateContract.ErrorStatus.SUCCESS
-            }
-
             newPassphraseVerification.isEmpty() -> {
                 TextFieldStateContract.ErrorStatus.NONE
+            }
+
+            newPassphraseVerification == newPassphrase -> {
+                TextFieldStateContract.ErrorStatus.SUCCESS
             }
 
             else -> {
