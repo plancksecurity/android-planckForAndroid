@@ -494,5 +494,11 @@
 
     <string name="about_libraries_table_header_name">Library Name</string>
     <string name="about_libraries_table_header_license">License</string>
+    <string name="google_button_beta_feature">Beta Feature</string>
+    <string name="google_guide_screen_1_text1">Login with Google is still a preview feature - you will see a warning message next. Here\'s what you need to do:</string>
+    <string name="google_guide_screen_1_text2_line_1">Step 1:\n</string>
+    <string name="google_guide_screen_1_text2_line_2">Press on “Advanced”</string>
+    <string name="google_guide_screen_2_text1_line_1">Step 2:\n</string>
+    <string name="google_guide_screen_2_text1_line_2">Press on “Advanced”</string>
 
 </resources>

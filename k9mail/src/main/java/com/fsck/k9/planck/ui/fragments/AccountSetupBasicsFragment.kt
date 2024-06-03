@@ -63,7 +63,8 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         _binding = FragmentAccountLoginBinding.inflate(inflater, container, false)
         _wizardSetupBinding = WizardSetupBinding.bind(binding.root)
         setupViews()
-        setupToolbar()
+        setupToolbar(!requireActivity().isTaskRoot
+                || parentFragmentManager.backStackEntryCount > 1)
 
         initializeViewListeners()
         validateFields()
@@ -125,14 +126,6 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.account_setup_basic_option, menu)
-    }
-
-    private fun setupToolbar() {
-        (requireActivity() as AccountSetupBasics).initializeToolbar(
-            !requireActivity().isTaskRoot
-                    || parentFragmentManager.backStackEntryCount > 1,
-            R.string.account_setup_basics_title
-        )
     }
 
     private fun initializeViewListeners() {
