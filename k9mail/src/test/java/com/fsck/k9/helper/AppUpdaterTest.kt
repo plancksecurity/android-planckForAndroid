@@ -3,7 +3,6 @@ package com.fsck.k9.helper
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.testutils.CoroutineTestRule
@@ -26,7 +25,7 @@ import security.planck.mdm.ManageableSetting
 import security.planck.mdm.serializeBooleanManageableSetting
 import java.io.File
 
-private const val CURRENT_APP_VERSION = 531L
+private const val CURRENT_APP_VERSION = 535L
 
 @ExperimentalCoroutinesApi
 class AppUpdaterTest {
@@ -85,6 +84,7 @@ class AppUpdaterTest {
 
         verify { verifyV317Update() }
         verify { verifyV3111Update() }
+        verify { verifyV3114Update() }
         verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
     }
 
@@ -103,9 +103,24 @@ class AppUpdaterTest {
         }
 
     @Test
+    fun `AppUpdater updates only for v3114`() =
+        runTest {
+            every { storage.getLong("appVersionCode", -1) }.returns(534)
+
+
+            appUpdater.performOperationsOnUpdate()
+
+
+            verify(exactly = 0) { verifyV317Update() }
+            verify(exactly = 0) { storageEditor.putString("pEpUsePassphraseForNewKeys", any()) }
+            verify { verifyV3114Update() }
+            verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
+        }
+
+    @Test
     fun `AppUpdater does not update anything if no update target versions are in range`() =
         runTest {
-            every { storage.getLong("appVersionCode", -1) }.returns(530)
+            every { storage.getLong("appVersionCode", -1) }.returns(535)
 
 
             appUpdater.performOperationsOnUpdate()
@@ -113,7 +128,8 @@ class AppUpdaterTest {
 
             verify(exactly = 0) { verifyV317Update() }
             verify(exactly = 0) { verifyV3111Update() }
-            verify { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
+            verify(exactly = 0) { verifyV3114Update() }
+            verify(exactly = 0) { storageEditor.putLong("appVersionCode", CURRENT_APP_VERSION) }
         }
 
     private fun verifyV317Update() {
@@ -128,7 +144,14 @@ class AppUpdaterTest {
         //storage.getBoolean("pEpUsePassphraseForNewKeys", BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
         storageEditor.remove("pEpUsePassphraseForNewKeys")
         //K9.setPlanckUsePassphraseForNewKeys(ManageableSetting(false))
-        storageEditor.putString("pEpUsePassphraseForNewKeys", serializeBooleanManageableSetting(ManageableSetting(false)))
+        storageEditor.putString(
+            "pEpUsePassphraseForNewKeys",
+            serializeBooleanManageableSetting(ManageableSetting(false))
+        )
+    }
+
+    private fun verifyV3114Update() {
+        storageEditor.remove("pEpUsePassphraseForNewKeys")
     }
 
 

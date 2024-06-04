@@ -2,7 +2,6 @@ package com.fsck.k9.helper
 
 import android.content.Context
 import android.content.pm.PackageInfo
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.DefaultDispatcherProvider
@@ -88,6 +87,9 @@ constructor(
         if (needsUpdateFor(v3_1_11)) {
             v3111Update(storage, editor)
         }
+        if (needsUpdateFor(v3_1_14)) {
+            v3114Update(editor)
+        }
     }
 
     private fun v3111Update(storage: Storage, editor: StorageEditor) {
@@ -95,7 +97,6 @@ constructor(
         val previousValue = storage.getBoolean(
             "pEpUsePassphraseForNewKeys",
             false
-            //BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS
         )
         editor.remove("pEpUsePassphraseForNewKeys")
         val newSetting = ManageableSetting(previousValue)
@@ -110,6 +111,10 @@ constructor(
         editor.remove("messageViewCopyActionVisible")
         editor.remove("messageViewSpamActionVisible")
     }
+    private fun v3114Update(editor: StorageEditor) { // name is the version just before the change, so last version that needs it
+        // cleanup removed settings
+        editor.remove("pEpUsePassphraseForNewKeys")
+    }
 
     private fun needsUpdate(target: Long, oldVersion: Long, newVersion: Long): Boolean {
         return target in oldVersion until newVersion
@@ -119,8 +124,9 @@ constructor(
         const val NO_APP_VERSION = 1
         const val APP_UPDATED = 1
         const val APP_NOT_UPDATED = 2
-        private const val v3_1_7 = 526L
+        private const val v3_1_7 = 526L // always the version that has the old code, that needs to be changed
         private const val v3_1_11 = 529L
+        private const val v3_1_14 = 534L
         private const val VERSION_OFFSET = 10000
     }
 
