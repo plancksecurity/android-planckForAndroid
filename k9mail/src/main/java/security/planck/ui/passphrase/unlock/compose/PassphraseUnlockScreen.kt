@@ -18,6 +18,7 @@ import security.planck.ui.common.compose.progress.CenteredCircularProgressIndica
 import security.planck.ui.passphrase.compose.PassphraseScreen
 import security.planck.ui.passphrase.compose.PassphraseValidationList
 import security.planck.ui.passphrase.compose.RenderCommonStates
+import security.planck.ui.passphrase.compose.RenderCoreError
 import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
@@ -55,6 +56,13 @@ private fun RenderState(
         tooManyFailuresAction = finishApp
     ) {
         when (state) {
+            is PassphraseState.CoreError -> {
+                RenderCoreError(
+                    message = stringResource(id = R.string.passphrase_unlock_dialog_initial_fatal_error_feedback),
+                    close = finishApp
+                )
+            }
+
             is PassphraseUnlockState.UnlockingPassphrases -> {
                 RenderUnlockingPassphrases(
                     state,

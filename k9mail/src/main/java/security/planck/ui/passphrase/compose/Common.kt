@@ -157,9 +157,6 @@ fun RenderCommonStates(
     renderCustomStates: @Composable (state: PassphraseState) -> Unit,
 ) {
     when (state) {
-        is PassphraseState.CoreError -> {
-            RenderCoreError(close = dismiss)
-        }
 
         PassphraseState.Success -> {
             RenderSingleMessageAndCloseButton(
@@ -186,8 +183,11 @@ fun RenderTooManyFailedAttempts(close: () -> Unit) {
 }
 
 @Composable
-fun RenderCoreError(close: () -> Unit) {
-    RenderSingleMessageAndCloseButton(message = stringResource(id = R.string.error_happened_restart_app), close = close)
+fun RenderCoreError(
+    message: String = stringResource(id = R.string.error_happened_restart_app),
+    close: () -> Unit
+) {
+    RenderSingleMessageAndCloseButton(message = message, close = close)
 }
 
 @Composable

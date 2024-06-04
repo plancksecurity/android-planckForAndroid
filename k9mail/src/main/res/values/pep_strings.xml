@@ -509,6 +509,7 @@
     <string name="passphrase_unlock_dialog_wrong_passhprase_status_desc">Wrong Passphrase</string>
     <string name="passphrase_unlock_dialog_correct_passphrase_status_desc">Correct Passphrase</string>
     <string name="passphrase_unlock_dialog_success">Passphrases were unlocked successfully.</string>
+    <string name="passphrase_unlock_dialog_initial_fatal_error_feedback">An error happened, app will close.</string>
 
     <string name="passphrase_management_dialog_title">Manage Passphrase</string>
     <string name="passphrase_management_preference_title">Manage Passphrases on Private Keys</string>
