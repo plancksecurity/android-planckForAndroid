@@ -29,7 +29,7 @@ class PassphraseUnlockViewModel @Inject constructor(
     private fun loadAccountsForUnlocking() {
         viewModelScope.launch {
             passphraseRepository.getAccountsWithPassPhrase().onFailure {
-                error(errorType = PassphraseVerificationStatus.CORE_ERROR)
+                stateLiveData.value = PassphraseState.CoreError(it)
             }.onSuccess { accountsWithPassphrase ->
                 initializePasswordStatesIfNeeded(accountsWithPassphrase)
             }
@@ -69,6 +69,7 @@ class PassphraseUnlockViewModel @Inject constructor(
 
     fun unlockKeysWithPassphrase(states: List<AccountTextFieldState>) {
         viewModelScope.launch {
+            loading(PassphraseLoading.Processing)
             val keysWithPassphrase =
                 states.map { state -> Pair(state.email, state.textState) }
             planckProvider.unlockKeysWithPassphrase(ArrayList(keysWithPassphrase)).onFailure {

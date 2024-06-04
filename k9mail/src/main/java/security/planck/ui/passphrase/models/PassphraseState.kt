@@ -15,6 +15,53 @@ sealed class PassphraseStateWithStatus : PassphraseState {
         PassphraseVerificationStatus.NONE
     )
     val loading: MutableState<PassphraseLoading?> = mutableStateOf(null)
+
+    protected abstract val allTextFieldStates: List<TextFieldStateContract>
+
+    /**
+     * Show error status
+     */
+    fun error(
+        errorType: PassphraseVerificationStatus,
+        accountsWithErrors: List<String>? = null
+    ) {
+        accountsWithErrors?.let {
+            allTextFieldStates.forEach { state ->
+                if (state is AccountTextFieldState && accountsWithErrors.contains(state.email)) {
+                    state.errorState = TextFieldStateContract.ErrorStatus.ERROR
+                }
+            }
+        }
+        this.status.value = errorType
+        loading.value = null
+    }
+
+    /**
+     * Show loading status
+     */
+    fun loading(loading: PassphraseLoading) {
+        this.loading.value = loading
+        status.value = PassphraseVerificationStatus.NONE
+    }
+
+    fun clearErrorStatusIfNeeded() {
+        if (!status.value.isPersistentError) {
+            clearItemErrorStatusIfPossible()
+        }
+    }
+
+    private fun clearItemErrorStatusIfPossible() {
+        var success = 0
+        for (state in allTextFieldStates) {
+            if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {
+                return
+            } else if (state.errorState == TextFieldStateContract.ErrorStatus.SUCCESS) {
+                success++
+            }
+        }
+        this.status.value =
+            if (success == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS else PassphraseVerificationStatus.NONE
+    }
 }
 
 sealed interface PassphraseLoading {

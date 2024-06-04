@@ -29,53 +29,7 @@ sealed interface PassphraseMgmtState : PassphraseState {
         val accountsWithNoPassphrase: List<String> =
             accounts.filter { !it.usesPassphrase }.map { acc -> acc.account }
 
-        private val allTextFieldStates: List<TextFieldStateContract> get() = oldPasswordStates.toList() + newPasswordState + newPasswordVerificationState
-
-        /**
-         * Show error status
-         */
-        fun error(
-            errorType: PassphraseVerificationStatus,
-            accountsWithErrors: List<String>? = null
-        ) {
-            accountsWithErrors?.let {
-                oldPasswordStates.forEach { state ->
-                    if (accountsWithErrors.contains(state.email)) {
-                        state.errorState = TextFieldStateContract.ErrorStatus.ERROR
-                    }
-                }
-            }
-            this.status.value = errorType
-            loading.value = null
-        }
-
-        /**
-         * Show loading status
-         */
-        fun loading(loading: PassphraseLoading) {
-            this.loading.value = loading
-            status.value = PassphraseVerificationStatus.NONE
-        }
-
-        fun clearErrorStatusIfNeeded() {
-            if (status.value.isItemError) {
-                clearItemErrorStatusIfPossible()
-            }
-        }
-
-        private fun clearItemErrorStatusIfPossible() {
-            val allTextFieldStates = this.allTextFieldStates
-            var success = 0
-            for (state in allTextFieldStates) {
-                if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {
-                    return
-                } else if (state.errorState == TextFieldStateContract.ErrorStatus.SUCCESS) {
-                    success++
-                }
-            }
-            this.status.value =
-                if (success == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS else PassphraseVerificationStatus.NONE
-        }
+        override val allTextFieldStates: List<TextFieldStateContract> get() = oldPasswordStates.toList() + newPasswordState + newPasswordVerificationState
     }
 }
 
