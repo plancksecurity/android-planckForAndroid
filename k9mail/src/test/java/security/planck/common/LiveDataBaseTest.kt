@@ -27,7 +27,7 @@ abstract class LiveDataBaseTest<BaseType, LiveDataType> {
     }
 
     protected fun customAssertObservedValues(vararg assertions: (BaseType) -> Unit) {
-        println("==== observed values: ${observedValues.joinToString("\n")}")
+        println("observed values: \n${observedValues.joinToString("\n")}")
         assertEquals(assertions.size, observedValues.size)
         assertions.forEachIndexed { index, assertion ->
             assertion(observedValues[index])

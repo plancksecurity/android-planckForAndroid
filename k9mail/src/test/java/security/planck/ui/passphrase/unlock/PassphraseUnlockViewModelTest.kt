@@ -15,7 +15,6 @@ import io.mockk.slot
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.jsoup.helper.Validate.fail
@@ -24,6 +23,7 @@ import org.junit.Test
 import security.planck.common.LiveDataTest
 import security.planck.passphrase.PassphraseFormatValidator
 import security.planck.passphrase.PassphraseRepository
+import security.planck.ui.passphrase.assertPairArrayList
 import security.planck.ui.passphrase.models.AccountTextFieldState
 import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseState
@@ -38,7 +38,7 @@ private const val TEST_PASSPHRASE = "HelloPassphrase!!1"
 @OptIn(ExperimentalCoroutinesApi::class)
 class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
     @get:Rule
-    var coroutinesTestRule = CoroutineTestRule(UnconfinedTestDispatcher())
+    var coroutinesTestRule = CoroutineTestRule()
     override val testLivedata: LiveData<PassphraseState>
         get() = viewModel.state
 
@@ -122,17 +122,6 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
             { assertUnlockingPassphrasesState(it, expectedLoading = PassphraseLoading.Processing) },
             { assertEquals(PassphraseState.Success, it) },
         )
-    }
-
-    private fun assertPairArrayList(
-        expected: List<Pair<String, String>>,
-        actual: ArrayList<Pair<String, String>>
-    ) {
-        assertEquals(expected.size, actual.size)
-        expected.forEachIndexed { index, pair ->
-            assertEquals(pair.first, actual[index].first)
-            assertEquals(pair.second, actual[index].second)
-        }
     }
 
     @Test

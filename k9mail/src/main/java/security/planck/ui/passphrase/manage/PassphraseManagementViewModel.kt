@@ -93,6 +93,7 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun setNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
+        loading(PassphraseLoading.Processing)
         val newPassphrase = state.newPasswordVerificationState
         val accountsToChange = state.accounts.map { account ->
             Pair(
