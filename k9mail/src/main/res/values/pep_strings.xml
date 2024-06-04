@@ -521,5 +521,6 @@
     <string name="passphrase_management_dialog_passphrase_no_match">Passphrase verification does not match.</string>
     <string name="passphrase_management_dialog_passphrase_no_passphrase">(No passphrase configured)</string>
     <string name="passphrase_management_dialog_success">Passphrases were updated successfully.</string>
+    <string name="passphrase_management_dialog_too_many_failed_attempts">Too many failed attempts. Cannot perform the operation.</string>
 
 </resources>

@@ -27,6 +27,7 @@ import security.planck.ui.passphrase.compose.PassphraseScreen
 import security.planck.ui.passphrase.compose.PassphraseValidationList
 import security.planck.ui.passphrase.compose.PassphraseValidationRow
 import security.planck.ui.passphrase.compose.RenderCommonStates
+import security.planck.ui.passphrase.compose.RenderTooManyFailedAttempts
 import security.planck.ui.passphrase.compose.ShowErrorFeedbackIfNeeded
 import security.planck.ui.passphrase.manage.PassphraseManagementViewModel
 import security.planck.ui.passphrase.models.PassphraseLoading
@@ -66,9 +67,14 @@ fun RenderState(
         state = state,
         successText = stringResource(id = R.string.passphrase_management_dialog_success),
         dismiss = dismiss,
-        tooManyFailuresAction = dismiss
     ) {
         when (state) {
+            PassphraseState.TooManyFailedAttempts -> {
+                RenderTooManyFailedAttempts(
+                    message = stringResource(id = R.string.passphrase_management_dialog_too_many_failed_attempts),
+                    close = dismiss
+                )
+            }
             is PassphraseMgmtState.ChoosingAccountsToManage -> {
                 Text(
                     text = stringResource(id = R.string.passphrase_management_dialog_pick_accounts),

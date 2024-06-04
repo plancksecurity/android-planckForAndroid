@@ -153,7 +153,6 @@ fun RenderCommonStates(
     state: PassphraseState,
     successText: String,
     dismiss: () -> Unit,
-    tooManyFailuresAction: () -> Unit,
     renderCustomStates: @Composable (state: PassphraseState) -> Unit,
 ) {
     when (state) {
@@ -169,17 +168,16 @@ fun RenderCommonStates(
             CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
         }
 
-        PassphraseState.TooManyFailedAttempts -> {
-            RenderTooManyFailedAttempts(tooManyFailuresAction)
-        }
-
         else -> renderCustomStates(state)
     }
 }
 
 @Composable
-fun RenderTooManyFailedAttempts(close: () -> Unit) {
-    RenderSingleMessageAndCloseButton(message = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts), close = close)
+fun RenderTooManyFailedAttempts(
+    message: String = stringResource(id = R.string.passphrase_unlock_dialog_too_many_failed_attempts),
+    close: () -> Unit
+) {
+    RenderSingleMessageAndCloseButton(message = message, close = close)
 }
 
 @Composable
