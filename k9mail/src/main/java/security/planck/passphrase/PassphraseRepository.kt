@@ -51,6 +51,10 @@ class PassphraseRepository @Inject constructor(
         k9.startAllServices()
     }
 
+    fun resetPassphraseLock() {
+        passphraseUnlocked = false
+    }
+
     companion object {
         @Volatile
         @JvmStatic
