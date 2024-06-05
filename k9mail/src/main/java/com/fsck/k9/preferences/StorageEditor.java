@@ -121,11 +121,15 @@ public class StorageEditor {
     }
 
     public void addOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesStorage.addMessageId(messageId);
+        if (messageId != null) {
+            ongoingDecryptMessagesStorage.addMessageId(messageId);
+        }
     }
 
     public void removeOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesStorage.removeMessageId(messageId);
+        if (messageId != null) {
+            ongoingDecryptMessagesStorage.removeMessageId(messageId);
+        }
     }
 
     public void addCouldNotDecryptMessageId(@Nullable String messageId) {
