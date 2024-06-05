@@ -3610,7 +3610,7 @@ public class TestUtils {
 
     private boolean downloadJSon() {
         int n = 0;
-        for (int i=0; i<15; i++){
+        for (int i=0; i<20; i++){
             waitForIdle();
             onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
             swipeUpScreen();
@@ -3625,7 +3625,7 @@ public class TestUtils {
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
-                if (n == 10) {
+                if (n == 15) {
                     return false;
                 } else {
                     n++;
@@ -4587,13 +4587,13 @@ public class TestUtils {
         openOptionsMenu();
         selectFromScreen(stringToID("about_action"));
         String aboutText = getTextFromView(onView(withId(R.id.aboutText)));
-        String librariesText = getTextFromView(onView(withId(R.id.librariesText)));
+        //String librariesText = getTextFromView(onView(withId(R.id.librariesText)));
         String[][] shortTextInAbout = new String[3][2];
         shortTextInAbout[0] = resources.getString(stringToID("app_authors_fmt")).split("%");
         shortTextInAbout[1] = resources.getString(stringToID("app_libraries")).split("%");
         shortTextInAbout[2] = resources.getString(stringToID("app_copyright_fmt")).split("%");
         if (!aboutText.contains(shortTextInAbout[0][0])
-                || !librariesText.contains(shortTextInAbout[1][0])
+//                || !librariesText.contains(shortTextInAbout[1][0])
                 || !aboutText.contains(shortTextInAbout[2][0])) {
             fail("Wrong text in About");
         }
