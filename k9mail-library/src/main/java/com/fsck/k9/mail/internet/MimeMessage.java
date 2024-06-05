@@ -317,12 +317,38 @@ public class MimeMessage extends Message {
     public Address[] getFrom() {
         if (mFrom == null) {
             String list = MimeUtility.unfold(getFirstHeader("From"));
-            if (list == null || list.length() == 0) {
+            if (list == null || list.isEmpty()) {
                 list = MimeUtility.unfold(getFirstHeader("Sender"));
+            }
+            if (list == null || list.isEmpty()) {
+                list = getFromFallback();
             }
             mFrom = Address.parse(list);
         }
         return mFrom;
+    }
+
+    String getFromFallback() {
+        String list;
+        list = MimeUtility.unfold(getFirstHeader("Return-Path"));
+        if (list == null || list.isEmpty()) {
+            list = getSenderAddressFromAuthResultsHeader();
+        }
+        return list;
+    }
+
+    private String getSenderAddressFromAuthResultsHeader() {
+        String authResultsHeader = getFirstHeader("Authentication-Results");
+        if (authResultsHeader != null) {
+            String[] params = authResultsHeader.split(" ");
+            for (String param : params) {
+                if (param.startsWith("smtp.mailfrom=")) {
+                    String fromCandidate = param.substring(14);
+                    return MimeUtility.unfold(fromCandidate);
+                }
+            }
+        }
+        return null;
     }
 
     @Override
