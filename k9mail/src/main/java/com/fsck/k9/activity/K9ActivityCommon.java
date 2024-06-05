@@ -8,12 +8,13 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
@@ -170,18 +171,13 @@ public class K9ActivityCommon {
 
     public void registerPassphraseReceiver() {
         Timber.e("pEpEngine-passphrase register receiver");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            mActivity.getApplicationContext()
-                    .registerReceiver(passphraseReceiver, passphraseReceiverfilter, Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            mActivity.getApplicationContext()
-                    .registerReceiver(passphraseReceiver, passphraseReceiverfilter);
-        }
-
+        LocalBroadcastManager.getInstance(mActivity.getApplicationContext())
+                .registerReceiver(passphraseReceiver, passphraseReceiverfilter);
     }
 
     public void unregisterPassphraseReceiver() {
-        mActivity.getApplicationContext().unregisterReceiver(passphraseReceiver);
+        LocalBroadcastManager.getInstance(mActivity.getApplicationContext())
+                .unregisterReceiver(passphraseReceiver);
     }
 
     public void registerOAuthTokenRevokedReceiver() {
