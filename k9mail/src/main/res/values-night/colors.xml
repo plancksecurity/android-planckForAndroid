@@ -23,4 +23,5 @@
 
     <color name="select_auth_key_icon_color_dark">@color/planck_gray</color>
     <color name="compose_unsecure_delivery_warning">#FD0007</color>
+    <color name="error_text_color">#DD6F53</color>
 </resources>

@@ -128,6 +128,8 @@ import security.planck.auth.OAuthTokenRevokedReceiver;
 import security.planck.echo.MessageReceivedListener;
 import security.planck.notification.GroupMailInvite;
 import security.planck.notification.GroupMailSignal;
+import security.planck.passphrase.LockableExecutorService;
+import security.planck.passphrase.PassphraseRepository;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -166,7 +168,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private final Set<MessagingListener> listeners = new CopyOnWriteArraySet<>();
     private final ConcurrentHashMap<String, AtomicInteger> sendCount = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Account, Pusher> pushers = new ConcurrentHashMap<>();
-    private final ExecutorService threadPool = Executors.newCachedThreadPool();
+    private final LockableExecutorService threadPool = new LockableExecutorService(Executors.newCachedThreadPool());
     private final MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
     private final TransportProvider transportProvider;
     private PlanckProvider planckProvider;
@@ -314,6 +316,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void putCommand(BlockingQueue<Command> queue, String description, MessagingListener listener,
                             Runnable runnable, boolean isForeground) {
+        if (!PassphraseRepository.getPassphraseUnlocked()) {
+            return;
+        }
         int retries = 10;
         Exception e = null;
         while (retries-- > 0) {

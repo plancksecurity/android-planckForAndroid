@@ -9,6 +9,8 @@ buildscript {
 
         versions = [
                 'kotlin'             : '1.8.0',
+                'compose'            : '1.4.1',
+                'composeUi'          : '1.6.7',
 
                 'rootbeer'           : '0.1.0',
                 'supportLibrary'     : '28.0.0',

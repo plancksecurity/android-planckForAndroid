@@ -5,6 +5,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
+import security.planck.passphrase.PassphraseRepository
 import timber.log.Timber
 
 
@@ -14,6 +15,10 @@ class PusherRefreshWorker(
 ) : Worker(appContext, params) {
 
     override fun doWork(): Result {
+        if (!PassphraseRepository.passphraseUnlocked) {
+            Timber.d("App is locked by passphrase. Skipping push refresh.")
+            return Result.success()
+        }
         inputData.getString(EXTRA_ACCOUNT_UUID)
             ?.let { accountUuid ->
                 Timber.d("Executing periodic push refresh for account %s", accountUuid)

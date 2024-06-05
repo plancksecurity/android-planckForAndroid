@@ -20,10 +20,18 @@ abstract class LiveDataBaseTest<BaseType, LiveDataType> {
         observeLiveData()
     }
 
-    protected abstract fun initialize()
+    protected open fun initialize() {}
 
     protected fun assertObservedValues(vararg values: BaseType) {
         assertEquals(values.toList(), observedValues)
+    }
+
+    protected fun customAssertObservedValues(vararg assertions: (BaseType) -> Unit) {
+        println("observed values: \n${observedValues.joinToString("\n")}")
+        assertEquals(assertions.size, observedValues.size)
+        assertions.forEachIndexed { index, assertion ->
+            assertion(observedValues[index])
+        }
     }
 
     protected fun assertFirstObservedValues(vararg values: BaseType) {
