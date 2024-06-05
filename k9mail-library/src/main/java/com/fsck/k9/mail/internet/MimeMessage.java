@@ -317,24 +317,29 @@ public class MimeMessage extends Message {
     public Address[] getFrom() {
         if (mFrom == null) {
             String list = MimeUtility.unfold(getFirstHeader("From"));
-            if (list == null || list.isEmpty()) {
-                list = MimeUtility.unfold(getFirstHeader("Sender"));
-            }
-            if (list == null || list.isEmpty()) {
-                list = getFromFallback();
-            }
+            list = doIfStillEmpty(list, new FromHeaderSupplier[]{
+                    () -> MimeUtility.unfold(getFirstHeader("Sender")),
+                    () -> MimeUtility.unfold(getFirstHeader("Return-Path")),
+                    this::getSenderAddressFromAuthResultsHeader
+            });
             mFrom = Address.parse(list);
         }
         return mFrom;
     }
 
-    String getFromFallback() {
-        String list;
-        list = MimeUtility.unfold(getFirstHeader("Return-Path"));
-        if (list == null || list.isEmpty()) {
-            list = getSenderAddressFromAuthResultsHeader();
+    String doIfStillEmpty(String list, FromHeaderSupplier[] lambdas) {
+        if (isNotNullOrEmpty(list)) return list;
+        for (FromHeaderSupplier lambda : lambdas) {
+            list = lambda.get();
+            if (isNotNullOrEmpty(list)) {
+                return list;
+            }
         }
         return list;
+    }
+
+    private boolean isNotNullOrEmpty(String input) {
+        return input != null && !input.isEmpty();
     }
 
     private String getSenderAddressFromAuthResultsHeader() {
@@ -349,6 +354,11 @@ public class MimeMessage extends Message {
             }
         }
         return null;
+    }
+
+    @FunctionalInterface
+    interface FromHeaderSupplier {
+        String get();
     }
 
     @Override
