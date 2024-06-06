@@ -18,8 +18,8 @@ sealed interface PassphraseMgmtState : PassphraseState {
 
     data class ManagingAccounts(
         val accounts: List<AccountUsesPassphrase>,
-        val newPasswordState: TextFieldState = TextFieldState(),
-        val newPasswordVerificationState: TextFieldState = TextFieldState(),
+        val newPasswordState: TextFieldState = TextFieldState(errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS),
+        val newPasswordVerificationState: TextFieldState = TextFieldState(errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS),
     ) : PassphraseMgmtState, PassphraseStateWithStatus() {
         val oldPasswordStates: SnapshotStateList<AccountTextFieldState> =
             mutableStateListOf<AccountTextFieldState>().also { list ->

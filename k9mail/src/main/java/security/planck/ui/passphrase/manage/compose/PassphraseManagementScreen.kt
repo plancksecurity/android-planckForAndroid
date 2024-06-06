@@ -75,6 +75,7 @@ fun RenderState(
                     close = dismiss
                 )
             }
+
             is PassphraseMgmtState.ChoosingAccountsToManage -> {
                 Text(
                     text = stringResource(id = R.string.passphrase_management_dialog_pick_accounts),
@@ -196,7 +197,12 @@ fun NewPassphraseAndConfirmation(
 ) {
     Text(
         text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase),
-        color = defaultColor
+        color = defaultColor,
+    )
+    Text(
+        text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase_empty),
+        color = defaultColor,
+        fontWeight = FontWeight.Bold,
     )
     PassphraseValidationRow(
         passwordState = state.newPasswordState,
