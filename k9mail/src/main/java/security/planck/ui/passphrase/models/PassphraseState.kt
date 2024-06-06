@@ -50,7 +50,7 @@ sealed class PassphraseStateWithStatus : PassphraseState {
         }
     }
 
-    private fun clearItemErrorStatusIfPossible() {
+    protected open fun clearItemErrorStatusIfPossible() {
         var success = 0
         for (state in allTextFieldStates) {
             if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {

@@ -18,8 +18,8 @@ sealed interface PassphraseMgmtState : PassphraseState {
 
     data class ManagingAccounts(
         val accounts: List<AccountUsesPassphrase>,
-        val newPasswordState: TextFieldState = TextFieldState(errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS),
-        val newPasswordVerificationState: TextFieldState = TextFieldState(errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS),
+        val newPasswordState: TextFieldState = TextFieldState(),
+        val newPasswordVerificationState: TextFieldState = TextFieldState(),
     ) : PassphraseMgmtState, PassphraseStateWithStatus() {
         val oldPasswordStates: SnapshotStateList<AccountTextFieldState> =
             mutableStateListOf<AccountTextFieldState>().also { list ->
@@ -30,6 +30,27 @@ sealed interface PassphraseMgmtState : PassphraseState {
             accounts.filter { !it.usesPassphrase }.map { acc -> acc.account }
 
         override val allTextFieldStates: List<TextFieldStateContract> get() = oldPasswordStates.toList() + newPasswordState + newPasswordVerificationState
+
+        override fun clearItemErrorStatusIfPossible() {
+            var success = 0
+            var verificationSuccess = 0
+            for (state in allTextFieldStates) {
+                if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {
+                    return
+                } else {
+                    if (state == newPasswordState || state == newPasswordVerificationState) {
+                        verificationSuccess++
+                    }
+                    if (state.errorState == TextFieldStateContract.ErrorStatus.SUCCESS) {
+                        success++
+                    }
+                }
+            }
+            this.status.value =
+                if (success == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS
+                else if (success + verificationSuccess == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS_EMPTY
+                else PassphraseVerificationStatus.NONE
+        }
     }
 }
 

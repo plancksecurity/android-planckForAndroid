@@ -52,7 +52,7 @@ class PassphraseManagementViewModel @Inject constructor(
 
     fun validateNewPassphrase(state: PassphraseMgmtState.ManagingAccounts) {
         val validationErrorState =
-            passphraseFormatValidator.validateNewPassphrase(state.newPasswordState.textState)
+            passphraseFormatValidator.validatePassphrase(state.newPasswordState.textState)
         state.newPasswordState.errorState = validationErrorState
         val verificationErrorState = passphraseFormatValidator.verifyNewPassphrase(
             state.newPasswordState.textState,

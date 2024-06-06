@@ -38,6 +38,10 @@ class PassphraseFormatValidator @Inject constructor() {
         newPassphraseVerification: String
     ): TextFieldStateContract.ErrorStatus {
         return when {
+            newPassphraseVerification.isEmpty() -> {
+                TextFieldStateContract.ErrorStatus.NONE
+            }
+
             newPassphraseVerification == newPassphrase -> {
                 TextFieldStateContract.ErrorStatus.SUCCESS
             }
