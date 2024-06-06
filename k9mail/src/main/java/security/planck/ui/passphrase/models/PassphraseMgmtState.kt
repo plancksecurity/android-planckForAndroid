@@ -30,6 +30,27 @@ sealed interface PassphraseMgmtState : PassphraseState {
             accounts.filter { !it.usesPassphrase }.map { acc -> acc.account }
 
         override val allTextFieldStates: List<TextFieldStateContract> get() = oldPasswordStates.toList() + newPasswordState + newPasswordVerificationState
+
+        override fun clearItemErrorStatusIfPossible() {
+            var success = 0
+            var verificationSuccess = 0
+            for (state in allTextFieldStates) {
+                if (state.errorState == TextFieldStateContract.ErrorStatus.ERROR) {
+                    return
+                } else {
+                    if (state == newPasswordState || state == newPasswordVerificationState) {
+                        verificationSuccess++
+                    }
+                    if (state.errorState == TextFieldStateContract.ErrorStatus.SUCCESS) {
+                        success++
+                    }
+                }
+            }
+            this.status.value =
+                if (success == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS
+                else if (success > 0 && success + verificationSuccess == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS_EMPTY
+                else PassphraseVerificationStatus.NONE
+        }
     }
 }
 

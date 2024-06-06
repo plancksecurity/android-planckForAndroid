@@ -75,6 +75,7 @@ fun RenderState(
                     close = dismiss
                 )
             }
+
             is PassphraseMgmtState.ChoosingAccountsToManage -> {
                 Text(
                     text = stringResource(id = R.string.passphrase_management_dialog_pick_accounts),
@@ -99,7 +100,6 @@ fun RenderState(
                         verifyNewPassphrase = { viewModel.verifyNewPassphrase(state) },
                         confirm = { viewModel.setNewPassphrase(state) },
                         cancel = dismiss,
-                        previous = viewModel::goBackToChoosingAccounts
                     )
                 } else {
                     RenderLoadingScreen(state)
@@ -131,7 +131,6 @@ fun RenderManagingAccounts(
     verifyNewPassphrase: (TextFieldStateContract) -> Unit,
     confirm: () -> Unit,
     cancel: () -> Unit,
-    previous: () -> Unit,
 ) {
     val defaultColor = getColorFromAttr(
         colorRes = R.attr.defaultColorOnBackground
@@ -167,7 +166,6 @@ fun RenderManagingAccounts(
         state = state,
         confirm = confirm,
         cancel = cancel,
-        previous = previous
     )
 }
 
@@ -196,7 +194,12 @@ fun NewPassphraseAndConfirmation(
 ) {
     Text(
         text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase),
-        color = defaultColor
+        color = defaultColor,
+    )
+    Text(
+        text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase_empty),
+        color = defaultColor,
+        fontWeight = FontWeight.Bold,
     )
     PassphraseValidationRow(
         passwordState = state.newPasswordState,
@@ -275,7 +278,6 @@ private fun ManageScreenButtonsRow(
     state: PassphraseMgmtState.ManagingAccounts,
     confirm: () -> Unit,
     cancel: () -> Unit,
-    previous: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -289,15 +291,16 @@ private fun ManageScreenButtonsRow(
         )
 
         TextActionButton(
-            text = stringResource(id = R.string.previous_action),
+            text = stringResource(id = R.string.action_remove),
             textColor = colorResource(
                 id = R.color.colorAccent
             ),
-            onClick = previous,
+            enabled = state.status.value == PassphraseVerificationStatus.SUCCESS_EMPTY,
+            onClick = confirm,
         )
 
         TextActionButton(
-            text = stringResource(id = R.string.pep_confirm_trustwords),
+            text = stringResource(id = R.string.action_change),
             textColor = colorResource(
                 id = R.color.colorAccent
             ),
