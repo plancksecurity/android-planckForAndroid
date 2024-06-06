@@ -48,7 +48,7 @@ sealed interface PassphraseMgmtState : PassphraseState {
             }
             this.status.value =
                 if (success == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS
-                else if (success + verificationSuccess == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS_EMPTY
+                else if (success > 0 && success + verificationSuccess == allTextFieldStates.size) PassphraseVerificationStatus.SUCCESS_EMPTY
                 else PassphraseVerificationStatus.NONE
         }
     }
