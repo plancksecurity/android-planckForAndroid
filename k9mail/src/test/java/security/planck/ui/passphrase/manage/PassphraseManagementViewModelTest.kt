@@ -246,8 +246,8 @@ class PassphraseManagementViewModelTest : LiveDataTest<PassphraseState>() {
         expectedOldStates: List<TextFieldStateContract> = if (usesPassphrase) listOf(
             AccountTextFieldState(EMAIL)
         ) else emptyList(),
-        expectedNewPasswordState: TextFieldState = TextFieldState(),
-        expectedNewPasswordVerificationState: TextFieldState = TextFieldState(),
+        expectedNewPasswordState: TextFieldState = TextFieldState(errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS),
+        expectedNewPasswordVerificationState: TextFieldState = TextFieldState(errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS),
         expectedLoading: PassphraseLoading? = null,
         expectedStatus: PassphraseVerificationStatus = PassphraseVerificationStatus.NONE,
     ) {
