@@ -586,7 +586,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="manage_identities_move_up_action">Nach oben verschieben</string>
     <string name="manage_identities_move_down_action">Nach unten verschieben</string>
     <string name="manage_identities_move_top_action">Ganz nach oben / Standard</string>
-    <string name="manage_identities_remove_action">Entfernen</string>
+    <string name="action_remove">Entfernen</string>
     <string name="edit_identity_description_label">Name der Identität</string>
     <string name="edit_identity_description_hint">(Optional)</string>
     <string name="edit_identity_name_label">Ihr Name</string>

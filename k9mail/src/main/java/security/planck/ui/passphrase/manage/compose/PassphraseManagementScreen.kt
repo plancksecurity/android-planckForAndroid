@@ -291,7 +291,7 @@ private fun ManageScreenButtonsRow(
         )
 
         TextActionButton(
-            text = stringResource(id = R.string.manage_identities_remove_action),
+            text = stringResource(id = R.string.action_remove),
             textColor = colorResource(
                 id = R.color.colorAccent
             ),
