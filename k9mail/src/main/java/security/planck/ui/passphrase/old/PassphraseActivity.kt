@@ -1,10 +1,11 @@
-package security.planck.ui.passphrase
+package security.planck.ui.passphrase.old
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.fsck.k9.R
 import com.fsck.k9.databinding.ActivityPassphraseBinding
 import com.fsck.k9.planck.manualsync.WizardActivity
@@ -110,7 +111,7 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
             val intent = Intent(PASSPHRASE_REQUEST_ACTION)
             intent.putExtra(REQUEST_TYPE_EXTRA, type)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.sendBroadcast(intent)
+            LocalBroadcastManager.getInstance(context.applicationContext).sendBroadcast(intent)
         }
 
         @JvmStatic

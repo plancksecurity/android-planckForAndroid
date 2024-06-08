@@ -105,25 +105,6 @@
         android:title="@string/pep_sync_folder" />
 
     <restriction
-        android:description="@string/use_passphrase_for_new_keys_description"
-        android:key="use_passphrase_for_new_keys"
-        android:restrictionType="bundle"
-        android:title="@string/use_passphrase_for_new_keys_title">
-        <restriction
-            android:defaultValue="@bool/default_use_passphrase_for_new_keys"
-            android:description="@string/value_restriction_description"
-            android:key="use_passphrase_for_new_keys_value"
-            android:restrictionType="bool"
-            android:title="@string/value_restriction_title" />
-        <restriction
-            android:defaultValue="@bool/managed_settings_locked_by_default"
-            android:description="@string/locked_restriction_description"
-            android:key="use_passphrase_for_new_keys_locked"
-            android:restrictionType="bool"
-            android:title="@string/locked_restriction_title" />
-    </restriction>
-
-    <restriction
         android:description="@string/debug_enable_debug_logging_summary"
         android:key="debug_logging"
         android:restrictionType="bundle"

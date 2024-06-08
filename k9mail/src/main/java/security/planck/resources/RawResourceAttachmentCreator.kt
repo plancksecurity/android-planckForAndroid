@@ -14,22 +14,20 @@ class RawResourceAttachmentCreator @Inject constructor(
     @ApplicationContext private val context: Context,
     private val resourceToFile: RawResources
 ) {
-    fun createAttachment(
+    suspend fun createAttachment(
         @RawRes resourceId: Int,
         fileName: String,
         contentType: String
-    ): Attachment = runBlocking {
-        withContext(Dispatchers.IO) {
-            val invitationFile = resourceToFile.copyRawResourceToFile(resourceId, fileName)
-            val packageName = context.packageName
-            val resourceUri = Uri.parse("android.resource://$packageName/$resourceId")
-            val myAttachment = Attachment.createAttachment(resourceUri, -1, contentType)
-            val metadataAttachment = myAttachment.deriveWithMetadataLoaded(
-                contentType,
-                fileName,
-                invitationFile.length()
-            )
-            metadataAttachment.deriveWithLoadComplete(invitationFile.absolutePath)
-        }
+    ): Attachment = withContext(Dispatchers.IO) {
+        val invitationFile = resourceToFile.copyRawResourceToFile(resourceId, fileName)
+        val packageName = context.packageName
+        val resourceUri = Uri.parse("android.resource://$packageName/$resourceId")
+        val myAttachment = Attachment.createAttachment(resourceUri, -1, contentType)
+        val metadataAttachment = myAttachment.deriveWithMetadataLoaded(
+            contentType,
+            fileName,
+            invitationFile.length()
+        )
+        metadataAttachment.deriveWithLoadComplete(invitationFile.absolutePath)
     }
 }

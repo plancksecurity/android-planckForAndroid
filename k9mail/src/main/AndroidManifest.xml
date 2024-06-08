@@ -528,7 +528,7 @@
             android:excludeFromRecents="true"
             android:exported="false" />
 
-        <activity android:name="security.planck.ui.passphrase.PassphraseActivity"
+        <activity android:name="security.planck.ui.passphrase.old.PassphraseActivity"
             android:launchMode="singleTask"
             android:label="@string/passhphrase_title"
             android:theme="@style/OverlayTheme"

@@ -27,10 +27,8 @@ class RawResources @Inject constructor(
         return outputFile
     }
 
-    fun readTextFileFromRaw(@RawRes resourceId: Int): String = runBlocking {
-        withContext(Dispatchers.IO) {
-            val inputStream = context.resources.openRawResource(resourceId)
-            inputStream.bufferedReader().use { it.readText() }
-        }
+    suspend fun readTextFileFromRaw(@RawRes resourceId: Int): String = withContext(Dispatchers.IO) {
+        val inputStream = context.resources.openRawResource(resourceId)
+        inputStream.bufferedReader().use { it.readText() }
     }
 }

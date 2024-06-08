@@ -494,5 +494,35 @@
 
     <string name="about_libraries_table_header_name">Library Name</string>
     <string name="about_libraries_table_header_license">License</string>
+    <string name="google_button_beta_feature">Beta Feature</string>
+    <string name="google_guide_screen_1_text1">Login with Google is still a preview feature - you will see a warning message next. Here\'s what you need to do:</string>
+    <string name="google_guide_screen_1_text2_line_1">Step 1:\n</string>
+    <string name="google_guide_screen_1_text2_line_2">Press on “Advanced”</string>
+    <string name="google_guide_screen_2_text1_line_1">Step 2:\n</string>
+    <string name="google_guide_screen_2_text1_line_2">Press on “Advanced”</string>
+
+    <string name="passphrase_unlock_dialog_title">Unlock Passphrases</string>
+    <string name="passphrase_unlock_dialog_wait_after_failed_attempt">Waiting %d seconds to retry…</string>
+    <string name="passphrase_unlock_dialog_too_many_failed_attempts">Too many failed attempts. App will close.</string>
+    <string name="passphrase_unlock_dialog_show_password">Show passphrase</string>
+    <string name="passphrase_unlock_dialog_hide_password">Hide passphrase</string>
+    <string name="passphrase_unlock_dialog_wrong_passhprase_status_desc">Wrong Passphrase</string>
+    <string name="passphrase_unlock_dialog_correct_passphrase_status_desc">Correct Passphrase</string>
+    <string name="passphrase_unlock_dialog_success">Passphrases were unlocked successfully.</string>
+    <string name="passphrase_unlock_dialog_initial_fatal_error_feedback">An error happened, app will close.</string>
+
+    <string name="passphrase_management_dialog_title">Manage Passphrase</string>
+    <string name="passphrase_management_preference_title">Manage Passphrases on Private Keys</string>
+    <string name="passphrase_management_dialog_manage_button">Manage</string>
+    <string name="passphrase_management_dialog_pick_accounts">Please select one (tap) or more (long tap) accounts to manage their passphrases.</string>
+    <string name="passphrase_management_dialog_enter_new_passphrase">Enter new single passphrase for all selected accounts:</string>
+    <string name="passphrase_management_dialog_enter_new_passphrase_empty">(empty for no passphrase)</string>
+    <string name="passphrase_management_dialog_enter_old_passphrases">Please enter old passphrases for selected accounts below.</string>
+    <string name="passphrase_management_dialog_confirm_new_passphrase">Confirm new passphrase:</string>
+    <string name="passphrase_management_dialog_passphrase_no_match">Passphrase verification does not match.</string>
+    <string name="passphrase_management_dialog_passphrase_no_passphrase">(No passphrase configured)</string>
+    <string name="passphrase_management_dialog_success">Passphrases were updated successfully.</string>
+    <string name="passphrase_management_dialog_too_many_failed_attempts">Too many failed attempts. Cannot perform the operation.</string>
+    <string name="action_change">Change</string>
 
 </resources>

@@ -1,0 +1,78 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fadingEdge="none"
+    android:fillViewport="true"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:scrollbarStyle="outsideInset"
+    tools:context="com.fsck.k9.planck.ui.fragments.GoogleAuthGuideStep2Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text1Line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/google_guide_screen_2_text1_line_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text1Line2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/google_guide_screen_1_text2_line_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text1Line1" />
+
+        <ImageView
+            android:id="@+id/step2Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/google_guide_screen_2_text1_line_1"
+            android:src="@drawable/ico_two"
+            app:layout_constraintBottom_toBottomOf="@+id/text1Line2"
+            app:layout_constraintStart_toEndOf="@id/text1Line2"
+            app:layout_constraintTop_toTopOf="@+id/text1Line2" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/google_guide_screen_2_text1_line_2"
+            android:src="@drawable/image_step_two"
+            app:layout_constraintBottom_toTopOf="@id/google_sign_in_button_card"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text1Line2" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/google_sign_in_button_card"
+            style="@style/SelectAuthScreenCardViews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <Button
+                android:id="@+id/google_sign_in_button"
+                style="@style/SelectAuthScreenButtons"
+                android:drawableStart="@drawable/ico_google"
+                android:text="@string/account_setup_oauth_sign_in_with_google" />
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

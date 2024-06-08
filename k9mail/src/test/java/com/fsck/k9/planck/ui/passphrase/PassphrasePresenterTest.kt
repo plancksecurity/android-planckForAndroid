@@ -29,9 +29,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import security.planck.ui.PassphraseProvider
-import security.planck.ui.passphrase.PassphraseInputView
-import security.planck.ui.passphrase.PassphrasePresenter
-import security.planck.ui.passphrase.PassphraseRequirementType
+import security.planck.ui.passphrase.old.PassphraseInputView
+import security.planck.ui.passphrase.old.PassphrasePresenter
+import security.planck.ui.passphrase.old.PassphraseRequirementType
 
 @ExperimentalCoroutinesApi
 class PassphrasePresenterTest : RobolectricTest() {

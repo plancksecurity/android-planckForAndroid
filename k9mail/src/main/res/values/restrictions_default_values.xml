@@ -13,7 +13,6 @@
     <bool name="default_signature_before_quoted_message">false</bool>
     <bool name="default_allow_pep_sync_new_devices">false</bool>
     <bool name="default_enable_planck_sync">true</bool>
-    <bool name="default_use_passphrase_for_new_keys">true</bool>
 
     <!-- Integer restriction -->
     <integer name="mail_settings_incoming_port_default">993</integer>

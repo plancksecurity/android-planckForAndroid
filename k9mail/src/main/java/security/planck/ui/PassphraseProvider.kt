@@ -10,8 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import security.planck.ui.passphrase.PassphraseActivity
-import security.planck.ui.passphrase.PassphraseRequirementType
+import security.planck.ui.passphrase.old.PassphraseActivity
+import security.planck.ui.passphrase.old.PassphraseRequirementType
 import timber.log.Timber
 
 object PassphraseProvider {

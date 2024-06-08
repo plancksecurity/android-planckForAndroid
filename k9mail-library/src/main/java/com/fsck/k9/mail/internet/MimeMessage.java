@@ -317,12 +317,48 @@ public class MimeMessage extends Message {
     public Address[] getFrom() {
         if (mFrom == null) {
             String list = MimeUtility.unfold(getFirstHeader("From"));
-            if (list == null || list.length() == 0) {
-                list = MimeUtility.unfold(getFirstHeader("Sender"));
-            }
+            list = doIfStillEmpty(list, new FromHeaderSupplier[]{
+                    () -> MimeUtility.unfold(getFirstHeader("Sender")),
+                    () -> MimeUtility.unfold(getFirstHeader("Return-Path")),
+                    this::getSenderAddressFromAuthResultsHeader
+            });
             mFrom = Address.parse(list);
         }
         return mFrom;
+    }
+
+    String doIfStillEmpty(String list, FromHeaderSupplier[] lambdas) {
+        if (isNotNullOrEmpty(list)) return list;
+        for (FromHeaderSupplier lambda : lambdas) {
+            list = lambda.get();
+            if (isNotNullOrEmpty(list)) {
+                return list;
+            }
+        }
+        return list;
+    }
+
+    private boolean isNotNullOrEmpty(String input) {
+        return input != null && !input.isEmpty();
+    }
+
+    private String getSenderAddressFromAuthResultsHeader() {
+        String authResultsHeader = getFirstHeader("Authentication-Results");
+        if (authResultsHeader != null) {
+            String[] params = authResultsHeader.split(" ");
+            for (String param : params) {
+                if (param.startsWith("smtp.mailfrom=")) {
+                    String fromCandidate = param.substring(14);
+                    return MimeUtility.unfold(fromCandidate);
+                }
+            }
+        }
+        return null;
+    }
+
+    @FunctionalInterface
+    interface FromHeaderSupplier {
+        String get();
     }
 
     @Override

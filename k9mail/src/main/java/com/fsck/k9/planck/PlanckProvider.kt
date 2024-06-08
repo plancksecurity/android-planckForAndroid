@@ -9,6 +9,7 @@ import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.ui.HandshakeData
 import com.fsck.k9.planck.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.Pair
 import foundation.pEp.jniadapter.Rating
 import foundation.pEp.jniadapter.Sync.MessageToSendCallback
 import foundation.pEp.jniadapter.Sync.NeedsFastPollCallback
@@ -16,6 +17,7 @@ import foundation.pEp.jniadapter.Sync.NotifyHandshakeCallback
 import foundation.pEp.jniadapter.exceptions.pEpException
 import security.planck.echo.MessageReceivedListener
 import timber.log.Timber
+import java.util.ArrayList
 import java.util.Vector
 
 /**
@@ -307,6 +309,12 @@ interface PlanckProvider {
         val stringAddress: String
             get() = address.address
     }
+
+    suspend fun hasPassphrase(email: String): Result<Boolean>
+
+    suspend fun managePassphrase(accountsWitOldPassphrases: ArrayList<Pair<String, String>>, newPassphrase: String): Result<Vector<String>?>
+
+    suspend fun unlockKeysWithPassphrase(accountsWithPassphrases: ArrayList<Pair<String, String>>): Result<Vector<String>?>
 
     class DecryptResult {
         @JvmField

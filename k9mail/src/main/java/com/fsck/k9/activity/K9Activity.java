@@ -50,7 +50,10 @@ import security.planck.auth.OAuthTokenRevokedListener;
 import security.planck.dialog.ConfirmationDialog;
 import security.planck.dialog.ConfirmationDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
+import security.planck.ui.passphrase.PassphraseDialogMode;
+import security.planck.ui.passphrase.unlock.PassphraseUnlockNotificationViewModel;
 import security.planck.ui.audit.AuditLogViewModel;
+import security.planck.ui.passphrase.PassphraseManagementDialogKt;
 import timber.log.Timber;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
@@ -84,6 +87,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public static final int NO_ANIMATION = 0;
     protected AuditLogViewModel auditLogViewModel;
     protected RestrictionsViewModel restrictionsViewModel;
+    protected PassphraseUnlockNotificationViewModel passphraseUnlockNotificationViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +106,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
         auditLogViewModel = new ViewModelProvider(this).get(AuditLogViewModel.class);
         restrictionsViewModel = new ViewModelProvider(this).get(RestrictionsViewModel.class);
+        passphraseUnlockNotificationViewModel = new ViewModelProvider(this).get(PassphraseUnlockNotificationViewModel.class);
         initializeFragmentListeners();
     }
 
@@ -356,6 +361,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         if (getK9().isRunningOnWorkProfile()) {
             observeRestrictionsViewModel();
         }
+        observePassphraseUnlockViewModel();
     }
 
     private void observeAuditLogViewModel() {
@@ -370,6 +376,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                         getString(R.string.audit_log_tamper_dialog_positive_button),
                         getString(R.string.ok)
                 );
+            }
+        });
+    }
+
+    private void observePassphraseUnlockViewModel() {
+        passphraseUnlockNotificationViewModel.getNeedsPassphraseUnlock().observe(this, event -> {
+            Boolean value = event.getContentIfNotHandled();
+            if (value != null && value) {
+                PassphraseManagementDialogKt.showPassphraseManagementDialog(this, PassphraseDialogMode.UNLOCK);
             }
         });
     }
@@ -426,6 +441,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         auditLogViewModel.getTamperAlert().removeObservers(this);
         restrictionsViewModel.getAccountRemoved().removeObservers(this);
         restrictionsViewModel.getWrongAccountSettings().removeObservers(this);
+        passphraseUnlockNotificationViewModel.getNeedsPassphraseUnlock().removeObservers(this);
     }
 
     @Override

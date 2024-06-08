@@ -37,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
@@ -125,8 +124,7 @@ import security.planck.dialog.PermanentlyDismissibleDialogKt;
 import security.planck.mdm.RestrictionsViewModel;
 import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
-import security.planck.resources.RawResourceAttachmentCreator;
-import security.planck.resources.RawResources;
+import security.planck.planckinvite.PlanckInvitationSender;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
 import security.planck.ui.resetpartnerkey.ResetPartnerKeyDialog;
 import security.planck.ui.resources.ResourcesProvider;
@@ -186,12 +184,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
-    private static final String INVITATION_ATTACHMENT_NAME = "email_gradient";
-    private static final String INVITATION_ATTACHMENT_MIME_TYPE = "image/png";
-    private static final String INVITATION_PARAGRAPH_1_PLACE_HOLDER = "PARAGRAPH_1";
-    private static final String INVITATION_PARAGRAPH_2_PLACE_HOLDER = "PARAGRAPH_2";
-    private static final String INVITATION_BUTTON_TEXT_PLACE_HOLDER = "BUTTON_TEXT";
-    private static final String INVITATION_PARAGRAPH_3_PLACE_HOLDER = "PARAGRAPH_3";
     private static final String INVITE_SENT_FEEDBACK_DIALOG_TAG = "planckInviteSentDialog";
 
     /**
@@ -289,9 +281,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     @Inject
     PlanckProvider planck;
     @Inject
-    RawResourceAttachmentCreator invitationAttachmentCreator;
-    @Inject
-    RawResources rawResources;
+    PlanckInvitationSender invitationSender;
 
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private ComposeBanner composeBanner;
@@ -856,48 +846,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         setTitle(action.getTitleResource());
     }
 
-    private MessageBuilder createMessageBuilderToSendPlanckInvites(List<Address> recipients) {
-        MessageBuilder builder = SimpleMessageBuilder.newInstance();
-        String invitationTemplate = rawResources.readTextFileFromRaw(R.raw.planck_invite);
-        String invitationText = invitationTemplate.replace(
-                INVITATION_PARAGRAPH_1_PLACE_HOLDER,
-                getString(R.string.planck_invite_paragraph_1, identity.getEmail())
-        ).replace(
-                INVITATION_PARAGRAPH_2_PLACE_HOLDER,
-                getString(R.string.planck_invite_paragraph_2)
-        ).replace(
-                INVITATION_BUTTON_TEXT_PLACE_HOLDER,
-                getString(R.string.planck_invite_button_text)
-        ).replace(
-                INVITATION_PARAGRAPH_3_PLACE_HOLDER,
-                getString(R.string.planck_invite_paragraph_3, identity.getEmail())
-        );
-        Map<String, Attachment> invitationAttachments = createInvitationAttachment();
-
-        return builder.setSubject(getString(R.string.planck_invite_title))
-                .setSentDate(new Date())
-                .setHideTimeZone(K9.hideTimeZone())
-                .setTo(recipients)
-                .setIdentity(identity)
-                .setMessageFormat(currentMessageFormat)
-                .setText(invitationText)
-                .setInlineAttachments(invitationAttachments)
-                .setSignature(signatureView.getCharacters())
-                .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
-                .allowHtmlTags();
-    }
-
-    @NonNull
-    private Map<String, Attachment> createInvitationAttachment() {
-        Attachment invitationAttachment = invitationAttachmentCreator.createAttachment(
-                R.raw.email_gradient,
-                INVITATION_ATTACHMENT_NAME,
-                INVITATION_ATTACHMENT_MIME_TYPE);
-        Map<String, Attachment> inlineAttachments = new HashMap<>(1);
-        inlineAttachments.put(invitationAttachment.name, invitationAttachment);
-        return inlineAttachments;
-    }
-
     @Nullable
     private MessageBuilder createMessageBuilder(boolean isDraft) {
         MessageBuilder builder;
@@ -967,10 +915,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void checkToSaveDraftAndSave() {
-        checkToSaveDraftAndSave(false);
-    }
-
-    private void checkToSaveDraftAndSave(boolean isInvite) {
         if (!account.hasDraftsFolder()) {
             FeedbackTools.showShortFeedback(getRootView(), getString(R.string.compose_error_no_draft_folder));
             return;
@@ -981,7 +925,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         finishAfterDraftSaved = true;
-        this.isInvite = isInvite;
         performSaveAfterChecks();
     }
 
@@ -2158,12 +2101,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void sendPlanckInvitesToUnsecureRecipients() {
-        MessageBuilder messageBuilder = createMessageBuilderToSendPlanckInvites(
-                recipientPresenter.getHaveNoKeyAddresses()
+        invitationSender.sendPlanckInvitesToUnsecureRecipients(
+                recipientPresenter.getHaveNoKeyAddresses(),
+                identity,
+                account
         );
-        MessagingController.getInstance(getApplicationContext())
-                .buildAndSendMessage(messageBuilder, account);
-        checkToSaveDraftAndSave(true);
+        this.isInvite = true;
+        checkToSaveDraftAndSave();
     }
 
     public void hideUnsecureDeliveryWarning() {

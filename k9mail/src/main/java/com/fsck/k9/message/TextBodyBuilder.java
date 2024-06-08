@@ -22,20 +22,20 @@ class TextBodyBuilder {
     private boolean mInsertSeparator = false;
     private boolean mAppendSignature = true;
 
-    private String mMessageContent;
+    private final String mMessageContent;
     private String mSignature;
     private String mQuotedText;
     private InsertableHtmlContent mQuotedTextHtml;
-    private final boolean allowHtmlTags;
+    private final boolean isHtml;
 
     public TextBodyBuilder(String messageContent) {
         mMessageContent = messageContent;
-        allowHtmlTags = false;
+        isHtml = false;
     }
 
-    public TextBodyBuilder(String messageContent, boolean allowHtmlTags) {
+    public TextBodyBuilder(String messageContent, boolean isHtml) {
         mMessageContent = messageContent;
-        this.allowHtmlTags = allowHtmlTags;
+        this.isHtml = isHtml;
     }
 
     /**
@@ -146,7 +146,7 @@ class TextBodyBuilder {
         int composedMessageOffset;
 
         // Get the user-supplied text
-        String text = mMessageContent;
+        String text = htmlFragmentToText(mMessageContent);
 
         // Capture composed message length before we start attaching quoted parts and signatures.
         composedMessageLength = text.length();
@@ -202,13 +202,10 @@ class TextBodyBuilder {
 
     private String getSignatureHtml() {
         String signature = "";
-        if (!TextUtils.isEmpty(mSignature)) {
-            if (mSignature.equals(Globals.getContext().getString(R.string.default_signature))) {
-                signature = mSignature.replace(PLANCK, PLANCK_LINK);
-                signature = textToHtmlFragment("\r\n\r\n" + signature, true);
-            } else {
-                signature = textToHtmlFragment("\r\n\r\n" + mSignature, false);
-            }
+        if (mSignature.equals(Globals.getContext().getString(R.string.default_signature))) {
+            signature = "<br><br>" + mSignature.replace(PLANCK, PLANCK_LINK);
+        } else if (!TextUtils.isEmpty(mSignature)) {
+            signature = textToHtmlFragment("\r\n\r\n" + mSignature);
         }
         return signature;
     }
@@ -229,11 +226,13 @@ class TextBodyBuilder {
      * protected for unit-test purposes
      */
     protected String textToHtmlFragment(String text) {
-        return HtmlConverter.textToHtmlFragment(text, allowHtmlTags);
+        if (isHtml) return text;
+        return HtmlConverter.textToHtmlFragment(text);
     }
 
-    protected String textToHtmlFragment(String text, boolean allowHtmlTags) {
-        return HtmlConverter.textToHtmlFragment(text, allowHtmlTags);
+    protected String htmlFragmentToText(String text) {
+        if (!isHtml) return text;
+        return HtmlConverter.htmlToText(text);
     }
 
     public void setSignature(String signature) {

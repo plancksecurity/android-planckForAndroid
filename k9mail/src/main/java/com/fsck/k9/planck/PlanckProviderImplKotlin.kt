@@ -1342,6 +1342,25 @@ class PlanckProviderImplKotlin(
             }
         }
 
+    override suspend fun hasPassphrase(email: String): Result<Boolean> = withContext(PlanckDispatcher) {
+        kotlin.runCatching {
+            engine.get().has_passphrase(email)
+        }
+    }
+
+    override suspend fun managePassphrase(
+        accountsWitOldPassphrases: ArrayList<Pair<String, String>>,
+        newPassphrase: String
+    ): Result<Vector<String>?> = withContext(PlanckDispatcher) {
+        kotlin.runCatching { engine.get().manage_passphrase(accountsWitOldPassphrases, newPassphrase) }
+    }
+
+    override suspend fun unlockKeysWithPassphrase(
+        accountsWithPassphrases: ArrayList<Pair<String, String>>
+    ): Result<Vector<String>?> = withContext(PlanckDispatcher) {
+        kotlin.runCatching { engine.get().unlock_keys_with_passphrase(accountsWithPassphrases) }
+    }
+
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"

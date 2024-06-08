@@ -134,5 +134,6 @@
     <color name="select_auth_key_icon_color_light">#5E5E5E</color>
     <color name="select_auth_key_icon_color_dark">@color/white_transparent_70</color>
     <color name="dark_theme_options_menu_background">#3d3d3d</color>
+    <color name="error_text_color">#D75838</color>
 
 </resources>

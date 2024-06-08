@@ -8,6 +8,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
+import security.planck.passphrase.PassphraseRepository
 import timber.log.Timber
 
 class MailSyncWorker(
@@ -16,6 +17,10 @@ class MailSyncWorker(
 ) : Worker(context, parameters) {
 
     override fun doWork(): Result {
+        if (!PassphraseRepository.passphraseUnlocked) {
+            Timber.d("App is locked by passphrase. Skipping mail sync.")
+            return Result.success()
+        }
         val accountUuid = inputData.getString(EXTRA_ACCOUNT_UUID)
         requireNotNull(accountUuid)
 

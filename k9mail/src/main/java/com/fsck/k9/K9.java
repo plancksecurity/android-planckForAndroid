@@ -89,11 +89,12 @@ import security.planck.mdm.MediaKey;
 import security.planck.mdm.RestrictionsReceiver;
 import security.planck.mdm.UserProfile;
 import security.planck.network.ConnectionMonitor;
+import security.planck.passphrase.PassphraseRepository;
 import security.planck.provisioning.ProvisioningManager;
 import security.planck.sync.KeySyncCleaner;
 import security.planck.sync.SyncRepository;
-import security.planck.ui.passphrase.PassphraseActivity;
-import security.planck.ui.passphrase.PassphraseRequirementType;
+import security.planck.ui.passphrase.old.PassphraseActivity;
+import security.planck.ui.passphrase.old.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -101,13 +102,12 @@ import timber.log.Timber.DebugTree;
 public class K9 extends MultiDexApplication implements DefaultLifecycleObserver {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PlanckProvider planckProvider;
-    private Account currentAccount;
-    private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
+    private final ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
 
-    private AtomicBoolean deviceJustLeftGroup = new AtomicBoolean(false);
+    private final AtomicBoolean deviceJustLeftGroup = new AtomicBoolean(false);
     private static final Long THIRTY_DAYS_IN_SECONDS = 2592000L;
     private static ManageableSetting<Long> auditLogDataTimeRetention =
             new ManageableSetting<>(THIRTY_DAYS_IN_SECONDS);
@@ -127,6 +127,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
     @Inject
     Provider<SyncRepository> syncRepository;
+    @Inject
+    PassphraseRepository passphraseRepository;
 
     public static K9JobManager jobManager;
 
@@ -367,7 +369,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static ManageableSetting<Boolean> planckSyncEnabled = new ManageableSetting<>(true);
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
-    private static ManageableSetting<Boolean> planckUsePassphraseForNewKeys = new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS);
     private static long appVersionCode = -1;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -461,6 +462,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
      * whether any accounts are configured.
      */
     public static void setServicesEnabled(Context context) {
+        if (!PassphraseRepository.getPassphraseUnlocked()) return;
         Context appContext = context.getApplicationContext();
         int acctLength = Preferences.getPreferences(appContext).getAvailableAccounts().size();
         boolean enable = acctLength > 0;
@@ -664,10 +666,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
-        editor.putString(
-                "pEpUsePassphraseForNewKeys",
-                ManageableSettingKt.serializeBooleanManageableSetting(planckUsePassphraseForNewKeys)
-        );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -736,8 +734,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         planckProvider = messagingController.getPlanckProvider();
         provisioningManager.performInitializedEngineProvisioning();
         initializeAuditLog();
-
         initJobManager(preferences, messagingController);
+        passphraseRepository.initializeBlocking();
 
         /*
          * Enable background sync of messages
@@ -828,15 +826,27 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         });
 
-        refreshFoldersForAllAccounts();
-        syncRepository.get().planckInitSyncEnvironment();
-        syncRepository.get().setupFastPoller();
+        if (PassphraseRepository.getPassphraseUnlocked()) {
+            refreshFoldersForAllAccounts();
+            startupSync();
+        }
 
         notifyObservers();
 
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         String packageName = getPackageName();
         batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
+    }
+
+    private void startupSync() {
+        syncRepository.get().planckInitSyncEnvironment();
+        syncRepository.get().setupFastPoller();
+    }
+
+    public void startAllServices() {
+        setServicesEnabled(this);
+        refreshFoldersForAllAccounts();
+        startupSync();
     }
 
     private void performOperationsOnUpdate() {
@@ -1064,14 +1074,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
-        planckUsePassphraseForNewKeys = ManageableSettingKt.deserializeBooleanManageableSetting(
-                storage.getString(
-                        "pEpUsePassphraseForNewKeys",
-                        ManageableSettingKt.serializeBooleanManageableSetting(
-                                new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
-                        )
-                )
-        );
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1693,22 +1695,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
     public static void setUsingpEpSyncFolder(boolean usingpEpSyncFolder) {
         K9.usingpEpSyncFolder = usingpEpSyncFolder;
-    }
-
-    public static boolean isPlanckUsePassphraseForNewKeys() {
-        return planckUsePassphraseForNewKeys.getValue();
-    }
-
-    public static void setPlanckUsePassphraseForNewKeys(boolean pEpUsePassphraseForNewKeys) {
-        K9.planckUsePassphraseForNewKeys.setValue(pEpUsePassphraseForNewKeys);
-    }
-
-    public static ManageableSetting<Boolean> getPlanckUsePassphraseForNewKeys() {
-        return planckUsePassphraseForNewKeys;
-    }
-
-    public static void setPlanckUsePassphraseForNewKeys(ManageableSetting<Boolean> pEpUsePassphraseForNewKeys) {
-        K9.planckUsePassphraseForNewKeys = pEpUsePassphraseForNewKeys;
     }
 
     public static long getAppVersionCode() {
