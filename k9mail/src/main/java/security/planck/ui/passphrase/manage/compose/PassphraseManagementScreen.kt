@@ -92,6 +92,8 @@ fun RenderState(
                 RenderManagingAccounts(
                     state,
                     validateInput = viewModel::updateAndValidateText,
+                    validateNewPassphrase = viewModel::updateNewPassphrase,
+                    verifyNewPassphrase = viewModel::updateNewPassphraseVerification,
                     confirm = { viewModel.setNewPassphrase() },
                     cancel = dismiss,
                 )
@@ -106,8 +108,8 @@ fun RenderState(
 fun RenderManagingAccounts(
     state: PassphraseMgmtState.ManagingAccounts,
     validateInput: (Int, String) -> Unit,
-    //validateNewPassphrase: (String) -> Unit,
-    //verifyNewPassphrase: (String) -> Unit,
+    validateNewPassphrase: (String) -> Unit,
+    verifyNewPassphrase: (String) -> Unit,
     confirm: () -> Unit,
     cancel: () -> Unit,
 ) {
@@ -137,8 +139,8 @@ fun RenderManagingAccounts(
         defaultColor = defaultColor,
         errorColor = errorColor,
         successColor = successColor,
-        validateInput = { validateInput(state.oldPasswordStates.size, it) },
-        verifyNewPassphrase = { validateInput(state.oldPasswordStates.size + 1, it) },
+        validateInput = validateNewPassphrase,
+        verifyNewPassphrase = verifyNewPassphrase,
     )
     ShowErrorFeedbackIfNeeded(state)
     ManageScreenButtonsRow(

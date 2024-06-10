@@ -117,6 +117,14 @@ class PassphraseManagementViewModel @Inject constructor(
         )
     }
 
+    fun updateNewPassphrase(text: String) {
+        updateAndValidateText(newPasswordIndex, text)
+    }
+
+    fun updateNewPassphraseVerification(text: String) {
+        updateAndValidateText(newPasswordVerificationIndex, text)
+    }
+
     override fun updateAndValidateInput(
         position: Int,
         text: String
