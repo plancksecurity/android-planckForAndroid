@@ -104,7 +104,7 @@ class PassphraseManagementViewModelTest : LiveDataTest<PassphraseState>() {
         coVerify { planckProvider.hasPassphrase(EMAIL) }
 
 
-        viewModel.selectAccountsToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
+        viewModel.goToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
 
 
         customAssertObservedValues(
@@ -124,7 +124,7 @@ class PassphraseManagementViewModelTest : LiveDataTest<PassphraseState>() {
             coVerify { planckProvider.hasPassphrase(EMAIL) }
 
 
-            viewModel.selectAccountsToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, false)))
+            viewModel.goToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, false)))
 
 
             customAssertObservedValues(
@@ -139,13 +139,13 @@ class PassphraseManagementViewModelTest : LiveDataTest<PassphraseState>() {
     fun `setNewPassphrase() uses PlanckProvider to set new passphrases`() = runTest {
         viewModel.start()
         advanceUntilIdle()
-        viewModel.selectAccountsToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
+        viewModel.goToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
 
 
         val state = viewModel.state.value as PassphraseMgmtState.ManagingAccounts
-        state.oldPasswordStates.first().textState = TEST_OLD_PASSPHRASE
-        state.newPasswordState.textState = TEST_PASSPHRASE
-        state.newPasswordVerificationState.textState = TEST_PASSPHRASE
+        state.oldPasswordStates.first().text = TEST_OLD_PASSPHRASE
+        state.newPasswordState.text = TEST_PASSPHRASE
+        state.newPasswordVerificationState.text = TEST_PASSPHRASE
         viewModel.setNewPassphrase(state)
         advanceUntilIdle()
 
@@ -175,13 +175,13 @@ class PassphraseManagementViewModelTest : LiveDataTest<PassphraseState>() {
         )
         viewModel.start()
         advanceUntilIdle()
-        viewModel.selectAccountsToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
+        viewModel.goToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
 
 
         val state = viewModel.state.value as PassphraseMgmtState.ManagingAccounts
-        state.oldPasswordStates.first().textState = TEST_OLD_PASSPHRASE
-        state.newPasswordState.textState = TEST_PASSPHRASE
-        state.newPasswordVerificationState.textState = TEST_PASSPHRASE
+        state.oldPasswordStates.first().text = TEST_OLD_PASSPHRASE
+        state.newPasswordState.text = TEST_PASSPHRASE
+        state.newPasswordVerificationState.text = TEST_PASSPHRASE
         viewModel.setNewPassphrase(state)
         advanceUntilIdle()
 
@@ -210,13 +210,13 @@ class PassphraseManagementViewModelTest : LiveDataTest<PassphraseState>() {
         )
         viewModel.start()
         advanceUntilIdle()
-        viewModel.selectAccountsToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
+        viewModel.goToManagePassphrase(listOf(AccountUsesPassphrase(EMAIL, true)))
 
 
         val state = viewModel.state.value as PassphraseMgmtState.ManagingAccounts
-        state.oldPasswordStates.first().textState = TEST_OLD_PASSPHRASE
-        state.newPasswordState.textState = TEST_PASSPHRASE
-        state.newPasswordVerificationState.textState = TEST_PASSPHRASE
+        state.oldPasswordStates.first().text = TEST_OLD_PASSPHRASE
+        state.newPasswordState.text = TEST_PASSPHRASE
+        state.newPasswordVerificationState.text = TEST_PASSPHRASE
         viewModel.setNewPassphrase(state)
         advanceUntilIdle()
 

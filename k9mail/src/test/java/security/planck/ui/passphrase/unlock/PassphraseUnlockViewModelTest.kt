@@ -209,8 +209,8 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
             { assertUnlockingPassphrasesState(it) },
         )
 
-        passwordState.textState = ""
-        viewModel.validateInput(passwordState)
+        passwordState.text = ""
+        viewModel.updateAndValidateInput(passwordState)
 
         customAssertObservedValues(
             { assertEquals(PassphraseState.Loading, it) },
@@ -218,8 +218,8 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
         )
 
 
-        passwordState.textState = "wrong"
-        viewModel.validateInput(passwordState)
+        passwordState.text = "wrong"
+        viewModel.updateAndValidateInput(passwordState)
 
 
         customAssertObservedValues(
@@ -233,8 +233,8 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
         )
 
 
-        passwordState.textState = TEST_PASSPHRASE
-        viewModel.validateInput(passwordState)
+        passwordState.text = TEST_PASSPHRASE
+        viewModel.updateAndValidateInput(passwordState)
 
         customAssertObservedValues(
             { assertEquals(PassphraseState.Loading, it) },

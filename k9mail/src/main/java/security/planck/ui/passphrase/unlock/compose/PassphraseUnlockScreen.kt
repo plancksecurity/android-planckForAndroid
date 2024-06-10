@@ -14,17 +14,14 @@ import androidx.compose.ui.text.font.FontFamily
 import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
-import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
 import security.planck.ui.passphrase.compose.PassphraseScreen
 import security.planck.ui.passphrase.compose.PassphraseValidationList
 import security.planck.ui.passphrase.compose.RenderCommonStates
 import security.planck.ui.passphrase.compose.RenderCoreError
 import security.planck.ui.passphrase.compose.RenderTooManyFailedAttempts
-import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.models.TextFieldStateContract
 import security.planck.ui.passphrase.unlock.PassphraseUnlockViewModel
 
 @Composable
@@ -61,6 +58,7 @@ private fun RenderState(
                     close = finishApp
                 )
             }
+
             is PassphraseState.CoreError -> {
                 RenderCoreError(
                     message = stringResource(id = R.string.passphrase_unlock_dialog_initial_fatal_error_feedback),
@@ -71,7 +69,7 @@ private fun RenderState(
             is PassphraseUnlockState.UnlockingPassphrases -> {
                 RenderUnlockingPassphrases(
                     state,
-                    validateInput = viewModel::validateInput,
+                    validateInput = viewModel::updateAndValidateText,
                     onConfirm = { viewModel.unlockKeysWithPassphrase(state.passwordStates.toList()) }
                 )
             }
@@ -84,36 +82,20 @@ private fun RenderState(
 @Composable
 private fun RenderUnlockingPassphrases(
     state: PassphraseUnlockState.UnlockingPassphrases,
-    validateInput: (TextFieldStateContract) -> Unit,
+    validateInput: (Int, String) -> Unit,
     onConfirm: () -> Unit,
 ) {
-    if (state.loading.value == null) {
-        RenderInputScreen(
-            state,
-            validateInput = validateInput,
-            onConfirm = onConfirm
-        )
-    } else {
-        RenderLoadingScreen(state)
-    }
-}
-
-@Composable
-fun RenderLoadingScreen(state: PassphraseUnlockState.UnlockingPassphrases) {
-    val string = when (val loadingState = state.loading.value!!) {
-        PassphraseLoading.Processing -> stringResource(id = R.string.message_list_loading)
-        is PassphraseLoading.WaitAfterFailedAttempt -> stringResource(
-            id = R.string.passphrase_unlock_dialog_wait_after_failed_attempt,
-            loadingState.seconds
-        )
-    }
-    CenteredCircularProgressIndicatorWithText(text = string)
+    RenderInputScreen(
+        state,
+        validateInput = validateInput,
+        onConfirm = onConfirm
+    )
 }
 
 @Composable
 private fun RenderInputScreen(
     state: PassphraseUnlockState.UnlockingPassphrases,
-    validateInput: (TextFieldStateContract) -> Unit,
+    validateInput: (Int, String) -> Unit,
     onConfirm: () -> Unit,
 ) {
     val defaultColor = getColorFromAttr(
@@ -126,9 +108,9 @@ private fun RenderInputScreen(
     PassphraseValidationList(
         passwordStates = state.passwordStates,
         defaultColor, successColor, errorColor,
-        validateInput = validateInput,
+        onTextChanged = validateInput,
     )
-    val errorType = state.status.value
+    val errorType = state.status
     if (errorType.isError) {
         val string = when (errorType) {
             PassphraseVerificationStatus.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
@@ -164,7 +146,7 @@ private fun ButtonsRow(
             textColor = colorResource(
                 id = R.color.colorAccent
             ),
-            enabled = state.status.value == PassphraseVerificationStatus.SUCCESS,
+            enabled = state.status == PassphraseVerificationStatus.SUCCESS,
             onClick = onConfirm,
         )
     }

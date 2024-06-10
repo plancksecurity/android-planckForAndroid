@@ -1,5 +1,6 @@
 package security.planck.ui.passphrase.compose
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +51,7 @@ fun <VM : PassphraseViewModel> PassphraseScreen(
     val paddingHorizontal = 24.dp
     val paddingTop = 24.dp
     val paddingBottom = 8.dp
-    val viewModelState = viewModel.state.observeAsState()
+    val viewModelState by viewModel.state.observeAsState(PassphraseState.Processing)
 
     Column(
         modifier = Modifier
@@ -62,7 +64,7 @@ fun <VM : PassphraseViewModel> PassphraseScreen(
         WizardToolbar(
             title = title
         )
-        viewModelState.value?.let { state ->
+        viewModelState.let { state ->
             content(state)
         }
     }
@@ -74,7 +76,7 @@ fun PassphraseValidationList(
     defaultColor: Color,
     successColor: Color,
     errorColor: Color,
-    validateInput: (TextFieldStateContract) -> Unit,
+    onTextChanged: (Int, String) -> Unit,
 ) {
     Column {
         passwordStates.forEachIndexed { index, state ->
@@ -91,7 +93,7 @@ fun PassphraseValidationList(
                     errorColor = errorColor,
                     successColor = successColor,
                     defaultColor = defaultColor,
-                    validateInput = validateInput
+                    onTextChanged = { onTextChanged(index, it) }
                 )
             }
         }
@@ -104,19 +106,19 @@ fun PassphraseValidationRow(
     errorColor: Color,
     successColor: Color,
     defaultColor: Color,
-    validateInput: (TextFieldStateContract) -> Unit,
+    onTextChanged: (String) -> Unit,
 ) {
-    val textColor = when (passwordState.errorState) {
+    val textColor = when (passwordState.errorStatus) {
         TextFieldStateContract.ErrorStatus.NONE -> defaultColor
         TextFieldStateContract.ErrorStatus.ERROR -> errorColor
         TextFieldStateContract.ErrorStatus.SUCCESS -> successColor
     }
-    val statusIcon = when (passwordState.errorState) {
+    val statusIcon = when (passwordState.errorStatus) {
         TextFieldStateContract.ErrorStatus.NONE -> Icons.Filled.Close
         TextFieldStateContract.ErrorStatus.ERROR -> Icons.Filled.Close
         TextFieldStateContract.ErrorStatus.SUCCESS -> Icons.Filled.CheckBox
     }
-    val statusIconDescription = when (passwordState.errorState) {
+    val statusIconDescription = when (passwordState.errorStatus) {
         TextFieldStateContract.ErrorStatus.NONE -> 0
         TextFieldStateContract.ErrorStatus.ERROR -> R.string.passphrase_unlock_dialog_wrong_passhprase_status_desc
         TextFieldStateContract.ErrorStatus.SUCCESS -> R.string.passphrase_unlock_dialog_correct_passphrase_status_desc
@@ -133,10 +135,10 @@ fun PassphraseValidationRow(
             textColor,
             errorColor,
             defaultColor,
-            validateInput,
+            onTextChanged,
             modifier = Modifier.weight(1f)
         )
-        if (passwordState.errorState != TextFieldStateContract.ErrorStatus.NONE) {
+        if (passwordState.errorStatus != TextFieldStateContract.ErrorStatus.NONE) {
             Icon(
                 imageVector = statusIcon,
                 stringResource(id = statusIconDescription),
@@ -164,8 +166,17 @@ fun RenderCommonStates(
             )
         }
 
-        PassphraseState.Loading -> {
+        PassphraseState.Processing -> {
             CenteredCircularProgressIndicatorWithText(text = stringResource(id = R.string.message_list_loading))
+        }
+
+        is PassphraseState.WaitAfterFailedAttempt -> {
+            CenteredCircularProgressIndicatorWithText(
+                text = stringResource(
+                    id = R.string.passphrase_unlock_dialog_wait_after_failed_attempt,
+                    state.seconds
+                )
+            )
         }
 
         else -> renderCustomStates(state)
@@ -218,7 +229,7 @@ fun RenderSingleMessageAndCloseButton(
 
 @Composable
 fun ShowErrorFeedbackIfNeeded(state: PassphraseStateWithStatus) {
-    val errorType = state.status.value
+    val errorType = state.status
     if (errorType.isError) {
         val string = when (errorType) {
             PassphraseVerificationStatus.WRONG_FORMAT -> R.string.passphrase_wrong_input_feedback
