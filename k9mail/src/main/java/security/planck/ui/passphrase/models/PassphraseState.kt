@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 sealed interface PassphraseState {
     object TooManyFailedAttempts : PassphraseState
     object Processing : PassphraseState
-    data class WaitAfterFailedAttempt(val seconds: Long) : PassphraseState
+    data class WaitAfterFailedAttempt(val seconds: Int) : PassphraseState
     object Success : PassphraseState
     data class CoreError(val error: Throwable?) : PassphraseState
 }
