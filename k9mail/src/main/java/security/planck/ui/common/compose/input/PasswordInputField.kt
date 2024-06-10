@@ -1,6 +1,5 @@
 package security.planck.ui.common.compose.input
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -41,7 +40,6 @@ fun PasswordInputField(
     OutlinedTextField(
         value = passwordState.text,
         onValueChange = {
-            Log.e("EFA-602", "MyScreen text pawwword changed: ${passwordState.text}")
             onTextChanged(it)
         },
         label = { Text(stringResource(id = R.string.passhphrase_input_hint)) },

@@ -1,6 +1,5 @@
 package security.planck.ui.passphrase.manage.compose
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +43,6 @@ fun PassphraseManagementDialogContent(
         viewModel = viewModel,
         title = stringResource(id = R.string.passphrase_management_dialog_title)
     ) { state ->
-        Log.e("EFA-602", "MyScreen recomposed with text: ${state}")
         val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
@@ -91,7 +89,6 @@ fun RenderState(
             }
 
             is PassphraseMgmtState.ManagingAccounts -> {
-                Log.e("EFA-602", "MyScreen recomposed with state: ${state.newPasswordState.text}")
                 RenderManagingAccounts(
                     state,
                     validateInput = viewModel::updateAndValidateText,
