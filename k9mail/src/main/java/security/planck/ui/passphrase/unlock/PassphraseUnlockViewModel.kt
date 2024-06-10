@@ -9,7 +9,6 @@ import security.planck.passphrase.PassphraseFormatValidator
 import security.planck.passphrase.PassphraseRepository
 import security.planck.ui.passphrase.PassphraseViewModel
 import security.planck.ui.passphrase.models.AccountTextFieldState
-import security.planck.ui.passphrase.models.PassphraseMgmtState
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
@@ -68,9 +67,10 @@ class PassphraseUnlockViewModel @Inject constructor(
         else PassphraseVerificationStatus.NONE
     }
 
-    override fun updateState() {
+    override fun updateState(errorType: PassphraseVerificationStatus?) {
         stateLiveData.value = PassphraseUnlockState.UnlockingPassphrases(
-            passwordStates
+            passwordStates,
+            status = errorType ?: getCurrentStatusOrDefault()
         )
     }
 }

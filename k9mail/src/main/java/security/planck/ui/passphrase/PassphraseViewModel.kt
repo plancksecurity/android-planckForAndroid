@@ -1,9 +1,5 @@
 package security.planck.ui.passphrase
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,7 +24,6 @@ abstract class PassphraseViewModel(
     private var failedUnlockAttempts = 0
     private val delayStep get() = failedUnlockAttempts - RETRY_WITH_DELAY_AFTER
 
-    protected val passphrases: MutableList<String> = mutableListOf()
     protected val textFieldStates: MutableList<TextFieldStateContract> = mutableListOf()
 
     protected val stateLiveData: MutableLiveData<PassphraseState> =
@@ -79,16 +74,17 @@ abstract class PassphraseViewModel(
         accountsWithErrors: List<String>? = null,
     ) {
         setErrorsPerAccount(accountsWithErrors)
-        setOverallErrorStatus(errorType)
+        updateState(errorType)
+    }
+
+    protected fun getCurrentStatusOrDefault(): PassphraseVerificationStatus {
+        val state = stateLiveData.value
+        return if (state is PassphraseStateWithStatus) {
+            state.status
+        } else PassphraseVerificationStatus.NONE
     }
 
     abstract fun calculateNewOverallStatus(): PassphraseVerificationStatus?
-
-    private fun setOverallErrorStatus(errorType: PassphraseVerificationStatus) {
-        doWithState {
-            if (errorType != it.status) stateLiveData.value = it.copyWith(status = errorType)
-        }
-    }
 
     private fun setErrorsPerAccount(accountsWithErrors: List<String>?) {
         accountsWithErrors?.let {
@@ -105,11 +101,11 @@ abstract class PassphraseViewModel(
         doWithState { state ->
             if (!state.status.isPersistentError) {
                 if (newErrorStatus != null && state.status != newErrorStatus) {
-                    stateLiveData.value = state.copyWith(status = newErrorStatus)
+                    updateState(newErrorStatus)
                 } else {
                     calculateNewOverallStatus()?.let { newStatus ->
                         if (state.status != newStatus) {
-                            stateLiveData.value = state.copyWith(status = newStatus)
+                            updateState(newStatus)
                         }
                     }
                 }
@@ -117,7 +113,7 @@ abstract class PassphraseViewModel(
         }
     }
 
-    protected abstract fun updateState()
+    protected abstract fun updateState(errorType: PassphraseVerificationStatus? = null)
 
     private inline fun doWithState(block: (PassphraseStateWithStatus) -> Unit) {
         val state = stateLiveData.value

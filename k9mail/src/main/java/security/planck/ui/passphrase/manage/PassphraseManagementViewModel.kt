@@ -1,6 +1,5 @@
 package security.planck.ui.passphrase.manage
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.PlanckProvider
@@ -28,10 +27,21 @@ class PassphraseManagementViewModel @Inject constructor(
 
     private var accountsUsePassphrase: MutableList<AccountUsesPassphrase> = mutableListOf()
 
-    private val accountsWithNoPassphrase get() = selectedAccounts.filter { !it.usesPassphrase }
-        .map { it.account }
-    private val accountsWithPassphrase get() = selectedAccounts.filter { it.usesPassphrase }
-        .map { it.account }
+    private val selectableAccounts
+        get() =
+            accountsUsePassphrase.mapIndexed { i, acc ->
+                SelectableItem(
+                    acc.account,
+                    i in selectedIndexes
+                )
+            }
+
+    private val accountsWithNoPassphrase
+        get() = selectedAccounts.filter { !it.usesPassphrase }
+            .map { it.account }
+    private val accountsWithPassphrase
+        get() = selectedAccounts.filter { it.usesPassphrase }
+            .map { it.account }
 
     private val newPasswordIndex: Int get() = textFieldStates.lastIndex - 1
     private val newPasswordVerificationIndex: Int get() = textFieldStates.lastIndex
@@ -51,8 +61,7 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun accountClicked(index: Int) {
-        val state = stateLiveData.value
-        if (state is PassphraseMgmtState.ChoosingAccountsToManage) {
+        doWithChoosingAccountsState { state ->
             if (state.actionMode) {
                 if (selectedIndexes.contains(index)) {
                     selectedIndexes.remove(index)
@@ -60,10 +69,7 @@ class PassphraseManagementViewModel @Inject constructor(
                     selectedIndexes.add(index)
                 }
                 stateLiveData.value = state.copy(
-                    accounts = state.accounts.toMutableList().also {
-                        val item = it[index]
-                        it[index] = item.copy(selected = !item.selected)
-                    }
+                    accounts = selectableAccounts
                 )
             } else {
                 selectedIndexes = mutableSetOf(index)
@@ -73,62 +79,72 @@ class PassphraseManagementViewModel @Inject constructor(
     }
 
     fun accountLongClicked(index: Int) {
-        val state = stateLiveData.value
-        if (state is PassphraseMgmtState.ChoosingAccountsToManage) {
+        doWithChoosingAccountsState { state ->
             if (selectedIndexes.contains(index)) {
                 selectedIndexes.remove(index)
             } else {
                 selectedIndexes.add(index)
             }
             stateLiveData.value = state.copy(
-                accounts = state.accounts.toMutableList().also {
-                    val item = it[index]
-                    it[index] = item.copy(selected = !item.selected)
-                }
+                accounts = selectableAccounts
             )
+        }
+    }
+
+    private fun doWithChoosingAccountsState(block: (PassphraseMgmtState.ChoosingAccountsToManage) -> Unit) {
+        val state = stateLiveData.value
+        if (state is PassphraseMgmtState.ChoosingAccountsToManage) {
+            block(state)
         }
     }
 
     fun goToManagePassphrase() {
-        val state = stateLiveData.value
-        if (state is PassphraseMgmtState.ChoosingAccountsToManage) {
-            textFieldStates.clear()
-            textFieldStates.addAll(
-                accountsWithPassphrase.map { AccountTextFieldState(it) }
-            )
-            textFieldStates.addAll(listOf(TextFieldState(), TextFieldState()))
-            updateState()
-        }
+        textFieldStates.clear()
+        textFieldStates.addAll(
+            accountsWithPassphrase.map { AccountTextFieldState(it) }
+        )
+        textFieldStates.addAll(listOf(TextFieldState(), TextFieldState()))
+        updateState()
     }
 
-    override fun updateState() {
+    override fun updateState(errorType: PassphraseVerificationStatus?) {
         stateLiveData.value = PassphraseMgmtState.ManagingAccounts(
             accountsWithNoPassphrase = accountsWithNoPassphrase,
             oldPasswordStates = oldPasswordStates,
             newPasswordState = newPasswordState,
             newPasswordVerificationState = newPasswordVerificationState,
+            status = errorType ?: getCurrentStatusOrDefault()
         )
     }
 
-    override fun updateAndValidateInput(position: Int, text: String): PassphraseVerificationStatus? {
+    override fun updateAndValidateInput(
+        position: Int,
+        text: String
+    ): PassphraseVerificationStatus? {
         return when (position) {
             newPasswordIndex -> {
                 val npStatus = updateAndValidateNewPassphraseText(text)
-                val npVerificationStatus = updateAndValidateNewPassphraseVerificationText(text, newPasswordVerificationState.text)
+                val npVerificationStatus = updateAndValidateNewPassphraseVerificationText(
+                    text,
+                    newPasswordVerificationState.text
+                )
                 if (npStatus == TextFieldStateContract.ErrorStatus.ERROR) {
                     PassphraseVerificationStatus.WRONG_FORMAT
                 } else if (npVerificationStatus == TextFieldStateContract.ErrorStatus.ERROR) {
                     PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
                 } else null
             }
+
             newPasswordVerificationIndex -> {
-                val status = updateAndValidateNewPassphraseVerificationText(newPasswordState.text, text)
+                val status =
+                    updateAndValidateNewPassphraseVerificationText(newPasswordState.text, text)
                 if (status == TextFieldStateContract.ErrorStatus.ERROR) {
                     PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
                 } else {
                     null
                 }
             }
+
             else -> {
                 super.updateAndValidateInput(position, text)
             }
@@ -138,7 +154,8 @@ class PassphraseManagementViewModel @Inject constructor(
     private fun updateAndValidateNewPassphraseText(text: String): TextFieldStateContract.ErrorStatus {
         val newPasswordState = newPasswordState
         val status = passphraseFormatValidator.validatePassphrase(text)
-        textFieldStates[newPasswordIndex] = newPasswordState.copyWith(newText = text, errorStatus = status)
+        textFieldStates[newPasswordIndex] =
+            newPasswordState.copyWith(newText = text, errorStatus = status)
         return status
     }
 
@@ -148,7 +165,8 @@ class PassphraseManagementViewModel @Inject constructor(
     ): TextFieldStateContract.ErrorStatus {
         val newPasswordState = newPasswordVerificationState
         val status = passphraseFormatValidator.verifyNewPassphrase(passphrase, verification)
-        textFieldStates[newPasswordVerificationIndex] = newPasswordState.copyWith(newText = verification, errorStatus = status)
+        textFieldStates[newPasswordVerificationIndex] =
+            newPasswordState.copyWith(newText = verification, errorStatus = status)
         return status
     }
 
@@ -168,14 +186,14 @@ class PassphraseManagementViewModel @Inject constructor(
             }
         }
         return if (success == textFieldStates.size) PassphraseVerificationStatus.SUCCESS
-                else if (success > 0 && success + verificationSuccess == textFieldStates.size) PassphraseVerificationStatus.SUCCESS_EMPTY
-                else PassphraseVerificationStatus.NONE
+        else if (success > 0 && success + verificationSuccess == textFieldStates.size) PassphraseVerificationStatus.SUCCESS_EMPTY
+        else PassphraseVerificationStatus.NONE
     }
 
     fun setNewPassphrase() {
         stateLiveData.value = PassphraseState.Processing
         val newPassphrase = newPasswordVerificationState
-        val accountsToChange = accountsUsePassphrase.map { account ->
+        val accountsToChange = selectedAccounts.map { account ->
             Pair(
                 account.account,
                 oldPasswordStates.find { it.email == account.account }?.text.orEmpty()
