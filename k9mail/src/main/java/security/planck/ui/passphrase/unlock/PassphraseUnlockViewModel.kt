@@ -41,20 +41,20 @@ class PassphraseUnlockViewModel @Inject constructor(
         }
     }
 
-    fun unlockKeysWithPassphrase(states: List<AccountTextFieldState>) {
+    fun unlockKeysWithPassphrase() {
         passphraseOperation(
             onSuccess = { passphraseRepository.unlockPassphrase() }
         ) {
             stateLiveData.value = PassphraseState.Processing
             val keysWithPassphrase =
-                states.map { state -> Pair(state.email, state.text) }
+                passwordStates.map { state -> Pair(state.email, state.text) }
             planckProvider.unlockKeysWithPassphrase(ArrayList(keysWithPassphrase))
         }
     }
 
     override fun calculateNewOverallStatus(): PassphraseVerificationStatus {
         var success = 0
-        textFieldStates.forEachIndexed { index, state ->
+        textFieldStates.forEach { state ->
             if (state.errorStatus == TextFieldStateContract.ErrorStatus.ERROR) {
                 return PassphraseVerificationStatus.WRONG_FORMAT
             } else {

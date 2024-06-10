@@ -70,7 +70,7 @@ private fun RenderState(
                 RenderUnlockingPassphrases(
                     state,
                     validateInput = viewModel::updateAndValidateText,
-                    onConfirm = { viewModel.unlockKeysWithPassphrase(state.passwordStates.toList()) }
+                    onConfirm = { viewModel.unlockKeysWithPassphrase() }
                 )
             }
 
