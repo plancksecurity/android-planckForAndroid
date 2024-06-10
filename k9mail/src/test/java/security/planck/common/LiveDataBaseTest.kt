@@ -23,7 +23,23 @@ abstract class LiveDataBaseTest<BaseType, LiveDataType> {
     protected open fun initialize() {}
 
     protected fun assertObservedValues(vararg values: BaseType) {
-        assertEquals(values.toList(), observedValues)
+        println("########################################")
+        println("observed values: \n${
+            observedValues
+                .mapIndexed { index, value -> "$index: $value" }
+                .joinToString("\n\n")
+        }")
+        println("########################################")
+        assertEquals(
+            "expected ${values.size} values but got ${observedValues.size} values instead",
+            values.size, observedValues.size
+        )
+        values.forEachIndexed { index, value ->
+            assertEquals(
+                "FAILURE AT POSITION $index:",
+                value, observedValues[index]
+            )
+        }
     }
 
     protected fun customAssertObservedValues(vararg assertions: (BaseType) -> Unit) {
