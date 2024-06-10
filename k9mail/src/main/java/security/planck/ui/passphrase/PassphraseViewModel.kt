@@ -84,7 +84,7 @@ abstract class PassphraseViewModel(
         } else PassphraseVerificationStatus.NONE
     }
 
-    abstract fun calculateNewOverallStatus(): PassphraseVerificationStatus?
+    abstract fun calculateNewOverallStatus(): PassphraseVerificationStatus
 
     private fun setErrorsPerAccount(accountsWithErrors: List<String>?) {
         accountsWithErrors?.let {
@@ -100,10 +100,12 @@ abstract class PassphraseViewModel(
     private fun updateStatusIfNeeded(newErrorStatus: PassphraseVerificationStatus?) {
         doWithState { state ->
             if (!state.status.isPersistentError) {
-                if (newErrorStatus != null && state.status != newErrorStatus) {
-                    updateState(newErrorStatus)
+                if (newErrorStatus != null) {
+                    if (state.status != newErrorStatus) {
+                        updateState(newErrorStatus)
+                    }
                 } else {
-                    calculateNewOverallStatus()?.let { newStatus ->
+                    calculateNewOverallStatus().let { newStatus ->
                         if (state.status != newStatus) {
                             updateState(newStatus)
                         }

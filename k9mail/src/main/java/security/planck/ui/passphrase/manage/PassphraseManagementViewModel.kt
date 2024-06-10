@@ -170,12 +170,15 @@ class PassphraseManagementViewModel @Inject constructor(
         return status
     }
 
-    override fun calculateNewOverallStatus(): PassphraseVerificationStatus? {
+    override fun calculateNewOverallStatus(): PassphraseVerificationStatus {
         var success = 0
         var verificationSuccess = 0
         textFieldStates.forEachIndexed { index, state ->
             if (state.errorStatus == TextFieldStateContract.ErrorStatus.ERROR) {
-                return null
+                return if (index == newPasswordVerificationIndex)
+                    PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
+                else
+                    PassphraseVerificationStatus.WRONG_FORMAT
             } else {
                 if (index >= newPasswordIndex) {
                     verificationSuccess++

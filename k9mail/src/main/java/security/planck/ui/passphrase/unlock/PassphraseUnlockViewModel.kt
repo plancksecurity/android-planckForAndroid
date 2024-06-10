@@ -52,11 +52,11 @@ class PassphraseUnlockViewModel @Inject constructor(
         }
     }
 
-    override fun calculateNewOverallStatus(): PassphraseVerificationStatus? {
+    override fun calculateNewOverallStatus(): PassphraseVerificationStatus {
         var success = 0
         textFieldStates.forEachIndexed { index, state ->
             if (state.errorStatus == TextFieldStateContract.ErrorStatus.ERROR) {
-                return null
+                return PassphraseVerificationStatus.WRONG_FORMAT
             } else {
                 if (state.errorStatus == TextFieldStateContract.ErrorStatus.SUCCESS) {
                     success++
