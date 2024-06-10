@@ -46,7 +46,7 @@ abstract class PassphraseViewModel(
         return passphraseFormatValidator.validatePassphrase(text).let {
             textFieldStates[position] =
                 textFieldStates[position].copyWith(newText = text, errorStatus = it)
-            if (it == TextFieldStateContract.ErrorStatus.ERROR) {
+            if (it.isError) {
                 PassphraseVerificationStatus.WRONG_FORMAT
             } else null
         }

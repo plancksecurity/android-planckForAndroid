@@ -55,7 +55,7 @@ class PassphraseUnlockViewModel @Inject constructor(
     override fun calculateNewOverallStatus(): PassphraseVerificationStatus {
         var success = 0
         textFieldStates.forEach { state ->
-            if (state.errorStatus == TextFieldStateContract.ErrorStatus.ERROR) {
+            if (state.errorStatus.isError) {
                 return PassphraseVerificationStatus.WRONG_FORMAT
             } else {
                 if (state.errorStatus == TextFieldStateContract.ErrorStatus.SUCCESS) {

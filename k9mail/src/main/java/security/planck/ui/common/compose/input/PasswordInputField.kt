@@ -45,7 +45,7 @@ fun PasswordInputField(
             onTextChanged(it)
         },
         label = { Text(stringResource(id = R.string.passhphrase_input_hint)) },
-        isError = passwordState.errorStatus == TextFieldStateContract.ErrorStatus.ERROR,
+        isError = passwordState.errorStatus.isError,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             val image = if (passwordVisible)

@@ -128,21 +128,15 @@ class PassphraseManagementViewModel @Inject constructor(
                     text,
                     newPasswordVerificationState.text
                 )
-                if (npStatus == TextFieldStateContract.ErrorStatus.ERROR) {
+                if (npStatus.isError) {
                     PassphraseVerificationStatus.WRONG_FORMAT
-                } else if (npVerificationStatus == TextFieldStateContract.ErrorStatus.ERROR) {
+                } else if (npVerificationStatus.isError) {
                     PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
                 } else null
             }
 
             newPasswordVerificationIndex -> {
-                val status =
-                    updateAndValidateNewPassphraseVerificationText(newPasswordState.text, text)
-                if (status == TextFieldStateContract.ErrorStatus.ERROR) {
-                    PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
-                } else {
-                    null
-                }
+                updateAndGetOverallStatusFromPassphraseVerificationText(newPasswordState.text, text)
             }
 
             else -> {
@@ -170,11 +164,31 @@ class PassphraseManagementViewModel @Inject constructor(
         return status
     }
 
+    private fun updateAndGetOverallStatusFromPassphraseVerificationText(
+        passphrase: String,
+        verification: String
+    ): PassphraseVerificationStatus? {
+        val newPasswordVerifyState = newPasswordVerificationState
+        var overallError: PassphraseVerificationStatus? = null
+        val status: TextFieldStateContract.ErrorStatus
+        if (newPasswordState.errorStatus.isError) {
+            overallError = PassphraseVerificationStatus.WRONG_FORMAT
+            status = TextFieldStateContract.ErrorStatus.ERROR
+        } else {
+            status = passphraseFormatValidator.verifyNewPassphrase(passphrase, verification)
+            if (status.isError) overallError =
+                PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
+        }
+        textFieldStates[newPasswordVerificationIndex] =
+            newPasswordVerifyState.copyWith(newText = verification, errorStatus = status)
+        return overallError
+    }
+
     override fun calculateNewOverallStatus(): PassphraseVerificationStatus {
         var success = 0
         var verificationSuccess = 0
         textFieldStates.forEachIndexed { index, state ->
-            if (state.errorStatus == TextFieldStateContract.ErrorStatus.ERROR) {
+            if (state.errorStatus.isError) {
                 return if (index == newPasswordVerificationIndex)
                     PassphraseVerificationStatus.NEW_PASSPHRASE_DOES_NOT_MATCH
                 else

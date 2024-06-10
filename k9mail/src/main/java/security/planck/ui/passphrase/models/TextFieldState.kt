@@ -12,7 +12,9 @@ interface TextFieldStateContract {
     }
 
     enum class ErrorStatus {
-        NONE, ERROR, SUCCESS
+        NONE, ERROR, SUCCESS;
+
+        val isError: Boolean get() = this == ERROR
     }
 }
 
