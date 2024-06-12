@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
+import foundation.pEp.jniadapter.PassphraseEntry
 import foundation.pEp.jniadapter.PassphraseType
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +24,7 @@ object PassphraseProvider {
         private set
 
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
-        return PassphraseRequiredCallback { passphraseType ->
+        return PassphraseRequiredCallback { passphraseType, email ->
             var result = ""
             Log.e("pEpEngine-passphrase", "base 0")
 
@@ -41,7 +42,7 @@ object PassphraseProvider {
             }
             Log.e("pEpEngine-passphrase", "base 3")
 
-            result
+            PassphraseEntry(email, result)
         }
     }
 
