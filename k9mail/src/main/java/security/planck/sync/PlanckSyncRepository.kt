@@ -116,7 +116,7 @@ class PlanckSyncRepository @Inject constructor(
             }
 
             SyncHandshakeSignal.SyncPassphraseRequired -> {
-                k9.showPassphraseDialogForSync()
+                k9.showPassphraseDialogForSync("android04@planck.dev")
             }
 
             SyncHandshakeSignal.DistributionNotifyGroupInvite -> {

@@ -23,25 +23,27 @@ class PassphrasePresenter @Inject constructor(
 ) {
     lateinit var view: PassphraseInputView
     lateinit var type: PassphraseRequirementType
-    fun init(view: PassphraseInputView, type: PassphraseRequirementType) {
+    lateinit var email: String
+    fun init(view: PassphraseInputView, type: PassphraseRequirementType, email: String) {
         this.view = view
         this.type = type
+        this.email = email
         view.init()
         view.initAffirmativeListeners()
 
         when (type) {
             PassphraseRequirementType.MISSING_PASSPHRASE -> {
-                view.showPasswordRequest()
+                view.showPasswordRequest(email)
                 view.enableNonSyncDismiss()
             }
             PassphraseRequirementType.WRONG_PASSPHRASE -> {
-                view.showRetryPasswordRequest()
+                view.showRetryPasswordRequest(email)
                 view.enableNonSyncDismiss()
 
             }
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
                 view.enableSyncDismiss()
-                view.showSyncPasswordRequest()
+                view.showSyncPasswordRequest(email)
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 view.enableNonSyncDismiss()

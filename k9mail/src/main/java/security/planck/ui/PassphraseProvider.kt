@@ -16,6 +16,8 @@ import security.planck.ui.passphrase.old.PassphraseRequirementType
 import timber.log.Timber
 
 object PassphraseProvider {
+    const val PASSPHRASE_FOR_NEW_KEYS_ENTRY = "PASSPHRASE_FOR_NEW_KEYS_ENTRY"
+
     @Volatile
     @JvmStatic
     var passphrase = ""
@@ -32,7 +34,7 @@ object PassphraseProvider {
 
                 Log.e("pEpEngine-passphrase", "base 1")
 
-                result = passphraseFromUser(context, passphraseType)
+                result = passphraseFromUser(context, passphraseType, email)
                 if (passphraseType != PassphraseType.pEpPassphraseForNewKeysRequired
                     && result.isNotBlank()) {
                     MessagingController.getInstance().tryToDecryptMessagesThatCouldNotDecryptBefore()
@@ -46,9 +48,9 @@ object PassphraseProvider {
         }
     }
 
-    suspend fun passphraseFromUser(context: Context, passphraseType: PassphraseType): String {
+    suspend fun passphraseFromUser(context: Context, passphraseType: PassphraseType, email: String): String {
         prepareProvider()
-        launchUI(context, passphraseType)
+        launchUI(context, passphraseType, email)
         wait()
         Log.e("pEpEngine-passphrase", " Callback END UI")
 
@@ -62,14 +64,14 @@ object PassphraseProvider {
         running = (K9.app as K9).isRunningInForeground
     }
 
-    private suspend fun launchUI(context: Context, passphraseType: PassphraseType) = withContext(Dispatchers.Main) {
+    private suspend fun launchUI(context: Context, passphraseType: PassphraseType, email: String) = withContext(Dispatchers.Main) {
         val type = when (passphraseType) {
             PassphraseType.pEpPassphraseRequired -> PassphraseRequirementType.MISSING_PASSPHRASE
             PassphraseType.pEpWrongPassphrase -> PassphraseRequirementType.WRONG_PASSPHRASE
             PassphraseType.pEpPassphraseForNewKeysRequired -> PassphraseRequirementType.NEW_KEYS_PASSPHRASE
         }
 
-        PassphraseActivity.notifyRequest(context, type)
+        PassphraseActivity.notifyRequest(context, type, email)
     }
 
     private suspend fun wait() = withContext(Dispatchers.IO) {

@@ -15,6 +15,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 const val REQUEST_TYPE_EXTRA: String = "requestTypeExtra"
+const val REQUEST_EMAIL_EXTRA: String = "requestEmailExtra"
 const val PASSPHRASE_REQUEST_ACTION: String = "PASSPHRASE_REQUEST"
 const val PASSPHRASE_RESULT_CODE: Int = 1500
 const val PASSPHRASE_RESULT_KEY: String = "PASSPHRASE_RESULT_KEY"
@@ -37,7 +38,8 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
         binding = ActivityPassphraseBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val type = intent?.extras?.getSerializable(REQUEST_TYPE_EXTRA)
-        presenter.init(this, type as PassphraseRequirementType)
+        val email = intent?.extras?.getString(REQUEST_EMAIL_EXTRA).orEmpty()
+        presenter.init(this, type as PassphraseRequirementType, email)
     }
 
     override fun init() {
@@ -88,28 +90,29 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
         binding.passphraseContainer.error = null
     }
 
-    override fun showRetryPasswordRequest() {
-        binding.description.setText(R.string.passhphrase_body_wrong_passphrase)
+    override fun showRetryPasswordRequest(email: String) {
+        binding.description.text = getString(R.string.passhphrase_body_wrong_passphrase, email)
     }
 
-    override fun showPasswordRequest() {
-        binding.description.setText(R.string.passhphrase_body_insert_passphrase)
+    override fun showPasswordRequest(email: String) {
+        binding.description.text = getString(R.string.passhphrase_body_insert_passphrase, email)
     }
 
-    override fun showSyncPasswordRequest() {
-        binding.description.setText(R.string.passhphrase_body_sync_passphrase)
+    override fun showSyncPasswordRequest(email: String) {
+        binding.description.text = getString(R.string.passhphrase_body_sync_passphrase, email)
     }
 
     override fun showNewKeysPassphrase() {
-        binding.description.setText(R.string.passhphrase_body_new_keys_passphrase)
+        binding.description.text = getString(R.string.passhphrase_body_new_keys_passphrase)
     }
 
     companion object {
         @JvmStatic
-        fun notifyRequest(context: Context, type: PassphraseRequirementType) {
+        fun notifyRequest(context: Context, type: PassphraseRequirementType, email: String) {
             Timber.e("pEpEngine-passphrase launch passphrase")
             val intent = Intent(PASSPHRASE_REQUEST_ACTION)
             intent.putExtra(REQUEST_TYPE_EXTRA, type)
+            intent.putExtra(REQUEST_EMAIL_EXTRA, email)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             LocalBroadcastManager.getInstance(context.applicationContext).sendBroadcast(intent)
         }

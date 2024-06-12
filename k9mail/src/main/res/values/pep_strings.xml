@@ -308,9 +308,9 @@
 
     <string name="passhphrase_title">Passphrase</string>
     <string name="passhphrase_input_hint">Passphrase</string>
-    <string name="passhphrase_body_insert_passphrase">Please enter your passphrase to continue</string>
-    <string name="passhphrase_body_wrong_passphrase">You entered a wrong passphrase.\n Please enter the correct one to continue.</string>
-    <string name="passhphrase_body_sync_passphrase">Enter passphrase for planck Sync:</string>
+    <string name="passhphrase_body_insert_passphrase">Please enter your passphrase for account %s to continue</string>
+    <string name="passhphrase_body_wrong_passphrase">You entered a wrong passphrase for account %s.\n Please enter the correct one to continue.</string>
+    <string name="passhphrase_body_sync_passphrase">Enter passphrase for account %s for planck Sync:</string>
     <string name="passhphrase_action_disable_sync">Shutdown Sync</string>
     <string name="passhphrase_body_new_keys_passphrase">We recommend using device encryption instead of a passphrase. This way you are securing all data and not only keys. If you still wish to proceed with a passphrase, please enter it below and enable it.</string>
     <string name="passhphrase_new_keys_settings_title">Use a passphrase for new keys</string>

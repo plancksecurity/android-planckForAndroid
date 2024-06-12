@@ -1924,11 +1924,11 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         }
     }
 
-    public void showPassphraseDialogForSync() {
+    public void showPassphraseDialogForSync(String email) {
         Timber.e("Showing passphrase dialog for sync");
         new Handler(Looper.getMainLooper()).postDelayed(() ->
                 PassphraseActivity.notifyRequest(K9.this,
-                        PassphraseRequirementType.SYNC_PASSPHRASE), PASSPHRASE_DELAY);
+                        PassphraseRequirementType.SYNC_PASSPHRASE, email), PASSPHRASE_DELAY);
     }
 
     private void forceSaveAppSettings() {

@@ -9,8 +9,8 @@ interface PassphraseInputView {
     fun enableActionConfirmation(enabled: Boolean)
     fun showPassphraseError()
     fun hidePassphraseError()
-    fun showRetryPasswordRequest()
-    fun showPasswordRequest()
-    fun showSyncPasswordRequest()
+    fun showRetryPasswordRequest(email: String)
+    fun showPasswordRequest(email: String)
+    fun showSyncPasswordRequest(email: String)
     fun showNewKeysPassphrase()
 }
