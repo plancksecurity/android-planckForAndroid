@@ -85,6 +85,8 @@ class ConfiguredSettingsUpdater @Inject constructor(
             RESTRICTION_AUDIT_LOG_DATA_TIME_RETENTION ->
                 saveAuditLogDataTimeRetention(restrictions, entry)
 
+            RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS ->
+                saveUsePassphraseForNewKeys(restrictions, entry)
 
             RESTRICTION_PLANCK_ACCOUNTS_SETTINGS ->
                 saveAccountsSettings(
@@ -93,6 +95,17 @@ class ConfiguredSettingsUpdater @Inject constructor(
                     allowModifyAccountProvisioningSettings,
                     purgeAccountSettings
                 )
+        }
+    }
+
+    private fun saveUsePassphraseForNewKeys(restrictions: Bundle, entry: RestrictionEntry) {
+        saveBooleanLockableSetting(
+            restrictions = restrictions,
+            entry = entry,
+            valueKey = RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS_VALUE,
+            lockedKey = RESTRICTION_USE_PASSPHRASE_FOR_NEW_KEYS_LOCKED
+        ) {
+            K9.setPlanckUsePassphraseForNewKeys(it)
         }
     }
 

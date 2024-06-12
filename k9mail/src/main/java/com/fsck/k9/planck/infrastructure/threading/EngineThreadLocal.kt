@@ -19,7 +19,10 @@ class EngineThreadLocal private constructor(
     }
 
     private fun configureOnEveryCall(engine: Engine) {
-
+        engine.config_passphrase_for_new_keys(
+            K9.isPlanckUsePassphraseForNewKeys(),
+            K9.getPlanckNewKeysPassphrase()
+        )
     }
 
     private fun createEngineInstanceIfNeeded(): Engine {
