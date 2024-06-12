@@ -369,6 +369,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static ManageableSetting<Boolean> planckSyncEnabled = new ManageableSetting<>(true);
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
+    private static ManageableSetting<Boolean> planckUsePassphraseForNewKeys = new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS);
     private static long appVersionCode = -1;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -1695,6 +1696,22 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
     public static void setUsingpEpSyncFolder(boolean usingpEpSyncFolder) {
         K9.usingpEpSyncFolder = usingpEpSyncFolder;
+    }
+
+    public static boolean isPlanckUsePassphraseForNewKeys() {
+        return planckUsePassphraseForNewKeys.getValue();
+    }
+
+    public static void setPlanckUsePassphraseForNewKeys(boolean pEpUsePassphraseForNewKeys) {
+        K9.planckUsePassphraseForNewKeys.setValue(pEpUsePassphraseForNewKeys);
+    }
+
+    public static ManageableSetting<Boolean> getPlanckUsePassphraseForNewKeys() {
+        return planckUsePassphraseForNewKeys;
+    }
+
+    public static void setPlanckUsePassphraseForNewKeys(ManageableSetting<Boolean> pEpUsePassphraseForNewKeys) {
+        K9.planckUsePassphraseForNewKeys = pEpUsePassphraseForNewKeys;
     }
 
     public static long getAppVersionCode() {

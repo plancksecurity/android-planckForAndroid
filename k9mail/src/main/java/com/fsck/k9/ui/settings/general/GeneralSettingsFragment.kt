@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.settings.general
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -22,7 +23,9 @@ import com.fsck.k9.planck.manualsync.PlanckSyncWizard
 import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
+import com.fsck.k9.ui.settings.account.AccountSettingsFragment
 import com.fsck.k9.ui.settings.onClick
+import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
 import com.google.android.material.snackbar.Snackbar
 import com.takisoft.preferencex.PreferenceFragmentCompat
@@ -40,6 +43,8 @@ import security.planck.sync.SyncRepository
 import security.planck.ui.audit.AuditLogDisplayActivity
 import security.planck.ui.leavedevicegroup.LeaveDeviceGroupDialog
 import security.planck.ui.leavedevicegroup.showLeaveDeviceGroupDialog
+import security.planck.ui.passphrase.old.PASSPHRASE_RESULT_CODE
+import security.planck.ui.passphrase.old.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.old.requestPassphraseForNewKeys
 import security.planck.ui.preference.LoadingPreference
 import security.planck.ui.support.export.ExportPlanckSupportDataActivity
@@ -150,7 +155,24 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeNewKeysPassphrase() {
+        if (BuildConfig.IS_ENTERPRISE && k9.isRunningOnWorkProfile) {
+            findPreference<SwitchPreferenceCompat>(PEP_USE_PASSPHRASE_FOR_NEW_KEYS)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    processNewKeysSwitchClick(preference, newValue)
+                }
+            }
 
+            initializeManagedSwitchLockedFeedback(
+                K9.getPlanckUsePassphraseForNewKeys(),
+                PEP_USE_PASSPHRASE_FOR_NEW_KEYS,
+            ) {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    processNewKeysSwitchClick(preference, newValue)
+                }
+            }
+        } else {
+            findPreference<SwitchPreferenceCompat>(PEP_USE_PASSPHRASE_FOR_NEW_KEYS)?.remove()
+        }
     }
 
     private fun initializeManualSync() {
@@ -397,6 +419,15 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
+        if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
+            result?.let { intent ->
+                val isChecked = intent.getBooleanExtra(PASSPHRASE_RESULT_KEY, false)
+                (findPreference(PEP_USE_PASSPHRASE_FOR_NEW_KEYS) as SwitchPreferenceCompat?)?.isChecked = isChecked
+            }
+        }
+    }
+
     companion object {
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
         private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
@@ -405,6 +436,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_SYNC_FOLDER = "pep_sync_folder"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
+        private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
         private const val PREFERENCE_UNSECURE_DELIVERY_WARNING = "pep_forward_warning"

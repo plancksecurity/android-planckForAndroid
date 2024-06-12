@@ -315,6 +315,7 @@ android {
             }
 
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
+            buildConfigField "boolean", "USE_PASSPHRASE_FOR_NEW_KEYS", "false"
         }
 
         debug {
@@ -322,6 +323,7 @@ android {
             testCoverageEnabled rootProject.testCoverage
 
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
+            buildConfigField "boolean", "USE_PASSPHRASE_FOR_NEW_KEYS", "${project.findProperty("DEBUG_USE_PASSPHRASE_FOR_NEW_KEYS") ?: false}"
         }
     }
     // Do not abort build if lint finds errors
