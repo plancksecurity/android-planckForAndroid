@@ -209,8 +209,8 @@ class PlanckProviderImplKotlin(
         engine.get().config_unencrypted_subject(!isProtected)
     }
 
-    override fun configPassphrase(passphrase: String) {
-        engine.get().config_passphrase(passphrase)
+    override fun configPassphrase(email: String, passphrase: String) {
+        engine.get().config_passphrase(email, passphrase)
     }
 
     override fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?) {

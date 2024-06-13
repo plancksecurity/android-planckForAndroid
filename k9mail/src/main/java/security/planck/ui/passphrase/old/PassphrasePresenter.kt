@@ -63,7 +63,7 @@ class PassphrasePresenter @Inject constructor(
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
                 scope.launch {
                     withContext(dispatcherProvider.planckDispatcher()) {
-                        planck.configPassphrase(passphrase)
+                        planck.configPassphrase(email, passphrase)
                     }
                     controller.tryToDecryptMessagesThatCouldNotDecryptBefore()
                     finish()

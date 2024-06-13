@@ -210,7 +210,7 @@ interface PlanckProvider {
     fun setPassiveModeEnabled(enable: Boolean)
     fun getOwnKeyDetails(message: foundation.pEp.jniadapter.Message): KeyDetail?
     fun setSubjectProtection(enabled: Boolean)
-    fun configPassphrase(passphrase: String)
+    fun configPassphrase(email: String, passphrase: String)
     fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?)
     val masterKeysInfo: List<KeyListItem>?
 
