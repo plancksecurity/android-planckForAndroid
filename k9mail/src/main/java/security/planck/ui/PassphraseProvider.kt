@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import security.planck.ui.passphrase.models.PlanckPassphraseEntry
 import security.planck.ui.passphrase.old.PassphraseActivity
 import security.planck.ui.passphrase.old.PassphraseRequirementType
 import timber.log.Timber
@@ -20,14 +21,16 @@ object PassphraseProvider {
 
     @Volatile
     @JvmStatic
-    var passphrase = ""
+    var passphraseEntry = PlanckPassphraseEntry()
     @Volatile
     var running = false
         private set
+    @JvmStatic
+    var createdAccountEmail = ""
 
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
         return PassphraseRequiredCallback { passphraseType, email ->
-            var result = ""
+            var result: PlanckPassphraseEntry
             Log.e("pEpEngine-passphrase", "base 0")
 
             runBlocking {
@@ -44,23 +47,23 @@ object PassphraseProvider {
             }
             Log.e("pEpEngine-passphrase", "base 3")
 
-            PassphraseEntry(email, result)
+            result.toPassphraseEntry()
         }
     }
 
-    suspend fun passphraseFromUser(context: Context, passphraseType: PassphraseType, email: String): String {
+    suspend fun passphraseFromUser(context: Context, passphraseType: PassphraseType, email: String): PlanckPassphraseEntry {
         prepareProvider()
         launchUI(context, passphraseType, email)
         wait()
         Log.e("pEpEngine-passphrase", " Callback END UI")
 
         Log.e("pEpEngine-passphrase", "Prerereturn   1")
-        return passphrase
+        return passphraseEntry
 
     }
 
     private fun prepareProvider() {
-        passphrase = ""
+        passphraseEntry = PlanckPassphraseEntry()
         running = (K9.app as K9).isRunningInForeground
     }
 
@@ -75,7 +78,7 @@ object PassphraseProvider {
     }
 
     private suspend fun wait() = withContext(Dispatchers.IO) {
-        while (passphrase == "" && running) {
+        while (passphraseEntry.isBlank() && running) {
             Timber.e("pEpEngine, delay")
             delay(1000)
         }
@@ -85,7 +88,7 @@ object PassphraseProvider {
     }
 
     fun stop() {
-        running = false;
+        running = false
     }
 
 

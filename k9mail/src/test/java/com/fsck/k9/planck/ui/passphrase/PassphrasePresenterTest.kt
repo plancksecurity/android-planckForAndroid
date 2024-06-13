@@ -163,7 +163,7 @@ class PassphrasePresenterTest : RobolectricTest() {
         presenter.deliverPassphrase(passphrase)
 
 
-        verify { PassphraseProvider.passphrase = passphrase }
+        verify { PassphraseProvider.passphraseEntry = passphrase }
         verify { PassphraseProvider.stop() }
         verify { view.finish() }
     }
@@ -207,7 +207,7 @@ class PassphrasePresenterTest : RobolectricTest() {
         presenter.deliverPassphrase(passphrase)
 
 
-        verify { PassphraseProvider.passphrase = passphrase }
+        verify { PassphraseProvider.passphraseEntry = passphrase }
         verify { K9.setPlanckNewKeysPassphrase(passphrase) }
         verify { PassphraseProvider.stop() }
         verify { view.finish(true) }

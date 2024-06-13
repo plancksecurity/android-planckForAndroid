@@ -10,6 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.ui.PassphraseProvider
+import security.planck.ui.passphrase.models.PlanckPassphraseEntry
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ private const val PASSPHRASE_REGEX = """^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$AC
 class PassphrasePresenter @Inject constructor(
     private val planck: PlanckProvider,
     private val controller: MessagingController,
+    //private val preferences: Preferences,
     private val dispatcherProvider: DispatcherProvider,
 ) {
     lateinit var view: PassphraseInputView
@@ -46,8 +48,15 @@ class PassphrasePresenter @Inject constructor(
                 view.showSyncPasswordRequest(email)
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
+                val setupAccount = PassphraseProvider.createdAccountEmail
+                // this means the user is setting an account
                 view.enableNonSyncDismiss()
-                view.showNewKeysPassphrase()
+                if (setupAccount.isNotBlank()) {
+                    this.email = setupAccount
+                    view.showNewKeysPassphraseForAcountCreation(setupAccount)
+                } else { // this should be key reset or so
+                    view.showNewKeysPassphrase()
+                }
             }
         }
     }
@@ -70,12 +79,18 @@ class PassphrasePresenter @Inject constructor(
                 }
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
-                PassphraseProvider.passphrase = passphrase
+
+                PassphraseProvider.passphraseEntry = PlanckPassphraseEntry(
+                    if (::email.isInitialized) email // means new account creation, so we add it just in case
+                    else PassphraseProvider.PASSPHRASE_FOR_NEW_KEYS_ENTRY,
+                    passphrase
+                )
+                PassphraseProvider.createdAccountEmail = ""
                 K9.setPlanckNewKeysPassphrase(passphrase)
                 finish(true)
             }
             else -> {
-                PassphraseProvider.passphrase = passphrase
+                PassphraseProvider.passphraseEntry = PlanckPassphraseEntry(email, passphrase)
                 finish()
             }
         }

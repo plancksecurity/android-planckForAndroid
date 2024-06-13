@@ -13,4 +13,5 @@ interface PassphraseInputView {
     fun showPasswordRequest(email: String)
     fun showSyncPasswordRequest(email: String)
     fun showNewKeysPassphrase()
+    fun showNewKeysPassphraseForAcountCreation(email: String)
 }

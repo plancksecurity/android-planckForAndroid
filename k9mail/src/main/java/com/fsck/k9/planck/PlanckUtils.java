@@ -41,6 +41,7 @@ import java.util.Vector;
 import foundation.pEp.jniadapter.CommType;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
+import security.planck.ui.PassphraseProvider;
 
 /**
  * some helper stuff
@@ -382,6 +383,7 @@ public class PlanckUtils {
         K9 app = (K9) context;
         PlanckProvider pEp = app.planckProvider;
         foundation.pEp.jniadapter.Identity myIdentity = PlanckUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
+        PassphraseProvider.setCreatedAccountEmail(account.getEmail());
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
 
