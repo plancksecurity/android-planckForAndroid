@@ -104,6 +104,10 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
         binding.description.setText(R.string.passhphrase_body_new_keys_passphrase)
     }
 
+    override fun showNewKeysPassphraseForAcountCreation(email: String) {
+        binding.description.text = getString(R.string.passhphrase_body_new_keys_passphrase_for_account_creation, email)
+    }
+
     companion object {
         @JvmStatic
         fun notifyRequest(context: Context, type: PassphraseRequirementType) {
