@@ -667,6 +667,10 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
+        editor.putString(
+                "pEpUsePassphraseForNewKeys",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckUsePassphraseForNewKeys)
+        );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -1075,6 +1079,14 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        planckUsePassphraseForNewKeys = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        "pEpUsePassphraseForNewKeys",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
+                        )
+                )
+        );
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
