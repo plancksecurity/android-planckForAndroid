@@ -377,8 +377,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
 
-    private static String planckNewKeysPassphrase = "";
-
     /**
      * @see #areDatabasesUpToDate()
      */
@@ -1579,14 +1577,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     public static String getAttachmentDefaultPath() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 .getAbsolutePath();
-    }
-
-    public static String getPlanckNewKeysPassphrase(){
-        return planckNewKeysPassphrase;
-    }
-
-    public static void setPlanckNewKeysPassphrase(String passphrase){
-        K9.planckNewKeysPassphrase = passphrase;
     }
 
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {

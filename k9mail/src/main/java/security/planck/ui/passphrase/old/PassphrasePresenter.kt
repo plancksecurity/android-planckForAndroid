@@ -75,7 +75,6 @@ class PassphrasePresenter @Inject constructor(
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 PassphraseProvider.passphrase = passphrase
-                K9.setPlanckNewKeysPassphrase(passphrase)
                 finish(true)
             }
             else -> {
