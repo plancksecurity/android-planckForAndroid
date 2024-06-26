@@ -260,6 +260,9 @@ class PlanckAuditLogger(
                 auditLoggerFile.appendText(signatureLog)
                 auditLoggerFile.appendText(signature)
             }.onFailure {
+                if (BuildConfig.DEBUG) {
+                    Log.e("AUDIT_LOG", "ERROR", it)
+                }
                 // same as tamper detected on failure
                 setTamperedAlertAndSaveTime()
             }
@@ -330,8 +333,16 @@ class PlanckAuditLogger(
     private fun verifyAuditText(auditText: String, signature: String) {
         if (signature.isBlank()
             || !planckProvider.get().verifySignature(auditText, signature)
+                .onFailure {
+                    if (BuildConfig.DEBUG) {
+                        Log.e("AUDIT_LOG", "ERROR", it)
+                    }
+                }
                 .getOrDefault(false) // same as tamper detected on failure
         ) {
+            if (BuildConfig.DEBUG) {
+                Log.e("AUDIT_LOG", "SIGNATURE IS BLANK")
+            }
             // tamper detected
             setTamperedAlertAndSaveTime()
         }
