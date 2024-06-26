@@ -3,7 +3,9 @@ package com.fsck.k9.controller;
 import android.content.Context;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.Globals;
 import com.fsck.k9.K9;
+import com.fsck.k9.extensions.MessageKt;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -14,6 +16,7 @@ import com.fsck.k9.planck.PlanckUtils;
 
 import foundation.pEp.jniadapter.Rating;
 
+import security.planck.audit.AuditLogger;
 import timber.log.Timber;
 
 class TrustedMessageController {
@@ -77,9 +80,22 @@ class TrustedMessageController {
             Timber.e("pEp", "getOwnMessageCopy: ", ex);
             throw ex;
         }
-        encryptedMessage.setUid(localMessage.getUid());
-        encryptedMessage.setInternalDate(localMessage.getInternalDate());
-        encryptedMessage.setFlags(localMessage.getFlags(), true);
+        if (encryptedMessage != null) {
+            encryptedMessage.setUid(localMessage.getUid());
+            encryptedMessage.setInternalDate(localMessage.getInternalDate());
+            encryptedMessage.setFlags(localMessage.getFlags(), true);
+            Rating rating = MessageKt.getRatingFromHeader(encryptedMessage);
+            if (rating != null) {
+                getAuditLogger().addMessageAuditLog(
+                        localMessage,
+                        rating
+                );
+            }
+        }
         return encryptedMessage;
+    }
+
+    private AuditLogger getAuditLogger() {
+        return ((K9) Globals.getContext()).getAuditLogger();
     }
 }
