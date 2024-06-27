@@ -91,15 +91,16 @@ class CreateAccountKeysViewModel @Inject constructor(
 
     private suspend fun configPassphraseIfNeeded() {
         if (K9.isPlanckUsePassphraseForNewKeys()) {
-            val currentState = stateLiveData.value
-            if (currentState is PassphraseUnlockState.UnlockingPassphrases) {
+            if (passwordStates.isNotEmpty()) {
+                val pair = passwordStates.first()
                 planckProvider.configPassphraseForNewKeys(
                     true,
-                    currentState.passwordStates.first().email,
-                    currentState.passwordStates.first().text
+                    pair.email,
+                    pair.text
                 ).onFailure {
                     stateLiveData.value = PassphraseState.CoreError(it)
                 }
+
             }
         }
     }
