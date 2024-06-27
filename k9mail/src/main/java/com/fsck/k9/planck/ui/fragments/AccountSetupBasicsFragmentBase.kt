@@ -98,7 +98,7 @@ abstract class AccountSetupBasicsFragmentBase : Fragment() {
             checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING)
         } else {
             // We've successfully checked outgoing as well.
-            AccountSetupNames.actionSetNames(requireActivity(), account, false)
+            AccountSetupNames.actionSetNames(requireActivity(), account!!, false)
         }
     }
 

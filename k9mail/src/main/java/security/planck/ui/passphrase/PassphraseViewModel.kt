@@ -86,7 +86,20 @@ abstract class PassphraseViewModel(
         } else PassphraseVerificationStatus.NONE
     }
 
-    abstract fun calculateNewOverallStatus(): PassphraseVerificationStatus
+    open fun calculateNewOverallStatus(): PassphraseVerificationStatus {
+        var success = 0
+        textFieldStates.forEach { state ->
+            if (state.errorStatus.isError) {
+                return PassphraseVerificationStatus.WRONG_FORMAT
+            } else {
+                if (state.errorStatus == TextFieldStateContract.ErrorStatus.SUCCESS) {
+                    success++
+                }
+            }
+        }
+        return if (success == textFieldStates.size) PassphraseVerificationStatus.SUCCESS
+        else PassphraseVerificationStatus.NONE
+    }
 
     private fun setErrorsPerAccount(accountsWithErrors: List<String>?) {
         accountsWithErrors?.let {

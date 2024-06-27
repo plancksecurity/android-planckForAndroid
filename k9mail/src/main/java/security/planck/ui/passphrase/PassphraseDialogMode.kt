@@ -1,5 +1,5 @@
 package security.planck.ui.passphrase
 
 enum class PassphraseDialogMode {
-    MANAGE, UNLOCK
+    MANAGE, UNLOCK, NEW_ACCOUNT
 }

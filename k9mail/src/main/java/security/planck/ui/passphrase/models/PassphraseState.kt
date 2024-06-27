@@ -7,6 +7,7 @@ sealed interface PassphraseState {
     object TooManyFailedAttempts : PassphraseState
     object Processing : PassphraseState
     data class WaitAfterFailedAttempt(val seconds: Int) : PassphraseState
+    //data class NewAccountPassphrase(val seconds: Int) : PassphraseState
     object Success : PassphraseState
     data class CoreError(val error: Throwable?) : PassphraseState
 }

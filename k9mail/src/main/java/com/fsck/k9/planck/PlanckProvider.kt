@@ -212,6 +212,12 @@ interface PlanckProvider {
     fun setSubjectProtection(enabled: Boolean)
     fun configPassphrase(passphrase: String)
     fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?)
+    suspend fun configPassphraseForNewKeys(
+        enable: Boolean,
+        email: String,
+        passphrase: String?
+    ): Result<Unit>
+
     val masterKeysInfo: List<KeyListItem>?
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
