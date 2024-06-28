@@ -1,6 +1,5 @@
 package security.planck.ui.passphrase.compose
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -80,23 +79,39 @@ fun PassphraseValidationList(
 ) {
     Column {
         passwordStates.forEachIndexed { index, state ->
-            Column {
-                Text(
-                    text = state.email,
-                    color = defaultColor,
-                    fontWeight = FontWeight.Bold
-                )
-
-                val passwordState = passwordStates[index]
-                PassphraseValidationRow(
-                    passwordState = passwordState,
-                    errorColor = errorColor,
-                    successColor = successColor,
-                    defaultColor = defaultColor,
-                    onTextChanged = { onTextChanged(index, it) }
-                )
-            }
+            AccountPassphraseInput(
+                state,
+                defaultColor,
+                errorColor,
+                successColor,
+                onTextChanged = { onTextChanged(index, it) }
+            )
         }
+    }
+}
+
+@Composable
+fun AccountPassphraseInput(
+    state: AccountTextFieldState,
+    defaultColor: Color,
+    errorColor: Color,
+    successColor: Color,
+    onTextChanged: (String) -> Unit
+) {
+    Column {
+        Text(
+            text = state.email,
+            color = defaultColor,
+            fontWeight = FontWeight.Bold
+        )
+
+        PassphraseValidationRow(
+            passwordState = state,
+            errorColor = errorColor,
+            successColor = successColor,
+            defaultColor = defaultColor,
+            onTextChanged = { onTextChanged(it) }
+        )
     }
 }
 

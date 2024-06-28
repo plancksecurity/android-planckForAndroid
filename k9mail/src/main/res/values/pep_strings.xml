@@ -502,7 +502,7 @@
     <string name="google_guide_screen_2_text1_line_2">Press “Go to Planck (unsafe)"</string>
 
     <string name="passphrase_unlock_dialog_title">Unlock Passphrases</string>
-    <string name="create_account_keys_dialog_title">Create Account</string>
+    <string name="create_account_keys_dialog_title">Finalize account</string>
     <string name="passphrase_unlock_dialog_wait_after_failed_attempt">Waiting %d seconds to retry…</string>
     <string name="passphrase_unlock_dialog_too_many_failed_attempts">Too many failed attempts. App will close.</string>
     <string name="passphrase_unlock_dialog_show_password">Show passphrase</string>
@@ -525,7 +525,7 @@
     <string name="passphrase_management_dialog_success">Passphrases were updated successfully.</string>
     <string name="passphrase_management_dialog_too_many_failed_attempts">Too many failed attempts. Cannot perform the operation.</string>
     <string name="action_change">Change</string>
-    <string name="create_account_keys_dialog_description">Please provide a passphrase for the new account:</string>
+    <string name="create_account_keys_dialog_description">Please provide a passphrase to protect new account\'s keys:</string>
     <string name="create_account_keys_dialog_success_message">Account was created successfully.</string>
 
 </resources>
