@@ -525,7 +525,7 @@
     <string name="passphrase_management_dialog_success">Passphrases were updated successfully.</string>
     <string name="passphrase_management_dialog_too_many_failed_attempts">Too many failed attempts. Cannot perform the operation.</string>
     <string name="action_change">Change</string>
-    <string name="create_account_keys_dialog_description">Please provide a passphrase to protect new account\'s keys:</string>
+    <string name="create_account_keys_dialog_description">Create a passphrase for your new account. Your passphrase would be used for protecting your account\'s keys.</string>
     <string name="create_account_keys_dialog_success_message">Account was created successfully.</string>
 
 </resources>
