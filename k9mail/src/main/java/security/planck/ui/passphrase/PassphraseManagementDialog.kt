@@ -11,7 +11,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import com.fsck.k9.activity.setup.CreateAccountKeysViewModel
 import com.fsck.k9.ui.getEnum
 import com.fsck.k9.ui.putEnum
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +27,6 @@ private const val ARG_MODE = "security.planck.passphrase.PassphraseManagementDia
 class PassphraseManagementDialog : DialogFragment() {
     private val managementViewModel: PassphraseManagementViewModel by viewModels()
     private val unlockViewModel: PassphraseUnlockViewModel by viewModels()
-    private val createAccountKeysViewModel: CreateAccountKeysViewModel by viewModels()
     private val mode: PassphraseDialogMode
         get() = requireArguments().getEnum<PassphraseDialogMode>(
             ARG_MODE
@@ -40,7 +38,6 @@ class PassphraseManagementDialog : DialogFragment() {
             when (mode) {
                 PassphraseDialogMode.MANAGE -> managementViewModel.start()
                 PassphraseDialogMode.UNLOCK -> unlockViewModel.start()
-                PassphraseDialogMode.NEW_ACCOUNT -> createAccountKeysViewModel.start()
             }
         }
     }
@@ -60,10 +57,6 @@ class PassphraseManagementDialog : DialogFragment() {
                             finishApp = ::finishApp,
                         )
                         PassphraseDialogMode.MANAGE -> PassphraseManagementDialogContent(
-                            viewModel = managementViewModel,
-                            dismiss = ::dismissAllowingStateLoss,
-                        )
-                        PassphraseDialogMode.NEW_ACCOUNT -> PassphraseManagementDialogContent(
                             viewModel = managementViewModel,
                             dismiss = ::dismissAllowingStateLoss,
                         )

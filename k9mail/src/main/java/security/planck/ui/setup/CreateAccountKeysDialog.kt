@@ -1,4 +1,4 @@
-package com.fsck.k9.activity.setup
+package security.planck.ui.setup
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.fsck.k9.activity.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
-import security.planck.ui.passphrase.newaccount.CreateAccountKeysDialogContent
 
 private const val ARG_ACCOUNT_UUID =
     "com.fsck.k9.activity.setup.CreateAccountKeysDialog.accountUuid"

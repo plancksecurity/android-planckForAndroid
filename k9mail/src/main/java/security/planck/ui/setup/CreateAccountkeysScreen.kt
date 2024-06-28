@@ -1,4 +1,4 @@
-package security.planck.ui.passphrase.newaccount
+package security.planck.ui.setup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,18 +15,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.fsck.k9.R
-import com.fsck.k9.activity.setup.CreateAccountKeysViewModel
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
 import security.planck.ui.passphrase.compose.PassphraseScreen
 import security.planck.ui.passphrase.compose.PassphraseValidationList
 import security.planck.ui.passphrase.compose.RenderCommonStates
 import security.planck.ui.passphrase.compose.RenderCoreError
-import security.planck.ui.passphrase.compose.RenderTooManyFailedAttempts
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.unlock.PassphraseUnlockViewModel
 
 @Composable
 fun CreateAccountKeysDialogContent(

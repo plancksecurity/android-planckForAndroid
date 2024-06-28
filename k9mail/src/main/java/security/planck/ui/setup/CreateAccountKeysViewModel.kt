@@ -1,4 +1,4 @@
-package com.fsck.k9.activity.setup
+package security.planck.ui.setup
 
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
@@ -35,21 +35,6 @@ class CreateAccountKeysViewModel @Inject constructor(
     private lateinit var account: Account
     private var manualSetup = false
     private val passwordStates get() = textFieldStates.filterIsInstance<AccountTextFieldState>()
-
-    fun start() {
-        account =
-            preferences.accountsAllowingIncomplete.first { it.setupState == Account.SetupState.INITIAL }
-        if (K9.isPlanckUsePassphraseForNewKeys()) {
-            stateLiveData.value =
-                PassphraseUnlockState.UnlockingPassphrases(
-                    listOf(
-                        AccountTextFieldState(account.email)
-                    )
-                )
-        } else {
-            createAccountKeys()
-        }
-    }
 
     fun initialize(accountUuid: String, manualSetup: Boolean) {
         account = preferences.getAccountAllowingIncomplete(accountUuid)

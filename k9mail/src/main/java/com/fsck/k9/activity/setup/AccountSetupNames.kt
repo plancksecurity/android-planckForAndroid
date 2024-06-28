@@ -19,6 +19,7 @@ import com.fsck.k9.databinding.WizardDoneBinding
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.ui.tools.KeyboardUtils
 import dagger.hilt.android.AndroidEntryPoint
+import security.planck.ui.setup.showCreateAccountKeysDialog
 import security.planck.ui.toolbar.ToolBarCustomizer
 import javax.inject.Inject
 
