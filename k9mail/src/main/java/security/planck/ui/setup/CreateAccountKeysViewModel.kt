@@ -61,39 +61,41 @@ class CreateAccountKeysViewModel @Inject constructor(
             stateLiveData.value = PassphraseState.Processing
             withContext(dispatcherProvider.io()) {
                 uiCache.removeCredentialsInPreferences()
-                configPassphraseIfNeeded()
-                account.setupState = Account.SetupState.READY
-                if (manualSetup) {
-                    account.setOptionsOnInstall()
-                }
-                if (k9.isRunningOnWorkProfile) {
-                    configManager.loadConfigurationsSuspend(
-                        ProvisioningScope.SingleAccountSettings(
-                            account.email
+                configPassphraseIfNeeded().mapCatching {
+                    account.setupState = Account.SetupState.READY
+                    if (manualSetup) {
+                        account.setOptionsOnInstall()
+                    }
+                    if (k9.isRunningOnWorkProfile) {
+                        configManager.loadConfigurationsSuspend(
+                            ProvisioningScope.SingleAccountSettings(
+                                account.email
+                            )
                         )
-                    )
-                } else {
-                    account.save(preferences)
+                    } else {
+                        account.save(preferences)
+                    }
+                    controller.refreshRemoteSynchronous(account)
+                    PlanckUtils.pEpGenerateAccountKeys(k9, account)
+                    K9.setServicesEnabled(k9)
                 }
-                controller.refreshRemoteSynchronous(account)
-                PlanckUtils.pEpGenerateAccountKeys(k9, account)
-                K9.setServicesEnabled(k9)
+            }.onFailure {
+                stateLiveData.value = PassphraseState.CoreError(it)
+            }.onSuccess {
+                stateLiveData.value = PassphraseState.Success
             }
-            stateLiveData.value = PassphraseState.Success
         }
     }
 
-    private suspend fun configPassphraseIfNeeded() {
-        if (K9.isPlanckUsePassphraseForNewKeys()) {
+    private suspend fun configPassphraseIfNeeded(): Result<Unit> {
+        return if (K9.isPlanckUsePassphraseForNewKeys()) {
             val pair = newPasswordState
             planckProvider.configPassphraseForNewKeys(
                 true,
                 pair.email,
                 pair.text
-            ).onFailure {
-                stateLiveData.value = PassphraseState.CoreError(it)
-            }
-        }
+            )
+        } else Result.success(Unit)
     }
 
     fun updateNewPassphrase(text: String) {
