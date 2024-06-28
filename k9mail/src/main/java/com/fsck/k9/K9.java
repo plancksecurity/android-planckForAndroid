@@ -693,7 +693,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         super.onCreate();
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-        //Debug.waitForDebugger();
+        Debug.waitForDebugger();
         app = this;
         Globals.setContext(this);
         performOperationsOnUpdate();

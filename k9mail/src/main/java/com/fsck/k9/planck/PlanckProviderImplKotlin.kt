@@ -213,8 +213,8 @@ class PlanckProviderImplKotlin(
         engine.get().config_passphrase(email, passphrase)
     }
 
-    override fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?) {
-        engine.get().config_passphrase_for_new_keys(enable, passphrase)
+    override fun configPassphraseForNewKeys(enable: Boolean) {
+        engine.get().config_passphrase_for_new_keys(enable)
     }
 
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {

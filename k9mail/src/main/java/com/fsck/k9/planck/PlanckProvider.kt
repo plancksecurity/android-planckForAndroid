@@ -211,7 +211,7 @@ interface PlanckProvider {
     fun getOwnKeyDetails(message: foundation.pEp.jniadapter.Message): KeyDetail?
     fun setSubjectProtection(enabled: Boolean)
     fun configPassphrase(email: String, passphrase: String)
-    fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?)
+    fun configPassphraseForNewKeys(enable: Boolean)
     val masterKeysInfo: List<KeyListItem>?
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
