@@ -18,6 +18,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fsck.k9.K9
 import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
@@ -271,14 +272,16 @@ private fun ManageScreenButtonsRow(
             onClick = cancel,
         )
 
-        TextActionButton(
-            text = stringResource(id = R.string.action_remove),
-            textColor = colorResource(
-                id = R.color.colorAccent
-            ),
-            enabled = state.status == PassphraseVerificationStatus.SUCCESS_EMPTY,
-            onClick = confirm,
-        )
+        if (!K9.isPlanckUsePassphraseForNewKeys()) {
+            TextActionButton(
+                text = stringResource(id = R.string.action_remove),
+                textColor = colorResource(
+                    id = R.color.colorAccent
+                ),
+                enabled = state.status == PassphraseVerificationStatus.SUCCESS_EMPTY,
+                onClick = confirm,
+            )
+        }
 
         TextActionButton(
             text = stringResource(id = R.string.action_change),
