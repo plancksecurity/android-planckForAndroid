@@ -44,8 +44,14 @@ class PassphrasePresenter @Inject constructor(
                 view.showSyncPasswordRequest()
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
+                val setupAccount = PassphraseProvider.newAccount
+                // this means the user is setting an account
                 view.enableNonSyncDismiss()
-                view.showNewKeysPassphrase()
+                if (setupAccount.isNotBlank()) {
+                    view.showNewKeysPassphraseForAcountCreation(setupAccount)
+                } else { // this should be key reset or so
+                    view.showNewKeysPassphrase()
+                }
             }
         }
     }
@@ -69,7 +75,6 @@ class PassphrasePresenter @Inject constructor(
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 PassphraseProvider.passphrase = passphrase
-                K9.setPlanckNewKeysPassphrase(passphrase)
                 finish(true)
             }
             else -> {

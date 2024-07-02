@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
+import foundation.pEp.jniadapter.PassphraseEntry
 import foundation.pEp.jniadapter.PassphraseType
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import security.planck.ui.passphrase.models.PlanckPassphraseEntry
 import security.planck.ui.passphrase.old.PassphraseActivity
 import security.planck.ui.passphrase.old.PassphraseRequirementType
 import timber.log.Timber
@@ -21,6 +23,10 @@ object PassphraseProvider {
     @Volatile
     var running = false
         private set
+
+    @Volatile
+    @JvmStatic
+    var newAccount = ""
 
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
         return PassphraseRequiredCallback { passphraseType ->
@@ -41,7 +47,7 @@ object PassphraseProvider {
             }
             Log.e("pEpEngine-passphrase", "base 3")
 
-            result
+            PassphraseEntry(newAccount, result)
         }
     }
 
@@ -83,6 +89,11 @@ object PassphraseProvider {
 
     fun stop() {
         running = false;
+    }
+
+    @JvmStatic
+    fun resetNewAccount() {
+        newAccount = ""
     }
 
 

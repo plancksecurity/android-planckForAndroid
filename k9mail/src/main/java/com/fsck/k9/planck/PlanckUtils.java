@@ -41,6 +41,7 @@ import java.util.Vector;
 import foundation.pEp.jniadapter.CommType;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
+import security.planck.ui.PassphraseProvider;
 
 /**
  * some helper stuff
@@ -382,7 +383,12 @@ public class PlanckUtils {
         K9 app = (K9) context;
         PlanckProvider pEp = app.planckProvider;
         foundation.pEp.jniadapter.Identity myIdentity = PlanckUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
-        myIdentity = pEp.myself(myIdentity);
+        PassphraseProvider.setNewAccount(account.getEmail());
+        try {
+            myIdentity = pEp.myself(myIdentity);
+        } finally {
+            PassphraseProvider.resetNewAccount();
+        }
         updateSyncFlag(account, pEp, myIdentity);
 
         // As global sync cannot be enabled if there is no enabled account, we disable it if we only

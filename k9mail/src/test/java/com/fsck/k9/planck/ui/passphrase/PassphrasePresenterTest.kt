@@ -208,7 +208,6 @@ class PassphrasePresenterTest : RobolectricTest() {
 
 
         verify { PassphraseProvider.passphrase = passphrase }
-        verify { K9.setPlanckNewKeysPassphrase(passphrase) }
         verify { PassphraseProvider.stop() }
         verify { view.finish(true) }
     }

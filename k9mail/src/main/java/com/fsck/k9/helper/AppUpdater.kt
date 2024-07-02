@@ -84,23 +84,9 @@ constructor(
         if (needsUpdateFor(v3_1_7)) {
             v317Update(editor)
         }
-        if (needsUpdateFor(v3_1_11)) {
-            v3111Update(storage, editor)
-        }
         if (needsUpdateFor(v3_1_14)) {
             v3114Update(editor)
         }
-    }
-
-    private fun v3111Update(storage: Storage, editor: StorageEditor) {
-        // setting became lockable so storage changed from Boolean to String
-        val previousValue = storage.getBoolean(
-            "pEpUsePassphraseForNewKeys",
-            false
-        )
-        editor.remove("pEpUsePassphraseForNewKeys")
-        val newSetting = ManageableSetting(previousValue)
-        editor.putString("pEpUsePassphraseForNewKeys", serializeBooleanManageableSetting(newSetting))
     }
 
     private fun v317Update(editor: StorageEditor) {
