@@ -1,5 +1,6 @@
 package com.fsck.k9.planck.ui.fragments
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +14,17 @@ import androidx.core.text.HtmlCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
+import com.fsck.k9.planck.infrastructure.extensions.dpToPx
 import com.fsck.k9.planck.infrastructure.extensions.showTermsAndConditions
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import security.planck.provisioning.AccountMailSettingsProvision
+
+private const val NARROW_PADDING_FOR_BETA_FEATURE = 10F
 
 @AndroidEntryPoint
 class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
@@ -57,9 +62,24 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         passwordFlowButtonCard = binding.otherMethodSignInButtonCard
         termsAndConditionTextView = binding.termsAndConditions
 
-        googleButton.setOnClickListener { navigator.goToGoogleAuthGuideStep1(parentFragmentManager) }
+        if (BuildConfig.USE_GOOGLE_LOGIN_WIZARD) {
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                val paddingStartInPx = requireContext().dpToPx(NARROW_PADDING_FOR_BETA_FEATURE)
+                with(googleButton) {
+                    setPaddingRelative(paddingStartInPx, paddingTop, paddingEnd, paddingBottom)
+                }
+            }
+            googleButton.setOnClickListener {
+                navigator.goToGoogleAuthGuideStep1(parentFragmentManager)
+            }
+        } else {
+            googleButton.setOnClickListener {
+                startGoogleFlow()
+            }
+        }
         microsoftButton.setOnClickListener { startMicrosoftFlow() }
         passwordFlowButton.setOnClickListener { startPasswordFlow() }
+        binding.googleSignInButtonBetaFeature.isVisible = BuildConfig.USE_GOOGLE_LOGIN_WIZARD
     }
 
     private fun updateUiFromProvisioningSettings() {

@@ -9,6 +9,7 @@ def planckDragonEmail = "\"$System.env.PLANCK_DRAGON_EMAIL_ADDRESS\""
 def planckDragonPassword = "\"$System.env.PLANCK_DRAGON_PASSWORD\""
 def planckDragonServer = "\"$System.env.PLANCK_DRAGON_SERVER\""
 def planckDragonUsername = "\"$System.env.PLANCK_DRAGON_USERNAME\""
+def useGoogleLoginWizard = false // change here to have the "Beta Feature" for Google login
 
 buildscript {
     repositories {
@@ -228,6 +229,7 @@ android {
         buildConfigField "String", "BASE_VERSION", "\"${gitVersionName}\""
 
         buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.findProperty("useFakeManager") ?: true}"
+        buildConfigField "boolean", "USE_GOOGLE_LOGIN_WIZARD", "${useGoogleLoginWizard}"
         buildConfigField "int", "USER", "0"
         testBuildType project.findProperty("testBuildType") ?: "debug"
     }

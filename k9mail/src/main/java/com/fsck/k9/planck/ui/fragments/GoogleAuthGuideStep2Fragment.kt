@@ -30,6 +30,6 @@ class GoogleAuthGuideStep2Fragment : AccountSetupBasicsFragmentBase() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navigator.setCurrentStep(AccountSetupNavigator.Step.GOOGLE_GUIDE_STEP_1, null)
+        navigator.setCurrentStep(AccountSetupNavigator.Step.GOOGLE_GUIDE_STEP_2, null)
     }
 }
