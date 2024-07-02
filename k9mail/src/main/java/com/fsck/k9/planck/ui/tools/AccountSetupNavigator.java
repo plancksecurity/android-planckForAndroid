@@ -30,7 +30,8 @@ public class AccountSetupNavigator {
         INCOMING,
         OUTGOING,
         OPTIONS,
-        GOOGLE_GUIDE_STEP_1
+        GOOGLE_GUIDE_STEP_1,
+        GOOGLE_GUIDE_STEP_2
     }
 
     private Step currentStep;
