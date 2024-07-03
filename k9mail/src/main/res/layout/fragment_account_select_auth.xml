@@ -56,7 +56,6 @@
         <Button
             android:id="@+id/google_sign_in_button"
             style="@style/SelectAuthScreenButtons"
-            android:paddingStart="10dp"
             android:drawableStart="@drawable/ico_google"
             android:text="@string/account_setup_oauth_sign_in_with_google" />
 

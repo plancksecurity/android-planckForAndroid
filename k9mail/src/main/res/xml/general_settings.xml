@@ -89,6 +89,10 @@
             android:key="manage_passphrases"
             android:title="@string/passphrase_management_preference_title" />
 
+        <SwitchPreferenceCompat
+            android:key="pep_use_passphrase_for_new_keys"
+            android:title="@string/passhphrase_new_keys_settings_title"/>
+
     </PreferenceScreen>
 
 </PreferenceScreen>

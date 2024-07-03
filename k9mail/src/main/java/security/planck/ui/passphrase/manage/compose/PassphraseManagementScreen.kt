@@ -18,11 +18,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fsck.k9.K9
 import com.fsck.k9.R
 import security.planck.ui.common.compose.button.TextActionButton
 import security.planck.ui.common.compose.color.getColorFromAttr
 import security.planck.ui.common.compose.list.RenderSelectableItem
-import security.planck.ui.common.compose.progress.CenteredCircularProgressIndicatorWithText
 import security.planck.ui.passphrase.compose.PassphraseScreen
 import security.planck.ui.passphrase.compose.PassphraseValidationList
 import security.planck.ui.passphrase.compose.PassphraseValidationRow
@@ -30,11 +30,9 @@ import security.planck.ui.passphrase.compose.RenderCommonStates
 import security.planck.ui.passphrase.compose.RenderTooManyFailedAttempts
 import security.planck.ui.passphrase.compose.ShowErrorFeedbackIfNeeded
 import security.planck.ui.passphrase.manage.PassphraseManagementViewModel
-import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseMgmtState
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
-import security.planck.ui.passphrase.models.TextFieldStateContract
 
 
 @Composable
@@ -86,24 +84,20 @@ fun RenderState(
                 Spacer(modifier = Modifier.height(16.dp))
                 ChooseScreenButtonsRow(
                     actionMode = state.actionMode,
-                    manage = { viewModel.selectAccountsToManagePassphrase(state.selectedAccounts) },
+                    manage = { viewModel.goToManagePassphrase() },
                     cancel = dismiss,
                 )
             }
 
             is PassphraseMgmtState.ManagingAccounts -> {
-                if (state.loading.value == null) {
-                    RenderManagingAccounts(
-                        state,
-                        validateInput = viewModel::validateInput,
-                        validateNewPassphrase = { viewModel.validateNewPassphrase(state) },
-                        verifyNewPassphrase = { viewModel.verifyNewPassphrase(state) },
-                        confirm = { viewModel.setNewPassphrase(state) },
-                        cancel = dismiss,
-                    )
-                } else {
-                    RenderLoadingScreen(state)
-                }
+                RenderManagingAccounts(
+                    state,
+                    validateInput = viewModel::updateAndValidateText,
+                    validateNewPassphrase = viewModel::updateNewPassphrase,
+                    verifyNewPassphrase = viewModel::updateNewPassphraseVerification,
+                    confirm = { viewModel.setNewPassphrase() },
+                    cancel = dismiss,
+                )
             }
 
             else -> Unit
@@ -112,23 +106,11 @@ fun RenderState(
 }
 
 @Composable
-fun RenderLoadingScreen(state: PassphraseMgmtState.ManagingAccounts) {
-    val string = when (val loadingState = state.loading.value!!) {
-        PassphraseLoading.Processing -> stringResource(id = R.string.message_list_loading)
-        is PassphraseLoading.WaitAfterFailedAttempt -> stringResource(
-            id = R.string.passphrase_unlock_dialog_wait_after_failed_attempt,
-            loadingState.seconds
-        )
-    }
-    CenteredCircularProgressIndicatorWithText(text = string)
-}
-
-@Composable
 fun RenderManagingAccounts(
     state: PassphraseMgmtState.ManagingAccounts,
-    validateInput: (TextFieldStateContract) -> Unit,
-    validateNewPassphrase: (TextFieldStateContract) -> Unit,
-    verifyNewPassphrase: (TextFieldStateContract) -> Unit,
+    validateInput: (Int, String) -> Unit,
+    validateNewPassphrase: (String) -> Unit,
+    verifyNewPassphrase: (String) -> Unit,
     confirm: () -> Unit,
     cancel: () -> Unit,
 ) {
@@ -189,8 +171,8 @@ fun NewPassphraseAndConfirmation(
     defaultColor: Color,
     errorColor: Color,
     successColor: Color,
-    validateInput: (TextFieldStateContract) -> Unit,
-    verifyNewPassphrase: (TextFieldStateContract) -> Unit,
+    validateInput: (String) -> Unit,
+    verifyNewPassphrase: (String) -> Unit,
 ) {
     Text(
         text = stringResource(id = R.string.passphrase_management_dialog_enter_new_passphrase),
@@ -206,7 +188,7 @@ fun NewPassphraseAndConfirmation(
         errorColor = errorColor,
         defaultColor = defaultColor,
         successColor = successColor,
-        validateInput = validateInput
+        onTextChanged = validateInput
     )
     Text(
         text = stringResource(id = R.string.passphrase_management_dialog_confirm_new_passphrase),
@@ -217,7 +199,7 @@ fun NewPassphraseAndConfirmation(
         errorColor = errorColor,
         defaultColor = defaultColor,
         successColor = successColor,
-        validateInput = verifyNewPassphrase
+        onTextChanged = verifyNewPassphrase
     )
 
 }
@@ -228,14 +210,14 @@ fun OldPassphrasesVerification(
     defaultColor: Color,
     errorColor: Color,
     successColor: Color,
-    validateInput: (TextFieldStateContract) -> Unit,
+    validateInput: (Int, String) -> Unit,
 ) {
     PassphraseValidationList(
         passwordStates = state.oldPasswordStates,
         defaultColor = defaultColor,
         successColor = successColor,
         errorColor = errorColor,
-        validateInput = validateInput,
+        onTextChanged = validateInput,
     )
 }
 
@@ -290,21 +272,23 @@ private fun ManageScreenButtonsRow(
             onClick = cancel,
         )
 
-        TextActionButton(
-            text = stringResource(id = R.string.action_remove),
-            textColor = colorResource(
-                id = R.color.colorAccent
-            ),
-            enabled = state.status.value == PassphraseVerificationStatus.SUCCESS_EMPTY,
-            onClick = confirm,
-        )
+        if (!K9.isPlanckUsePassphraseForNewKeys()) {
+            TextActionButton(
+                text = stringResource(id = R.string.action_remove),
+                textColor = colorResource(
+                    id = R.color.colorAccent
+                ),
+                enabled = state.status == PassphraseVerificationStatus.SUCCESS_EMPTY,
+                onClick = confirm,
+            )
+        }
 
         TextActionButton(
             text = stringResource(id = R.string.action_change),
             textColor = colorResource(
                 id = R.color.colorAccent
             ),
-            enabled = state.status.value == PassphraseVerificationStatus.SUCCESS,
+            enabled = state.status == PassphraseVerificationStatus.SUCCESS,
             onClick = confirm,
         )
     }
@@ -316,20 +300,20 @@ fun RenderChoosingAccountsToManage(
     viewModel: PassphraseManagementViewModel
 ) {
     Column {
-        state.accountsUsingPassphrase.forEachIndexed { index, account ->
+        state.accounts.forEachIndexed { index, account ->
             RenderSelectableItem(
                 item = account,
-                onItemClicked = { clickedItem ->
-                    viewModel.accountClicked(clickedItem)
+                onItemClicked = {
+                    viewModel.accountClicked(index)
                 },
                 onItemLongClicked = {
-                    viewModel.accountLongClicked(it)
+                    viewModel.accountLongClicked(index)
                 },
                 normalColor = getColorFromAttr(colorRes = R.attr.defaultDialogBackground),
                 selectedColor = getColorFromAttr(colorRes = R.attr.messageListSelectedBackgroundColor),
             ) { acc, modifier ->
                 Text(
-                    text = acc.data.account,
+                    text = acc.data,
                     color = getColorFromAttr(colorRes = R.attr.defaultColorOnBackground),
                     modifier = modifier.padding(8.dp)
                 )

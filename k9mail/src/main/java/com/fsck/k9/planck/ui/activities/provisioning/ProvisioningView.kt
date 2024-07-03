@@ -9,4 +9,5 @@ interface ProvisioningView {
     fun displayProvisioningError(message: String)
     fun displayInitializationError(message: String)
     fun displayUnknownError(trace: String)
+    fun offerRestorePlanckData()
 }

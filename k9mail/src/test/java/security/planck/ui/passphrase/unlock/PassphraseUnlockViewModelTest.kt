@@ -13,11 +13,9 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.jsoup.helper.Validate.fail
 import org.junit.Rule
 import org.junit.Test
 import security.planck.common.LiveDataTest
@@ -25,7 +23,6 @@ import security.planck.passphrase.PassphraseFormatValidator
 import security.planck.passphrase.PassphraseRepository
 import security.planck.ui.passphrase.assertPairArrayList
 import security.planck.ui.passphrase.models.AccountTextFieldState
-import security.planck.ui.passphrase.models.PassphraseLoading
 import security.planck.ui.passphrase.models.PassphraseState
 import security.planck.ui.passphrase.models.PassphraseUnlockState
 import security.planck.ui.passphrase.models.PassphraseVerificationStatus
@@ -57,8 +54,8 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
         PassphraseUnlockViewModel(planckProvider, passphraseRepository, passphraseValidator)
 
     @Test
-    fun `initial state is Loading`() {
-        assertObservedValues(PassphraseState.Loading)
+    fun `initial state is Processing`() {
+        assertObservedValues(PassphraseState.Processing)
     }
 
     @Test
@@ -68,9 +65,9 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
 
 
         coVerify { passphraseRepository.getAccountsWithPassPhrase() }
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            { assertUnlockingPassphrasesState(it) },
+        assertObservedValues(
+            PassphraseState.Processing,
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL)))
         )
     }
 
@@ -88,7 +85,7 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
 
 
         coVerify { passphraseRepository.getAccountsWithPassPhrase() }
-        assertObservedValues(PassphraseState.Loading, PassphraseState.CoreError(TestException()))
+        assertObservedValues(PassphraseState.Processing, PassphraseState.CoreError(TestException()))
     }
 
     @Test
@@ -96,15 +93,8 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
         viewModel.start()
         advanceUntilIdle()
 
-
-        viewModel.unlockKeysWithPassphrase(
-            listOf(
-                AccountTextFieldState(
-                    EMAIL,
-                    text = TEST_PASSPHRASE
-                )
-            )
-        )
+        viewModel.updateAndValidateText(0, TEST_PASSPHRASE)
+        viewModel.unlockKeysWithPassphrase()
         advanceUntilIdle()
 
 
@@ -117,10 +107,34 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
         )
         verify { passphraseRepository.unlockPassphrase() }
 
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            { assertUnlockingPassphrasesState(it, expectedLoading = PassphraseLoading.Processing) },
-            { assertEquals(PassphraseState.Success, it) },
+        assertObservedValues(
+            // initial state
+            PassphraseState.Processing,
+            // initialized
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            // text updated
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                    )
+                ),
+            ),
+            // overall status updated according to text status
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                    )
+                ),
+                status = PassphraseVerificationStatus.SUCCESS
+            ),
+            // core operation
+            PassphraseState.Processing,
+            // success
+            PassphraseState.Success,
         )
     }
 
@@ -135,28 +149,49 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
             viewModel.start()
             advanceUntilIdle()
 
-
-            viewModel.unlockKeysWithPassphrase(
-                listOf(
-                    AccountTextFieldState(
-                        EMAIL,
-                        text = TEST_PASSPHRASE
-                    )
-                )
-            )
+            viewModel.updateAndValidateText(0, TEST_PASSPHRASE)
+            viewModel.unlockKeysWithPassphrase()
             advanceUntilIdle()
 
 
             coVerify { planckProvider.unlockKeysWithPassphrase(any()) }
             verify(exactly = 0) { passphraseRepository.unlockPassphrase() }
-            customAssertObservedValues(
-                { assertEquals(PassphraseState.Loading, it) },
-                {
-                    assertUnlockingPassphrasesState(
-                        it,
-                        expectedStatus = PassphraseVerificationStatus.CORE_ERROR
-                    )
-                },
+            assertObservedValues(
+                // initial state
+                PassphraseState.Processing,
+                // initialized
+                PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+                // text updated
+                PassphraseUnlockState.UnlockingPassphrases(
+                    listOf(
+                        AccountTextFieldState(
+                            EMAIL, text = TEST_PASSPHRASE,
+                            errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                        )
+                    ),
+                ),
+                // overall status updated according to text status
+                PassphraseUnlockState.UnlockingPassphrases(
+                    listOf(
+                        AccountTextFieldState(
+                            EMAIL, text = TEST_PASSPHRASE,
+                            errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                        )
+                    ),
+                    status = PassphraseVerificationStatus.SUCCESS
+                ),
+                // core operation
+                PassphraseState.Processing,
+                // core error
+                PassphraseUnlockState.UnlockingPassphrases(
+                    listOf(
+                        AccountTextFieldState(
+                            EMAIL, text = TEST_PASSPHRASE,
+                            errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                        )
+                    ),
+                    status = PassphraseVerificationStatus.CORE_ERROR
+                ),
             )
         }
 
@@ -172,92 +207,166 @@ class PassphraseUnlockViewModelTest : LiveDataTest<PassphraseState>() {
         viewModel.start()
         advanceUntilIdle()
 
-
-        viewModel.unlockKeysWithPassphrase(
-            listOf(
-                AccountTextFieldState(
-                    EMAIL,
-                    text = TEST_PASSPHRASE
-                )
-            )
-        )
+        viewModel.updateAndValidateText(0, TEST_PASSPHRASE)
+        viewModel.unlockKeysWithPassphrase()
         advanceUntilIdle()
 
 
         coVerify { planckProvider.unlockKeysWithPassphrase(any()) }
         verify(exactly = 0) { passphraseRepository.unlockPassphrase() }
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            {
-                assertUnlockingPassphrasesState(
-                    it,
-                    expectedStatus = PassphraseVerificationStatus.WRONG_PASSPHRASE
-                )
-            },
+        assertObservedValues(
+            // initial state
+            PassphraseState.Processing,
+            // initialized
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            // text updated
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                    )
+                ),
+            ),
+            // overall status updated according to text status
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                    )
+                ),
+                status = PassphraseVerificationStatus.SUCCESS
+            ),
+            // core operation
+            PassphraseState.Processing,
+            // wrong passphrase
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.ERROR
+                    )
+                ),
+                status = PassphraseVerificationStatus.WRONG_PASSPHRASE
+            ),
         )
     }
 
     @Test
-    fun `validateInput() clears errors`() = runTest {
+    fun `updateAndValidateText() clears errors`() = runTest {
         viewModel.start()
         advanceUntilIdle()
-        val passwordState =
-            (viewModel.state.value as PassphraseUnlockState.UnlockingPassphrases).passwordStates[0]
 
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            { assertUnlockingPassphrasesState(it) },
+        assertObservedValues(
+            PassphraseState.Processing,
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL)))
         )
 
-        passwordState.textState = ""
-        viewModel.validateInput(passwordState)
+        viewModel.updateAndValidateText(0, "")
 
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            { assertUnlockingPassphrasesState(it) }, // empty passphrase is not considered error
-        )
-
-
-        passwordState.textState = "wrong"
-        viewModel.validateInput(passwordState)
-
-
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            {
-                assertUnlockingPassphrasesState(
-                    it,
-                    expectedStatus = PassphraseVerificationStatus.WRONG_FORMAT
-                )
-            },
+        assertObservedValues(
+            // initial state
+            PassphraseState.Processing,
+            // initialized
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            // text updated
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL,
+                        errorStatus = TextFieldStateContract.ErrorStatus.NONE
+                    )
+                ),
+            ),
+            // overall status not updated according to text status since it did not change
         )
 
 
-        passwordState.textState = TEST_PASSPHRASE
-        viewModel.validateInput(passwordState)
+        viewModel.updateAndValidateText(0, "wrong")
 
-        customAssertObservedValues(
-            { assertEquals(PassphraseState.Loading, it) },
-            {
-                assertUnlockingPassphrasesState(
-                    it,
-                    expectedStatus = PassphraseVerificationStatus.SUCCESS
-                )
-            },
+
+        assertObservedValues(
+            // initial state
+            PassphraseState.Processing,
+            // initialized
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            // text updated
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = "wrong",
+                        errorStatus = TextFieldStateContract.ErrorStatus.ERROR
+                    )
+                ),
+            ),
+            // overall status updated according to text status
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = "wrong",
+                        errorStatus = TextFieldStateContract.ErrorStatus.ERROR
+                    )
+                ),
+                status = PassphraseVerificationStatus.WRONG_FORMAT
+            ),
         )
-    }
+        //[security.planck.ui.passphrase.models.PassphraseState$Processing@5da57a64,
+        //UnlockingPassphrases(passwordStates=[AccountTextFieldState(email=test@mail.ch, text=, errorStatus=NONE)], status=NONE),
+        //UnlockingPassphrases(passwordStates=[AccountTextFieldState(email=test@mail.ch, text=, errorStatus=NONE)], status=NONE),
+        //UnlockingPassphrases(passwordStates=[AccountTextFieldState(email=test@mail.ch, text=wrong, errorStatus=ERROR)], status=NONE),
+        //UnlockingPassphrases(passwordStates=[AccountTextFieldState(email=test@mail.ch, text=wrong, errorStatus=ERROR)], status=WRONG_FORMAT)]
 
-    private fun assertUnlockingPassphrasesState(
-        actual: PassphraseState,
-        expectedStates: List<TextFieldStateContract> = listOf(AccountTextFieldState(EMAIL)),
-        expectedLoading: PassphraseLoading? = null,
-        expectedStatus: PassphraseVerificationStatus = PassphraseVerificationStatus.NONE,
-    ) {
-        if (actual is PassphraseUnlockState.UnlockingPassphrases) {
-            assertEquals(expectedStates, actual.passwordStates.toList())
-            assertEquals(expectedLoading, actual.loading.value)
-            assertEquals(expectedStatus, actual.status.value)
-        } else fail("Wrong type. Expected UnlockingPassphrases but got ${actual.javaClass.simpleName}")
+        viewModel.updateAndValidateText(0, TEST_PASSPHRASE)
+
+        assertObservedValues(
+            // initial state
+            PassphraseState.Processing,
+            // initialized
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            PassphraseUnlockState.UnlockingPassphrases(listOf(AccountTextFieldState(EMAIL))),
+            // text updated
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = "wrong",
+                        errorStatus = TextFieldStateContract.ErrorStatus.ERROR
+                    )
+                ),
+            ),
+            // overall status updated according to text status
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = "wrong",
+                        errorStatus = TextFieldStateContract.ErrorStatus.ERROR
+                    )
+                ),
+                status = PassphraseVerificationStatus.WRONG_FORMAT
+            ),
+
+            // text updated
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                    ),
+                ),
+                status = PassphraseVerificationStatus.WRONG_FORMAT
+            ),
+            // overall status updated according to text status
+            PassphraseUnlockState.UnlockingPassphrases(
+                listOf(
+                    AccountTextFieldState(
+                        EMAIL, text = TEST_PASSPHRASE,
+                        errorStatus = TextFieldStateContract.ErrorStatus.SUCCESS
+                    )
+                ),
+                status = PassphraseVerificationStatus.SUCCESS
+            ),
+        )
     }
 
     private data class TestException(override val message: String = "test") : Throwable()

@@ -169,7 +169,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     public static final int DEFAULT_CONTACT_NAME_COLOR = 0xff00008f;
 
     public static String password = null;
-    private static long PASSPHRASE_DELAY = 4000;
+    private static final long PASSPHRASE_DELAY = 4000;
 
 
     /**
@@ -354,7 +354,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean mHideTimeZone = false;
 
     private static SortType mSortType = Account.DEFAULT_SORT_TYPE;
-    private static Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
+    private static final Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
 
     private static boolean sUseBackgroundAsUnreadIndicator = false;
     private static boolean sThreadedViewEnabled = true;
@@ -369,14 +369,13 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static ManageableSetting<Boolean> planckSyncEnabled = new ManageableSetting<>(true);
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
+    private static ManageableSetting<Boolean> planckUsePassphraseForNewKeys = new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS);
     private static long appVersionCode = -1;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
-
-    private static String planckNewKeysPassphrase = "";
 
     /**
      * @see #areDatabasesUpToDate()
@@ -666,6 +665,10 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
+        editor.putString(
+                "pEpUsePassphraseForNewKeys",
+                ManageableSettingKt.serializeBooleanManageableSetting(planckUsePassphraseForNewKeys)
+        );
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
         editor.putString("extraKeys", serializeExtraKeys());
@@ -691,8 +694,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         app = this;
         Globals.setContext(this);
         performOperationsOnUpdate();
-
-        provisioningManager.startProvisioning();
+        pEpSetupUiEngineSession();
+        provisioningManager.startProvisioningBlockingIfPossible();
     }
 
     private void initializeAuditLog() {
@@ -702,7 +705,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public void finalizeSetup() {
-        pEpSetupUiEngineSession();
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
@@ -1074,6 +1076,14 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        planckUsePassphraseForNewKeys = ManageableSettingKt.deserializeBooleanManageableSetting(
+                storage.getString(
+                        "pEpUsePassphraseForNewKeys",
+                        ManageableSettingKt.serializeBooleanManageableSetting(
+                                new ManageableSetting<>(BuildConfig.USE_PASSPHRASE_FOR_NEW_KEYS)
+                        )
+                )
+        );
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", false);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
@@ -1195,10 +1205,9 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static String getK9CurrentLanguage() {
-        if(language.isEmpty()) {
-           return LangUtils.getDefaultLocale().getLanguage();
-        }
-        else return language;
+        if (language.isEmpty()) {
+            return LangUtils.getDefaultLocale().getLanguage();
+        } else return language;
     }
 
     public static void setK9Language(String nlanguage) {
@@ -1568,14 +1577,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
                 .getAbsolutePath();
     }
 
-    public static String getPlanckNewKeysPassphrase(){
-        return planckNewKeysPassphrase;
-    }
-
-    public static void setPlanckNewKeysPassphrase(String passphrase){
-        K9.planckNewKeysPassphrase = passphrase;
-    }
-
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {
         K9.enableEchoProtocol = enableEchoProtocol;
     }
@@ -1697,6 +1698,22 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         K9.usingpEpSyncFolder = usingpEpSyncFolder;
     }
 
+    public static boolean isPlanckUsePassphraseForNewKeys() {
+        return planckUsePassphraseForNewKeys.getValue();
+    }
+
+    public static void setPlanckUsePassphraseForNewKeys(boolean pEpUsePassphraseForNewKeys) {
+        K9.planckUsePassphraseForNewKeys.setValue(pEpUsePassphraseForNewKeys);
+    }
+
+    public static ManageableSetting<Boolean> getPlanckUsePassphraseForNewKeys() {
+        return planckUsePassphraseForNewKeys;
+    }
+
+    public static void setPlanckUsePassphraseForNewKeys(ManageableSetting<Boolean> pEpUsePassphraseForNewKeys) {
+        K9.planckUsePassphraseForNewKeys = pEpUsePassphraseForNewKeys;
+    }
+
     public static long getAppVersionCode() {
         return appVersionCode;
     }
@@ -1754,7 +1771,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         K9.shallRequestPermissions = shallRequestPermissions;
     }
 
-    private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
+    private final ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         int activityCount = 0;
 
         @Override

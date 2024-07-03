@@ -788,35 +788,35 @@
     <!-- Microsoft variants -->
     <provider id="outlook" label="Outlook.com" domain="outlook.com">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="hotmail" label="Hotmail" domain="hotmail.com">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="msn" label="MSN" domain="msn.com">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="live" label="Windows Live Hotmail" domain="live.com">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="live-uk" label="Windows Live Hotmail" domain="live.co.uk">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="hotmail-uk" label="Hotmail" domain="hotmail.co.uk">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="outlook.sk" label="Outlook.sk" domain="outlook.sk">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
     <provider id="Microsoft-custom-domains" label="Microsoft custom domains" domain="mail.protection.outlook.com">
         <incoming uri="imap+ssl+://outlook.office365.com"  username="$email" />
-        <outgoing uri="smtp+tls+://smtp.office365.com" username="$email" />
+        <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
 
 </providers>
