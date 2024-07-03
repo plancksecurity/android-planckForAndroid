@@ -169,7 +169,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     public static final int DEFAULT_CONTACT_NAME_COLOR = 0xff00008f;
 
     public static String password = null;
-    private static long PASSPHRASE_DELAY = 4000;
+    private static final long PASSPHRASE_DELAY = 4000;
 
 
     /**
@@ -354,7 +354,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     private static boolean mHideTimeZone = false;
 
     private static SortType mSortType = Account.DEFAULT_SORT_TYPE;
-    private static Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
+    private static final Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
 
     private static boolean sUseBackgroundAsUnreadIndicator = false;
     private static boolean sThreadedViewEnabled = true;
@@ -694,8 +694,8 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         app = this;
         Globals.setContext(this);
         performOperationsOnUpdate();
-
-        provisioningManager.startProvisioning();
+        pEpSetupUiEngineSession();
+        provisioningManager.startProvisioningBlockingIfPossible();
     }
 
     private void initializeAuditLog() {
@@ -705,7 +705,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public void finalizeSetup() {
-        pEpSetupUiEngineSession();
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
@@ -1206,10 +1205,9 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public static String getK9CurrentLanguage() {
-        if(language.isEmpty()) {
-           return LangUtils.getDefaultLocale().getLanguage();
-        }
-        else return language;
+        if (language.isEmpty()) {
+            return LangUtils.getDefaultLocale().getLanguage();
+        } else return language;
     }
 
     public static void setK9Language(String nlanguage) {
@@ -1773,7 +1771,7 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         K9.shallRequestPermissions = shallRequestPermissions;
     }
 
-    private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
+    private final ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         int activityCount = 0;
 
         @Override

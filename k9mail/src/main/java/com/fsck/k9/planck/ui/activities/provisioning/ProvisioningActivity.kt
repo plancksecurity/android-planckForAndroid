@@ -1,51 +1,116 @@
 package com.fsck.k9.planck.ui.activities.provisioning
 
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.DocumentsContract
+import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity.NO_ANIMATION
 import com.fsck.k9.activity.SettingsActivity
+import com.fsck.k9.databinding.ActivityProvisioningBinding
 import com.fsck.k9.planck.ui.activities.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import security.planck.provisioning.ProvisionState
+import security.planck.provisioning.ProvisioningFailedException
 
 @AndroidEntryPoint
 class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen {
-    @Inject
-    lateinit var presenter: ProvisioningPresenter
-
+    private lateinit var binding: ActivityProvisioningBinding
+    private lateinit var folderPickerLauncher: ActivityResultLauncher<Intent>
+    private val viewModel: ProvisioningViewModel by viewModels()
     private lateinit var waitingForProvisioningText: TextView
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupViews()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        this.viewModel.state.observe(this) { state ->
+            state?.let { renderState(state) }
+        }
+    }
+
+    private fun renderState(state: ProvisionState) {
+        when (state) {
+            is ProvisionState.WaitingForProvisioning ->
+
+                waitingForProvisioning()
+
+            is ProvisionState.InProvisioning ->
+                provisioningProgress()
+
+            is ProvisionState.WaitingToInitialize -> {
+                if (state.offerRestore) {
+                    offerRestorePlanckData()
+                } else {
+                    initializing()
+                }
+            }
+
+            is ProvisionState.Initializing ->
+                if (state.provisioned) {
+                    initializingAfterSuccessfulProvision()
+                } else {
+                    initializing()
+                }
+
+            is ProvisionState.Initialized ->
+                initialized()
+
+            is ProvisionState.Error -> {
+                val throwableMessage = state.throwable.message
+                val message =
+                    if (throwableMessage.isNullOrBlank())
+                        state.throwable.stackTraceToString()
+                    else throwableMessage
+                if (state.throwable is ProvisioningFailedException) {
+                    displayProvisioningError(message)
+                } else {
+                    displayInitializationError(message)
+                }
+            }
+        }
     }
 
     private fun setupViews() {
-        setContentView(R.layout.activity_provisioning)
-        waitingForProvisioningText = findViewById(R.id.waitingForProvisioningText)
-        progressBar = findViewById(R.id.provisioning_progress)
-    }
+        binding = ActivityProvisioningBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        waitingForProvisioningText = binding.waitingForProvisioningText
+        progressBar = binding.provisioningProgress
+        binding.provisioningSkipButton.setOnClickListener { this.viewModel.initializeApp() }
+        binding.provisioningRestoreDataButton.setOnClickListener { pickFolder() }
 
-    override fun onStart() {
-        super.onStart()
-        presenter.attach(this)
+        folderPickerLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    result.data?.data?.let { uri ->
+                        restoreDataFromSelectedFolder(uri)
+                    }
+                }
+                this.viewModel.initializeApp()
+            }
     }
 
     override fun onPause() {
         super.onPause()
         overridePendingTransition(NO_ANIMATION, NO_ANIMATION)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        presenter.detach()
     }
 
     override fun waitingForProvisioning() {
@@ -57,6 +122,8 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     override fun initializing() {
+        hideRestoreButtons()
+        waitingForProvisioningText.isVisible = true
         waitingForProvisioningText.setText(R.string.initializing_application)
     }
 
@@ -95,5 +162,41 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
 
     override fun displayUnknownError(trace: String) {
         waitingForProvisioningText.text = trace
+    }
+
+    override fun offerRestorePlanckData() {
+        waitingForProvisioningText.isVisible = false
+        showRestoreButtons()
+    }
+
+    private fun showRestoreButtons() {
+        binding.provisioningSkipButton.isVisible = true
+        binding.provisioningRestoreDataButton.isVisible = true
+    }
+
+    private fun hideRestoreButtons() {
+        binding.provisioningSkipButton.isVisible = false
+        binding.provisioningRestoreDataButton.isVisible = false
+    }
+
+    private fun pickFolder() {
+        val documentsFolder =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val initialFolderUri: Uri = Uri.fromFile(documentsFolder)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialFolderUri)
+        }
+        folderPickerLauncher.launch(intent)
+    }
+
+    private fun restoreDataFromSelectedFolder(folderUri: Uri) {
+        Log.e("EFA-625", "FOLDER URI: $folderUri")
+        val contentResolver = applicationContext.contentResolver
+        val takeFlags: Int =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        contentResolver.takePersistableUriPermission(folderUri, takeFlags)
+
+        val documentFile = DocumentFile.fromTreeUri(this, folderUri)
+        this.viewModel.restoreData(documentFile)
     }
 }

@@ -527,5 +527,7 @@
     <string name="action_change">Change</string>
     <string name="create_account_keys_dialog_description">Create a passphrase for your new account. Your passphrase would be used for protecting your account\'s keys.</string>
     <string name="create_account_keys_dialog_success_message">Account was created successfully.</string>
+    <string name="provisioning_restore_action">Restore data</string>
+    <string name="provisioning_skip_action">Skip</string>
 
 </resources>

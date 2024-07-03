@@ -1,13 +1,19 @@
 package security.planck.provisioning
 
 import android.util.Log
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.extensions.mapError
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,26 +23,37 @@ class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val configurationManager: ConfigurationManager,
+    private val fileLocator: PlanckSystemFileLocator,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
 ) {
-    private var provisionState: ProvisionState =
+    private val stateMutableFlow: MutableStateFlow<ProvisionState> = MutableStateFlow(
         if (k9.isRunningOnWorkProfile) ProvisionState.WaitingForProvisioning
-        else ProvisionState.Initializing()
+        else ProvisionState.WaitingToInitialize(shouldOfferRestore)
+    )
+    val state = stateMutableFlow.asStateFlow()
 
-    private val listeners = mutableListOf<ProvisioningStateListener>()
+    private val areCoreDbsClear: Boolean
+        get() = !fileLocator.keysDbFile.exists()
+    private val shouldOfferRestore: Boolean
+        get() = BuildConfig.IS_ENTERPRISE && !k9.isRunningOnWorkProfile && areCoreDbsClear
 
-    fun addListener(listener: ProvisioningStateListener) {
-        listeners.add(listener)
-        listener.provisionStateChanged(provisionState)
-    }
-
-    fun removeListener(listener: ProvisioningStateListener) {
-        listeners.remove(listener)
+    fun startProvisioningBlockingIfPossible() {
+        runBlocking(dispatcherProvider.planckDispatcher()) {
+            // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
+            if (!shouldOfferRestore) {
+                performProvisioningIfNeeded()
+                    .onFailure {
+                        Log.e("Provisioning Manager", "Error", it)
+                        setProvisionState(ProvisionState.Error(it))
+                    }
+                    .onSuccess { setProvisionState(ProvisionState.Initialized) }
+            }
+        }
     }
 
     fun startProvisioning() {
-        runBlocking(dispatcherProvider.planckDispatcher()) {
+        CoroutineScope(dispatcherProvider.planckDispatcher()).launch {
             // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
             performProvisioningIfNeeded()
                 .onFailure {
@@ -127,11 +144,6 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun setProvisionState(newState: ProvisionState) {
-        provisionState = newState
-        listeners.forEach { it.provisionStateChanged(newState) }
-    }
-
-    interface ProvisioningStateListener {
-        fun provisionStateChanged(state: ProvisionState)
+        stateMutableFlow.value = newState
     }
 }
