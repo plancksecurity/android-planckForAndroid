@@ -1,6 +1,7 @@
 package security.planck.provisioning
 
 import android.util.Log
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
@@ -11,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,14 +22,20 @@ class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val preferences: Preferences,
     private val configurationManager: ConfigurationManager,
+    private val fileLocator: PlanckSystemFileLocator,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
 ) {
     private var provisionState: ProvisionState =
         if (k9.isRunningOnWorkProfile) ProvisionState.WaitingForProvisioning
-        else ProvisionState.WaitingToInitialize
+        else ProvisionState.WaitingToInitialize(shouldOfferRestore)
 
     private val listeners = mutableListOf<ProvisioningStateListener>()
+
+    private val areCoreDbsClear: Boolean
+        get() = !fileLocator.keysDbFile.exists()
+    private val shouldOfferRestore: Boolean
+        get() = BuildConfig.IS_ENTERPRISE && !k9.isRunningOnWorkProfile && areCoreDbsClear
 
     fun addListener(listener: ProvisioningStateListener) {
         listeners.add(listener)
@@ -58,7 +66,7 @@ class ProvisioningManager @Inject constructor(
                     Log.e("Provisioning Manager", "Error", it)
                     setProvisionState(ProvisionState.Error(it))
                 }
-                .onSuccess { withContext(dispatcherProvider.main()) { setProvisionState(ProvisionState.Initialized) } }
+                .onSuccess { setProvisionState(ProvisionState.Initialized) }
         }
     }
 
@@ -133,9 +141,7 @@ class ProvisioningManager @Inject constructor(
         kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
 
     private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
-        withContext(dispatcherProvider.main()) {
-            setProvisionState(ProvisionState.Initializing(provisionDone))
-        }
+        setProvisionState(ProvisionState.Initializing(provisionDone))
         return kotlin.runCatching {
             k9.finalizeSetup()
         }.mapError {

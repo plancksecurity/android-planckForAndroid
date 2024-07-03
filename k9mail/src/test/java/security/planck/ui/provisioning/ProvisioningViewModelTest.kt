@@ -1,6 +1,6 @@
 package security.planck.ui.provisioning
 
-import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningPresenter
+import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningViewModel
 import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningView
 import io.mockk.mockk
 import io.mockk.verify
@@ -10,10 +10,10 @@ import security.planck.provisioning.ProvisionState
 import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningManager
 
-class ProvisioningPresenterTest {
+class ProvisioningViewModelTest {
     private val provisioningManager: ProvisioningManager = mockk(relaxed = true)
     private val view: ProvisioningView = mockk(relaxed = true)
-    private val presenter = ProvisioningPresenter(provisioningManager)
+    private val presenter = ProvisioningViewModel(provisioningManager)
 
     @Test
     fun `attach() adds listener to provisioning manager`() {
