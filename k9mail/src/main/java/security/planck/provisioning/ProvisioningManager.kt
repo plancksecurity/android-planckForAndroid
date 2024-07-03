@@ -50,6 +50,20 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
+    fun startProvisioningBlockingIfPossible() {
+        runBlocking(dispatcherProvider.planckDispatcher()) {
+            // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
+            if (!shouldOfferRestore) {
+                performProvisioningIfNeeded()
+                    .onFailure {
+                        Log.e("Provisioning Manager", "Error", it)
+                        setProvisionState(ProvisionState.Error(it))
+                    }
+                    .onSuccess { setProvisionState(ProvisionState.Initialized) }
+            }
+        }
+    }
+
     fun startProvisioning() {
         CoroutineScope(dispatcherProvider.planckDispatcher()).launch {
             // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
