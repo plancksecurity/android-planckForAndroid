@@ -60,6 +60,7 @@ class ProvisioningViewModel @Inject constructor(
         var outputFolder: File? = null
         if (fileName.startsWith(PlanckSystemFileLocator.KEYS_DB_FILE)
             || fileName.startsWith(PlanckSystemFileLocator.MANAGEMENT_DB_FILE)
+                    || fileName.startsWith(PlanckSystemFileLocator.LOG_DB_FILE)
         ) {
             outputFolder = fileLocator.pEpFolder
         } else if (fileName.startsWith(PlanckSystemFileLocator.SYSTEM_DB_FILE)) {

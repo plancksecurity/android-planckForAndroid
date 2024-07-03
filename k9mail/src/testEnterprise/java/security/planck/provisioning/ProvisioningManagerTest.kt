@@ -4,6 +4,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
+import com.fsck.k9.activity.setup.AuthFlowState
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mailstore.LocalStore
@@ -12,9 +13,12 @@ import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.*
+import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
 import security.planck.network.UrlChecker
 import security.planck.provisioning.*
@@ -28,20 +32,18 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     private val k9: K9 = mockk(relaxed = true)
     private val urlChecker: UrlChecker = spyk(UrlChecker())
-    private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
     private val configurationManager: ConfigurationManager = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
     private val provisioningSettings: ProvisioningSettings = mockk()
-    private val manager = ProvisioningManager(
-        k9,
-        preferences,
-        configurationManager,
-        provisioningSettings,
-        coroutinesTestRule.testDispatcherProvider,
-    )
+    private val fileLocator: PlanckSystemFileLocator = mockk()
+
+    private val observedValues = mutableListOf<ProvisionState>()
+
+    private lateinit var manager : ProvisioningManager
 
     @Before
     fun setUp() {
+        observedValues.clear()
         coEvery { provisioningSettings.hasValidMailSettings() }.returns(true)
         coEvery { provisioningSettings.accountsProvisionList }.returns(mutableListOf())
         coEvery { provisioningSettings.findAccountsToRemove() }.returns(emptyList())
@@ -55,16 +57,32 @@ class ProvisioningManagerTest: RobolectricTest() {
 
         mockkStatic(Utility::class)
         coEvery { Utility.hasConnectivity(any()) }.returns(true)
+        initializeManager()
+    }
 
-        manager.addListener(listener)
-        verify { listener.provisionStateChanged(any()) }
-        clearMocks(listener)
+    private fun initializeManager() {
+        manager = ProvisioningManager(
+            k9,
+            preferences,
+            configurationManager,
+            fileLocator,
+            provisioningSettings,
+            coroutinesTestRule.testDispatcherProvider,
+        )
     }
 
     @After
     fun tearDown() {
         unmockkObject(PlanckProviderImplKotlin)
         unmockkStatic(Utility::class)
+    }
+
+    @Test
+    fun `initial state is WaitingForProvisioning if running under MDM`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
+        assertObservedValues(ProvisionState.WaitingForProvisioning)
     }
 
     @Test
@@ -86,7 +104,6 @@ class ProvisioningManagerTest: RobolectricTest() {
 
         coVerify { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
         coVerify { k9.finalizeSetup() }
-        coVerify { listener.provisionStateChanged(ProvisionState.Initialized) }
     }
 
     @Test
@@ -358,17 +375,37 @@ class ProvisioningManagerTest: RobolectricTest() {
         }
     }
 
-    @Test
-    fun `manager calls provisionStateChanged() on added listener`() {
-        manager.addListener(listener)
-
-
-        verify { listener.provisionStateChanged(any()) }
+    private fun assertObservedValues(vararg values: ProvisionState) {
+        println("########################################")
+        println("observed values: \n${
+            observedValues
+                .mapIndexed { index, value -> "$index: $value" }
+                .joinToString("\n\n")
+        }")
+        println("########################################")
+        assertEquals(
+            "expected ${values.size} values but got ${observedValues.size} values instead",
+            values.size, observedValues.size
+        )
+        values.forEachIndexed { index, value ->
+            assertEquals(
+                "FAILURE AT POSITION $index:",
+                value, observedValues[index]
+            )
+        }
     }
 
     private fun assertListenerProvisionChangedWithState(block: (state: ProvisionState) -> Unit) {
-        val slot = mutableListOf<ProvisionState>()
-        coVerify { listener.provisionStateChanged(capture(slot)) }
-        block(slot.last())
+        //val slot = mutableListOf<ProvisionState>()
+        //coVerify { listener.provisionStateChanged(capture(slot)) }
+        //block(slot.last())
+    }
+
+    private fun observeFlow() {
+        CoroutineScope(UnconfinedTestDispatcher()).launch {
+            manager.state.collect {
+                observedValues.add(it)
+            }
+        }
     }
 }

@@ -99,7 +99,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
 
         folderPickerLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                Log.e("EFA-625", "RESULT CODE: ${result.resultCode}, DATA: ${result.data}")
                 if (result.resultCode == Activity.RESULT_OK) {
                     result.data?.data?.let { uri ->
                         restoreDataFromSelectedFolder(uri)

@@ -33,5 +33,6 @@ class PlanckSystemFileLocator @Inject constructor(
         const val KEYS_DB_FILE = "keys.db"
         const val MANAGEMENT_DB_FILE = "management.db"
         const val SYSTEM_DB_FILE = "system.db"
+        const val LOG_DB_FILE = "log.db"
     }
 }
