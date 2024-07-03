@@ -38,18 +38,6 @@ class ProvisioningManager @Inject constructor(
     private val shouldOfferRestore: Boolean
         get() = BuildConfig.IS_ENTERPRISE && !k9.isRunningOnWorkProfile && areCoreDbsClear
 
-    fun startProvisioningBlocking() {
-        runBlocking(dispatcherProvider.planckDispatcher()) {
-            // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
-            performProvisioningIfNeeded()
-                .onFailure {
-                    Log.e("Provisioning Manager", "Error", it)
-                    setProvisionState(ProvisionState.Error(it))
-                }
-                .onSuccess { setProvisionState(ProvisionState.Initialized) }
-        }
-    }
-
     fun startProvisioningBlockingIfPossible() {
         runBlocking(dispatcherProvider.planckDispatcher()) {
             // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
