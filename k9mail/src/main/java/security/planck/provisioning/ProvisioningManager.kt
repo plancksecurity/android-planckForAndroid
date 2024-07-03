@@ -9,9 +9,10 @@ import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.extensions.mapError
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
 import javax.inject.Inject
@@ -26,25 +27,16 @@ class ProvisioningManager @Inject constructor(
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
 ) {
-    private var provisionState: ProvisionState =
+    private val stateMutableFlow: MutableStateFlow<ProvisionState> = MutableStateFlow(
         if (k9.isRunningOnWorkProfile) ProvisionState.WaitingForProvisioning
         else ProvisionState.WaitingToInitialize(shouldOfferRestore)
-
-    private val listeners = mutableListOf<ProvisioningStateListener>()
+    )
+    val state = stateMutableFlow.asStateFlow()
 
     private val areCoreDbsClear: Boolean
         get() = !fileLocator.keysDbFile.exists()
     private val shouldOfferRestore: Boolean
         get() = BuildConfig.IS_ENTERPRISE && !k9.isRunningOnWorkProfile && areCoreDbsClear
-
-    fun addListener(listener: ProvisioningStateListener) {
-        listeners.add(listener)
-        listener.provisionStateChanged(provisionState)
-    }
-
-    fun removeListener(listener: ProvisioningStateListener) {
-        listeners.remove(listener)
-    }
 
     fun startProvisioningBlocking() {
         runBlocking(dispatcherProvider.planckDispatcher()) {
@@ -140,7 +132,7 @@ class ProvisioningManager @Inject constructor(
     private fun isDeviceOnline(): Boolean =
         kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
 
-    private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
+    private fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
         setProvisionState(ProvisionState.Initializing(provisionDone))
         return kotlin.runCatching {
             k9.finalizeSetup()
@@ -149,12 +141,7 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
-    private suspend fun setProvisionState(newState: ProvisionState) {
-        provisionState = newState
-        listeners.forEach { it.provisionStateChanged(newState) }
-    }
-
-    interface ProvisioningStateListener {
-        fun provisionStateChanged(state: ProvisionState)
+    private fun setProvisionState(newState: ProvisionState) {
+        stateMutableFlow.value = newState
     }
 }

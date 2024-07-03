@@ -11,6 +11,8 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.Globals
 import com.fsck.k9.planck.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.planck.file.PlanckSystemFileLocator
@@ -25,22 +27,18 @@ class ProvisioningViewModel @Inject constructor(
     private val provisioningManager: ProvisioningManager,
     private val fileLocator: PlanckSystemFileLocator,
     private val dispatcherProvider: DispatcherProvider,
-) : ViewModel(), ProvisioningManager.ProvisioningStateListener {
+) : ViewModel() {
     private val stateLiveData: MutableLiveData<ProvisionState> = MutableLiveData(
         ProvisionState.WaitingToInitialize(false)
     )
     val state: LiveData<ProvisionState> = stateLiveData
 
     init {
-        provisioningManager.addListener(this)
-    }
-
-    private fun displayProvisionState(state: ProvisionState) {
-        stateLiveData.postValue(state)
-    }
-
-    override fun provisionStateChanged(state: ProvisionState) {
-        displayProvisionState(state)
+        provisioningManager.state
+            .onEach {
+                stateLiveData.value =
+                    it // we can map state here if we need more control on presentation layer
+            }.launchIn(viewModelScope)
     }
 
     fun initializeApp() {
@@ -81,11 +79,6 @@ class ProvisioningViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun onCleared() {
-        provisioningManager.removeListener(this)
-        super.onCleared()
     }
 
     private fun logInDebug(tag: String, message: String) {
