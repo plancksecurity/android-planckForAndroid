@@ -6,12 +6,6 @@ import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val HOME_FOLDER = "home"
-private const val PEP_FOLDER = ".pEp"
-private const val TRUSTWORDS_FOLDER = "trustwords"
-private const val KEYSTORE_FOLDER = "KeyStore"
-private const val KEYS_DB_FILE = "keys.db"
-
 @Singleton
 class PlanckSystemFileLocator @Inject constructor(
     private val k9: K9,
@@ -30,4 +24,14 @@ class PlanckSystemFileLocator @Inject constructor(
 
     val keysDbFile: File
         get() = File(pEpFolder, KEYS_DB_FILE)
+
+    companion object {
+        const val HOME_FOLDER = "home"
+        const val PEP_FOLDER = ".pEp"
+        const val TRUSTWORDS_FOLDER = "trustwords"
+        const val KEYSTORE_FOLDER = "KeyStore"
+        const val KEYS_DB_FILE = "keys.db"
+        const val MANAGEMENT_DB_FILE = "management.db"
+        const val SYSTEM_DB_FILE = "system.db"
+    }
 }

@@ -1,21 +1,35 @@
 package com.fsck.k9.planck.ui.activities.provisioning
 
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.DocumentsContract
+import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity.NO_ANIMATION
 import com.fsck.k9.activity.SettingsActivity
+import com.fsck.k9.databinding.ActivityProvisioningBinding
 import com.fsck.k9.planck.ui.activities.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen {
+    private lateinit var binding: ActivityProvisioningBinding
+    private lateinit var folderPickerLauncher: ActivityResultLauncher<Intent>
+
     @Inject
     lateinit var presenter: ProvisioningPresenter
 
@@ -28,9 +42,21 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     private fun setupViews() {
-        setContentView(R.layout.activity_provisioning)
-        waitingForProvisioningText = findViewById(R.id.waitingForProvisioningText)
-        progressBar = findViewById(R.id.provisioning_progress)
+        binding = ActivityProvisioningBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        waitingForProvisioningText = binding.waitingForProvisioningText
+        progressBar = binding.provisioningProgress
+        binding.provisioningSkipButton.setOnClickListener { presenter.initializeApp() }
+        binding.provisioningRestoreDataButton.setOnClickListener { pickFolder() }
+
+        folderPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.e("EFA-625", "RESULT CODE: ${result.resultCode}, DATA: ${result.data}")
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    restoreDataFromSelectedFolder(uri)
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -57,6 +83,8 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     override fun initializing() {
+        hideRestoreButtons()
+        waitingForProvisioningText.isVisible = true
         waitingForProvisioningText.setText(R.string.initializing_application)
     }
 
@@ -95,5 +123,39 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
 
     override fun displayUnknownError(trace: String) {
         waitingForProvisioningText.text = trace
+    }
+
+    override fun offerRestorePlanckData() {
+        waitingForProvisioningText.isVisible = false
+        showRestoreButtons()
+    }
+
+    private fun showRestoreButtons() {
+        binding.provisioningSkipButton.isVisible = true
+        binding.provisioningRestoreDataButton.isVisible = true
+    }
+
+    private fun hideRestoreButtons() {
+        binding.provisioningSkipButton.isVisible = false
+        binding.provisioningRestoreDataButton.isVisible = false
+    }
+
+    private fun pickFolder() {
+        val documentsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val initialFolderUri: Uri = Uri.fromFile(documentsFolder)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialFolderUri)
+        }
+        folderPickerLauncher.launch(intent)
+    }
+
+    private fun restoreDataFromSelectedFolder(folderUri: Uri) {
+        Log.e("EFA-625", "FOLDER URI: $folderUri")
+        val contentResolver = applicationContext.contentResolver
+        val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        contentResolver.takePersistableUriPermission(folderUri, takeFlags)
+
+        val documentFile = DocumentFile.fromTreeUri(this, folderUri)
+        presenter.restoreData(documentFile)
     }
 }

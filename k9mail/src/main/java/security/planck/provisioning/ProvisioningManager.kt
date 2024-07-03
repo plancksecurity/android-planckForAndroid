@@ -7,7 +7,10 @@ import com.fsck.k9.helper.Utility
 import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.planck.infrastructure.extensions.mapError
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.planck.mdm.ConfigurationManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,7 +25,7 @@ class ProvisioningManager @Inject constructor(
 ) {
     private var provisionState: ProvisionState =
         if (k9.isRunningOnWorkProfile) ProvisionState.WaitingForProvisioning
-        else ProvisionState.Initializing()
+        else ProvisionState.WaitingToInitialize
 
     private val listeners = mutableListOf<ProvisioningStateListener>()
 
@@ -35,8 +38,20 @@ class ProvisioningManager @Inject constructor(
         listeners.remove(listener)
     }
 
-    fun startProvisioning() {
+    fun startProvisioningBlocking() {
         runBlocking(dispatcherProvider.planckDispatcher()) {
+            // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
+            performProvisioningIfNeeded()
+                .onFailure {
+                    Log.e("Provisioning Manager", "Error", it)
+                    setProvisionState(ProvisionState.Error(it))
+                }
+                .onSuccess { setProvisionState(ProvisionState.Initialized) }
+        }
+    }
+
+    fun startProvisioning() {
+        CoroutineScope(dispatcherProvider.planckDispatcher()).launch {
             // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
             performProvisioningIfNeeded()
                 .onFailure {
@@ -117,8 +132,10 @@ class ProvisioningManager @Inject constructor(
     private fun isDeviceOnline(): Boolean =
         kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
 
-    private fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
-        setProvisionState(ProvisionState.Initializing(provisionDone))
+    private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
+        //withContext(dispatcherProvider.main()) {
+            setProvisionState(ProvisionState.Initializing(provisionDone))
+        //}
         return kotlin.runCatching {
             k9.finalizeSetup()
         }.mapError {
@@ -126,7 +143,7 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
-    private fun setProvisionState(newState: ProvisionState) {
+    private suspend fun setProvisionState(newState: ProvisionState) {
         provisionState = newState
         listeners.forEach { it.provisionStateChanged(newState) }
     }

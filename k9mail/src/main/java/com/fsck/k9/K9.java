@@ -694,8 +694,16 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
         app = this;
         Globals.setContext(this);
         performOperationsOnUpdate();
+        pEpSetupUiEngineSession();
+        Log.e("EFA-625", "DB EXISTS: " + planckSystemFileLocator.getKeysDbFile().exists());
+        //planckSystemFileLocator.getHomeFolder();
+        if (!BuildConfig.IS_ENTERPRISE) {
+            startProvisioning();
+        }
+    }
 
-        provisioningManager.startProvisioning();
+    public void startProvisioning() {
+        provisioningManager.startProvisioningBlocking();
     }
 
     private void initializeAuditLog() {
@@ -705,7 +713,6 @@ public class K9 extends MultiDexApplication implements DefaultLifecycleObserver 
     }
 
     public void finalizeSetup() {
-        pEpSetupUiEngineSession();
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
