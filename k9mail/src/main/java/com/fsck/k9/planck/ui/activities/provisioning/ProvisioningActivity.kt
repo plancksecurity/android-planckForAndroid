@@ -56,6 +56,7 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
                     restoreDataFromSelectedFolder(uri)
                 }
             }
+            presenter.initializeApp()
         }
     }
 
@@ -83,9 +84,11 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     override fun initializing() {
-        hideRestoreButtons()
-        waitingForProvisioningText.isVisible = true
-        waitingForProvisioningText.setText(R.string.initializing_application)
+        runOnUiThread {
+            hideRestoreButtons()
+            waitingForProvisioningText.isVisible = true
+            waitingForProvisioningText.setText(R.string.initializing_application)
+        }
     }
 
     override fun initializingAfterSuccessfulProvision() {

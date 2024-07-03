@@ -58,7 +58,7 @@ class ProvisioningManager @Inject constructor(
                     Log.e("Provisioning Manager", "Error", it)
                     setProvisionState(ProvisionState.Error(it))
                 }
-                .onSuccess { setProvisionState(ProvisionState.Initialized) }
+                .onSuccess { withContext(dispatcherProvider.main()) { setProvisionState(ProvisionState.Initialized) } }
         }
     }
 
@@ -133,9 +133,9 @@ class ProvisioningManager @Inject constructor(
         kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
 
     private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
-        //withContext(dispatcherProvider.main()) {
+        withContext(dispatcherProvider.main()) {
             setProvisionState(ProvisionState.Initializing(provisionDone))
-        //}
+        }
         return kotlin.runCatching {
             k9.finalizeSetup()
         }.mapError {
