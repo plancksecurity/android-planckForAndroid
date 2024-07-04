@@ -80,7 +80,7 @@ open class AccountSetupNames : K9Activity() {
             mName.isFocusable = false
             mDescription.setText(viewModel.account.description)
         }
-        if (!mName.text.isNullOrBlank()) {
+        if (mName.text.isNullOrBlank()) {
             mDoneButton.isEnabled = false
         }
     }
