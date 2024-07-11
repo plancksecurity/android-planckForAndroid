@@ -1891,7 +1891,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void hideResetPartnerKeysOption() {
-        resetPartnerKeys.setVisible(false);
+        if (resetPartnerKeys != null) {
+            resetPartnerKeys.setVisible(false);
+        }
     }
 
     private void onToggleTheme() {

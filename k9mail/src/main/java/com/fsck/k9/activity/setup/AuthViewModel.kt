@@ -49,6 +49,7 @@ import javax.inject.Inject
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
 private const val ACCESS_DENIED_BY_USER = "access_denied"
+private const val SELECT_ACCOUNT_PROMPT = "select_account"
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -193,12 +194,13 @@ class AuthViewModel @Inject constructor(
             serviceConfig,
             config.clientId,
             ResponseTypeValues.CODE,
-            config.redirectUri.toUri()
+            config.redirectUri.toUri(),
         )
 
         val scopeString = config.scopes.joinToString(separator = " ")
         val authRequest = authRequestBuilder
             .setScope(scopeString)
+            .setPromptValues(SELECT_ACCOUNT_PROMPT)
             .setLoginHint(email)
             .build()
 
