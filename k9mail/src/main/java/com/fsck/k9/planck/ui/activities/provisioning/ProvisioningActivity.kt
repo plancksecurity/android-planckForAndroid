@@ -86,6 +86,9 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
                     displayInitializationError(message)
                 }
             }
+
+            is ProvisionState.DbImportFailed ->
+                displayDbImportFailed(state.throwable.message.orEmpty())
         }
     }
 
@@ -146,11 +149,17 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
         displayError(R.string.provisioning_error_template, message)
     }
 
+    override fun displayDbImportFailed(message: String) {
+        binding.provisioningRestoreDataButton.isEnabled = false
+        displayError(R.string.provisioning_db_import_error_msg, message)
+    }
+
     private fun displayError(@StringRes stringResource: Int, message: String) {
         val errorColor = ContextCompat.getColor(
             this,
             R.color.compose_unsecure_delivery_warning
         )
+        waitingForProvisioningText.isVisible = true
         waitingForProvisioningText.setTextColor(errorColor)
         waitingForProvisioningText.text = getString(stringResource, message)
         progressBar.indeterminateDrawable.setColorFilter(

@@ -48,12 +48,17 @@ class ProvisioningViewModel @Inject constructor(
     fun restoreData(documentFile: DocumentFile?) {
         viewModelScope.launch {
             withContext(dispatcherProvider.io()) {
-                logInDebug("EFA-625", "SELECTED DOCUMENT FILE: ${documentFile?.uri}")
-                documentFile?.listFiles()?.forEach { file ->
-                    copyFileToInternalStorage(file.uri, file.name ?: "unknown")
+                kotlin.runCatching {
+                    logInDebug("EFA-625", "SELECTED DOCUMENT FILE: ${documentFile?.uri}")
+                    documentFile?.listFiles()?.forEach { file ->
+                        copyFileToInternalStorage(file.uri, file.name ?: "unknown")
+                    }
                 }
+            }.onSuccess {
+                initializeApp()
+            }.onFailure {
+                stateLiveData.value = ProvisionState.DbImportFailed(it)
             }
-            initializeApp()
         }
     }
 
