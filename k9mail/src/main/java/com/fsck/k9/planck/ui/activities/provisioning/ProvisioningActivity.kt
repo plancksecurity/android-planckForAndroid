@@ -104,7 +104,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
                         restoreDataFromSelectedFolder(uri)
                     }
                 }
-                this.viewModel.initializeApp()
             }
     }
 

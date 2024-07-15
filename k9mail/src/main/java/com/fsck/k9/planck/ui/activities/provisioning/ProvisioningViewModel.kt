@@ -53,6 +53,7 @@ class ProvisioningViewModel @Inject constructor(
                     copyFileToInternalStorage(file.uri, file.name ?: "unknown")
                 }
             }
+            initializeApp()
         }
     }
 
