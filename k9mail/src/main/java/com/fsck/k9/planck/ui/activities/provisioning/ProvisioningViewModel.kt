@@ -18,7 +18,7 @@ class ProvisioningViewModel @Inject constructor(
     private val provisioningManager: ProvisioningManager,
 ) : ViewModel() {
     private val stateLiveData: MutableLiveData<ProvisionState> = MutableLiveData(
-        ProvisionState.WaitingToInitialize(false)
+        provisioningManager.state.value
     )
     val state: LiveData<ProvisionState> = stateLiveData
 

@@ -30,7 +30,6 @@ class ProvisioningViewModelTest : LiveDataTest<ProvisionState>() {
         get() = viewModel.state
 
     override fun initialize() {
-        //Dispatchers.setMain(coroutinesTestRule.testDispatcher)
         viewModel = ProvisioningViewModel(
             provisioningManager,
         )
