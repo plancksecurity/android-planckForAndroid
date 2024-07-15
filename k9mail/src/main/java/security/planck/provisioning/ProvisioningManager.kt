@@ -1,7 +1,10 @@
 package security.planck.provisioning
 
+import android.net.Uri
 import android.util.Log
+import androidx.documentfile.provider.DocumentFile
 import com.fsck.k9.BuildConfig
+import com.fsck.k9.Globals
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
@@ -13,8 +16,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
+import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,15 +34,14 @@ class ProvisioningManager @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
 ) {
     private val stateMutableFlow: MutableStateFlow<ProvisionState> = MutableStateFlow(
-        if (k9.isRunningOnWorkProfile) ProvisionState.WaitingForProvisioning
-        else ProvisionState.WaitingToInitialize(shouldOfferRestore)
+        ProvisionState.WaitingToInitialize(shouldOfferRestore)
     )
     val state = stateMutableFlow.asStateFlow()
 
     private val areCoreDbsClear: Boolean
         get() = !fileLocator.keysDbFile.exists()
     private val shouldOfferRestore: Boolean
-        get() = BuildConfig.IS_ENTERPRISE && !k9.isRunningOnWorkProfile && areCoreDbsClear
+        get() = areCoreDbsClear
 
     fun startProvisioningBlockingIfPossible() {
         runBlocking(dispatcherProvider.planckDispatcher()) {
@@ -61,6 +66,51 @@ class ProvisioningManager @Inject constructor(
                     setProvisionState(ProvisionState.Error(it))
                 }
                 .onSuccess { setProvisionState(ProvisionState.Initialized) }
+        }
+    }
+
+    fun initializeApp() {
+        startProvisioning()
+    }
+
+    suspend fun restoreData(documentFile: DocumentFile?) {
+        withContext(dispatcherProvider.io()) {
+            kotlin.runCatching {
+                logInDebug("EFA-625", "SELECTED DOCUMENT FILE: ${documentFile?.uri}")
+                documentFile?.listFiles()?.forEach { file ->
+                    copyFileToInternalStorage(file.uri, file.name ?: "unknown")
+                }
+            }
+        }.onSuccess {
+            initializeApp()
+        }.onFailure {
+            stateMutableFlow.value = ProvisionState.DbImportFailed(it)
+        }
+    }
+
+    private fun copyFileToInternalStorage(fileUri: Uri, fileName: String) {
+        var outputFolder: File? = null
+        if (fileName.startsWith(PlanckSystemFileLocator.KEYS_DB_FILE)
+            || fileName.startsWith(PlanckSystemFileLocator.MANAGEMENT_DB_FILE)
+            || fileName.startsWith(PlanckSystemFileLocator.LOG_DB_FILE)
+        ) {
+            outputFolder = fileLocator.pEpFolder
+        } else if (fileName.startsWith(PlanckSystemFileLocator.SYSTEM_DB_FILE)) {
+            outputFolder = fileLocator.trustwordsFolder
+        } else {
+            logInDebug("EFA-625", "IGNORED FILE: $fileName")
+        }
+        outputFolder?.let {
+            val inputStream: InputStream? =
+                Globals.getContext().contentResolver.openInputStream(fileUri)
+            outputFolder.mkdirs()
+            val outputFile = File(outputFolder, fileName)
+            inputStream?.use { input ->
+                outputFile.outputStream().use { output ->
+                    logInDebug("EFA-625", "COPYING FILE $fileName TO ${outputFile.absolutePath}")
+                    input.copyTo(output)
+                }
+            }
         }
     }
 
@@ -145,5 +195,12 @@ class ProvisioningManager @Inject constructor(
 
     private fun setProvisionState(newState: ProvisionState) {
         stateMutableFlow.value = newState
+    }
+
+    @Suppress("SameParameterValue")
+    private fun logInDebug(tag: String, message: String) {
+        if (BuildConfig.DEBUG) {
+            Log.d(tag, message)
+        }
     }
 }

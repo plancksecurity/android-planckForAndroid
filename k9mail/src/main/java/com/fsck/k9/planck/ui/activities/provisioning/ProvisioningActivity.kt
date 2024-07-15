@@ -49,10 +49,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
 
     private fun renderState(state: ProvisionState) {
         when (state) {
-            is ProvisionState.WaitingForProvisioning ->
-
-                waitingForProvisioning()
-
             is ProvisionState.InProvisioning ->
                 provisioningProgress()
 
@@ -86,6 +82,9 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
                     displayInitializationError(message)
                 }
             }
+
+            is ProvisionState.DbImportFailed ->
+                displayDbImportFailed(state.throwable.message.orEmpty())
         }
     }
 
@@ -104,17 +103,12 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
                         restoreDataFromSelectedFolder(uri)
                     }
                 }
-                this.viewModel.initializeApp()
             }
     }
 
     override fun onPause() {
         super.onPause()
         overridePendingTransition(NO_ANIMATION, NO_ANIMATION)
-    }
-
-    override fun waitingForProvisioning() {
-        waitingForProvisioningText.setText(R.string.waiting_for_provisioning)
     }
 
     override fun provisioningProgress() {
@@ -147,11 +141,17 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
         displayError(R.string.provisioning_error_template, message)
     }
 
+    override fun displayDbImportFailed(message: String) {
+        binding.provisioningRestoreDataButton.isEnabled = false
+        displayError(R.string.provisioning_db_import_error_msg, message)
+    }
+
     private fun displayError(@StringRes stringResource: Int, message: String) {
         val errorColor = ContextCompat.getColor(
             this,
             R.color.compose_unsecure_delivery_warning
         )
+        waitingForProvisioningText.isVisible = true
         waitingForProvisioningText.setTextColor(errorColor)
         waitingForProvisioningText.text = getString(stringResource, message)
         progressBar.indeterminateDrawable.setColorFilter(
@@ -180,22 +180,11 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     private fun pickFolder() {
-        val documentsFolder =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val initialFolderUri: Uri = Uri.fromFile(documentsFolder)
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialFolderUri)
-        }
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         folderPickerLauncher.launch(intent)
     }
 
     private fun restoreDataFromSelectedFolder(folderUri: Uri) {
-        Log.e("EFA-625", "FOLDER URI: $folderUri")
-        val contentResolver = applicationContext.contentResolver
-        val takeFlags: Int =
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        contentResolver.takePersistableUriPermission(folderUri, takeFlags)
-
         val documentFile = DocumentFile.fromTreeUri(this, folderUri)
         this.viewModel.restoreData(documentFile)
     }
