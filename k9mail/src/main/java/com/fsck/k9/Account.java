@@ -230,7 +230,7 @@ public class Account implements BaseAccount, StoreConfig {
     public static final boolean DEFAULT_MESSAGE_FORMAT_AUTO = false;
     public static final QuoteStyle DEFAULT_QUOTE_STYLE = QuoteStyle.HEADER;
     public static final String DEFAULT_QUOTE_PREFIX = ">";
-    public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = true;
+    public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = false;
     public static final boolean DEFAULT_REPLY_AFTER_QUOTE = false;
     public static final boolean DEFAULT_STRIP_SIGNATURE = true;
     public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = 50;
