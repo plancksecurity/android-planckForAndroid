@@ -49,10 +49,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
 
     private fun renderState(state: ProvisionState) {
         when (state) {
-            is ProvisionState.WaitingForProvisioning ->
-
-                waitingForProvisioning()
-
             is ProvisionState.InProvisioning ->
                 provisioningProgress()
 
@@ -113,10 +109,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     override fun onPause() {
         super.onPause()
         overridePendingTransition(NO_ANIMATION, NO_ANIMATION)
-    }
-
-    override fun waitingForProvisioning() {
-        waitingForProvisioningText.setText(R.string.waiting_for_provisioning)
     }
 
     override fun provisioningProgress() {

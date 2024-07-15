@@ -1,58 +1,55 @@
 package security.planck.provisioning
 
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.planck.PlanckProviderImplKotlin
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.called
-import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
-import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
-import security.planck.network.UrlChecker
+import java.io.File
 
 @ExperimentalCoroutinesApi
-class NonProvisioningManagerTest: RobolectricTest() {
+class NonProvisioningManagerTest : RobolectricTest() {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule(testDispatcher = UnconfinedTestDispatcher())
 
     private val k9: K9 = mockk(relaxed = true)
-    private val urlChecker: UrlChecker = mockk()
-    private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
     private val configurationManager: ConfigurationManager = mockk()
     private val provisioningSettings: ProvisioningSettings = mockk()
     private val preferences: Preferences = mockk()
-    private val manager = ProvisioningManager(
-        k9,
-        preferences,
-        configurationManager,
-        provisioningSettings,
-        coroutinesTestRule.testDispatcherProvider,
-    )
+    private val keysDb: File = mockk {
+        every { exists() }.returns(true)
+    }
+    private val fileLocator: PlanckSystemFileLocator = mockk {
+        every { keysDbFile }.returns(keysDb)
+    }
+    private val observedValues = mutableListOf<ProvisionState>()
+    private lateinit var manager: ProvisioningManager
 
     @Before
     fun setUp() {
-        assumeFalse(BuildConfig.IS_OFFICIAL)
         mockkObject(PlanckProviderImplKotlin)
-
-        manager.addListener(listener)
-        verify { listener.provisionStateChanged(any()) }
-        clearMocks(listener)
+        initializeManager()
     }
 
     @After
@@ -60,45 +57,114 @@ class NonProvisioningManagerTest: RobolectricTest() {
         unmockkObject(PlanckProviderImplKotlin)
     }
 
+    private fun initializeManager() {
+        manager = ProvisioningManager(
+            k9,
+            preferences,
+            configurationManager,
+            fileLocator,
+            provisioningSettings,
+            coroutinesTestRule.testDispatcherProvider,
+        )
+    }
+
+    private fun initializeManagerAndObserveFlow() {
+        initializeManager()
+        observeFlow()
+    }
+
     @Test
-    fun `startProvisioning() does not provision app in dev variant`() {
+    fun `startProvisioning() does not provision app in dev variant`() = runTest {
+        initializeManagerAndObserveFlow()
+
+
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { PlanckProviderImplKotlin.wasNot(called) }
         coVerify { k9.finalizeSetup() }
-        assertListenerProvisionChangedWithState { state ->
-            assertEquals(ProvisionState.Initialized, state)
-        }
+        assertObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initialized
+        )
     }
 
     @Test
-    fun `when K9 initialization fails, resulting state is error`() {
+    fun `Manager offers restore initially if keys db does not exist`() {
+        every { keysDb.exists() }.returns(false)
+        initializeManagerAndObserveFlow()
+        assertObservedValues(ProvisionState.WaitingToInitialize(true))
+    }
+
+    @Test
+    fun `when K9 initialization fails, resulting state is error`() = runTest {
         coEvery { k9.finalizeSetup() }.coAnswers { throw RuntimeException("fail") }
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        coVerify { k9.finalizeSetup() }
-        assertListenerProvisionChangedWithState { state ->
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is InitializationFailedException)
-        }
+        assertFirstObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initializing(false)
+        )
+        val throwable = (observedValues[2] as ProvisionState.Error).throwable
+        assertTrue(throwable is InitializationFailedException)
     }
 
     @Test
     fun `performInitializedEngineProvisioning() never calls configurationManager_loadConfigurationsSuspend`() {
+        initializeManagerAndObserveFlow()
         manager.performInitializedEngineProvisioning()
 
 
         coVerify { configurationManager.wasNot(called) }
     }
 
-    private fun assertListenerProvisionChangedWithState(block: (state: ProvisionState) -> Unit) {
-        val slot = mutableListOf<ProvisionState>()
-        coVerify { listener.provisionStateChanged(capture(slot)) }
-        block(slot.last())
+    private fun assertObservedValues(vararg values: ProvisionState) {
+        println("########################################")
+        println("observed values: \n${
+            observedValues
+                .mapIndexed { index, value -> "$index: $value" }
+                .joinToString("\n\n")
+        }")
+        println("########################################")
+        assertEquals(
+            "expected ${values.size} values but got ${observedValues.size} values instead",
+            values.size, observedValues.size
+        )
+        values.forEachIndexed { index, value ->
+            assertEquals(
+                "FAILURE AT POSITION $index:",
+                value, observedValues[index]
+            )
+        }
+    }
+
+    private fun assertFirstObservedValues(vararg values: ProvisionState) {
+        println("########################################")
+        println("observed values: \n${
+            observedValues
+                .mapIndexed { index, value -> "$index: $value" }
+                .joinToString("\n\n")
+        }")
+        println("########################################")
+        values.forEachIndexed { index, value ->
+            assertEquals(
+                "FAILURE AT POSITION $index:",
+                value, observedValues[index]
+            )
+        }
+    }
+
+    private fun observeFlow() {
+        CoroutineScope(UnconfinedTestDispatcher()).launch {
+            manager.state.collect {
+                observedValues.add(it)
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.fsck.k9.planck.ui.activities.provisioning
 
 interface ProvisioningView {
-    fun waitingForProvisioning()
     fun provisioningProgress()
     fun initializing()
     fun initializingAfterSuccessfulProvision()

@@ -1,98 +1,57 @@
 package security.planck.ui.provisioning
 
+import androidx.lifecycle.LiveData
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningViewModel
-import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningView
+import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
-import security.planck.provisioning.InitializationFailedException
+import security.planck.common.LiveDataTest
 import security.planck.provisioning.ProvisionState
-import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningManager
 
-class ProvisioningViewModelTest {
-    private val provisioningManager: ProvisioningManager = mockk(relaxed = true)
-    private val view: ProvisioningView = mockk(relaxed = true)
-    private val viewModel = ProvisioningViewModel(provisioningManager)
+@OptIn(ExperimentalCoroutinesApi::class)
+class ProvisioningViewModelTest : LiveDataTest<ProvisionState>() {
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
 
-    @Test
-    fun `view handles WaitingForProvisioning state`() {
-        viewModel.attach(view)
+    private val testFlow =
+        MutableStateFlow<ProvisionState>(ProvisionState.WaitingToInitialize(false))
+    private val provisioningManager: ProvisioningManager = mockk(relaxed = true) {
+        every { state }.returns(testFlow)
+    }
+    private lateinit var viewModel: ProvisioningViewModel
+    override val testLivedata: LiveData<ProvisionState>
+        get() = viewModel.state
 
-
-        viewModel.provisionStateChanged(ProvisionState.WaitingForProvisioning)
-
-
-        verify { view.waitingForProvisioning() }
+    override fun initialize() {
+        //Dispatchers.setMain(coroutinesTestRule.testDispatcher)
+        viewModel = ProvisioningViewModel(
+            provisioningManager,
+        )
     }
 
     @Test
-    fun `view handles InProvisioning state`() {
-        viewModel.attach(view)
-
-
-        viewModel.provisionStateChanged(ProvisionState.InProvisioning)
-
-
-        verify { view.provisioningProgress() }
-    }
-
-    @Test
-    fun `view handles Initializing state after successful provisioning`() {
-        viewModel.attach(view)
-
-
-        viewModel.provisionStateChanged(ProvisionState.Initializing(true))
-
-
-        verify { view.initializingAfterSuccessfulProvision() }
-    }
-
-    @Test
-    fun `view handles Initializing state`() {
-        viewModel.attach(view)
-
-
-        viewModel.provisionStateChanged(ProvisionState.Initializing(false))
-
-
-        verify { view.initializing() }
-    }
-
-    @Test
-    fun `view handles Initialized state`() {
-        viewModel.attach(view)
-
-
-        viewModel.provisionStateChanged(ProvisionState.Initialized)
-
-
-        verify { view.initialized() }
-    }
-
-    @Test
-    fun `view handles provisioning Error state`() {
-        viewModel.attach(view)
-
-
-        viewModel.provisionStateChanged(
-            ProvisionState.Error(ProvisioningFailedException("test error", RuntimeException()))
+    fun `view emits state from ProvisioningManager`() = runTest {
+        assertObservedValues(
+            ProvisionState.WaitingToInitialize(false),// initial state
+            ProvisionState.WaitingToInitialize(false),
         )
 
 
-        verify { view.displayProvisioningError("test error") }
-    }
-
-    @Test
-    fun `view handles initialization Error state`() {
-        viewModel.attach(view)
+        testFlow.value = ProvisionState.Initialized
+        advanceUntilIdle()
 
 
-        viewModel.provisionStateChanged(
-            ProvisionState.Error(InitializationFailedException("test error", RuntimeException()))
+        assertObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initialized,
         )
-
-
-        verify { view.displayInitializationError("test error") }
     }
 }
