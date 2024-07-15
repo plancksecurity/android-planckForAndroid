@@ -190,12 +190,6 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     private fun restoreDataFromSelectedFolder(folderUri: Uri) {
-        Log.e("EFA-625", "FOLDER URI: $folderUri")
-        val contentResolver = applicationContext.contentResolver
-        val takeFlags: Int =
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        contentResolver.takePersistableUriPermission(folderUri, takeFlags)
-
         val documentFile = DocumentFile.fromTreeUri(this, folderUri)
         this.viewModel.restoreData(documentFile)
     }
