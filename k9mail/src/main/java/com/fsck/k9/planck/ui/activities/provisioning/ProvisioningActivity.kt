@@ -180,12 +180,7 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     private fun pickFolder() {
-        val documentsFolder =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val initialFolderUri: Uri = Uri.fromFile(documentsFolder)
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialFolderUri)
-        }
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         folderPickerLauncher.launch(intent)
     }
 
