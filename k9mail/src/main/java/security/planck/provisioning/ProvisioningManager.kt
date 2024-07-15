@@ -36,7 +36,7 @@ class ProvisioningManager @Inject constructor(
     private val areCoreDbsClear: Boolean
         get() = !fileLocator.keysDbFile.exists()
     private val shouldOfferRestore: Boolean
-        get() = BuildConfig.IS_ENTERPRISE && !k9.isRunningOnWorkProfile && areCoreDbsClear
+        get() = areCoreDbsClear
 
     fun startProvisioningBlockingIfPossible() {
         runBlocking(dispatcherProvider.planckDispatcher()) {
