@@ -2216,6 +2216,11 @@ public class CucumberTestSteps {
                 waitForIdle();
                 fileName = "testpdf.pdf";
                 break;
+            case "TXT":
+                raw = R.raw.textfile;
+                waitForIdle();
+                fileName = "testtxt.txt";
+                break;
             case "masterKey":
                 raw = R.raw.masterkeypro;
                 waitForIdle();
