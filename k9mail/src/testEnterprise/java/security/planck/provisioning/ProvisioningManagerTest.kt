@@ -17,11 +17,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.*
 import security.planck.file.PlanckSystemFileLocator
 import security.planck.mdm.ConfigurationManager
 import security.planck.network.UrlChecker
 import security.planck.provisioning.*
+import java.io.File
 
 private const val TEST_PROVISIONING_URL = "https://test/url"
 
@@ -35,7 +38,12 @@ class ProvisioningManagerTest: RobolectricTest() {
     private val configurationManager: ConfigurationManager = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
     private val provisioningSettings: ProvisioningSettings = mockk()
-    private val fileLocator: PlanckSystemFileLocator = mockk()
+    private val keysDb: File = mockk {
+        every { exists() }.returns(true)
+    }
+    private val fileLocator: PlanckSystemFileLocator = mockk {
+        every { keysDbFile }.returns(keysDb)
+    }
 
     private val observedValues = mutableListOf<ProvisionState>()
 
@@ -57,7 +65,11 @@ class ProvisioningManagerTest: RobolectricTest() {
 
         mockkStatic(Utility::class)
         coEvery { Utility.hasConnectivity(any()) }.returns(true)
+    }
+
+    private fun initializeManagerAndObserveFlow() {
         initializeManager()
+        observeFlow()
     }
 
     private fun initializeManager() {
@@ -78,19 +90,26 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `initial state is WaitingForProvisioning if running under MDM`() {
-        coEvery { k9.isRunningOnWorkProfile }.returns(true)
-
-
-        assertObservedValues(ProvisionState.WaitingForProvisioning)
+    fun `initial state is WaitingToInitialize`() {
+        initializeManagerAndObserveFlow()
+        assertObservedValues(ProvisionState.WaitingToInitialize(false))
     }
 
     @Test
-    fun `startProvisioning() starts provisioning app if running on work profile`() {
+    fun `Manager offers restore initially if keys db does not exist`() {
+        every { keysDb.exists() }.returns(false)
+        initializeManagerAndObserveFlow()
+        assertObservedValues(ProvisionState.WaitingToInitialize(true))
+    }
+
+    @Test
+    fun `startProvisioning() starts provisioning app if running on work profile`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup) }
@@ -98,8 +117,10 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Test
     @Ignore("provisioning url disabled")
-    fun `startProvisioning() provisions app using PEpProviderImplKotlin`() {
+    fun `startProvisioning() provisions app using PEpProviderImplKotlin`() = runTest {
+        initializeManagerAndObserveFlow()
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
@@ -107,131 +128,134 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `when device has no network connectivity, resulting state is error`() {
+    fun `when device has no network connectivity, resulting state is error`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         coEvery { Utility.hasConnectivity(any()) }.returns(false)
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is ProvisioningFailedException)
-            assertTrue(throwable.message!!.contains("Device is offline"))
-        }
+        assertEquals(observedValues.first(), ProvisionState.WaitingToInitialize(false))
+        val throwable = (observedValues[1] as ProvisionState.Error).throwable
+        assertTrue(throwable is ProvisioningFailedException)
+        assertEquals(throwable.message, "Device is offline")
     }
 
     @Test
     @Ignore("provisioning url disabled")
-    fun `when provisioning url is not reachable, resulting state is error`() {
+    fun `when provisioning url is not reachable, resulting state is error`() = runTest {
+        initializeManagerAndObserveFlow()
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is ProvisioningFailedException)
-            assertTrue(throwable.message!!.contains("is not reachable"))
-        }
+        assertEquals(observedValues.first(), ProvisionState.WaitingToInitialize(false))
+        val throwable = (observedValues[1] as ProvisionState.Error).throwable
+        assertTrue(throwable is ProvisioningFailedException)
+        assertTrue(throwable.message!!.contains("is not reachable"))
     }
 
     @Test
     @Ignore("provisioning url disabled")
-    fun `when url has bad format, resulting state is error`() {
+    fun `when url has bad format, resulting state is error`() = runTest {
+        initializeManagerAndObserveFlow()
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is ProvisioningFailedException)
-            assertTrue(throwable.message!!.contains("Url has bad format"))
-        }
+        assertEquals(observedValues.first(), ProvisionState.WaitingToInitialize(false))
+        val throwable = (observedValues[1] as ProvisionState.Error).throwable
+        assertTrue(throwable is ProvisioningFailedException)
+        assertTrue(throwable.message!!.contains("Url has bad format"))
     }
 
     @Test
     @Ignore("provisioning url disabled")
-    fun `when provisioning fails, resulting state is error`() {
+    fun `when provisioning fails, resulting state is error`() = runTest {
         coEvery { PlanckProviderImplKotlin.provision(any(), any()) }
             .returns(Result.failure(ProvisioningFailedException("fail", RuntimeException())))
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
-        assertListenerProvisionChangedWithState { state ->
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is ProvisioningFailedException)
-        }
         unmockkObject(PlanckProviderImplKotlin)
     }
 
     @Test
-    fun `when K9 initialization fails, resulting state is error`() {
+    fun `when K9 initialization fails, resulting state is error`() = runTest {
         coEvery { k9.finalizeSetup() }.coAnswers { throw RuntimeException("fail") }
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            coVerify { k9.finalizeSetup() }
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is InitializationFailedException)
-        }
+        assertFirstObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initializing(false)
+        )
+        val throwable = (observedValues[2] as ProvisionState.Error).throwable
+        assertTrue(throwable is InitializationFailedException)
     }
 
     @Test
     @Ignore("provisioning url disabled")
-    fun `if provisioning url was not provided, provisioning does not happen`() {
+    fun `if provisioning url was not provided, provisioning does not happen`() = runTest {
+        initializeManagerAndObserveFlow()
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify(exactly = 0) { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
-
-        assertListenerProvisionChangedWithState { state ->
-            assertEquals(ProvisionState.Initialized, state)
-        }
     }
 
     @Test
-    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter FirstStartup`() {
+    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter FirstStartup`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.FirstStartup) }
-        assertListenerProvisionChangedWithState { state ->
-            assertEquals(ProvisionState.Initialized, state)
-        }
+        assertObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initialized
+        )
     }
 
     @Test
-    fun `if there are accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup`() {
+    fun `if there are accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup`() = runTest {
         coEvery { preferences.accounts }.answers { listOf(mockk()) }
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.Startup) }
-        assertListenerProvisionChangedWithState { state ->
-            assertEquals(ProvisionState.Initialized, state)
-        }
+        assertObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initialized
+        )
     }
 
     @Test
-    fun `if there are accounts setup, accounts in ProvisioningSettings that need deletion are deleted`() {
+    fun `if there are accounts setup, accounts in ProvisioningSettings that need deletion are deleted`() = runTest {
         val localStore: LocalStore = mockk {
             every { delete() }.just(runs)
         }
@@ -242,9 +266,11 @@ class ProvisioningManagerTest: RobolectricTest() {
         coEvery { preferences.accounts }.answers { listOf(account) }
         coEvery { provisioningSettings.findAccountsToRemove() }.returns(listOf(account))
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerifyOrder {
@@ -257,48 +283,58 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
-    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine if it is the first startup`() {
+    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine if it is the first startup`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
         manager.performInitializedEngineProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine) }
     }
 
     @Test
-    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine on every startup`() {
+    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine on every startup`() = runTest {
         coEvery { preferences.accounts }.answers { listOf(mockk()) }
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
         manager.performInitializedEngineProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningScope.InitializedEngine) }
     }
 
     @Test
-    fun `startProvisioning() does not provision app if not running on work profile`() {
+    fun `startProvisioning() does not provision app if not running on work profile`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(false)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
         coVerify { PlanckProviderImplKotlin.wasNot(called) }
         coVerify { k9.finalizeSetup() }
-        assertListenerProvisionChangedWithState { state ->
-            assertEquals(ProvisionState.Initialized, state)
-        }
+        assertObservedValues(
+            ProvisionState.WaitingToInitialize(false),
+            ProvisionState.Initialized
+        )
     }
 
     @Test
-    fun `if ConfigurationManager_loadConfigurationSuspend fails, resulting state is error`() {
+    fun `if ConfigurationManager_loadConfigurationSuspend fails, resulting state is error`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
+        initializeManagerAndObserveFlow()
 
 
         coEvery { configurationManager.loadConfigurationsSuspend(any()) }
@@ -306,42 +342,33 @@ class ProvisioningManagerTest: RobolectricTest() {
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            coVerify { k9.isRunningOnWorkProfile }
-            confirmVerified(k9)
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is RuntimeException)
-            assertTrue(throwable.message!!.contains("fail"))
-        }
+        val throwable = (observedValues[1] as ProvisionState.Error).throwable
+        assertTrue(throwable is RuntimeException)
+        assertTrue(throwable.message!!.contains("fail"))
     }
 
     @Test
-    fun `if mail settings are not valid, resulting state is error`() {
+    fun `if mail settings are not valid, resulting state is error`() = runTest {
         coEvery { k9.isRunningOnWorkProfile }.returns(true)
         coEvery { provisioningSettings.hasValidMailSettings() }.returns(false)
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            coVerify { k9.isRunningOnWorkProfile }
-            confirmVerified(k9)
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is ProvisioningFailedException)
-            assertTrue(
-                throwable.message!!.contains("Provisioned mail settings are not valid")
-            )
-        }
+        val throwable = (observedValues[1] as ProvisionState.Error).throwable
+        assertTrue(throwable is ProvisioningFailedException)
+        assertTrue(throwable.message!!.contains("Provisioned mail settings are not valid"))
     }
 
     @Test
     @Ignore("provisioning url disabled")
-    fun `if url fails mail settings server url check, resulting state is error`() {
+    fun `if url fails mail settings server url check, resulting state is error`() = runTest {
         coEvery { urlChecker.isValidUrl(any()) }.returns(false)
         coEvery { provisioningSettings.accountsProvisionList.firstOrNull()?.provisionedMailSettings }.returns(
             AccountMailSettingsProvision(
@@ -359,20 +386,17 @@ class ProvisioningManagerTest: RobolectricTest() {
                 )
             )
         )
+        initializeManagerAndObserveFlow()
 
 
         manager.startProvisioning()
+        advanceUntilIdle()
 
 
-        assertListenerProvisionChangedWithState { state ->
-            coVerify { k9.wasNot(called) }
-            assertTrue(state is ProvisionState.Error)
-            val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is ProvisioningFailedException)
-            assertTrue(
-                throwable.message!!.contains("Provisioned mail settings are not valid")
-            )
-        }
+
+        val throwable = (observedValues[1] as ProvisionState.Error).throwable
+        assertTrue(throwable is ProvisioningFailedException)
+        assertTrue(throwable.message!!.contains("Provisioned mail settings are not valid"))
     }
 
     private fun assertObservedValues(vararg values: ProvisionState) {
@@ -395,10 +419,20 @@ class ProvisioningManagerTest: RobolectricTest() {
         }
     }
 
-    private fun assertListenerProvisionChangedWithState(block: (state: ProvisionState) -> Unit) {
-        //val slot = mutableListOf<ProvisionState>()
-        //coVerify { listener.provisionStateChanged(capture(slot)) }
-        //block(slot.last())
+    private fun assertFirstObservedValues(vararg values: ProvisionState) {
+        println("########################################")
+        println("observed values: \n${
+            observedValues
+                .mapIndexed { index, value -> "$index: $value" }
+                .joinToString("\n\n")
+        }")
+        println("########################################")
+        values.forEachIndexed { index, value ->
+            assertEquals(
+                "FAILURE AT POSITION $index:",
+                value, observedValues[index]
+            )
+        }
     }
 
     private fun observeFlow() {

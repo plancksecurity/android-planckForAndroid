@@ -4,7 +4,7 @@
     <bool name="default_enable_privacy_protection">true</bool>
     <bool name="default_unsecure_delivery_warning">true</bool>
     <bool name="default_use_pep_sync_folder">true</bool>
-    <bool name="default_quoted_text_shown">true</bool>
+    <bool name="default_quoted_text_shown">false</bool>
     <bool name="default_debug_logging">false</bool>
     <bool name="default_enable_echo_protocol">false</bool>
     <bool name="default_remote_search_enabled">true</bool>

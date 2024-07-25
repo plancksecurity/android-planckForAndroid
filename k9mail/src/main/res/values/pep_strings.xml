@@ -529,5 +529,6 @@
     <string name="create_account_keys_dialog_success_message">Account was created successfully.</string>
     <string name="provisioning_restore_action">Restore data</string>
     <string name="provisioning_skip_action">Skip</string>
+    <string name="provisioning_db_import_error_msg">Could not import databases\n%s\nPlease restart app or contact your IT department.</string>
 
 </resources>

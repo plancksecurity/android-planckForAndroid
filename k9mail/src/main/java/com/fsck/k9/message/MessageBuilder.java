@@ -280,7 +280,7 @@ public abstract class MessageBuilder {
             MimeBodyPart bp = new MimeBodyPart(body);
 
             addContentType(bp, attachment.contentType, attachment.name);
-            addContentDisposition(bp, attachment.name,  "attachment", attachment.size);
+            addContentDisposition(bp, "attachment", attachment.name, attachment.size);
 
             mp.addBodyPart(bp);
         }

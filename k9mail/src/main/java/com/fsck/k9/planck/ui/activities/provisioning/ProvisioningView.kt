@@ -1,7 +1,6 @@
 package com.fsck.k9.planck.ui.activities.provisioning
 
 interface ProvisioningView {
-    fun waitingForProvisioning()
     fun provisioningProgress()
     fun initializing()
     fun initializingAfterSuccessfulProvision()
@@ -9,5 +8,6 @@ interface ProvisioningView {
     fun displayProvisioningError(message: String)
     fun displayInitializationError(message: String)
     fun displayUnknownError(trace: String)
+    fun displayDbImportFailed(message: String)
     fun offerRestorePlanckData()
 }
