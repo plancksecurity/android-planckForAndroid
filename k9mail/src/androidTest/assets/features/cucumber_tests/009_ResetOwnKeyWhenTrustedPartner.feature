@@ -28,7 +28,7 @@ Feature: Reset Own Key when Trusted Partner
     And I enter BotWillResetOwnKey in the messageBody field
     Then I check the privacy status is Trusted
     When I click the send message button
-    And I send 1 messages to bot2 with subject AfterReset and body ResetPartnersKey
+    And I send 2 messages to bot2 with subject AfterReset and body ResetPartnersKey
     And I click the first message
     Then I check the privacy status is Encrypted
     And I compare rating_string from json file with reliable
