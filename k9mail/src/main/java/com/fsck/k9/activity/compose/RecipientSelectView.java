@@ -869,7 +869,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
      */
     @Override
     protected TokenImageSpan buildSpanForObject(Recipient obj) {
-        if (obj == null) {
+        if (obj == null || obj.getAddress().getAddress() == null) {
             return null;
         }
         String email = obj.getAddress().getAddress().toLowerCase();
