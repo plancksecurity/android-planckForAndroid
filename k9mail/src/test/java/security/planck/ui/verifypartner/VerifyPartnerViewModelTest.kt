@@ -32,6 +32,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import security.planck.common.LiveDataTest
@@ -668,11 +669,12 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
             advanceUntilIdle()
 
 
-            coVerify { planckProvider.incomingMessageRating(localMessage) }
-            coVerify { localMessage.planckRating = TRUSTED_RATING }
+            coVerify(exactly = 0) { planckProvider.incomingMessageRating(any()) }
+            coVerify(exactly = 0) { localMessage.planckRating = any() }
         }
 
     @Test
+    @Ignore("message rating not updated for now")
     fun `positiveAction() on trust confirmation for incoming message sets state to ErrorTrusting if PlanckProvider_incomingMessageRating() fails`() =
         runTest {
             coEvery { planckProvider.incomingMessageRating(any()) }.returns(
@@ -711,6 +713,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
     @Test
+    @Ignore("message rating not saved for now")
     fun `positiveAction() on trust confirmation for incoming message sets state to ErrorTrusting if it fails to save new rating to message`() =
         runTest {
             coEvery { localMessage.planckRating = any() }.throws(RuntimeException("test"))
@@ -723,8 +726,8 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
             advanceUntilIdle()
 
 
-            coVerify { planckProvider.incomingMessageRating(localMessage) }
-            coVerify { localMessage.planckRating = TRUSTED_RATING }
+            coVerify(exactly = 0) { planckProvider.incomingMessageRating(any()) }
+            coVerify(exactly = 0) { localMessage.planckRating = any() }
             assertObservedValues(
                 Idle,
                 LoadingHandshakeData,
@@ -745,6 +748,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
     @Test
+    @Ignore("message rating not updated for now")
     fun `positiveAction() on mistrust confirmation for incoming message sets state to ErrorMistrusting if PlanckProvider_incomingMessageRating() fails`() =
         runTest {
             coEvery { planckProvider.incomingMessageRating(any()) }.returns(
@@ -783,6 +787,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
         }
 
     @Test
+    @Ignore("message rating not saved for now")
     fun `positiveAction() on mistrust confirmation for incoming message sets state to ErrorMistrusting if it fails to save new rating to message`() =
         runTest {
             coEvery { planckProvider.incomingMessageRating(any()) }.returns(
@@ -800,8 +805,8 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
             advanceUntilIdle()
 
 
-            coVerify { planckProvider.incomingMessageRating(localMessage) }
-            coVerify { localMessage.planckRating = MISTRUSTED_RATING }
+            coVerify(exactly = 0) { planckProvider.incomingMessageRating(any()) }
+            coVerify(exactly = 0) { localMessage.planckRating = any() }
             assertObservedValues(
                 Idle,
                 LoadingHandshakeData,
@@ -955,7 +960,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                 TrustProgress(partner.address),
                 TrustDone(
                     partner.address,
-                    mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to TRUSTED_RATING.toString())
+                    mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to TEST_RATING.toString()) // no rating change for now
                 )
             )
         }
@@ -994,7 +999,7 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
                 MistrustProgress(partner.address),
                 MistrustDone(
                     partner.address,
-                    mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to MISTRUSTED_RATING.toString())
+                    mapOf(VerifyPartnerFragment.RESULT_KEY_RATING to TEST_RATING.toString()) // no rating change for now
                 )
             )
         }
@@ -1143,14 +1148,17 @@ class VerifyPartnerViewModelTest : LiveDataTest<VerifyPartnerState>() {
     @Test
     fun `finish() sets state to Finish with empty result map if result was already delivered`() =
         runTest {
-            coEvery { planckProvider.incomingMessageRating(any()) }.returns(
-                ResultCompat.success(
-                    MISTRUSTED_RATING
+            coEvery {
+                planckProvider.getRatingResult(
+                    any(),
+                    any(),
+                    any(),
+                    any()
                 )
-            )
+            }.returns(ResultCompat.success(MISTRUSTED_RATING))
 
 
-            initializeViewModel(incoming = true)
+            initializeViewModel(incoming = false)
             advanceUntilIdle()
             viewModel.negativeAction()
             viewModel.positiveAction()
