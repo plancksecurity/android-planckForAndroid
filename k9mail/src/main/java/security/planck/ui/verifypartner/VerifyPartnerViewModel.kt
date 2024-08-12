@@ -208,7 +208,8 @@ constructor(
         }
 
     private suspend fun refreshRating(): ResultCompat<Unit> =
-        retrieveNewRating().flatMapSuspend { onRatingChanged(it) }
+        if (isMessageIncoming) ResultCompat.success(Unit)
+        else retrieveNewRating().flatMapSuspend { onRatingChanged(it) }
 
     private suspend fun retrieveNewRating(): ResultCompat<Rating> =
         withContext(dispatcherProvider.planckDispatcher()) {
