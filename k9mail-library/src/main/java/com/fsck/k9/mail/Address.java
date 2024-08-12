@@ -170,8 +170,7 @@ public class Address implements Serializable {
             }
         } catch (MimeException pe) {
             Timber.e(pe, "MimeException in Address.parse()");
-            //but we do an silent failover : we just use the given string as name with empty address
-            addresses.add(new Address(null, addressList, false));
+            // broken addresses are never added to the resulting array
         }
         return addresses.toArray(EMPTY_ADDRESS_ARRAY);
     }
