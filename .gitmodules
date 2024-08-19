@@ -30,3 +30,7 @@
 	path = foldable-folder-list
 	url = git@github.com:plancksecurity/android-foldable-folder-list.git
 	branch = develop
+[submodule "core/botan"]
+	path = core/botan
+	url = git@github.com:plancksecurity/botan.git
+	branch = 2.19.3_planck

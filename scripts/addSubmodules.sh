@@ -11,5 +11,6 @@ git submodule add --force -b develop git@github.com:plancksecurity/foundation-pl
 git submodule add --force -b develop git@github.com:plancksecurity/foundation-libPlanckCxx11.git core/libPlanckCxx11
 git submodule add --force -b develop git@github.com:plancksecurity/foundation-libPlanckWrapper.git core/libPlanckWrapper
 git submodule add --force -b develop git@github.com:plancksecurity/foundation-planckJNIWrapper.git core/planckJNIWrapper
+git submodule add --force -b 2.19.3_planck git@github.com:plancksecurity/botan.git core/botan
 git submodule add --force -b develop git@github.com:plancksecurity/android-foldable-folder-list.git foldable-folder-list
 
