@@ -34,3 +34,7 @@
 	path = core/botan
 	url = git@github.com:plancksecurity/botan.git
 	branch = 2.19.3_planck
+[submodule "core/jitterentropy-library"]
+	path = core/jitterentropy-library
+	url = git@github.com:plancksecurity/jitterentropy-library.git
+	branch = develop
