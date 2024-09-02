@@ -6,6 +6,9 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.planck.PlanckProvider
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Provider
@@ -17,6 +20,9 @@ class PassphraseRepository @Inject constructor(
     private val preferences: Preferences,
     private val k9: K9,
 ) {
+    private val lockedMF = MutableStateFlow<UnlockState>(UnlockState.LOADING)
+    val lockedState: StateFlow<UnlockState> = lockedMF.asStateFlow()
+
     fun initializeBlocking() {
         runBlocking {
             getAccountsWithPassPhrase().onFailure {
@@ -26,6 +32,9 @@ class PassphraseRepository @Inject constructor(
             }.onSuccess { list ->
                 if (list.isEmpty()) {
                     unlockPassphrase()
+                } else {
+                    // request unlock
+                    lockedMF.value = UnlockState.LOCKED
                 }
             }
         }
@@ -46,6 +55,7 @@ class PassphraseRepository @Inject constructor(
     }
 
     fun unlockPassphrase() {
+        lockedMF.value = UnlockState.UNLOCKED
         passphraseUnlocked = true
         // initialize all mail services etc etc
         k9.startAllServices()
@@ -53,6 +63,12 @@ class PassphraseRepository @Inject constructor(
 
     fun resetPassphraseLock() {
         passphraseUnlocked = false
+    }
+
+    enum class UnlockState {
+        LOADING, LOCKED, UNLOCKED;
+
+        val needsUnlock: Boolean get() = this == LOCKED
     }
 
     companion object {
