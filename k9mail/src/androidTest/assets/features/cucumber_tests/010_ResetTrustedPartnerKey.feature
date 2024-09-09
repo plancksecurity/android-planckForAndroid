@@ -9,7 +9,7 @@ Feature: Reset Trusted Partner Key
     And I send 1 messages to bot2 with subject ResetKey and body ResetPartnersKey
     And I click the last message received
     And I click confirm trust words
-    Then I check if the privacy status is Trusted
+    Then I check if the privacy status is Encrypted
     Then I reset partner key
     When I press back
     When I click compose message

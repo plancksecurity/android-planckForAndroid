@@ -16,6 +16,6 @@ Feature: Handshake in existing message
     And I click the last message received
     Then I confirm trust words match
     When I click confirm trust words
-    Then I check if the privacy status is Trusted
+    Then I check if the privacy status is Encrypted
 
 

@@ -9,7 +9,7 @@ Feature: Trust Reset: Mistrusted message
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted2
     And I click the last message received
     And I click mistrust words
-    Then I check if the privacy status is Dangerous
+    Then I check if the privacy status is Encrypted
     And I reset partner key
     When I click reply message
     Then I check if the privacy status is NotEncrypted

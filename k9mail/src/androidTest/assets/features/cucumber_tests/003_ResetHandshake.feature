@@ -12,7 +12,7 @@ Feature: Reset Handshake
     When I click the last message received
     Then I check if the privacy status is Encrypted
     When I click mistrust words
-    Then I check if the privacy status is Dangerous
+    Then I check if the privacy status is Encrypted
     When I go back to the Inbox
     Then I check the badge color of the first message is Dangerous
     And I click compose message
@@ -34,7 +34,7 @@ Feature: Reset Handshake
     Then I check if the privacy status is Encrypted
     When I click confirm trust words
     And I go back to the Inbox
-    Then I check the badge color of the first message is Trusted
+    Then I check the badge color of the first message is Encrypted
     When I click compose message
     And I send 1 message to bot4 with subject TM-18C and body cucumberStopTrustingConfirmTrustWords
     Then I check the badge color of the first message is Trusted

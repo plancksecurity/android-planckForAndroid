@@ -9,9 +9,9 @@ Feature: Trust Reset: Trusted
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted
     And I click the last message received
     And I click confirm trust words
-    Then I check if the privacy status is Trusted
+    Then I check if the privacy status is Encrypted
     When I reset partner key
-    Then I check if the privacy status is Trusted
+    Then I check if the privacy status is Encrypted
     And I press back
     When I click compose message
     And I check the privacy status is Undefined

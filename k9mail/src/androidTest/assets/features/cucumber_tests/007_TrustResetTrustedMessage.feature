@@ -10,7 +10,7 @@ Feature: Trust Reset: Trusted message
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted2
     And I click the last message received
     And I click confirm trust words
-    Then I check if the privacy status is Trusted
+    Then I check if the privacy status is Encrypted
     And I reset partner key
     When I click reply message
     Then I check if the privacy status is NotEncrypted

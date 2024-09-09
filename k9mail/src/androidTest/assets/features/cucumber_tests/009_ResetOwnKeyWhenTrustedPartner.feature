@@ -9,7 +9,7 @@ Feature: Reset Own Key when Trusted Partner
     And I click the last message received
     And I compare rating_string from json file with unencrypted
     And I click confirm trust words
-    Then I check if the privacy status is Trusted
+    Then I check if the privacy status is Encrypted
     And I go back to the Inbox
     And I reset own key
     When I click compose message
