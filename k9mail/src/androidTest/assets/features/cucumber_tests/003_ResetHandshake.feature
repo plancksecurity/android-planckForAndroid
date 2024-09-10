@@ -14,7 +14,7 @@ Feature: Reset Handshake
     When I click mistrust words
     Then I check if the privacy status is Encrypted
     When I go back to the Inbox
-    Then I check the badge color of the first message is Dangerous
+    Then I check the badge color of the first message is Encrypted
     And I click compose message
     And I enter bot4 in the messageTo field
     And I enter TM-18A in the messageSubject field
