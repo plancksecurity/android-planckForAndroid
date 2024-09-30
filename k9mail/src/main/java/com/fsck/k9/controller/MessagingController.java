@@ -3296,17 +3296,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
                         }
-                        if (!message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
-                            if (isLocalMessageAlreadyOnServer(account, encryptedMessage.getMessageId(), account.getSentFolderName())) {
-                                Timber.d("EFA-656 Sent message is already in remote folder, nothing to do");
-                                message.setFlag(Flag.DELETED, true);
-                            } else {
-                                Timber.d("EFA-656 Sent message not found on remote folder, appending it");
-                                moveOrDeleteSentMessage(account, localStore, message, encryptedMessage);
-                            }
-                        } else {
-                            moveOrDeleteSentMessage(account, localStore, message, encryptedMessage);
-                        }
+                        moveOrDeleteSentMessage(account, localStore, message, encryptedMessage);
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -3407,14 +3397,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
-            //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
-            PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
-            queuePendingCommand(account, command);
-            processPendingCommands(account);
-
-            Timber.i("Moved sent message to folder '%s' (%d)",
-                    account.getSentFolderName(), localSentFolder.getId());
-
+            if (isLocalMessageAlreadyOnServer(account, encryptedMessage.getMessageId(), account.getSentFolderName())) {
+                Timber.d("EFA-656 Sent message is already in remote folder, nothing to do");
+            } else {
+                Timber.d("EFA-656 Sent message not found on remote folder, appending it");
+                //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
+                PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
+                queuePendingCommand(account, command);
+                processPendingCommands(account);
+                Timber.i("Moved sent message to folder '%s' (%d)",
+                        account.getSentFolderName(), localSentFolder.getId());
+            }
 
             Rating rating = PlanckUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
