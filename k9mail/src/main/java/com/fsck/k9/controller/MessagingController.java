@@ -71,7 +71,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.planck.PlanckProvider;
@@ -113,7 +112,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -153,6 +151,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
     public static final long SHARE_SIZE_THRESHOLD = 64000;
     public static final int SHARE_MAX_FILENAME_SIZE = 20;
+    public static final int CHECK_MESSAGE_ON_SERVER_INTERVAL = 5000;
+    public static final int CHECK_MESSAGE_ON_SERVER_MAX_TRIES = 5;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -3296,7 +3296,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
                         }
-                        moveOrDeleteSentMessage(account, localStore, localFolder, message, encryptedMessage);
+                        if (!message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
+                            if (isLocalMessageAlreadyOnServer(account, encryptedMessage.getMessageId(), account.getSentFolderName())) {
+                                Timber.d("EFA-656 Sent message is already in remote folder, nothing to do");
+                                message.setFlag(Flag.DELETED, true);
+                            } else {
+                                Timber.d("EFA-656 Sent message not found on remote folder, appending it");
+                                moveOrDeleteSentMessage(account, localStore, message, encryptedMessage);
+                            }
+                        } else {
+                            moveOrDeleteSentMessage(account, localStore, message, encryptedMessage);
+                        }
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -3378,7 +3388,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void moveOrDeleteSentMessage(Account account, LocalStore localStore,
-                                         LocalFolder localFolder, LocalMessage message, Message encryptedMessage) throws MessagingException {
+                                         LocalMessage message, Message encryptedMessage) throws MessagingException {
         if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
             Timber.i("Account does not have a sent mail folder; deleting sent message");
 
@@ -3422,6 +3432,39 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                        }
 
 
+        }
+    }
+
+    private static boolean isLocalMessageAlreadyOnServer(
+            Account account,
+            String messageId,
+            String folder
+    ) throws MessagingException {
+        Folder remoteFolder = null;
+        try {
+            Store remoteStore = account.getRemoteStore();
+            remoteFolder = remoteStore.getFolder(folder);
+            if (!remoteFolder.exists()) {
+                return false;
+            }
+            remoteFolder.open(Folder.OPEN_MODE_RO);
+            if (remoteFolder.getMode() != Folder.OPEN_MODE_RO) {
+                return false;
+            }
+            for (int i = 0; i < CHECK_MESSAGE_ON_SERVER_MAX_TRIES; i++) {
+                boolean remoteMessageFound = remoteFolder.getUidFromMessageId(messageId) != null;
+                Timber.d("EFA-656 CHECKING TIMES:" + (i + 1));
+                if (remoteMessageFound) {
+                    return true;
+                }
+                try {
+                    Thread.sleep(CHECK_MESSAGE_ON_SERVER_INTERVAL);
+                } catch (InterruptedException ignored) {
+                }
+            }
+            return false;
+        } finally {
+            closeFolder(remoteFolder);
         }
     }
 
