@@ -151,8 +151,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
     public static final long SHARE_SIZE_THRESHOLD = 64000;
     public static final int SHARE_MAX_FILENAME_SIZE = 20;
-    public static final int CHECK_MESSAGE_ON_SERVER_INTERVAL = 5000;
-    public static final int CHECK_MESSAGE_ON_SERVER_MAX_TRIES = 5;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -3444,18 +3442,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (remoteFolder.getMode() != Folder.OPEN_MODE_RO) {
                 return false;
             }
-            for (int i = 0; i < CHECK_MESSAGE_ON_SERVER_MAX_TRIES; i++) {
-                boolean remoteMessageFound = remoteFolder.getUidFromMessageId(messageId) != null;
-                Timber.d("EFA-656 CHECKING TIMES:" + (i + 1));
-                if (remoteMessageFound) {
-                    return true;
-                }
-                try {
-                    Thread.sleep(CHECK_MESSAGE_ON_SERVER_INTERVAL);
-                } catch (InterruptedException ignored) {
-                }
-            }
-            return false;
+            return remoteFolder.getUidFromMessageId(messageId) != null;
         } finally {
             closeFolder(remoteFolder);
         }
