@@ -71,7 +71,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.planck.PlanckProvider;
@@ -113,7 +112,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -3296,7 +3294,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
                         }
-                        moveOrDeleteSentMessage(account, localStore, localFolder, message, encryptedMessage);
+                        moveOrDeleteSentMessage(account, localStore, message, encryptedMessage);
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -3378,7 +3376,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void moveOrDeleteSentMessage(Account account, LocalStore localStore,
-                                         LocalFolder localFolder, LocalMessage message, Message encryptedMessage) throws MessagingException {
+                                         LocalMessage message, Message encryptedMessage) throws MessagingException {
         if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
             Timber.i("Account does not have a sent mail folder; deleting sent message");
 
@@ -3397,14 +3395,16 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
-            //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
-            PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
-            queuePendingCommand(account, command);
-            processPendingCommands(account);
-
-            Timber.i("Moved sent message to folder '%s' (%d)",
-                    account.getSentFolderName(), localSentFolder.getId());
-
+            if (isLocalMessageAlreadyOnServer(account, encryptedMessage.getMessageId(), account.getSentFolderName())) {
+                Timber.d("EFA-656 Sent message is already in remote folder, nothing to do");
+            } else {
+                Timber.d("EFA-656 Sent message not found on remote folder, appending it");
+                PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
+                queuePendingCommand(account, command);
+                processPendingCommands(account);
+                Timber.i("Moved sent message to folder '%s' (%d)",
+                        account.getSentFolderName(), localSentFolder.getId());
+            }
 
             Rating rating = PlanckUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
@@ -3422,6 +3422,28 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                        }
 
 
+        }
+    }
+
+    private static boolean isLocalMessageAlreadyOnServer(
+            Account account,
+            String messageId,
+            String folder
+    ) throws MessagingException {
+        Folder remoteFolder = null;
+        try {
+            Store remoteStore = account.getRemoteStore();
+            remoteFolder = remoteStore.getFolder(folder);
+            if (!remoteFolder.exists()) {
+                return false;
+            }
+            remoteFolder.open(Folder.OPEN_MODE_RO);
+            if (remoteFolder.getMode() != Folder.OPEN_MODE_RO) {
+                return false;
+            }
+            return remoteFolder.getUidFromMessageId(messageId) != null;
+        } finally {
+            closeFolder(remoteFolder);
         }
     }
 
