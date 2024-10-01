@@ -3399,7 +3399,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 Timber.d("EFA-656 Sent message is already in remote folder, nothing to do");
             } else {
                 Timber.d("EFA-656 Sent message not found on remote folder, appending it");
-                //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
                 PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
                 queuePendingCommand(account, command);
                 processPendingCommands(account);
