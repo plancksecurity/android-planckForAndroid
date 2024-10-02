@@ -99,6 +99,13 @@ class PlanckAuditLogger(
             storage.lastTamperingDetectedTime > 0
                     || storage.persistentWarningOnStartup()
         if (pendingAlert) {
+            if (BuildConfig.DEBUG || K9.isDebug()) {
+                Log.e(
+                    CONSOLE_LOG_TAG,
+                    "AUDIT LOG STARTUP PENDING ALERT: STORAGE LAST TAMPERING DETECTED TIME " +
+                            "IS ${storage.lastTamperingDetectedTime}"
+                )
+            }
             setTamperedAlert()
         }
     }
@@ -171,6 +178,9 @@ class PlanckAuditLogger(
     private fun getAllFileText() = if (auditLoggerFile.exists()) {
         auditLoggerFile.readText().also {
             if (it.isBlank()) { // there should never be a blank audit file! File is created when first log is added.
+                if (BuildConfig.DEBUG || K9.isDebug()) {
+                    Log.e(CONSOLE_LOG_TAG, "AUDIT LOGGER FILE IS BLANK!!")
+                }
                 setTamperedAlertAndSaveTime()
             }
         }
@@ -182,6 +192,9 @@ class PlanckAuditLogger(
     private fun checkPreviousFileExistenceOnNonExistentFile() {
         val auditLogExisted = storage.auditLogFileExists()
         if (auditLogExisted) {
+            if (BuildConfig.DEBUG || K9.isDebug()) {
+                Log.e(CONSOLE_LOG_TAG, "AUDIT LOGGER FOUND A FAKE AUDIT LOG FILE")
+            }
             setTamperedAlertAndSaveTime()
         }
     }
@@ -261,6 +274,12 @@ class PlanckAuditLogger(
                 auditLoggerFile.appendText(signature)
             }.onFailure {
                 // same as tamper detected on failure
+                if (BuildConfig.DEBUG || K9.isDebug()) {
+                    Log.e(
+                        CONSOLE_LOG_TAG, "AUDIT LOGGER ERROR DETECTED ADDING " +
+                                "SIGNATURE:\n${it.stackTraceToString()}"
+                    )
+                }
                 setTamperedAlertAndSaveTime()
             }
     }
@@ -330,9 +349,24 @@ class PlanckAuditLogger(
     private fun verifyAuditText(auditText: String, signature: String) {
         if (signature.isBlank()
             || !planckProvider.get().verifySignature(auditText, signature)
-                .getOrDefault(false) // same as tamper detected on failure
+                .onFailure {
+                    if (BuildConfig.DEBUG || K9.isDebug()) {
+                        Log.e(
+                            CONSOLE_LOG_TAG, "AUDIT LOGGER ERROR DETECTED VERIFYING " +
+                                    "SIGNATURE:\n${it.stackTraceToString()}"
+                        )
+                    }
+                }.getOrDefault(false) // same as tamper detected on failure
         ) {
             // tamper detected
+            if (BuildConfig.DEBUG || K9.isDebug()) {
+                Log.e(
+                    CONSOLE_LOG_TAG, "AUDIT LOGGER ERROR VERIFYING SIGNATURE" +
+                            "\nAUDIT TEXT: $auditText" +
+                            "\nSIGNATURE: $signature" +
+                            "\nSIGNATURE MAY BE BLANK OR JUST NOT MATCH."
+                )
+            }
             setTamperedAlertAndSaveTime()
         }
     }
@@ -368,6 +402,13 @@ class PlanckAuditLogger(
     override fun processPendingTamperingWarningFromBackground() {
         CoroutineScope(dispatcherProvider.io()).launch {
             if (storage.lastTamperingDetectedTime > 0) {
+                if (BuildConfig.DEBUG || K9.isDebug()) {
+                    Log.e(
+                        CONSOLE_LOG_TAG,
+                        "PROCESSING AUDIT LOG FROM BACKGROUND: STORAGE LAST TAMPERING DETECTED " +
+                                "TIME IS ${storage.lastTamperingDetectedTime}"
+                    )
+                }
                 setTamperedAlert()
             }
         }
