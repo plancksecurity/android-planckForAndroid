@@ -362,8 +362,9 @@ class PlanckAuditLogger(
             if (BuildConfig.DEBUG || K9.isDebug()) {
                 Log.e(
                     CONSOLE_LOG_TAG, "AUDIT LOGGER ERROR VERIFYING SIGNATURE" +
-                            "\nAUDIT TEXT: $auditText" +
+                            "\nAUDIT TEXT VERIFIED: \n$auditText" +
                             "\nSIGNATURE: $signature" +
+                            "\nAUDIT LOG CONTENT: \n${getAllFileText()}" +
                             "\nSIGNATURE MAY BE BLANK OR JUST NOT MATCH."
                 )
             }
