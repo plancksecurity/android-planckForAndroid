@@ -3395,16 +3395,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
-            if (isLocalMessageAlreadyOnServer(account, encryptedMessage.getMessageId(), account.getSentFolderName())) {
-                Timber.d("EFA-656 Sent message is already in remote folder, nothing to do");
-            } else {
-                Timber.d("EFA-656 Sent message not found on remote folder, appending it");
+            Timber.d("EFA-656 DOES ACCOUNT AUTOMATICALLY ADD MESSAGES TO SENT: " + account.doesAppendSentMessages());
+            if (!account.doesAppendSentMessages()) {
+                //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
                 PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
                 queuePendingCommand(account, command);
                 processPendingCommands(account);
+
                 Timber.i("Moved sent message to folder '%s' (%d)",
                         account.getSentFolderName(), localSentFolder.getId());
             }
+
 
             Rating rating = PlanckUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
@@ -3422,28 +3423,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                        }
 
 
-        }
-    }
-
-    private static boolean isLocalMessageAlreadyOnServer(
-            Account account,
-            String messageId,
-            String folder
-    ) throws MessagingException {
-        Folder remoteFolder = null;
-        try {
-            Store remoteStore = account.getRemoteStore();
-            remoteFolder = remoteStore.getFolder(folder);
-            if (!remoteFolder.exists()) {
-                return false;
-            }
-            remoteFolder.open(Folder.OPEN_MODE_RO);
-            if (remoteFolder.getMode() != Folder.OPEN_MODE_RO) {
-                return false;
-            }
-            return remoteFolder.getUidFromMessageId(messageId) != null;
-        } finally {
-            closeFolder(remoteFolder);
         }
     }
 
