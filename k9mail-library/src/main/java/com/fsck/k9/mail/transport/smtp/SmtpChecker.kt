@@ -1,5 +1,7 @@
 package com.fsck.k9.mail.transport.smtp
 
+import com.fsck.k9.mail.Transport
+
 class SmtpChecker {
     companion object {
         // Set of SMTP hosts that automatically append sent messages to the Sent folder
@@ -26,7 +28,8 @@ class SmtpChecker {
          */
         fun doesAppendSentMessages(transportUri: String?): Boolean {
             transportUri ?: return false
-            val settings = SmtpTransport.decodeUri(transportUri)
+            val settings = kotlin.runCatching { Transport.decodeTransportUri(transportUri) }
+                .getOrElse { return false }
             val smtpHost = settings.host ?: return false
             return smtpHostsWithSentAppend.contains(smtpHost)
         }
