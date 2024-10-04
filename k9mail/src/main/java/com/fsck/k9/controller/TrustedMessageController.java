@@ -52,7 +52,7 @@ class TrustedMessageController {
 
         if (localMessage.getFlags().contains(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) return localMessage;
 
-        if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())
+        if (account.getDraftsFolderName().equals(localMessage.getFolder().getName()) || account.getSentFolderName().equals(localMessage.getFolder().getName())
                 || localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) {
             encryptedMessage = encryptUntrustedMessage(context, planckProvider, account, localMessage);
         } else { // Trusted

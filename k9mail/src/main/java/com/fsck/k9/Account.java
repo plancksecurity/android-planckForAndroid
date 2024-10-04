@@ -33,6 +33,7 @@ import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.StoreConfig;
+import com.fsck.k9.mail.transport.smtp.SmtpChecker;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.mailstore.StorageManager.StorageProvider;
@@ -139,8 +140,8 @@ public class Account implements BaseAccount, StoreConfig {
             incomingServerSettings = incomingServerSettings.newPassword(incomingPassword);
             outgoingServerSettings = outgoingServerSettings.newPassword(outgoingPassword);
         }
-        storeUri = RemoteStore.createStoreUri(incomingServerSettings);
-        transportUri = Transport.createTransportUri(outgoingServerSettings);
+        setStoreUri(RemoteStore.createStoreUri(incomingServerSettings));
+        setTransportUri(Transport.createTransportUri(outgoingServerSettings));
         deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingServerSettings.type);
         setupFolderNames(context, incomingServerSettings.host.toLowerCase());
     }
@@ -304,6 +305,7 @@ public class Account implements BaseAccount, StoreConfig {
      */
     private String localStorageProviderId;
     private String transportUri;
+    private boolean doesAppendSentMessages;
     private ManageableSetting<String> description;
     private String alwaysBcc;
     private int automaticCheckIntervalMinutes;
@@ -513,10 +515,10 @@ public class Account implements BaseAccount, StoreConfig {
 
         Storage storage = preferences.getStorage();
 
-        storeUri = Base64.decode(storage.getString(accountUuid + ".storeUri", null));
+        setStoreUri(Base64.decode(storage.getString(accountUuid + ".storeUri", null)));
         localStorageProviderId = storage.getString(
                 accountUuid + ".localStorageProvider", StorageManager.getInstance(K9.app).getDefaultProviderId());
-        transportUri = Base64.decode(storage.getString(accountUuid + ".transportUri", null));
+        setTransportUri(Base64.decode(storage.getString(accountUuid + ".transportUri", null)));
         String descriptionText = storage.getString(accountUuid + ".description", null);
         description = descriptionText != null
                 ? ManageableSettingKt.deserializeStringManageableSetting(descriptionText)
@@ -1081,6 +1083,10 @@ public class Account implements BaseAccount, StoreConfig {
         return transportUri;
     }
 
+    public synchronized boolean doesAppendSentMessages() {
+        return doesAppendSentMessages;
+    }
+
     @Override
     public OAuth2TokenProvider getOAuth2TokenProvider() throws MessagingException {
         return getRemoteStore().getOauthTokenProvider();
@@ -1088,6 +1094,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     public synchronized void setTransportUri(String transportUri) {
         this.transportUri = transportUri;
+        doesAppendSentMessages = SmtpChecker.Companion.doesAppendSentMessages(transportUri);
     }
 
     @Override
